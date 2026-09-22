@@ -55,6 +55,11 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   BpjsReferenceController: 'bpjs-pcare',
   BpjsReportController: 'bpjs-pcare',
   BpjsSubmissionController: 'bpjs-pcare',
+  // P25-T16. The non-capitation recap rides on the BPJS entitlement; it
+  // holds no PCare credential of its own, but a clinic without BPJS has no
+  // participants to claim for.
+  BpjsNonCapitationRecapController: 'bpjs-pcare',
+  BpjsNonCapitationSettingsController: 'bpjs-pcare',
   BugReportController: 'bug-reporting',
   // P25-T06 — the midwife's antenatal pathway. Default off: a clinic that
   // does not follow pregnancies has no use for it.

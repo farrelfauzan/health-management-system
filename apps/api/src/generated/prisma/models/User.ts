@@ -312,6 +312,9 @@ export type UserWhereInput = {
   recordedDiagnoses?: Prisma.DiagnosisListRelationFilter
   recordedProcedures?: Prisma.ProcedureListRelationFilter
   recordedBpjsReferrals?: Prisma.BpjsReferralListRelationFilter
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkListRelationFilter
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffListRelationFilter
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsListRelationFilter
   dispensedByRecords?: Prisma.DispenseRecordListRelationFilter
   medicationStockReceipts?: Prisma.MedicationStockReceiptListRelationFilter
   createdInvoices?: Prisma.InvoiceListRelationFilter
@@ -403,6 +406,9 @@ export type UserOrderByWithRelationInput = {
   recordedDiagnoses?: Prisma.DiagnosisOrderByRelationAggregateInput
   recordedProcedures?: Prisma.ProcedureOrderByRelationAggregateInput
   recordedBpjsReferrals?: Prisma.BpjsReferralOrderByRelationAggregateInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkOrderByRelationAggregateInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffOrderByRelationAggregateInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsOrderByRelationAggregateInput
   dispensedByRecords?: Prisma.DispenseRecordOrderByRelationAggregateInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptOrderByRelationAggregateInput
   createdInvoices?: Prisma.InvoiceOrderByRelationAggregateInput
@@ -497,6 +503,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   recordedDiagnoses?: Prisma.DiagnosisListRelationFilter
   recordedProcedures?: Prisma.ProcedureListRelationFilter
   recordedBpjsReferrals?: Prisma.BpjsReferralListRelationFilter
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkListRelationFilter
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffListRelationFilter
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsListRelationFilter
   dispensedByRecords?: Prisma.DispenseRecordListRelationFilter
   medicationStockReceipts?: Prisma.MedicationStockReceiptListRelationFilter
   createdInvoices?: Prisma.InvoiceListRelationFilter
@@ -631,6 +640,9 @@ export type UserCreateInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -721,6 +733,9 @@ export type UserUncheckedCreateInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -811,6 +826,9 @@ export type UserUpdateInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -901,6 +919,9 @@ export type UserUncheckedUpdateInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -1709,6 +1730,52 @@ export type UserUpdateOneWithoutRecordedBpjsReferralsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecordedBpjsReferralsInput, Prisma.UserUpdateWithoutRecordedBpjsReferralsInput>, Prisma.UserUncheckedUpdateWithoutRecordedBpjsReferralsInput>
 }
 
+export type UserCreateNestedOneWithoutNonCapitationSettingsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationSettingsInput, Prisma.UserUncheckedCreateWithoutNonCapitationSettingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNonCapitationSettingsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutNonCapitationSettingsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationSettingsInput, Prisma.UserUncheckedCreateWithoutNonCapitationSettingsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNonCapitationSettingsInput
+  upsert?: Prisma.UserUpsertWithoutNonCapitationSettingsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNonCapitationSettingsInput, Prisma.UserUpdateWithoutNonCapitationSettingsInput>, Prisma.UserUncheckedUpdateWithoutNonCapitationSettingsInput>
+}
+
+export type UserCreateNestedOneWithoutNonCapitationTariffsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationTariffsInput, Prisma.UserUncheckedCreateWithoutNonCapitationTariffsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNonCapitationTariffsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutNonCapitationTariffsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationTariffsInput, Prisma.UserUncheckedCreateWithoutNonCapitationTariffsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNonCapitationTariffsInput
+  upsert?: Prisma.UserUpsertWithoutNonCapitationTariffsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNonCapitationTariffsInput, Prisma.UserUpdateWithoutNonCapitationTariffsInput>, Prisma.UserUncheckedUpdateWithoutNonCapitationTariffsInput>
+}
+
+export type UserCreateNestedOneWithoutNonCapitationClaimMarksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationClaimMarksInput, Prisma.UserUncheckedCreateWithoutNonCapitationClaimMarksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNonCapitationClaimMarksInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNonCapitationClaimMarksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationClaimMarksInput, Prisma.UserUncheckedCreateWithoutNonCapitationClaimMarksInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNonCapitationClaimMarksInput
+  upsert?: Prisma.UserUpsertWithoutNonCapitationClaimMarksInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNonCapitationClaimMarksInput, Prisma.UserUpdateWithoutNonCapitationClaimMarksInput>, Prisma.UserUncheckedUpdateWithoutNonCapitationClaimMarksInput>
+}
+
 export type UserCreateNestedOneWithoutCreatedAiProviderConfigsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedAiProviderConfigsInput, Prisma.UserUncheckedCreateWithoutCreatedAiProviderConfigsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedAiProviderConfigsInput
@@ -2268,6 +2335,9 @@ export type UserCreateWithoutGrantedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -2357,6 +2427,9 @@ export type UserUncheckedCreateWithoutGrantedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2451,6 +2524,9 @@ export type UserCreateWithoutRevokedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -2540,6 +2616,9 @@ export type UserUncheckedCreateWithoutRevokedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -2645,6 +2724,9 @@ export type UserUpdateWithoutGrantedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -2734,6 +2816,9 @@ export type UserUncheckedUpdateWithoutGrantedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -2834,6 +2919,9 @@ export type UserUpdateWithoutRevokedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -2923,6 +3011,9 @@ export type UserUncheckedUpdateWithoutRevokedDoctorMandatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3012,6 +3103,9 @@ export type UserCreateWithoutRefreshTokensInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -3101,6 +3195,9 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3206,6 +3303,9 @@ export type UserUpdateWithoutRefreshTokensInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -3295,6 +3395,9 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3384,6 +3487,9 @@ export type UserCreateWithoutSentInvitationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -3473,6 +3579,9 @@ export type UserUncheckedCreateWithoutSentInvitationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3578,6 +3687,9 @@ export type UserUpdateWithoutSentInvitationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -3667,6 +3779,9 @@ export type UserUncheckedUpdateWithoutSentInvitationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -3756,6 +3871,9 @@ export type UserCreateWithoutMfaCredentialInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -3845,6 +3963,9 @@ export type UserUncheckedCreateWithoutMfaCredentialInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -3950,6 +4071,9 @@ export type UserUpdateWithoutMfaCredentialInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -4039,6 +4163,9 @@ export type UserUncheckedUpdateWithoutMfaCredentialInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4128,6 +4255,9 @@ export type UserCreateWithoutMfaRecoveryCodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -4217,6 +4347,9 @@ export type UserUncheckedCreateWithoutMfaRecoveryCodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4322,6 +4455,9 @@ export type UserUpdateWithoutMfaRecoveryCodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -4411,6 +4547,9 @@ export type UserUncheckedUpdateWithoutMfaRecoveryCodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4500,6 +4639,9 @@ export type UserCreateWithoutUpdatedFeatureEntitlementsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -4589,6 +4731,9 @@ export type UserUncheckedCreateWithoutUpdatedFeatureEntitlementsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -4694,6 +4839,9 @@ export type UserUpdateWithoutUpdatedFeatureEntitlementsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -4783,6 +4931,9 @@ export type UserUncheckedUpdateWithoutUpdatedFeatureEntitlementsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -4871,6 +5022,9 @@ export type UserCreateWithoutPatientProfilesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -4960,6 +5114,9 @@ export type UserUncheckedCreateWithoutPatientProfilesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5065,6 +5222,9 @@ export type UserUpdateWithoutPatientProfilesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -5154,6 +5314,9 @@ export type UserUncheckedUpdateWithoutPatientProfilesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5244,6 +5407,9 @@ export type UserCreateWithoutPrivacyNoticeRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -5333,6 +5499,9 @@ export type UserUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5438,6 +5607,9 @@ export type UserUpdateWithoutPrivacyNoticeRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -5527,6 +5699,9 @@ export type UserUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5616,6 +5791,9 @@ export type UserCreateWithoutGrantedDeliveryConsentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -5705,6 +5883,9 @@ export type UserUncheckedCreateWithoutGrantedDeliveryConsentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -5810,6 +5991,9 @@ export type UserUpdateWithoutGrantedDeliveryConsentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -5899,6 +6083,9 @@ export type UserUncheckedUpdateWithoutGrantedDeliveryConsentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -5988,6 +6175,9 @@ export type UserCreateWithoutRequestedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -6077,6 +6267,9 @@ export type UserUncheckedCreateWithoutRequestedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -6182,6 +6375,9 @@ export type UserUpdateWithoutRequestedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -6271,6 +6467,9 @@ export type UserUncheckedUpdateWithoutRequestedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -6359,6 +6558,9 @@ export type UserCreateWithoutDoctorProfileInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -6448,6 +6650,9 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -6553,6 +6758,9 @@ export type UserUpdateWithoutDoctorProfileInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -6642,6 +6850,9 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -6732,6 +6943,9 @@ export type UserCreateWithoutGrantedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -6821,6 +7035,9 @@ export type UserUncheckedCreateWithoutGrantedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -6915,6 +7132,9 @@ export type UserCreateWithoutRevokedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -7004,6 +7224,9 @@ export type UserUncheckedCreateWithoutRevokedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7109,6 +7332,9 @@ export type UserUpdateWithoutGrantedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -7198,6 +7424,9 @@ export type UserUncheckedUpdateWithoutGrantedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7298,6 +7527,9 @@ export type UserUpdateWithoutRevokedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -7387,6 +7619,9 @@ export type UserUncheckedUpdateWithoutRevokedDoctorAuthoritiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -7475,6 +7710,9 @@ export type UserCreateWithoutAssignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -7564,6 +7802,9 @@ export type UserUncheckedCreateWithoutAssignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7658,6 +7899,9 @@ export type UserCreateWithoutUnassignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -7747,6 +7991,9 @@ export type UserUncheckedCreateWithoutUnassignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -7852,6 +8099,9 @@ export type UserUpdateWithoutAssignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -7941,6 +8191,9 @@ export type UserUncheckedUpdateWithoutAssignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8041,6 +8294,9 @@ export type UserUpdateWithoutUnassignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -8130,6 +8386,9 @@ export type UserUncheckedUpdateWithoutUnassignedDoctorPatientsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8219,6 +8478,9 @@ export type UserCreateWithoutDoctorPatientActivitiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -8308,6 +8570,9 @@ export type UserUncheckedCreateWithoutDoctorPatientActivitiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -8413,6 +8678,9 @@ export type UserUpdateWithoutDoctorPatientActivitiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -8502,6 +8770,9 @@ export type UserUncheckedUpdateWithoutDoctorPatientActivitiesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8591,6 +8862,9 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -8680,6 +8954,9 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -8785,6 +9062,9 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -8874,6 +9154,9 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -8963,6 +9246,9 @@ export type UserCreateWithoutCreatedRegistrationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -9052,6 +9338,9 @@ export type UserUncheckedCreateWithoutCreatedRegistrationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -9157,6 +9446,9 @@ export type UserUpdateWithoutCreatedRegistrationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -9246,6 +9538,9 @@ export type UserUncheckedUpdateWithoutCreatedRegistrationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -9335,6 +9630,9 @@ export type UserCreateWithoutCreatedEncountersInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -9424,6 +9722,9 @@ export type UserUncheckedCreateWithoutCreatedEncountersInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -9529,6 +9830,9 @@ export type UserUpdateWithoutCreatedEncountersInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -9618,6 +9922,9 @@ export type UserUncheckedUpdateWithoutCreatedEncountersInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -9707,6 +10014,9 @@ export type UserCreateWithoutRecordedVitalSignsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -9796,6 +10106,9 @@ export type UserUncheckedCreateWithoutRecordedVitalSignsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -9901,6 +10214,9 @@ export type UserUpdateWithoutRecordedVitalSignsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -9990,6 +10306,9 @@ export type UserUncheckedUpdateWithoutRecordedVitalSignsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -10079,6 +10398,9 @@ export type UserCreateWithoutRecordedDiagnosesInput = {
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -10168,6 +10490,9 @@ export type UserUncheckedCreateWithoutRecordedDiagnosesInput = {
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -10273,6 +10598,9 @@ export type UserUpdateWithoutRecordedDiagnosesInput = {
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -10362,6 +10690,9 @@ export type UserUncheckedUpdateWithoutRecordedDiagnosesInput = {
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -10451,6 +10782,9 @@ export type UserCreateWithoutRecordedProceduresInput = {
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -10540,6 +10874,9 @@ export type UserUncheckedCreateWithoutRecordedProceduresInput = {
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -10645,6 +10982,9 @@ export type UserUpdateWithoutRecordedProceduresInput = {
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -10734,6 +11074,9 @@ export type UserUncheckedUpdateWithoutRecordedProceduresInput = {
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -10824,6 +11167,9 @@ export type UserCreateWithoutDispensedByRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
@@ -10913,6 +11259,9 @@ export type UserUncheckedCreateWithoutDispensedByRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
@@ -11018,6 +11367,9 @@ export type UserUpdateWithoutDispensedByRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
@@ -11107,6 +11459,9 @@ export type UserUncheckedUpdateWithoutDispensedByRecordsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
@@ -11196,6 +11551,9 @@ export type UserCreateWithoutMedicationStockReceiptsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
@@ -11285,6 +11643,9 @@ export type UserUncheckedCreateWithoutMedicationStockReceiptsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
@@ -11390,6 +11751,9 @@ export type UserUpdateWithoutMedicationStockReceiptsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
@@ -11479,6 +11843,9 @@ export type UserUncheckedUpdateWithoutMedicationStockReceiptsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
@@ -11568,6 +11935,9 @@ export type UserCreateWithoutUpdatedTaxSettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -11657,6 +12027,9 @@ export type UserUncheckedCreateWithoutUpdatedTaxSettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -11762,6 +12135,9 @@ export type UserUpdateWithoutUpdatedTaxSettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -11851,6 +12227,9 @@ export type UserUncheckedUpdateWithoutUpdatedTaxSettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -11940,6 +12319,9 @@ export type UserCreateWithoutCreatedTaxCodeRatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -12029,6 +12411,9 @@ export type UserUncheckedCreateWithoutCreatedTaxCodeRatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -12134,6 +12519,9 @@ export type UserUpdateWithoutCreatedTaxCodeRatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -12223,6 +12611,9 @@ export type UserUncheckedUpdateWithoutCreatedTaxCodeRatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -12312,6 +12703,9 @@ export type UserCreateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -12401,6 +12795,9 @@ export type UserUncheckedCreateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -12506,6 +12903,9 @@ export type UserUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -12595,6 +12995,9 @@ export type UserUncheckedUpdateWithoutUpdatedTaxCategoryDefaultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -12684,6 +13087,9 @@ export type UserCreateWithoutGeneratedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -12773,6 +13179,9 @@ export type UserUncheckedCreateWithoutGeneratedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -12867,6 +13276,9 @@ export type UserCreateWithoutFinalizedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -12956,6 +13368,9 @@ export type UserUncheckedCreateWithoutFinalizedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -13061,6 +13476,9 @@ export type UserUpdateWithoutGeneratedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -13150,6 +13568,9 @@ export type UserUncheckedUpdateWithoutGeneratedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -13250,6 +13671,9 @@ export type UserUpdateWithoutFinalizedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -13339,6 +13763,9 @@ export type UserUncheckedUpdateWithoutFinalizedTaxReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -13428,6 +13855,9 @@ export type UserCreateWithoutVoidedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -13517,6 +13947,9 @@ export type UserUncheckedCreateWithoutVoidedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -13611,6 +14044,9 @@ export type UserCreateWithoutCreatedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
@@ -13700,6 +14136,9 @@ export type UserUncheckedCreateWithoutCreatedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
@@ -13805,6 +14244,9 @@ export type UserUpdateWithoutVoidedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -13894,6 +14336,9 @@ export type UserUncheckedUpdateWithoutVoidedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -13994,6 +14439,9 @@ export type UserUpdateWithoutCreatedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
@@ -14083,6 +14531,9 @@ export type UserUncheckedUpdateWithoutCreatedInvoicesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
@@ -14172,6 +14623,9 @@ export type UserCreateWithoutReceivedPaymentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -14261,6 +14715,9 @@ export type UserUncheckedCreateWithoutReceivedPaymentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -14366,6 +14823,9 @@ export type UserUpdateWithoutReceivedPaymentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -14455,6 +14915,9 @@ export type UserUncheckedUpdateWithoutReceivedPaymentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -14544,6 +15007,9 @@ export type UserCreateWithoutCreatedDocumentTemplatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -14633,6 +15099,9 @@ export type UserUncheckedCreateWithoutCreatedDocumentTemplatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -14738,6 +15207,9 @@ export type UserUpdateWithoutCreatedDocumentTemplatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -14827,6 +15299,9 @@ export type UserUncheckedUpdateWithoutCreatedDocumentTemplatesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -14916,6 +15391,9 @@ export type UserCreateWithoutPublishedTemplateVersionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -15005,6 +15483,9 @@ export type UserUncheckedCreateWithoutPublishedTemplateVersionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15110,6 +15591,9 @@ export type UserUpdateWithoutPublishedTemplateVersionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -15199,6 +15683,9 @@ export type UserUncheckedUpdateWithoutPublishedTemplateVersionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -15287,6 +15774,9 @@ export type UserCreateWithoutRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -15376,6 +15866,9 @@ export type UserUncheckedCreateWithoutRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15470,6 +15963,9 @@ export type UserCreateWithoutAssignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -15559,6 +16055,9 @@ export type UserUncheckedCreateWithoutAssignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15653,6 +16152,9 @@ export type UserCreateWithoutUnassignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -15742,6 +16244,9 @@ export type UserUncheckedCreateWithoutUnassignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -15847,6 +16352,9 @@ export type UserUpdateWithoutRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -15936,6 +16444,9 @@ export type UserUncheckedUpdateWithoutRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -16036,6 +16547,9 @@ export type UserUpdateWithoutAssignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -16125,6 +16639,9 @@ export type UserUncheckedUpdateWithoutAssignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -16225,6 +16742,9 @@ export type UserUpdateWithoutUnassignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -16314,6 +16834,9 @@ export type UserUncheckedUpdateWithoutUnassignedRolesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -16403,6 +16926,9 @@ export type UserCreateWithoutRecordedBpjsReferralsInput = {
   recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -16492,6 +17018,9 @@ export type UserUncheckedCreateWithoutRecordedBpjsReferralsInput = {
   recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16597,6 +17126,9 @@ export type UserUpdateWithoutRecordedBpjsReferralsInput = {
   recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -16686,6 +17218,1161 @@ export type UserUncheckedUpdateWithoutRecordedBpjsReferralsInput = {
   recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserCreateWithoutNonCapitationSettingsInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserUncheckedCreateWithoutNonCapitationSettingsInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserCreateOrConnectWithoutNonCapitationSettingsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationSettingsInput, Prisma.UserUncheckedCreateWithoutNonCapitationSettingsInput>
+}
+
+export type UserUpsertWithoutNonCapitationSettingsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNonCapitationSettingsInput, Prisma.UserUncheckedUpdateWithoutNonCapitationSettingsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationSettingsInput, Prisma.UserUncheckedCreateWithoutNonCapitationSettingsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNonCapitationSettingsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNonCapitationSettingsInput, Prisma.UserUncheckedUpdateWithoutNonCapitationSettingsInput>
+}
+
+export type UserUpdateWithoutNonCapitationSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNonCapitationSettingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserCreateWithoutNonCapitationTariffsInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserUncheckedCreateWithoutNonCapitationTariffsInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserCreateOrConnectWithoutNonCapitationTariffsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationTariffsInput, Prisma.UserUncheckedCreateWithoutNonCapitationTariffsInput>
+}
+
+export type UserUpsertWithoutNonCapitationTariffsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNonCapitationTariffsInput, Prisma.UserUncheckedUpdateWithoutNonCapitationTariffsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationTariffsInput, Prisma.UserUncheckedCreateWithoutNonCapitationTariffsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNonCapitationTariffsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNonCapitationTariffsInput, Prisma.UserUncheckedUpdateWithoutNonCapitationTariffsInput>
+}
+
+export type UserUpdateWithoutNonCapitationTariffsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNonCapitationTariffsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUncheckedUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUncheckedUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUncheckedUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUncheckedUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserCreateWithoutNonCapitationClaimMarksInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitCreateNestedOneWithoutMembersInput
+  roles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
+  dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserUncheckedCreateWithoutNonCapitationClaimMarksInput = {
+  id?: string
+  email: string
+  fullName?: string | null
+  passwordHash: string
+  isActive?: boolean
+  isSystem?: boolean
+  offboardedAt?: Date | string | null
+  organizationUnitId?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  roles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  assignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUnassignedByInput
+  patientProfiles?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutOwnerUserInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutOwnerUserInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutAssignedByInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutUnassignedByInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedCreateNestedManyWithoutActorInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRegistrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdEncounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
+  createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
+  voidedInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutVoidedByInput
+  receivedPayments?: Prisma.PaymentUncheckedCreateNestedManyWithoutCashierInput
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  mfaCredential?: Prisma.MfaCredentialUncheckedCreateNestedOneWithoutUserInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUncheckedCreateNestedManyWithoutUserInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutActorInput
+  chatSessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutOwnerUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutAuthorUserInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUncheckedCreateNestedManyWithoutUpdatedByInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  ownedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutOwnerInput
+  releasedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutReleasedByInput
+  blockedConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBlockedByInput
+  conversationMessages?: Prisma.ConversationMessageUncheckedCreateNestedManyWithoutAuthorInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdAdmissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdBedAssignments?: Prisma.BedAssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRecipientInput
+  sentInvitations?: Prisma.UserInvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUncheckedCreateNestedManyWithoutPublishedByInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGranteeInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUncheckedCreateNestedManyWithoutGrantedByInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUncheckedCreateNestedManyWithoutUserInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutGrantedByInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutRequestedByInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUncheckedCreateNestedManyWithoutApproverInput
+  filedBugReports?: Prisma.BugReportUncheckedCreateNestedManyWithoutReporterInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutDraftedByInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUncheckedCreateNestedManyWithoutSubmittedByInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUncheckedCreateNestedManyWithoutApproverInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUncheckedCreateNestedManyWithoutApproverInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUncheckedCreateNestedManyWithoutCollectedByInput
+  enteredLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutEnteredByInput
+  verifiedLabResults?: Prisma.LabResultUncheckedCreateNestedManyWithoutVerifiedByInput
+  requestedLabReports?: Prisma.LabReportUncheckedCreateNestedManyWithoutRequestedByInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  updatedTaxSettings?: Prisma.TaxSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUncheckedCreateNestedManyWithoutCreatedByInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUncheckedCreateNestedManyWithoutUpdatedByInput
+  generatedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutGeneratedByInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUncheckedCreateNestedManyWithoutFinalizedByInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutCreatedByInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUncheckedCreateNestedManyWithoutRevokedByInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutCreatedByInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUncheckedCreateNestedManyWithoutRecordedByInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUncheckedCreateNestedManyWithoutDismissedByInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUncheckedCreateNestedManyWithoutRevokedByInput
+  recordedDeliveries?: Prisma.DeliveryRecordUncheckedCreateNestedManyWithoutRecordedByInput
+  shkSamplesTaken?: Prisma.ShkScreeningUncheckedCreateNestedManyWithoutSampleTakenByInput
+}
+
+export type UserCreateOrConnectWithoutNonCapitationClaimMarksInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationClaimMarksInput, Prisma.UserUncheckedCreateWithoutNonCapitationClaimMarksInput>
+}
+
+export type UserUpsertWithoutNonCapitationClaimMarksInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNonCapitationClaimMarksInput, Prisma.UserUncheckedUpdateWithoutNonCapitationClaimMarksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNonCapitationClaimMarksInput, Prisma.UserUncheckedCreateWithoutNonCapitationClaimMarksInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNonCapitationClaimMarksInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNonCapitationClaimMarksInput, Prisma.UserUncheckedUpdateWithoutNonCapitationClaimMarksInput>
+}
+
+export type UserUpdateWithoutNonCapitationClaimMarksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnit?: Prisma.OrganizationUnitUpdateOneWithoutMembersNestedInput
+  roles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
+  dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
+  medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
+  createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
+  voidedInvoices?: Prisma.InvoiceUpdateManyWithoutVoidedByNestedInput
+  receivedPayments?: Prisma.PaymentUpdateManyWithoutCashierNestedInput
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  mfaCredential?: Prisma.MfaCredentialUpdateOneWithoutUserNestedInput
+  mfaRecoveryCodes?: Prisma.MfaRecoveryCodeUpdateManyWithoutUserNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutActorNestedInput
+  chatSessions?: Prisma.ChatSessionUpdateManyWithoutOwnerUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutAuthorUserNestedInput
+  createdAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutCreatedByNestedInput
+  updatedAiProviderConfigs?: Prisma.AiProviderConfigUpdateManyWithoutUpdatedByNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  ownedDocuments?: Prisma.DocumentUpdateManyWithoutOwnerNestedInput
+  releasedDocuments?: Prisma.DocumentUpdateManyWithoutReleasedByNestedInput
+  blockedConversations?: Prisma.ConversationUpdateManyWithoutBlockedByNestedInput
+  conversationMessages?: Prisma.ConversationMessageUpdateManyWithoutAuthorNestedInput
+  updatedFeatureEntitlements?: Prisma.FeatureEntitlementUpdateManyWithoutUpdatedByNestedInput
+  createdAdmissions?: Prisma.AdmissionUpdateManyWithoutCreatedByNestedInput
+  createdBedAssignments?: Prisma.BedAssignmentUpdateManyWithoutCreatedByNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRecipientNestedInput
+  sentInvitations?: Prisma.UserInvitationUpdateManyWithoutInvitedByNestedInput
+  createdDocumentTemplates?: Prisma.DocumentTemplateUpdateManyWithoutCreatedByNestedInput
+  publishedTemplateVersions?: Prisma.DocumentTemplateVersionUpdateManyWithoutPublishedByNestedInput
+  receivedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGranteeNestedInput
+  grantedVaultShares?: Prisma.VaultDocumentShareUpdateManyWithoutGrantedByNestedInput
+  offboardingNotices?: Prisma.UserOffboardingNoticeUpdateManyWithoutUserNestedInput
+  grantedDeliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutGrantedByNestedInput
+  requestedDeliveries?: Prisma.DocumentDeliveryUpdateManyWithoutRequestedByNestedInput
+  defaultApproverForTypes?: Prisma.DocumentTypeApproverUpdateManyWithoutApproverNestedInput
+  filedBugReports?: Prisma.BugReportUpdateManyWithoutReporterNestedInput
+  draftedManagedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutDraftedByNestedInput
+  submittedApprovalRequests?: Prisma.DocumentApprovalRequestUpdateManyWithoutSubmittedByNestedInput
+  namedApprovalRounds?: Prisma.DocumentApprovalApproverUpdateManyWithoutApproverNestedInput
+  approvalDecisions?: Prisma.DocumentApprovalDecisionUpdateManyWithoutApproverNestedInput
+  collectedLabSpecimens?: Prisma.LabSpecimenUpdateManyWithoutCollectedByNestedInput
+  enteredLabResults?: Prisma.LabResultUpdateManyWithoutEnteredByNestedInput
+  verifiedLabResults?: Prisma.LabResultUpdateManyWithoutVerifiedByNestedInput
+  requestedLabReports?: Prisma.LabReportUpdateManyWithoutRequestedByNestedInput
+  updatedLaboratorySettings?: Prisma.LaboratorySettingsUpdateManyWithoutUpdatedByNestedInput
+  updatedTaxSettings?: Prisma.TaxSettingsUpdateManyWithoutUpdatedByNestedInput
+  createdTaxCodeRates?: Prisma.TaxCodeRateUpdateManyWithoutCreatedByNestedInput
+  updatedTaxCategoryDefaults?: Prisma.TaxCategoryDefaultUpdateManyWithoutUpdatedByNestedInput
+  generatedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutGeneratedByNestedInput
+  finalizedTaxReports?: Prisma.TaxReportDraftUpdateManyWithoutFinalizedByNestedInput
+  grantedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutCreatedByNestedInput
+  revokedDoctorAuthorities?: Prisma.DoctorAuthorityUpdateManyWithoutRevokedByNestedInput
+  grantedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutCreatedByNestedInput
+  createdPregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutCreatedByNestedInput
+  recordedExternalDoctorVisits?: Prisma.PregnancyExternalDoctorVisitUpdateManyWithoutRecordedByNestedInput
+  recordedAntenatalExaminations?: Prisma.AntenatalExaminationUpdateManyWithoutRecordedByNestedInput
+  recordedPostnatalExaminations?: Prisma.PostnatalExaminationUpdateManyWithoutRecordedByNestedInput
+  dismissedAntenatalReferrals?: Prisma.AntenatalReferralDismissalUpdateManyWithoutDismissedByNestedInput
+  revokedDoctorMandates?: Prisma.DoctorMandateUpdateManyWithoutRevokedByNestedInput
+  recordedDeliveries?: Prisma.DeliveryRecordUpdateManyWithoutRecordedByNestedInput
+  shkSamplesTaken?: Prisma.ShkScreeningUpdateManyWithoutSampleTakenByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNonCapitationClaimMarksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  fullName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  offboardedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  organizationUnitId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  roles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUnassignedByNestedInput
+  patientProfiles?: Prisma.PatientProfileUncheckedUpdateManyWithoutOwnerUserNestedInput
+  doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutOwnerUserNestedInput
+  assignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutAssignedByNestedInput
+  unassignedDoctorPatients?: Prisma.DoctorPatientUncheckedUpdateManyWithoutUnassignedByNestedInput
+  doctorPatientActivities?: Prisma.DoctorPatientActivityUncheckedUpdateManyWithoutActorNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRegistrations?: Prisma.RegistrationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdEncounters?: Prisma.EncounterUncheckedUpdateManyWithoutCreatedByNestedInput
+  recordedVitalSigns?: Prisma.VitalSignsUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
+  recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -16776,6 +18463,9 @@ export type UserCreateWithoutCreatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -16865,6 +18555,9 @@ export type UserUncheckedCreateWithoutCreatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -16959,6 +18652,9 @@ export type UserCreateWithoutUpdatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -17048,6 +18744,9 @@ export type UserUncheckedCreateWithoutUpdatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17153,6 +18852,9 @@ export type UserUpdateWithoutCreatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -17242,6 +18944,9 @@ export type UserUncheckedUpdateWithoutCreatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17342,6 +19047,9 @@ export type UserUpdateWithoutUpdatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -17431,6 +19139,9 @@ export type UserUncheckedUpdateWithoutUpdatedAiProviderConfigsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17520,6 +19231,9 @@ export type UserCreateWithoutChatSessionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -17609,6 +19323,9 @@ export type UserUncheckedCreateWithoutChatSessionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -17714,6 +19431,9 @@ export type UserUpdateWithoutChatSessionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -17803,6 +19523,9 @@ export type UserUncheckedUpdateWithoutChatSessionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -17892,6 +19615,9 @@ export type UserCreateWithoutChatMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -17981,6 +19707,9 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18086,6 +19815,9 @@ export type UserUpdateWithoutChatMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -18175,6 +19907,9 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -18264,6 +19999,9 @@ export type UserCreateWithoutUploadedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -18353,6 +20091,9 @@ export type UserUncheckedCreateWithoutUploadedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18447,6 +20188,9 @@ export type UserCreateWithoutOwnedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -18536,6 +20280,9 @@ export type UserUncheckedCreateWithoutOwnedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18630,6 +20377,9 @@ export type UserCreateWithoutReleasedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -18719,6 +20469,9 @@ export type UserUncheckedCreateWithoutReleasedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -18824,6 +20577,9 @@ export type UserUpdateWithoutUploadedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -18913,6 +20669,9 @@ export type UserUncheckedUpdateWithoutUploadedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19013,6 +20772,9 @@ export type UserUpdateWithoutOwnedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -19102,6 +20864,9 @@ export type UserUncheckedUpdateWithoutOwnedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19202,6 +20967,9 @@ export type UserUpdateWithoutReleasedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -19291,6 +21059,9 @@ export type UserUncheckedUpdateWithoutReleasedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19380,6 +21151,9 @@ export type UserCreateWithoutReceivedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -19469,6 +21243,9 @@ export type UserUncheckedCreateWithoutReceivedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19563,6 +21340,9 @@ export type UserCreateWithoutGrantedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -19652,6 +21432,9 @@ export type UserUncheckedCreateWithoutGrantedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -19757,6 +21540,9 @@ export type UserUpdateWithoutReceivedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -19846,6 +21632,9 @@ export type UserUncheckedUpdateWithoutReceivedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -19946,6 +21735,9 @@ export type UserUpdateWithoutGrantedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -20035,6 +21827,9 @@ export type UserUncheckedUpdateWithoutGrantedVaultSharesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -20124,6 +21919,9 @@ export type UserCreateWithoutOffboardingNoticesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -20213,6 +22011,9 @@ export type UserUncheckedCreateWithoutOffboardingNoticesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -20318,6 +22119,9 @@ export type UserUpdateWithoutOffboardingNoticesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -20407,6 +22211,9 @@ export type UserUncheckedUpdateWithoutOffboardingNoticesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -20496,6 +22303,9 @@ export type UserCreateWithoutBlockedConversationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -20585,6 +22395,9 @@ export type UserUncheckedCreateWithoutBlockedConversationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -20690,6 +22503,9 @@ export type UserUpdateWithoutBlockedConversationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -20779,6 +22595,9 @@ export type UserUncheckedUpdateWithoutBlockedConversationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -20868,6 +22687,9 @@ export type UserCreateWithoutConversationMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -20957,6 +22779,9 @@ export type UserUncheckedCreateWithoutConversationMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21062,6 +22887,9 @@ export type UserUpdateWithoutConversationMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -21151,6 +22979,9 @@ export type UserUncheckedUpdateWithoutConversationMessagesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -21240,6 +23071,9 @@ export type UserCreateWithoutCreatedAdmissionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -21329,6 +23163,9 @@ export type UserUncheckedCreateWithoutCreatedAdmissionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21434,6 +23271,9 @@ export type UserUpdateWithoutCreatedAdmissionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -21523,6 +23363,9 @@ export type UserUncheckedUpdateWithoutCreatedAdmissionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -21612,6 +23455,9 @@ export type UserCreateWithoutCreatedBedAssignmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -21701,6 +23547,9 @@ export type UserUncheckedCreateWithoutCreatedBedAssignmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -21806,6 +23655,9 @@ export type UserUpdateWithoutCreatedBedAssignmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -21895,6 +23747,9 @@ export type UserUncheckedUpdateWithoutCreatedBedAssignmentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -21984,6 +23839,9 @@ export type UserCreateWithoutNotificationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -22073,6 +23931,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22178,6 +24039,9 @@ export type UserUpdateWithoutNotificationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -22267,6 +24131,9 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -22355,6 +24222,9 @@ export type UserCreateWithoutOrganizationUnitInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -22444,6 +24314,9 @@ export type UserUncheckedCreateWithoutOrganizationUnitInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22581,6 +24454,9 @@ export type UserCreateWithoutDefaultApproverForTypesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -22670,6 +24546,9 @@ export type UserUncheckedCreateWithoutDefaultApproverForTypesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -22775,6 +24654,9 @@ export type UserUpdateWithoutDefaultApproverForTypesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -22864,6 +24746,9 @@ export type UserUncheckedUpdateWithoutDefaultApproverForTypesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -22953,6 +24838,9 @@ export type UserCreateWithoutDraftedManagedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -23042,6 +24930,9 @@ export type UserUncheckedCreateWithoutDraftedManagedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23147,6 +25038,9 @@ export type UserUpdateWithoutDraftedManagedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -23236,6 +25130,9 @@ export type UserUncheckedUpdateWithoutDraftedManagedDocumentsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -23325,6 +25222,9 @@ export type UserCreateWithoutSubmittedApprovalRequestsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -23414,6 +25314,9 @@ export type UserUncheckedCreateWithoutSubmittedApprovalRequestsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23519,6 +25422,9 @@ export type UserUpdateWithoutSubmittedApprovalRequestsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -23608,6 +25514,9 @@ export type UserUncheckedUpdateWithoutSubmittedApprovalRequestsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -23697,6 +25606,9 @@ export type UserCreateWithoutNamedApprovalRoundsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -23786,6 +25698,9 @@ export type UserUncheckedCreateWithoutNamedApprovalRoundsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -23891,6 +25806,9 @@ export type UserUpdateWithoutNamedApprovalRoundsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -23980,6 +25898,9 @@ export type UserUncheckedUpdateWithoutNamedApprovalRoundsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -24069,6 +25990,9 @@ export type UserCreateWithoutApprovalDecisionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -24158,6 +26082,9 @@ export type UserUncheckedCreateWithoutApprovalDecisionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24263,6 +26190,9 @@ export type UserUpdateWithoutApprovalDecisionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -24352,6 +26282,9 @@ export type UserUncheckedUpdateWithoutApprovalDecisionsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -24441,6 +26374,9 @@ export type UserCreateWithoutCollectedLabSpecimensInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -24530,6 +26466,9 @@ export type UserUncheckedCreateWithoutCollectedLabSpecimensInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24635,6 +26574,9 @@ export type UserUpdateWithoutCollectedLabSpecimensInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -24724,6 +26666,9 @@ export type UserUncheckedUpdateWithoutCollectedLabSpecimensInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -24813,6 +26758,9 @@ export type UserCreateWithoutEnteredLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -24902,6 +26850,9 @@ export type UserUncheckedCreateWithoutEnteredLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -24996,6 +26947,9 @@ export type UserCreateWithoutVerifiedLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -25085,6 +27039,9 @@ export type UserUncheckedCreateWithoutVerifiedLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -25190,6 +27147,9 @@ export type UserUpdateWithoutEnteredLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -25279,6 +27239,9 @@ export type UserUncheckedUpdateWithoutEnteredLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -25379,6 +27342,9 @@ export type UserUpdateWithoutVerifiedLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -25468,6 +27434,9 @@ export type UserUncheckedUpdateWithoutVerifiedLabResultsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -25557,6 +27526,9 @@ export type UserCreateWithoutUpdatedLaboratorySettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -25646,6 +27618,9 @@ export type UserUncheckedCreateWithoutUpdatedLaboratorySettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -25751,6 +27726,9 @@ export type UserUpdateWithoutUpdatedLaboratorySettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -25840,6 +27818,9 @@ export type UserUncheckedUpdateWithoutUpdatedLaboratorySettingsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -25929,6 +27910,9 @@ export type UserCreateWithoutRequestedLabReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -26018,6 +28002,9 @@ export type UserUncheckedCreateWithoutRequestedLabReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26123,6 +28110,9 @@ export type UserUpdateWithoutRequestedLabReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -26212,6 +28202,9 @@ export type UserUncheckedUpdateWithoutRequestedLabReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -26301,6 +28294,9 @@ export type UserCreateWithoutFiledBugReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -26390,6 +28386,9 @@ export type UserUncheckedCreateWithoutFiledBugReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26495,6 +28494,9 @@ export type UserUpdateWithoutFiledBugReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -26584,6 +28586,9 @@ export type UserUncheckedUpdateWithoutFiledBugReportsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -26673,6 +28678,9 @@ export type UserCreateWithoutCreatedPregnancyEpisodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -26762,6 +28770,9 @@ export type UserUncheckedCreateWithoutCreatedPregnancyEpisodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -26867,6 +28878,9 @@ export type UserUpdateWithoutCreatedPregnancyEpisodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -26956,6 +28970,9 @@ export type UserUncheckedUpdateWithoutCreatedPregnancyEpisodesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -27045,6 +29062,9 @@ export type UserCreateWithoutRecordedExternalDoctorVisitsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -27134,6 +29154,9 @@ export type UserUncheckedCreateWithoutRecordedExternalDoctorVisitsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -27239,6 +29262,9 @@ export type UserUpdateWithoutRecordedExternalDoctorVisitsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -27328,6 +29354,9 @@ export type UserUncheckedUpdateWithoutRecordedExternalDoctorVisitsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -27417,6 +29446,9 @@ export type UserCreateWithoutRecordedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -27506,6 +29538,9 @@ export type UserUncheckedCreateWithoutRecordedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -27611,6 +29646,9 @@ export type UserUpdateWithoutRecordedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -27700,6 +29738,9 @@ export type UserUncheckedUpdateWithoutRecordedDeliveriesInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -27789,6 +29830,9 @@ export type UserCreateWithoutShkSamplesTakenInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -27878,6 +29922,9 @@ export type UserUncheckedCreateWithoutShkSamplesTakenInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -27983,6 +30030,9 @@ export type UserUpdateWithoutShkSamplesTakenInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -28072,6 +30122,9 @@ export type UserUncheckedUpdateWithoutShkSamplesTakenInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -28161,6 +30214,9 @@ export type UserCreateWithoutRecordedAntenatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -28250,6 +30306,9 @@ export type UserUncheckedCreateWithoutRecordedAntenatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -28355,6 +30414,9 @@ export type UserUpdateWithoutRecordedAntenatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -28444,6 +30506,9 @@ export type UserUncheckedUpdateWithoutRecordedAntenatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -28533,6 +30598,9 @@ export type UserCreateWithoutDismissedAntenatalReferralsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -28622,6 +30690,9 @@ export type UserUncheckedCreateWithoutDismissedAntenatalReferralsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -28727,6 +30798,9 @@ export type UserUpdateWithoutDismissedAntenatalReferralsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -28816,6 +30890,9 @@ export type UserUncheckedUpdateWithoutDismissedAntenatalReferralsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -28905,6 +30982,9 @@ export type UserCreateWithoutRecordedPostnatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceCreateNestedManyWithoutCreatedByInput
@@ -28994,6 +31074,9 @@ export type UserUncheckedCreateWithoutRecordedPostnatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedCreateNestedManyWithoutRecordedByInput
   recordedProcedures?: Prisma.ProcedureUncheckedCreateNestedManyWithoutRecordedByInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedCreateNestedManyWithoutRecordedByInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedCreateNestedManyWithoutMarkedByInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedCreateNestedManyWithoutCreatedByInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedCreateNestedManyWithoutUpdatedByInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedCreateNestedManyWithoutPharmacistInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedCreateNestedManyWithoutReceivedByInput
   createdInvoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutCreatedByInput
@@ -29099,6 +31182,9 @@ export type UserUpdateWithoutRecordedPostnatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -29188,6 +31274,9 @@ export type UserUncheckedUpdateWithoutRecordedPostnatalExaminationsInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -29293,6 +31382,9 @@ export type UserUpdateWithoutOrganizationUnitInput = {
   recordedDiagnoses?: Prisma.DiagnosisUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUpdateManyWithoutCreatedByNestedInput
@@ -29382,6 +31474,9 @@ export type UserUncheckedUpdateWithoutOrganizationUnitInput = {
   recordedDiagnoses?: Prisma.DiagnosisUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedProcedures?: Prisma.ProcedureUncheckedUpdateManyWithoutRecordedByNestedInput
   recordedBpjsReferrals?: Prisma.BpjsReferralUncheckedUpdateManyWithoutRecordedByNestedInput
+  nonCapitationClaimMarks?: Prisma.BpjsNonCapitationClaimMarkUncheckedUpdateManyWithoutMarkedByNestedInput
+  nonCapitationTariffs?: Prisma.BpjsNonCapitationTariffUncheckedUpdateManyWithoutCreatedByNestedInput
+  nonCapitationSettings?: Prisma.BpjsNonCapitationSettingsUncheckedUpdateManyWithoutUpdatedByNestedInput
   dispensedByRecords?: Prisma.DispenseRecordUncheckedUpdateManyWithoutPharmacistNestedInput
   medicationStockReceipts?: Prisma.MedicationStockReceiptUncheckedUpdateManyWithoutReceivedByNestedInput
   createdInvoices?: Prisma.InvoiceUncheckedUpdateManyWithoutCreatedByNestedInput
@@ -29478,6 +31573,9 @@ export type UserCountOutputType = {
   recordedDiagnoses: number
   recordedProcedures: number
   recordedBpjsReferrals: number
+  nonCapitationClaimMarks: number
+  nonCapitationTariffs: number
+  nonCapitationSettings: number
   dispensedByRecords: number
   medicationStockReceipts: number
   createdInvoices: number
@@ -29551,6 +31649,9 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   recordedDiagnoses?: boolean | UserCountOutputTypeCountRecordedDiagnosesArgs
   recordedProcedures?: boolean | UserCountOutputTypeCountRecordedProceduresArgs
   recordedBpjsReferrals?: boolean | UserCountOutputTypeCountRecordedBpjsReferralsArgs
+  nonCapitationClaimMarks?: boolean | UserCountOutputTypeCountNonCapitationClaimMarksArgs
+  nonCapitationTariffs?: boolean | UserCountOutputTypeCountNonCapitationTariffsArgs
+  nonCapitationSettings?: boolean | UserCountOutputTypeCountNonCapitationSettingsArgs
   dispensedByRecords?: boolean | UserCountOutputTypeCountDispensedByRecordsArgs
   medicationStockReceipts?: boolean | UserCountOutputTypeCountMedicationStockReceiptsArgs
   createdInvoices?: boolean | UserCountOutputTypeCountCreatedInvoicesArgs
@@ -29715,6 +31816,27 @@ export type UserCountOutputTypeCountRecordedProceduresArgs<ExtArgs extends runti
  */
 export type UserCountOutputTypeCountRecordedBpjsReferralsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BpjsReferralWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNonCapitationClaimMarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BpjsNonCapitationClaimMarkWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNonCapitationTariffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BpjsNonCapitationTariffWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNonCapitationSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BpjsNonCapitationSettingsWhereInput
 }
 
 /**
@@ -30142,6 +32264,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   recordedDiagnoses?: boolean | Prisma.User$recordedDiagnosesArgs<ExtArgs>
   recordedProcedures?: boolean | Prisma.User$recordedProceduresArgs<ExtArgs>
   recordedBpjsReferrals?: boolean | Prisma.User$recordedBpjsReferralsArgs<ExtArgs>
+  nonCapitationClaimMarks?: boolean | Prisma.User$nonCapitationClaimMarksArgs<ExtArgs>
+  nonCapitationTariffs?: boolean | Prisma.User$nonCapitationTariffsArgs<ExtArgs>
+  nonCapitationSettings?: boolean | Prisma.User$nonCapitationSettingsArgs<ExtArgs>
   dispensedByRecords?: boolean | Prisma.User$dispensedByRecordsArgs<ExtArgs>
   medicationStockReceipts?: boolean | Prisma.User$medicationStockReceiptsArgs<ExtArgs>
   createdInvoices?: boolean | Prisma.User$createdInvoicesArgs<ExtArgs>
@@ -30276,6 +32401,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   recordedDiagnoses?: boolean | Prisma.User$recordedDiagnosesArgs<ExtArgs>
   recordedProcedures?: boolean | Prisma.User$recordedProceduresArgs<ExtArgs>
   recordedBpjsReferrals?: boolean | Prisma.User$recordedBpjsReferralsArgs<ExtArgs>
+  nonCapitationClaimMarks?: boolean | Prisma.User$nonCapitationClaimMarksArgs<ExtArgs>
+  nonCapitationTariffs?: boolean | Prisma.User$nonCapitationTariffsArgs<ExtArgs>
+  nonCapitationSettings?: boolean | Prisma.User$nonCapitationSettingsArgs<ExtArgs>
   dispensedByRecords?: boolean | Prisma.User$dispensedByRecordsArgs<ExtArgs>
   medicationStockReceipts?: boolean | Prisma.User$medicationStockReceiptsArgs<ExtArgs>
   createdInvoices?: boolean | Prisma.User$createdInvoicesArgs<ExtArgs>
@@ -30361,6 +32489,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     recordedDiagnoses: Prisma.$DiagnosisPayload<ExtArgs>[]
     recordedProcedures: Prisma.$ProcedurePayload<ExtArgs>[]
     recordedBpjsReferrals: Prisma.$BpjsReferralPayload<ExtArgs>[]
+    nonCapitationClaimMarks: Prisma.$BpjsNonCapitationClaimMarkPayload<ExtArgs>[]
+    nonCapitationTariffs: Prisma.$BpjsNonCapitationTariffPayload<ExtArgs>[]
+    nonCapitationSettings: Prisma.$BpjsNonCapitationSettingsPayload<ExtArgs>[]
     dispensedByRecords: Prisma.$DispenseRecordPayload<ExtArgs>[]
     medicationStockReceipts: Prisma.$MedicationStockReceiptPayload<ExtArgs>[]
     createdInvoices: Prisma.$InvoicePayload<ExtArgs>[]
@@ -30886,6 +33017,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   recordedDiagnoses<T extends Prisma.User$recordedDiagnosesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedDiagnosesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagnosisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recordedProcedures<T extends Prisma.User$recordedProceduresArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedProceduresArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProcedurePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recordedBpjsReferrals<T extends Prisma.User$recordedBpjsReferralsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recordedBpjsReferralsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsReferralPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  nonCapitationClaimMarks<T extends Prisma.User$nonCapitationClaimMarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$nonCapitationClaimMarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsNonCapitationClaimMarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  nonCapitationTariffs<T extends Prisma.User$nonCapitationTariffsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$nonCapitationTariffsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsNonCapitationTariffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  nonCapitationSettings<T extends Prisma.User$nonCapitationSettingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$nonCapitationSettingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BpjsNonCapitationSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   dispensedByRecords<T extends Prisma.User$dispensedByRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dispensedByRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DispenseRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   medicationStockReceipts<T extends Prisma.User$medicationStockReceiptsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$medicationStockReceiptsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MedicationStockReceiptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdInvoices<T extends Prisma.User$createdInvoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdInvoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -31759,6 +33893,78 @@ export type User$recordedBpjsReferralsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.BpjsReferralScalarFieldEnum | Prisma.BpjsReferralScalarFieldEnum[]
+}
+
+/**
+ * User.nonCapitationClaimMarks
+ */
+export type User$nonCapitationClaimMarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BpjsNonCapitationClaimMark
+   */
+  select?: Prisma.BpjsNonCapitationClaimMarkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BpjsNonCapitationClaimMark
+   */
+  omit?: Prisma.BpjsNonCapitationClaimMarkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BpjsNonCapitationClaimMarkInclude<ExtArgs> | null
+  where?: Prisma.BpjsNonCapitationClaimMarkWhereInput
+  orderBy?: Prisma.BpjsNonCapitationClaimMarkOrderByWithRelationInput | Prisma.BpjsNonCapitationClaimMarkOrderByWithRelationInput[]
+  cursor?: Prisma.BpjsNonCapitationClaimMarkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BpjsNonCapitationClaimMarkScalarFieldEnum | Prisma.BpjsNonCapitationClaimMarkScalarFieldEnum[]
+}
+
+/**
+ * User.nonCapitationTariffs
+ */
+export type User$nonCapitationTariffsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BpjsNonCapitationTariff
+   */
+  select?: Prisma.BpjsNonCapitationTariffSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BpjsNonCapitationTariff
+   */
+  omit?: Prisma.BpjsNonCapitationTariffOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BpjsNonCapitationTariffInclude<ExtArgs> | null
+  where?: Prisma.BpjsNonCapitationTariffWhereInput
+  orderBy?: Prisma.BpjsNonCapitationTariffOrderByWithRelationInput | Prisma.BpjsNonCapitationTariffOrderByWithRelationInput[]
+  cursor?: Prisma.BpjsNonCapitationTariffWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BpjsNonCapitationTariffScalarFieldEnum | Prisma.BpjsNonCapitationTariffScalarFieldEnum[]
+}
+
+/**
+ * User.nonCapitationSettings
+ */
+export type User$nonCapitationSettingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BpjsNonCapitationSettings
+   */
+  select?: Prisma.BpjsNonCapitationSettingsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BpjsNonCapitationSettings
+   */
+  omit?: Prisma.BpjsNonCapitationSettingsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BpjsNonCapitationSettingsInclude<ExtArgs> | null
+  where?: Prisma.BpjsNonCapitationSettingsWhereInput
+  orderBy?: Prisma.BpjsNonCapitationSettingsOrderByWithRelationInput | Prisma.BpjsNonCapitationSettingsOrderByWithRelationInput[]
+  cursor?: Prisma.BpjsNonCapitationSettingsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BpjsNonCapitationSettingsScalarFieldEnum | Prisma.BpjsNonCapitationSettingsScalarFieldEnum[]
 }
 
 /**

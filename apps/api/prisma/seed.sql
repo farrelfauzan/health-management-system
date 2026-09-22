@@ -243,6 +243,15 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('encounter.read:own', 'Encounter', 'read', 'OWN', 'Read own clinical encounters'),
     ('encounter.write:any', 'Encounter', 'write', 'ANY', 'Open, record, and close any clinical encounter'),
     ('encounter.write:own', 'Encounter', 'write', 'OWN', 'Open, record, and close own clinical encounters'),
+    -- Opening a visit off the queue is a front-desk act, split from `write`
+    -- so D-033 can keep `encounter.write:any` from SUPER_ADMIN without leaving
+    -- the admin queue with no account able to start a consultation. The call
+    -- names the attending doctor and returns counts, never note content, so
+    -- neither key is clinical content and SUPER_ADMIN picks up `:any` from the
+    -- catalog-wide union. `:own` is the attending clinician opening for
+    -- themselves, granted wherever `encounter.write:own` is.
+    ('encounter.open:any', 'Encounter', 'open', 'ANY', 'Open a clinical encounter on behalf of any doctor'),
+    ('encounter.open:own', 'Encounter', 'open', 'OWN', 'Open a clinical encounter one attends'),
     ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
     ('icd9cm-code.read:any', 'Icd9cmCode', 'read', 'ANY', 'Search the ICD-9-CM procedure code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
@@ -330,6 +339,15 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('bpjs.eligibility.check:any', 'BpjsEligibility', 'check', 'ANY', 'Check BPJS membership eligibility for a patient at registration check-in'),
     ('bpjs.submission.read:any', 'BpjsSubmission', 'read', 'ANY', 'Read BPJS PCare submission outbox status'),
     ('bpjs.submission.retry:any', 'BpjsSubmission', 'retry', 'ANY', 'Retry failed BPJS PCare submissions'),
+    -- P25-T16 (SJ-239). The bidan jejaring's monthly non-capitation recap for
+    -- the induk FKTP. D-033's billing-line opening (Pasal 32(2)(c) and
+    -- 34(1)(c)): a line carries participant, service type, date, tariff, claim
+    -- status and whether a document of the required category is filed —
+    -- never a diagnosis, a finding or a document's content. Read is split
+    -- from write because marking lines sent and editing tariffs and the induk
+    -- settings change what the clinic claims.
+    ('bpjs.non-capitation.read:any', 'BpjsNonCapitation', 'read', 'ANY', 'Read the BPJS non-capitation claim recap, its tariffs and the induk FKTP settings'),
+    ('bpjs.non-capitation.write:any', 'BpjsNonCapitation', 'write', 'ANY', 'Mark non-capitation recap lines as sent to the induk FKTP and edit its tariffs and settings'),
     ('chat.session.create:own', 'ChatSession', 'create', 'OWN', 'Create own chat sessions'),
     ('chat.session.read:any', 'ChatSession', 'read', 'ANY', 'Read every chat session for the admin support view'),
     ('chat.session.read:own', 'ChatSession', 'read', 'OWN', 'Read own chat sessions'),
@@ -576,6 +594,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- (`recorded_by_id`), so a shared write grant does not blur who wrote what.
     ('ADMIN', 'encounter.read:any'),
     ('ADMIN', 'encounter.write:any'),
+    ('ADMIN', 'encounter.open:any'),
     ('ADMIN', 'icd10-code.read:any'),
     ('ADMIN', 'icd9cm-code.read:any'),
     ('ADMIN', 'medication.read:any'),
@@ -662,6 +681,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- work, and the P11-T07 integrations monitor needs only the former.
     ('ADMIN', 'bpjs.submission.read:any'),
     ('ADMIN', 'bpjs.submission.retry:any'),
+    -- P25-T16. Claims are billing, and billing is the admin's (D-033's
+    -- billing-line opening); clinicians neither read nor mark the recap.
+    ('ADMIN', 'bpjs.non-capitation.read:any'),
+    ('ADMIN', 'bpjs.non-capitation.write:any'),
     -- The chatbot ships two channels, PATIENT and DOCTOR, so PHARMACIST is
     -- absent from every chat grant below. The design note reads "all
     -- authenticated" for the OWN-scoped session reads, but a role that cannot
@@ -774,6 +797,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- relationship exists.
     ('DOCTOR', 'encounter.read:own'),
     ('DOCTOR', 'encounter.write:own'),
+    ('DOCTOR', 'encounter.open:own'),
     -- P21-T04. What SATUSEHAT holds for a visit is clinical content, so the
     -- comparison is its own OWN-scoped key rather than a mode of
     -- `encounter.read`: ADMIN holds `encounter.read:any`, and reusing it would
@@ -1062,6 +1086,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'registration.read:any'),
     ('MIDWIFE', 'encounter.read:own'),
     ('MIDWIFE', 'encounter.write:own'),
+    ('MIDWIFE', 'encounter.open:own'),
     ('MIDWIFE', 'satusehat.record.read:own'),
     ('MIDWIFE', 'satusehat.kyc.verify:any'),
     ('MIDWIFE', 'icd10-code.read:any'),
@@ -1155,6 +1180,31 @@ SELECT
 FROM combined_role_permissions crp
 JOIN "roles" r ON r."code" = crp.role_code
 JOIN "permissions" p ON p."permission_key" = crp.permission_key
+ON CONFLICT ("role_id", "permission_id") DO NOTHING;
+
+-- `encounter.open` split from `encounter.write`. A custom role built in the
+-- admin UI before the split could open encounters through its `write` grant;
+-- give it the matching `open` scope so a re-seed does not take that away.
+INSERT INTO "role_permissions" (
+  "id",
+  "role_id",
+  "permission_id",
+  "created_at"
+)
+SELECT
+  md5('role_permission:' || r."code" || ':' || open_p."permission_key")::uuid,
+  r."id",
+  open_p."id",
+  NOW()
+FROM "role_permissions" rp
+JOIN "roles" r ON r."id" = rp."role_id"
+JOIN "permissions" write_p ON write_p."id" = rp."permission_id"
+JOIN "permissions" open_p
+  ON open_p."resource" = 'Encounter'
+  AND open_p."action" = 'open'
+  AND open_p."scope" = write_p."scope"
+WHERE write_p."resource" = 'Encounter'
+  AND write_p."action" = 'write'
 ON CONFLICT ("role_id", "permission_id") DO NOTHING;
 
 DELETE FROM "role_permissions" rp
@@ -2232,6 +2282,49 @@ SELECT
   NOW()
 FROM seed_pph21_brackets
 ON CONFLICT ("effective_from", "lower_bound") DO NOTHING;
+
+-- P25-T16 (SJ-239). The BPJS non-capitation tariffs a bidan jejaring (FKTP
+-- selain puskesmas) claims through its induk, from the official Permenkes
+-- 3/2023 PDF, batang tubuh Pasal 19–22, pp. 13–16 — NOT the lampiran, which
+-- holds only INA-CBG. Every figure and page is the one quoted in
+-- docs/ops/bpjs-bidan-jejaring-claims-spike.md §4.1; none is from memory.
+-- Valid from the Permenkes's promulgation on 9 January 2023. DO NOTHING: a
+-- reseed must not undo a row the clinic added for a later regulation.
+WITH seed_non_capitation_tariffs(service_type, amount, regulation_reference) AS (
+  VALUES
+    ('ANTENATAL_MIDWIFE', 70000.00, 'Permenkes 3/2023 Pasal 19 ayat (2) huruf c, hlm. 13 (ANC per kunjungan oleh bidan, termasuk bidan jejaring)'),
+    ('ANTENATAL_DOCTOR', 90000.00, 'Permenkes 3/2023 Pasal 19 ayat (2), hlm. 13 (ANC per kunjungan oleh dokter, FKTP selain puskesmas)'),
+    ('ANTENATAL_DOCTOR_ULTRASOUND', 160000.00, 'Permenkes 3/2023 Pasal 19 ayat (2), hlm. 13 (ANC per kunjungan oleh dokter dengan USG, FKTP selain puskesmas)'),
+    ('PRE_REFERRAL', 200000.00, 'Permenkes 3/2023 Pasal 19 ayat (5)-(6), hlm. 14 (pra rujukan, paling banyak, termasuk bidan jejaring)'),
+    ('DELIVERY_WITH_DOCTOR', 1200000.00, 'Permenkes 3/2023 Pasal 20 ayat (2) huruf a-b, hlm. 14 (persalinan, tim paling sedikit 1 dokter dan 2 nakes, FKTP selain puskesmas)'),
+    ('DELIVERY_HEALTH_WORKER_TEAM', 800000.00, 'Permenkes 3/2023 Pasal 20 ayat (1) huruf b dan ayat (2) huruf c, hlm. 14 (persalinan, tim paling sedikit 2 nakes tanpa dokter, tanpa komplikasi)'),
+    ('POSTNATAL_MOTHER_NEWBORN', 50000.00, 'Permenkes 3/2023 Pasal 21 ayat (4)-(5) huruf c, hlm. 15 (PNC kunjungan 1-3 ibu nifas dan bayi baru lahir, bidan jejaring)'),
+    ('POSTNATAL_MOTHER', 50000.00, 'Permenkes 3/2023 Pasal 21 ayat (4)-(5) huruf c, hlm. 15 (PNC kunjungan ke-4 ibu nifas, bidan jejaring)'),
+    ('FAMILY_PLANNING_IUD', 105000.00, 'Permenkes 3/2023 Pasal 22 ayat (2) huruf a, hlm. 16 (pemasangan dan/atau pencabutan AKDR)'),
+    ('FAMILY_PLANNING_IMPLANT', 105000.00, 'Permenkes 3/2023 Pasal 22 ayat (2) huruf b, hlm. 16 (pemasangan dan/atau pencabutan implan)'),
+    ('FAMILY_PLANNING_INJECTION', 20000.00, 'Permenkes 3/2023 Pasal 22 ayat (2) huruf c, hlm. 16 (suntik KB, per suntikan)')
+)
+INSERT INTO "bpjs_non_capitation_tariffs" (
+  "id",
+  "service_type",
+  "amount",
+  "valid_from",
+  "valid_until",
+  "regulation_reference",
+  "created_at",
+  "updated_at"
+)
+SELECT
+  md5('bpjs_non_capitation_tariff:' || service_type || ':2023-01-09')::uuid,
+  service_type::"non_capitation_service_type",
+  amount,
+  DATE '2023-01-09',
+  NULL,
+  regulation_reference,
+  NOW(),
+  NOW()
+FROM seed_non_capitation_tariffs
+ON CONFLICT ("service_type", "valid_from") DO NOTHING;
 
 -- Every tariff category is a medical service until the clinic says otherwise;
 -- medications are taxable goods. A clinic with aesthetic or administrative

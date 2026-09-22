@@ -86,7 +86,7 @@ const expectedOperations: readonly ExpectedOperation[] = [
   operation(RegistrationFlowController, 'updateRegistration', 'patch', '/api/v1/registrations/{id}', 'update', 'Registration', true),
   operation(EncounterController, 'listEncounters', 'get', '/api/v1/encounters', 'read', 'Encounter'),
   operation(EncounterController, 'getEncounterById', 'get', '/api/v1/encounters/{id}', 'read', 'Encounter'),
-  operation(EncounterController, 'openEncounter', 'post', '/api/v1/encounters', 'write', 'Encounter', true),
+  operation(EncounterController, 'openEncounter', 'post', '/api/v1/encounters', 'open', 'Encounter', true),
   operation(EncounterController, 'updateEncounterSoap', 'patch', '/api/v1/encounters/{id}', 'write', 'Encounter', true),
   operation(EncounterController, 'closeEncounter', 'post', '/api/v1/encounters/{id}/close', 'write', 'Encounter'),
   operation(EncounterController, 'cancelEncounter', 'post', '/api/v1/encounters/{id}/cancel', 'write', 'Encounter'),

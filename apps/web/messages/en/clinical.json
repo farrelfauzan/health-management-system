@@ -242,6 +242,9 @@
           "MEDICAL_CERTIFICATE": "Medical certificate",
           "PREGNANCY_CERTIFICATE": "Pregnancy certificate",
           "BIRTH_CERTIFICATE": "Birth certificate",
+          "KIA_BOOK_COPY": "KIA book copy / kartu ibu",
+          "PARTOGRAPH": "Partograph",
+          "FAMILY_PLANNING_BOOK": "Family planning (KB) book",
           "INSURANCE": "Insurance",
           "IDENTITY": "Identity",
           "OTHER": "Other"
@@ -1012,6 +1015,9 @@
           "MEDICAL_CERTIFICATE": "Medical certificate",
           "PREGNANCY_CERTIFICATE": "Pregnancy certificate",
           "BIRTH_CERTIFICATE": "Birth certificate",
+          "KIA_BOOK_COPY": "KIA book copy / kartu ibu",
+          "PARTOGRAPH": "Partograph",
+          "FAMILY_PLANNING_BOOK": "Family planning (KB) book",
           "INSURANCE": "Insurance",
           "IDENTITY": "Identity",
           "OTHER": "Other"

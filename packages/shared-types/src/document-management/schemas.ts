@@ -100,6 +100,12 @@ export const DOCUMENT_CATEGORIES = [
   // a clinic looking for it should not read every certificate she has had.
   'PREGNANCY_CERTIFICATE',
   'BIRTH_CERTIFICATE',
+  // P25-T16: the supporting documents a BPJS non-capitation claim needs that
+  // no category above names (Peraturan BPJS 7/2018 Pasal 13–14): the KIA sheet
+  // copy or signed kartu ibu, the partograf, and the KB book.
+  'KIA_BOOK_COPY',
+  'PARTOGRAPH',
+  'FAMILY_PLANNING_BOOK',
   'INSURANCE',
   'IDENTITY',
   'OTHER',

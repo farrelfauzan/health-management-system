@@ -1788,6 +1788,23 @@ export type EnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
 }
 
+export type EnumNonCapitationServiceTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.NonCapitationServiceType | Prisma.EnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNonCapitationServiceTypeFilter<$PrismaModel> | $Enums.NonCapitationServiceType
+}
+
+export type EnumNonCapitationServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.NonCapitationServiceType | Prisma.EnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNonCapitationServiceTypeWithAggregatesFilter<$PrismaModel> | $Enums.NonCapitationServiceType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumNonCapitationServiceTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumNonCapitationServiceTypeFilter<$PrismaModel>
+}
+
 export type EnumAiProviderKindFilter<$PrismaModel = never> = {
   equals?: $Enums.AiProviderKind | Prisma.EnumAiProviderKindFieldRefInput<$PrismaModel>
   in?: $Enums.AiProviderKind[] | Prisma.ListEnumAiProviderKindFieldRefInput<$PrismaModel>
@@ -4569,6 +4586,23 @@ export type NestedEnumBpjsSubmissionStatusWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumBpjsSubmissionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumNonCapitationServiceTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.NonCapitationServiceType | Prisma.EnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNonCapitationServiceTypeFilter<$PrismaModel> | $Enums.NonCapitationServiceType
+}
+
+export type NestedEnumNonCapitationServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.NonCapitationServiceType | Prisma.EnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.NonCapitationServiceType[] | Prisma.ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumNonCapitationServiceTypeWithAggregatesFilter<$PrismaModel> | $Enums.NonCapitationServiceType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumNonCapitationServiceTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumNonCapitationServiceTypeFilter<$PrismaModel>
 }
 
 export type NestedEnumAiProviderKindFilter<$PrismaModel = never> = {
