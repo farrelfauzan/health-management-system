@@ -30416,9 +30416,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     recordedPostnatalExaminations: Prisma.$PostnatalExaminationPayload<ExtArgs>[]
     dismissedAntenatalReferrals: Prisma.$AntenatalReferralDismissalPayload<ExtArgs>[]
     revokedDoctorMandates: Prisma.$DoctorMandatePayload<ExtArgs>[]
-    /**
-     * The offboarding sweep's one read: everyone currently in a window.
-     */
     recordedDeliveries: Prisma.$DeliveryRecordPayload<ExtArgs>[]
     shkSamplesTaken: Prisma.$ShkScreeningPayload<ExtArgs>[]
   }

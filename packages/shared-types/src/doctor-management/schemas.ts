@@ -256,6 +256,24 @@ export const listDoctorsQuerySchema = z.object({
   profession: clinicianProfessionSchema.optional(),
 });
 
+/**
+ * A clinician's own NPWP for the BP21 the clinic issues on their fees
+ * (P27-T07). Digits only after the separators people type; 16 digits is the
+ * Coretax format, 15 the legacy one, kept rather than refused. Optional: an
+ * individual's NIK serves as NPWP, so the withholding draft falls back to it.
+ */
+export const clinicianNpwpSchema = z
+  .string()
+  .trim()
+  .transform((value) => value.replace(/[\s.-]/g, ''))
+  .refine((value) => /^\d{15,16}$/.test(value), { message: 'NPWP must be 15 or 16 digits' });
+
+/** The NPWP box on the clinician form: blank means none, otherwise a valid NPWP. */
+export const optionalClinicianNpwpSchema = z.union([
+  z.string().trim().length(0),
+  clinicianNpwpSchema,
+]);
+
 export const createDoctorSchema = z.object({
   licenseNumber: z.string().trim().min(3).max(64),
   fullName: z.string().trim().min(2).max(120),
@@ -286,6 +304,7 @@ export const createDoctorSchema = z.object({
   // permanent, not retryable (SJ-75). Legacy rows predating this rule may still
   // hold null; `listDoctorsQuerySchema.missingNik` is how they are found.
   nik: nikSchema,
+  npwp: clinicianNpwpSchema.optional(),
   licenses: doctorLicensesSchema.optional(),
   educations: doctorEducationsSchema.optional(),
   isActive: z.boolean().optional().default(true),
@@ -321,6 +340,8 @@ export const updateDoctorSchema = z
     // Settable but not clearable: a doctor who has a NIK must keep one, or
     // their next encounter silently becomes unreportable (SJ-75).
     nik: nikSchema.optional(),
+    /** Clearable, unlike the NIK: `null` removes a wrongly entered NPWP (P27-T07). */
+    npwp: clinicianNpwpSchema.nullable().optional(),
     // Replaces the whole list: the client always submits the complete set of
     // active licenses, and removed entries are soft-deleted rather than
     // dropped, so the credential history survives licensing audits.
@@ -602,8 +623,7 @@ export const DOCTOR_MANDATE_INVALID_PARTIES_ERROR_CODE = 'DOCTOR_MANDATE_INVALID
  * A pelimpahan is written (PP 28/2024 Pasal 745(2)), so the instruction file
  * is required — a mandate nobody signed is a conversation (422).
  */
-export const DOCTOR_MANDATE_INSTRUCTION_REQUIRED_ERROR_CODE =
-  'DOCTOR_MANDATE_INSTRUCTION_REQUIRED';
+export const DOCTOR_MANDATE_INSTRUCTION_REQUIRED_ERROR_CODE = 'DOCTOR_MANDATE_INSTRUCTION_REQUIRED';
 
 /**
  * Warnings a mandate may carry without being refused (D-036 §3). The "same
@@ -669,11 +689,7 @@ export type RevokeDoctorMandateInput = z.infer<typeof revokeDoctorMandateSchema>
 
 export const createDoctorAuthorityUploadUrlSchema = z.object({
   mimeType: doctorAuthorityGrantDocumentMimeTypeSchema,
-  sizeBytes: z.coerce
-    .number()
-    .int()
-    .positive()
-    .max(DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES),
+  sizeBytes: z.coerce.number().int().positive().max(DOCTOR_AUTHORITY_GRANT_DOCUMENT_MAX_SIZE_BYTES),
 });
 
 export type CreateDoctorAuthorityUploadUrlInput = z.infer<

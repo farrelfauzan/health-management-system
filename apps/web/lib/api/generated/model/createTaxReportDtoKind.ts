@@ -12,4 +12,5 @@ export type CreateTaxReportDtoKind = typeof CreateTaxReportDtoKind[keyof typeof 
 export const CreateTaxReportDtoKind = {
   PP55_OMZET: 'PP55_OMZET',
   PPN_OUTPUT: 'PPN_OUTPUT',
+  PPH21_NON_EMPLOYEE: 'PPH21_NON_EMPLOYEE',
 } as const;

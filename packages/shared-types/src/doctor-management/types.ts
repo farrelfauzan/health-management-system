@@ -40,6 +40,7 @@ export type CreateDoctorRecordPayload = {
   title?: string;
   degrees?: string;
   nik: string;
+  npwp?: string;
   licenses?: DoctorLicenseWritePayload[];
   educations?: DoctorEducationInput[];
   ownerUserId?: string;
@@ -56,6 +57,7 @@ export type UpdateDoctorRecordPayload = {
   title?: string | null;
   degrees?: string | null;
   nik?: string;
+  npwp?: string | null;
   /** When present, replaces the whole active license list. */
   licenses?: DoctorLicenseWritePayload[];
   /** When present, replaces the whole active education list. */
@@ -90,6 +92,8 @@ export type DoctorRecord = {
    * never leave the repository layer, and the plaintext NIK is never read back.
    */
   nikLast4: string | null;
+  /** The clinician's own NPWP, digits only, for the BP21 on their fees (P27-T07). */
+  npwp: string | null;
   satusehatPractitionerId: string | null;
   ownerUserId: string | null;
   /** The doctor's email, read from their account — the only stored copy. */

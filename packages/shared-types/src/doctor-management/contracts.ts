@@ -57,6 +57,11 @@ export type DoctorProfile = {
    * `doctor.read-identifier` and is audited.
    */
   nikMasked?: string;
+  /**
+   * The clinician's own NPWP, digits only (P27-T07). Not secret the way a
+   * NIK is — it is printed on every bukti potong — so it rides along in full.
+   */
+  npwp?: string;
   satusehatPractitionerId?: string;
   ownerUserId?: string;
   isActive: boolean;

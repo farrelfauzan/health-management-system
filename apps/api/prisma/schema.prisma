@@ -659,29 +659,29 @@ enum DoctorMandateKind {
 /// an IUD insertion never covers anything else. Never open-ended — `validUntil`
 /// is required, like every authority (D-036).
 model DoctorMandate {
-  id                     String            @id @default(uuid()) @db.Uuid
-  midwifeDoctorId        String            @map("midwife_doctor_id") @db.Uuid
-  mandatingDoctorId      String            @map("mandating_doctor_id") @db.Uuid
-  kind                   DoctorMandateKind
+  id                    String            @id @default(uuid()) @db.Uuid
+  midwifeDoctorId       String            @map("midwife_doctor_id") @db.Uuid
+  mandatingDoctorId     String            @map("mandating_doctor_id") @db.Uuid
+  kind                  DoctorMandateKind
   /// What the doctor asked her to do, in his words.
-  instruction            String
+  instruction           String
   /// The delegated procedures, as ICD-9-CM codes. At least one: a mandate for
   /// nothing is not a mandate.
-  icd9cmCodes            String[]          @map("icd9cm_codes")
-  validFrom              DateTime          @map("valid_from") @db.Date
-  validUntil             DateTime          @map("valid_until") @db.Date
+  icd9cmCodes           String[]          @map("icd9cm_codes")
+  validFrom             DateTime          @map("valid_from") @db.Date
+  validUntil            DateTime          @map("valid_until") @db.Date
   /// The signed instruction. Required, because a pelimpahan is written
   /// (PP 28/2024 Pasal 745(2)) — one nobody signed is a conversation.
-  instructionStorageKey  String            @map("instruction_storage_key")
-  instructionMimeType    String            @map("instruction_mime_type")
-  instructionSizeBytes   Int               @map("instruction_size_bytes")
-  revokedAt              DateTime?         @map("revoked_at") @db.Timestamptz(3)
-  revokedById            String?           @map("revoked_by_id") @db.Uuid
-  revokeReason           String?           @map("revoke_reason")
-  createdById            String            @map("created_by_id") @db.Uuid
-  createdAt              DateTime          @default(now()) @map("created_at")
-  updatedAt              DateTime          @updatedAt @map("updated_at")
-  deletedAt              DateTime?         @map("deleted_at")
+  instructionStorageKey String            @map("instruction_storage_key")
+  instructionMimeType   String            @map("instruction_mime_type")
+  instructionSizeBytes  Int               @map("instruction_size_bytes")
+  revokedAt             DateTime?         @map("revoked_at") @db.Timestamptz(3)
+  revokedById           String?           @map("revoked_by_id") @db.Uuid
+  revokeReason          String?           @map("revoke_reason")
+  createdById           String            @map("created_by_id") @db.Uuid
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @updatedAt @map("updated_at")
+  deletedAt             DateTime?         @map("deleted_at")
 
   midwifeDoctor   DoctorProfile @relation("DoctorMandateMidwife", fields: [midwifeDoctorId], references: [id], onDelete: Cascade)
   mandatingDoctor DoctorProfile @relation("DoctorMandateMandatingDoctor", fields: [mandatingDoctorId], references: [id], onDelete: Restrict)
@@ -1192,36 +1192,36 @@ model User {
   defaultApproverForTypes    DocumentTypeApprover[]
   filedBugReports            BugReport[]                  @relation("BugReportReporter")
 
-  draftedManagedDocuments   ManagedDocument[]          @relation("ManagedDocumentDraftedBy")
-  submittedApprovalRequests DocumentApprovalRequest[]  @relation("DocumentApprovalSubmittedBy")
-  namedApprovalRounds       DocumentApprovalApprover[]
-  approvalDecisions         DocumentApprovalDecision[]
-  collectedLabSpecimens     LabSpecimen[]              @relation("LabSpecimenCollectedBy")
-  enteredLabResults         LabResult[]                @relation("LabResultEnteredBy")
-  verifiedLabResults        LabResult[]                @relation("LabResultVerifiedBy")
-  requestedLabReports       LabReport[]                @relation("LabReportRequestedBy")
-  updatedLaboratorySettings LaboratorySettings[]       @relation("LaboratorySettingsUpdatedBy")
-  updatedTaxSettings        TaxSettings[]              @relation("TaxSettingsUpdatedBy")
-  createdTaxCodeRates        TaxCodeRate[]              @relation("TaxCodeRateCreatedBy")
-  updatedTaxCategoryDefaults TaxCategoryDefault[]       @relation("TaxCategoryDefaultUpdatedBy")
-  generatedTaxReports        TaxReportDraft[]           @relation("TaxReportGeneratedBy")
-  finalizedTaxReports        TaxReportDraft[]           @relation("TaxReportFinalizedBy")
-  grantedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityCreatedBy")
-  revokedDoctorAuthorities  DoctorAuthority[]          @relation("DoctorAuthorityRevokedBy")
-  grantedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateCreatedBy")
-  createdPregnancyEpisodes  PregnancyEpisode[]         @relation("PregnancyEpisodeCreatedBy")
-  recordedExternalDoctorVisits PregnancyExternalDoctorVisit[] @relation("PregnancyExternalDoctorVisitRecordedBy")
-  recordedAntenatalExaminations AntenatalExamination[]        @relation("AntenatalExaminationRecordedBy")
-  recordedPostnatalExaminations PostnatalExamination[]        @relation("PostnatalExaminationRecordedBy")
-  dismissedAntenatalReferrals   AntenatalReferralDismissal[]  @relation("AntenatalReferralDismissedBy")
-  revokedDoctorMandates     DoctorMandate[]            @relation("DoctorMandateRevokedBy")
+  draftedManagedDocuments       ManagedDocument[]              @relation("ManagedDocumentDraftedBy")
+  submittedApprovalRequests     DocumentApprovalRequest[]      @relation("DocumentApprovalSubmittedBy")
+  namedApprovalRounds           DocumentApprovalApprover[]
+  approvalDecisions             DocumentApprovalDecision[]
+  collectedLabSpecimens         LabSpecimen[]                  @relation("LabSpecimenCollectedBy")
+  enteredLabResults             LabResult[]                    @relation("LabResultEnteredBy")
+  verifiedLabResults            LabResult[]                    @relation("LabResultVerifiedBy")
+  requestedLabReports           LabReport[]                    @relation("LabReportRequestedBy")
+  updatedLaboratorySettings     LaboratorySettings[]           @relation("LaboratorySettingsUpdatedBy")
+  updatedTaxSettings            TaxSettings[]                  @relation("TaxSettingsUpdatedBy")
+  createdTaxCodeRates           TaxCodeRate[]                  @relation("TaxCodeRateCreatedBy")
+  updatedTaxCategoryDefaults    TaxCategoryDefault[]           @relation("TaxCategoryDefaultUpdatedBy")
+  generatedTaxReports           TaxReportDraft[]               @relation("TaxReportGeneratedBy")
+  finalizedTaxReports           TaxReportDraft[]               @relation("TaxReportFinalizedBy")
+  grantedDoctorAuthorities      DoctorAuthority[]              @relation("DoctorAuthorityCreatedBy")
+  revokedDoctorAuthorities      DoctorAuthority[]              @relation("DoctorAuthorityRevokedBy")
+  grantedDoctorMandates         DoctorMandate[]                @relation("DoctorMandateCreatedBy")
+  createdPregnancyEpisodes      PregnancyEpisode[]             @relation("PregnancyEpisodeCreatedBy")
+  recordedExternalDoctorVisits  PregnancyExternalDoctorVisit[] @relation("PregnancyExternalDoctorVisitRecordedBy")
+  recordedAntenatalExaminations AntenatalExamination[]         @relation("AntenatalExaminationRecordedBy")
+  recordedPostnatalExaminations PostnatalExamination[]         @relation("PostnatalExaminationRecordedBy")
+  dismissedAntenatalReferrals   AntenatalReferralDismissal[]   @relation("AntenatalReferralDismissedBy")
+  revokedDoctorMandates         DoctorMandate[]                @relation("DoctorMandateRevokedBy")
+  recordedDeliveries            DeliveryRecord[]               @relation("DeliveryRecordedBy")
+  shkSamplesTaken               ShkScreening[]                 @relation("ShkSampleTakenBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
   @@index([offboardedAt])
   @@map("users")
-  recordedDeliveries DeliveryRecord[] @relation("DeliveryRecordedBy")
-  shkSamplesTaken    ShkScreening[]   @relation("ShkSampleTakenBy")
 }
 
 /// One issued refresh token (SJ-6). The token itself is opaque 256-bit random
@@ -1509,10 +1509,10 @@ enum PatientRecordSource {
 }
 
 model PatientProfile {
-  id           String              @id @default(uuid()) @db.Uuid
-  mrn          String              @unique
-  source       PatientRecordSource @default(FRONT_DESK)
-  fullName     String              @map("full_name")
+  id              String              @id @default(uuid()) @db.Uuid
+  mrn             String              @unique
+  source          PatientRecordSource @default(FRONT_DESK)
+  fullName        String              @map("full_name")
   /// Required again since `P17-T05`.
   ///
   /// It was nullable for one release cycle, for `PCS-T07`: the chat booking
@@ -1524,47 +1524,47 @@ model PatientProfile {
   /// `ProspectivePatient`, which costs no MRN and holds no clinical field — so
   /// nothing creates a record without this column any more and the schema
   /// stops advertising a state the product cannot produce.
-  dateOfBirth  DateTime            @map("date_of_birth") @db.Date
-  placeOfBirth String?             @map("place_of_birth")
-  sex          PatientSex
-  status       PatientStatus       @default(OUT_PATIENT)
-  phoneNumber  String              @map("phone_number")
+  dateOfBirth     DateTime            @map("date_of_birth") @db.Date
+  placeOfBirth    String?             @map("place_of_birth")
+  sex             PatientSex
+  status          PatientStatus       @default(OUT_PATIENT)
+  phoneNumber     String              @map("phone_number")
   /// Required again since `P17-T05`, for the same reason as {@link dateOfBirth}.
   ///
   /// Since `P19-T10` this is the **street line** of a structured address —
   /// the part no master data can supply — and the column keeps its name so
   /// the invoice token, the arrival worklist and every existing row stay
   /// valid. The Kemendagri chain lives in the four code columns below.
-  address      String
+  address         String
   /// The structured address (P19-T10). Nullable for the rows that predate
   /// the region master data and for chat-made drafts; a front-desk create
   /// supplies all four codes, validated as a chain by the service before the
   /// database sees them. `Restrict` on every relation: a region that has
   /// patients in it must never be deleted, only deactivated.
-  provinceCode String?             @map("province_code")
-  regencyCode  String?             @map("regency_code")
-  districtCode String?             @map("district_code")
-  villageCode  String?             @map("village_code")
+  provinceCode    String?             @map("province_code")
+  regencyCode     String?             @map("regency_code")
+  districtCode    String?             @map("district_code")
+  villageCode     String?             @map("village_code")
   /// `003/007`, free text as the KTP prints it.
-  rtRw         String?             @map("rt_rw")
-  postalCode   String?             @map("postal_code")
+  rtRw            String?             @map("rt_rw")
+  postalCode      String?             @map("postal_code")
   /// The mother whose record this baby was registered from (P24-T10,
   /// FR-NB-01). Set makes the row a **newborn**: no NIK for weeks, the
   /// mother's address, and — until she has one of her own — her NIK is how
   /// SATUSEHAT identifies the baby (P24-T11). `Restrict`, because a mother
   /// with a child in the registry is not a record anyone may remove.
-  motherPatientId String?          @map("mother_patient_id") @db.Uuid
+  motherPatientId String?             @map("mother_patient_id") @db.Uuid
   /// Which of her children this is, counting from 1. Required exactly when
   /// `motherPatientId` is set, enforced by a CHECK in the migration, and
   /// unique per mother so a twin cannot be registered twice. It is also
   /// `Patient.multipleBirthInteger` on the wire.
-  birthOrder      Int?             @map("birth_order")
-  ownerUserId  String?             @map("owner_user_id") @db.Uuid
-  isActive     Boolean             @default(true) @map("is_active")
-  createdAt    DateTime            @default(now()) @map("created_at")
-  updatedAt    DateTime            @updatedAt @map("updated_at")
-  deletedAt    DateTime?           @map("deleted_at")
-  lastVisitAt  DateTime?           @map("last_visit_at")
+  birthOrder      Int?                @map("birth_order")
+  ownerUserId     String?             @map("owner_user_id") @db.Uuid
+  isActive        Boolean             @default(true) @map("is_active")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+  deletedAt       DateTime?           @map("deleted_at")
+  lastVisitAt     DateTime?           @map("last_visit_at")
 
   // Demographic and clinical-safety identity fields required by PMK 24/2022
   // and expected on Indonesian registration forms. All optional so existing
@@ -1632,7 +1632,8 @@ model PatientProfile {
   deliveryConsents      PatientDeliveryConsent[]
   deliveries            DocumentDelivery[]
 
-  managedDocuments ManagedDocument[]
+  managedDocuments  ManagedDocument[]
+  newbornCareRecord NewbornCareRecord? @relation("NewbornCarePatient")
 
   @@index([deletedAt])
   @@index([ownerUserId])
@@ -1655,7 +1656,6 @@ model PatientProfile {
   @@index([villageCode])
   @@index([motherPatientId])
   @@map("patient_profiles")
-  newbornCareRecord NewbornCareRecord? @relation("NewbornCarePatient")
 }
 
 /// Published privacy notices are immutable legal evidence. A correction is a
@@ -1899,19 +1899,19 @@ model PatientAllergy {
 /// share every column, every screen and every rule, and the only thing that
 /// differs is which list a field draws from.
 model DoctorCredentialOption {
-  id   String               @id @default(uuid()) @db.Uuid
-  kind DoctorCredentialKind
+  id        String               @id @default(uuid()) @db.Uuid
+  kind      DoctorCredentialKind
   /// Stable upper-snake ASCII identifier ("SP_PD"). This is what is stored on
   /// doctor profiles and education rows, so it must never be rewritten — an
   /// option whose printed form changed gets a new `label`, not a new `code`.
-  code String
+  code      String
   /// The printed form, exactly as it should appear on a document.
   label     String
-  sortOrder Int       @default(0) @map("sort_order")
-  isActive  Boolean   @default(true) @map("is_active")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  sortOrder Int                  @default(0) @map("sort_order")
+  isActive  Boolean              @default(true) @map("is_active")
+  createdAt DateTime             @default(now()) @map("created_at")
+  updatedAt DateTime             @updatedAt @map("updated_at")
+  deletedAt DateTime?            @map("deleted_at")
 
   @@unique([kind, code])
   @@index([kind, isActive])
@@ -1931,22 +1931,22 @@ enum DoctorCredentialKind {
 }
 
 model Specialty {
-  id           String    @id @default(uuid()) @db.Uuid
-  name         String    @unique
-  description  String?
+  id                  String    @id @default(uuid()) @db.Uuid
+  name                String    @unique
+  description         String?
   /// BPJS PCare kdPoli this specialty registers under (P11-T03). The clinic
   /// has no standalone poli entity — Specialty is the closest structural
   /// equivalent (a registration reaches BPJS via its doctor's specialty), so
   /// the poli mapping lives here rather than on a new join table. Nullable —
   /// an unmapped specialty fails a BPJS submission fast with a readable
   /// message.
-  bpjsPoliCode String?   @map("bpjs_poli_code")
+  bpjsPoliCode        String?   @map("bpjs_poli_code")
   /// The poli's SATUSEHAT Location (`ro`) once registered (P24-T05/T06).
-  satusehatLocationId String? @map("satusehat_location_id")
-  isActive     Boolean   @default(true) @map("is_active")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  satusehatLocationId String?   @map("satusehat_location_id")
+  isActive            Boolean   @default(true) @map("is_active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
 
   doctors           DoctorProfile[]
   registrations     Registration[]
@@ -1959,13 +1959,13 @@ model Specialty {
 }
 
 model DoctorProfile {
-  id            String    @id @default(uuid()) @db.Uuid
-  licenseNumber String    @unique @map("license_number")
-  fullName      String    @map("full_name")
-  specialtyId   String    @map("specialty_id") @db.Uuid
+  id            String              @id @default(uuid()) @db.Uuid
+  licenseNumber String              @unique @map("license_number")
+  fullName      String              @map("full_name")
+  specialtyId   String              @map("specialty_id") @db.Uuid
   /// Doctor or midwife (D-034). Every profile created before P24-T02 is a doctor.
   profession    ClinicianProfession @default(DOCTOR)
-  phoneNumber   String?   @map("phone_number")
+  phoneNumber   String?             @map("phone_number")
   /// The account this doctor signs in with. An address is collected at
   /// creation and owned by `User` — there is no `email` column here, by
   /// design. Required on create since P20-T01: an existing account is attached
@@ -1974,11 +1974,11 @@ model DoctorProfile {
   /// a pending invitation has no user yet, and doctors created before P20-T01
   /// may have no account at all; the directory shows those as `NO_ACCOUNT` and
   /// offers to invite them.
-  ownerUserId   String?   @unique @map("owner_user_id") @db.Uuid
-  isActive      Boolean   @default(true) @map("is_active")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-  deletedAt     DateTime? @map("deleted_at")
+  ownerUserId   String?             @unique @map("owner_user_id") @db.Uuid
+  isActive      Boolean             @default(true) @map("is_active")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  deletedAt     DateTime?           @map("deleted_at")
 
   // National identity and SATUSEHAT linkage required by PMK 24/2022.
   //
@@ -1993,6 +1993,12 @@ model DoctorProfile {
   nikIndex                String? @unique @map("nik_index")
   nikLast4                String? @map("nik_last4")
   nikKeyVersion           Int?    @map("nik_key_version") @db.SmallInt
+  // The clinician's own NPWP, digits only, for the BP21 the clinic issues on
+  // their jasa medis (P27-T07). Plaintext: a tax number is printed on every
+  // bukti potong and is not the citizen identifier the NIK is. Nullable —
+  // an individual's NIK serves as NPWP, so the withholding draft falls back
+  // to the encrypted NIK above.
+  npwp                    String? @db.VarChar(16)
   // IHS practitioner number, filled after the first successful SATUSEHAT
   // practitioner lookup. Plaintext: it is a pseudonymous Kemenkes-issued
   // identifier, read on every outbound FHIR call and never searched by value.
@@ -2039,8 +2045,8 @@ model DoctorProfile {
   licenses            DoctorLicense[]
   authorities         DoctorAuthority[]
   /// Pelimpahan she works under, and pelimpahan he granted (P25-T05).
-  mandatesReceived    DoctorMandate[]   @relation("DoctorMandateMidwife")
-  mandatesGranted     DoctorMandate[]   @relation("DoctorMandateMandatingDoctor")
+  mandatesReceived    DoctorMandate[]      @relation("DoctorMandateMidwife")
+  mandatesGranted     DoctorMandate[]      @relation("DoctorMandateMandatingDoctor")
   educations          DoctorEducation[]
   encounters          Encounter[]
   admissions          Admission[]
@@ -2052,7 +2058,11 @@ model DoctorProfile {
   /// Invitations raised for this profile's sign-in account (P19-T15). Plural
   /// because a resend writes a replacement row rather than editing the old
   /// one, so the history of every link minted for this doctor stays readable.
-  ownerInvitations UserInvitation[]
+  ownerInvitations              UserInvitation[]
+  attendedDeliveries            DeliveryRecord[]       @relation("DeliveryAttendant")
+  clinicianFeeRules             ClinicianFeeRule[]
+  clinicianFeeEntries           ClinicianFeeEntry[]
+  providedFamilyPlanningRecords FamilyPlanningRecord[] @relation("FamilyPlanningProvider")
 
   @@index([deletedAt])
   @@index([isActive])
@@ -2060,10 +2070,6 @@ model DoctorProfile {
   @@index([fullName])
   @@index([specialtyId])
   @@map("doctor_profiles")
-  attendedDeliveries DeliveryRecord[] @relation("DeliveryAttendant")
-  clinicianFeeRules   ClinicianFeeRule[]
-  clinicianFeeEntries ClinicianFeeEntry[]
-  providedFamilyPlanningRecords FamilyPlanningRecord[] @relation("FamilyPlanningProvider")
 }
 
 /// Academic qualifications mapped later to SATUSEHAT Practitioner.qualification
@@ -2496,45 +2502,45 @@ model Encounter {
   // (ICD-10) and `procedures` (ICD-9-CM), and forcing narrative reasoning into
   // codes loses the clinical detail a later reader needs.
   /// Anamnesis — what the patient reports.
-  subjective String?
+  subjective        String?
   /// Examination findings. Measured vitals stay in `vital_signs`; this is the
   /// qualitative reading of them.
-  objective  String?
+  objective         String?
   /// Clinical reasoning. The coded conclusion is a `Diagnosis` row.
-  assessment String?
+  assessment        String?
   /// Treatment plan. Prescribed items stay in `prescriptions`.
-  plan       String?
+  plan              String?
   /// The doctor's outlook for this episode (P10-T15), feeding
   /// `ClinicalImpression.prognosisCodeableConcept`. Null when nobody recorded
   /// one — the element is then omitted rather than defaulted, so the national
   /// record never carries an assessment that was not made.
-  prognosis  EncounterPrognosis?
+  prognosis         EncounterPrognosis?
   /// Null unless a midwife opened the encounter for a child under 60 months
   /// (P25-T03); `SICK_CHILD` was allowed only with an active MTBS authority.
   childVisitPurpose EncounterChildVisitPurpose? @map("child_visit_purpose")
 
-  registration         Registration          @relation(fields: [registrationId], references: [id], onDelete: Restrict)
-  patient              PatientProfile        @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  doctor               DoctorProfile         @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  createdBy            User?                 @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  vitalSigns           VitalSigns[]
-  diagnoses            Diagnosis[]
-  procedures           Procedure[]
-  immunizations        Immunization[]
-  prescriptions        Prescription[]
-  invoices             Invoice[]
+  registration           Registration            @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  patient                PatientProfile          @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  doctor                 DoctorProfile           @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  createdBy              User?                   @relation("EncounterCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  vitalSigns             VitalSigns[]
+  diagnoses              Diagnosis[]
+  procedures             Procedure[]
+  immunizations          Immunization[]
+  prescriptions          Prescription[]
+  invoices               Invoice[]
   /// A list only because the uniqueness that keeps it to one row is a partial
   /// index Prisma cannot see (P18-T09). At most one ENCOUNTER row exists per
   /// encounter, and lab reports never point here.
-  satusehatSubmissions SatusehatSubmission[]
-  bpjsReferral         BpjsReferral?
-  admissions           Admission[]
-  clinicalDocuments    Document[]
-  labOrders            LabOrder[]
-  antenatalVisit       AntenatalVisit?
+  satusehatSubmissions   SatusehatSubmission[]
+  bpjsReferral           BpjsReferral?
+  admissions             Admission[]
+  clinicalDocuments      Document[]
+  labOrders              LabOrder[]
+  antenatalVisit         AntenatalVisit?
   familyPlanningStarts   FamilyPlanningRecord[]
   familyPlanningServices FamilyPlanningService[]
-  postnatalVisit       PostnatalVisit?
+  postnatalVisit         PostnatalVisit?
 
   @@index([patientId, startedAt])
   @@index([doctorId, startedAt])
@@ -2694,31 +2700,31 @@ model Icd9cmCode {
 /// diagnoses there is no primary/secondary split — every procedure on a visit
 /// counts equally toward the claim.
 model Procedure {
-  id           String    @id @default(uuid()) @db.Uuid
-  encounterId  String    @map("encounter_id") @db.Uuid
-  icd9cmCodeId String?   @map("icd9cm_code_id") @db.Uuid
-  code         String
-  display      String
-  notes        String?
+  id                         String                      @id @default(uuid()) @db.Uuid
+  encounterId                String                      @map("encounter_id") @db.Uuid
+  icd9cmCodeId               String?                     @map("icd9cm_code_id") @db.Uuid
+  code                       String
+  display                    String
+  notes                      String?
   /// When the action was performed, which can precede the moment it was
   /// written down.
-  performedAt  DateTime  @default(now()) @map("performed_at")
+  performedAt                DateTime                    @default(now()) @map("performed_at")
   /// Set when the procedure inserted or removed a contraceptive implant; a
   /// midwife then needed an active IUD_IMPLANT authority (P25-T03).
   contraceptiveImplantAction ContraceptiveImplantAction? @map("contraceptive_implant_action")
   /// Set when a midwife recorded this under a doctor's pelimpahan rather than
   /// her own authority (P25-T05). It is what the card reads to name the
   /// responsible clinician, so it is never inferred later.
-  mandateId    String?   @map("mandate_id") @db.Uuid
-  recordedById String?   @map("recorded_by_id") @db.Uuid
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
-  deletedAt    DateTime? @map("deleted_at")
+  mandateId                  String?                     @map("mandate_id") @db.Uuid
+  recordedById               String?                     @map("recorded_by_id") @db.Uuid
+  createdAt                  DateTime                    @default(now()) @map("created_at")
+  updatedAt                  DateTime                    @updatedAt @map("updated_at")
+  deletedAt                  DateTime?                   @map("deleted_at")
 
-  encounter  Encounter   @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  icd9cmCode Icd9cmCode? @relation(fields: [icd9cmCodeId], references: [id], onDelete: SetNull)
+  encounter  Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  icd9cmCode Icd9cmCode?    @relation(fields: [icd9cmCodeId], references: [id], onDelete: SetNull)
   mandate    DoctorMandate? @relation(fields: [mandateId], references: [id], onDelete: Restrict)
-  recordedBy User?       @relation("ProcedureRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
+  recordedBy User?          @relation("ProcedureRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
 
   @@index([encounterId, performedAt])
   @@index([mandateId])
@@ -2728,32 +2734,32 @@ model Procedure {
 }
 
 model Medication {
-  id           String              @id @default(uuid()) @db.Uuid
-  code         String              @unique
-  kfaCode      String?             @unique @map("kfa_code")
+  id                    String               @id @default(uuid()) @db.Uuid
+  code                  String               @unique
+  kfaCode               String?              @unique @map("kfa_code")
   /// BPJS DPHO kdObat (P11-T03), linked by an admin from the search-and-cache
   /// DPHO catalog. Sits alongside kfaCode — two national code systems, one
   /// medication row. Unique for the same reason kfaCode is: one catalog
   /// identity maps to at most one local row.
-  dphoCode     String?             @unique @map("dpho_code")
-  name         String
-  form         String?
-  strength     String?
-  unit         MedicationUnit?
-  category     MedicationCategory?
-  reorderLevel Int                 @default(0) @map("reorder_level")
+  dphoCode              String?              @unique @map("dpho_code")
+  name                  String
+  form                  String?
+  strength              String?
+  unit                  MedicationUnit?
+  category              MedicationCategory?
+  reorderLevel          Int                  @default(0) @map("reorder_level")
   /// Selling price per `unit`, in rupiah. Nullable because the MVP catalog
   /// predates billing; invoice generation treats an unpriced dispensed
   /// medication as a gap to surface, not a free item.
-  unitPrice    Decimal?            @map("unit_price") @db.Decimal(12, 2)
+  unitPrice             Decimal?             @map("unit_price") @db.Decimal(12, 2)
   /// Whether this catalog row is a vaccine (P10-T16). Vaccines live here
   /// rather than in a catalog of their own because they *are* KFA products;
   /// the flag is what filters the immunisation picker down to them.
-  isVaccine    Boolean             @default(false) @map("is_vaccine")
+  isVaccine             Boolean              @default(false) @map("is_vaccine")
   /// Whether a midwife may prescribe this item (P24-T04, FR-MW-06). False by
   /// default and never seeded: Permenkes 28/2017 limits a bidan to her own
   /// authorities, and which catalog items fall inside them is the clinic's call.
-  isMidwifePrescribable Boolean @default(false) @map("is_midwife_prescribable")
+  isMidwifePrescribable Boolean              @default(false) @map("is_midwife_prescribable")
   /// Which of a bidan's authorities this item sits under when she is the one
   /// prescribing (P25-T05, FR-FORM-01). Null is the ordinary case: the item is
   /// either outside her formulary altogether or inside her own authority, and
@@ -2763,18 +2769,22 @@ model Medication {
   midwifeAuthorityKind  DoctorAuthorityKind? @map("midwife_authority_kind")
   /// This medication's own tax code (P27-T03). Null means it follows the
   /// medication default in `tax_category_defaults`.
-  taxCodeId             String?             @map("tax_code_id") @db.Uuid
-  createdAt    DateTime            @default(now()) @map("created_at")
-  updatedAt    DateTime            @updatedAt @map("updated_at")
-  deletedAt    DateTime?           @map("deleted_at")
+  taxCodeId             String?              @map("tax_code_id") @db.Uuid
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+  deletedAt             DateTime?            @map("deleted_at")
 
-  prescriptionItems  PrescriptionMedication[]
-  compoundComponents PrescriptionItemComponent[]
-  dispenseItems      DispenseItem[]
-  stockReceipts      MedicationStockReceipt[]
-  invoiceItems       InvoiceItem[]
-  immunizations      Immunization[]
-  taxCode            TaxCode?                    @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
+  prescriptionItems      PrescriptionMedication[]
+  compoundComponents     PrescriptionItemComponent[]
+  dispenseItems          DispenseItem[]
+  stockReceipts          MedicationStockReceipt[]
+  invoiceItems           InvoiceItem[]
+  immunizations          Immunization[]
+  taxCode                TaxCode?                    @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
+  deliveryUterotonics    DeliveryRecord[]            @relation("DeliveryUterotonic")
+  newbornVitaminK1Doses  NewbornCareRecord[]         @relation("NewbornVitaminK1")
+  postnatalVitaminADoses PostnatalExamination[]      @relation("PostnatalVitaminA")
+  newbornEyeProphylaxis  NewbornCareRecord[]         @relation("NewbornEyeProphylaxis")
 
   @@index([name])
   @@index([category])
@@ -2783,10 +2793,6 @@ model Medication {
   @@index([taxCodeId])
   @@index([deletedAt])
   @@map("medications")
-  deliveryUterotonics   DeliveryRecord[]    @relation("DeliveryUterotonic")
-  newbornVitaminK1Doses NewbornCareRecord[] @relation("NewbornVitaminK1")
-  postnatalVitaminADoses PostnatalExamination[] @relation("PostnatalVitaminA")
-  newbornEyeProphylaxis NewbornCareRecord[] @relation("NewbornEyeProphylaxis")
 }
 
 /// The midwife formulary template (P25-T04, FR-FORM-01/02): what Permenkes
@@ -3041,38 +3047,38 @@ model DispenseItemStockAllocation {
 /// the migration is what actually keeps that row a singleton, exactly as it
 /// does for the two BPJS config tables.
 model ClinicProfile {
-  id             String   @id @default(uuid()) @db.Uuid
-  facilityId     String?  @unique @map("facility_id") @db.Uuid
-  name           String
-  legalName      String?  @map("legal_name")
-  address        String?
-  phoneNumber    String?  @map("phone_number")
-  email          String?
+  id                  String   @id @default(uuid()) @db.Uuid
+  facilityId          String?  @unique @map("facility_id") @db.Uuid
+  name                String
+  legalName           String?  @map("legal_name")
+  address             String?
+  phoneNumber         String?  @map("phone_number")
+  email               String?
   /// Izin operasional klinik — the operating licence a receipt is expected to
   /// carry in Indonesia.
-  licenseNumber  String?  @map("license_number")
+  licenseNumber       String?  @map("license_number")
   /// NPWP. A new or changed value must be the 16 digits Coretax uses and is
   /// stored as digits only (P27-T02, D-038). A 15-digit value written before
   /// that rule is kept and flagged, never rejected on an unrelated save.
-  taxId          String?  @map("tax_id")
+  taxId               String?  @map("tax_id")
   /// Server-minted object key for the re-encoded logo, or null. The bytes
   /// behind it are always this service's own re-encode, never what the
   /// browser uploaded (docs/security/file-uploads.md §1).
-  logoStorageKey String?  @map("logo_storage_key")
+  logoStorageKey      String?  @map("logo_storage_key")
   /// What the stored object actually is, so the signed download pins
   /// `ResponseContentType` to a validated value rather than to a constant
   /// that a future re-encode target would silently make wrong.
-  logoMimeType   String?  @map("logo_mime_type")
+  logoMimeType        String?  @map("logo_mime_type")
   /// Decimal degrees, required before any SATUSEHAT Location is registered
   /// (P24-T05, FR-LOC-01). Validated to Indonesia's bounding box because the
   /// official Location example swaps latitude and longitude.
-  latitude       Decimal? @db.Decimal(9, 6)
-  longitude      Decimal? @db.Decimal(9, 6)
+  latitude            Decimal? @db.Decimal(9, 6)
+  longitude           Decimal? @db.Decimal(9, 6)
   /// The root site Location once registered (FR-LOC-02). While null, bundles
   /// keep using `SATUSEHAT_LOCATION_ID`, exactly as before this column existed.
-  satusehatLocationId String? @map("satusehat_location_id")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  satusehatLocationId String?  @map("satusehat_location_id")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
 
   @@map("clinic_profiles")
 }
@@ -3105,22 +3111,22 @@ enum IncomeTaxRegime {
 /// is not here: `ClinicProfile.taxId` owns it and this row's NITKU must start
 /// with it.
 model TaxSettings {
-  id               String           @id @default(uuid()) @db.Uuid
-  facilityId       String?          @unique @map("facility_id") @db.Uuid
+  id              String          @id @default(uuid()) @db.Uuid
+  facilityId      String?         @unique @map("facility_id") @db.Uuid
   /// Null until an administrator says; nothing guesses a legal form.
-  taxpayerType     TaxpayerType?    @map("taxpayer_type")
-  incomeTaxRegime  IncomeTaxRegime  @default(GENERAL) @map("income_tax_regime")
+  taxpayerType    TaxpayerType?   @map("taxpayer_type")
+  incomeTaxRegime IncomeTaxRegime @default(GENERAL) @map("income_tax_regime")
   /// The first tax year on the 0.5% rate. A badan's time limit counts from it;
   /// always null under the general regime.
-  pp55StartYear    Int?             @map("pp55_start_year")
+  pp55StartYear   Int?            @map("pp55_start_year")
   /// Pengusaha Kena Pajak. Off: the clinic never charges PPN (D-038).
-  isPkp            Boolean          @default(false) @map("is_pkp")
-  pkpSince         DateTime?        @map("pkp_since") @db.Date
+  isPkp           Boolean         @default(false) @map("is_pkp")
+  pkpSince        DateTime?       @map("pkp_since") @db.Date
   /// 22 digits: the NPWP plus a six-digit place-of-business suffix.
-  nitku            String?          @db.VarChar(22)
-  updatedById      String?          @map("updated_by_id") @db.Uuid
-  createdAt        DateTime         @default(now()) @map("created_at")
-  updatedAt        DateTime         @updatedAt @map("updated_at")
+  nitku           String?         @db.VarChar(22)
+  updatedById     String?         @map("updated_by_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
 
   updatedBy User? @relation("TaxSettingsUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 
@@ -3218,8 +3224,28 @@ model TaxCategoryDefault {
 enum TaxReportKind {
   PP55_OMZET
   PPN_OUTPUT
+  /// PPh 21 bukan pegawai on clinician fees, one BP21 per clinician (P27-T07).
+  PPH21_NON_EMPLOYEE
 
   @@map("tax_report_kind")
+}
+
+/// One Pasal 17(1)(a) income-tax bracket (P27-T07, D-038: tax is data). Rows
+/// sharing an `effectiveFrom` form one bracket set; the set in force on a
+/// date is the latest one starting on or before it, so a new law is a new
+/// set of rows and an old period keeps the rates it was taxed under.
+/// Bounds are rupiah of taxable base: `lowerBound` inclusive, `upperBound`
+/// exclusive and null for the open top bracket.
+model Pph21TaxBracket {
+  id            String   @id @default(uuid()) @db.Uuid
+  effectiveFrom DateTime @map("effective_from") @db.Date
+  lowerBound    Decimal  @map("lower_bound") @db.Decimal(15, 2)
+  upperBound    Decimal? @map("upper_bound") @db.Decimal(15, 2)
+  ratePercent   Decimal  @map("rate_percent") @db.Decimal(5, 2)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([effectiveFrom, lowerBound])
+  @@map("pph21_tax_brackets")
 }
 
 enum TaxReportStatus {
@@ -3257,14 +3283,14 @@ enum TaxReminderKind {
 /// Append-only. Withdrawing a reminder would silently re-arm it on the next
 /// sweep, which is the one thing a compliance reminder must never do.
 model TaxReminderNotice {
-  id   String          @id @default(uuid()) @db.Uuid
-  kind TaxReminderKind
+  id        String          @id @default(uuid()) @db.Uuid
+  kind      TaxReminderKind
   /// The claim itself, unique across every family: `DUE:2026-10:PP55_INCOME_TAX_DEPOSIT:5`,
   /// `TURNOVER:2026:80`, `PP55_LAST_YEAR:2029`. One text column because the
   /// three families are keyed by different things and a shared set of nullable
   /// columns would describe none of them honestly.
-  noticeKey String @unique @map("notice_key")
-  raisedAt  DateTime @default(now()) @map("raised_at")
+  noticeKey String          @unique @map("notice_key")
+  raisedAt  DateTime        @default(now()) @map("raised_at")
 
   @@index([kind])
   @@map("tax_reminder_notices")
@@ -3287,8 +3313,8 @@ model TaxReportDraft {
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
 
-  generatedBy User? @relation("TaxReportGeneratedBy", fields: [generatedById], references: [id], onDelete: SetNull)
-  finalizedBy User? @relation("TaxReportFinalizedBy", fields: [finalizedById], references: [id], onDelete: SetNull)
+  generatedBy User?              @relation("TaxReportGeneratedBy", fields: [generatedById], references: [id], onDelete: SetNull)
+  finalizedBy User?              @relation("TaxReportFinalizedBy", fields: [finalizedById], references: [id], onDelete: SetNull)
   document    TaxReportDocument?
 
   @@unique([period, kind])
@@ -3368,12 +3394,12 @@ model ServiceTariff {
   updatedAt   DateTime              @updatedAt @map("updated_at")
   deletedAt   DateTime?             @map("deleted_at")
 
-  roomClass    RoomClass?    @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
-  specialty    Specialty?    @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
-  taxCode      TaxCode?      @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
-  invoiceItems InvoiceItem[]
-  labTests     LabTest[]
-  labPanels    LabPanel[]
+  roomClass         RoomClass?         @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
+  specialty         Specialty?         @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+  taxCode           TaxCode?           @relation(fields: [taxCodeId], references: [id], onDelete: Restrict)
+  invoiceItems      InvoiceItem[]
+  labTests          LabTest[]
+  labPanels         LabPanel[]
   clinicianFeeRules ClinicianFeeRule[]
 
   @@index([category])
@@ -3445,16 +3471,16 @@ model Invoice {
   updatedAt      DateTime      @updatedAt @map("updated_at")
   deletedAt      DateTime?     @map("deleted_at")
 
-  encounter    Encounter?         @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  admission    Admission?         @relation(fields: [admissionId], references: [id], onDelete: Restrict)
-  registration Registration?      @relation(fields: [registrationId], references: [id], onDelete: Restrict)
-  patient      PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  voidedBy     User?              @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
-  createdBy    User?              @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  items        InvoiceItem[]
-  payment      Payment?
-  documents    InvoiceDocument[]
-  deliveries   DocumentDelivery[]
+  encounter           Encounter?          @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  admission           Admission?          @relation(fields: [admissionId], references: [id], onDelete: Restrict)
+  registration        Registration?       @relation(fields: [registrationId], references: [id], onDelete: Restrict)
+  patient             PatientProfile      @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  voidedBy            User?               @relation("InvoiceVoidedBy", fields: [voidedById], references: [id], onDelete: SetNull)
+  createdBy           User?               @relation("InvoiceCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  items               InvoiceItem[]
+  payment             Payment?
+  documents           InvoiceDocument[]
+  deliveries          DocumentDelivery[]
   clinicianFeeEntries ClinicianFeeEntry[]
 
   managedDocuments ManagedDocument[]
@@ -3478,11 +3504,11 @@ model Invoice {
 /// replaces them wholesale, and a voided invoice keeps its lines because the
 /// invoice row itself is never deleted.
 model InvoiceItem {
-  id                 String          @id @default(uuid()) @db.Uuid
-  invoiceId          String          @map("invoice_id") @db.Uuid
-  itemType           InvoiceItemType @map("item_type")
-  serviceTariffId    String?         @map("service_tariff_id") @db.Uuid
-  medicationId       String?         @map("medication_id") @db.Uuid
+  id                    String          @id @default(uuid()) @db.Uuid
+  invoiceId             String          @map("invoice_id") @db.Uuid
+  itemType              InvoiceItemType @map("item_type")
+  serviceTariffId       String?         @map("service_tariff_id") @db.Uuid
+  medicationId          String?         @map("medication_id") @db.Uuid
   /// What this line was charged *for* (P18-T11). Provenance only, `SetNull`
   /// like the two above — losing the source row must never take the billed
   /// line with it, because the line is a financial snapshot.
@@ -3491,34 +3517,34 @@ model InvoiceItem {
   /// descriptions and tariff ids, which breaks the moment a panel and a loose
   /// test share a tariff or somebody edits a description. With them it is a
   /// recorded fact, and reconciling work done against work billed is one join.
-  labOrderId         String?         @map("lab_order_id") @db.Uuid
-  prescriptionItemId String?         @map("prescription_item_id") @db.Uuid
-  description        String
-  quantity           Int
-  unitPrice          Decimal         @map("unit_price") @db.Decimal(12, 2)
+  labOrderId            String?         @map("lab_order_id") @db.Uuid
+  prescriptionItemId    String?         @map("prescription_item_id") @db.Uuid
+  description           String
+  quantity              Int
+  unitPrice             Decimal         @map("unit_price") @db.Decimal(12, 2)
   /// Always `quantity * unitPrice`, enforced by a CHECK in the migration —
   /// stored anyway because the row is a financial snapshot, not a view.
-  amount             Decimal         @db.Decimal(12, 2)
+  amount                Decimal         @db.Decimal(12, 2)
   /// The tax snapshot (P27-T04, D-038): the code this line was taxed under and
   /// what it came to, computed while DRAFT and frozen at issue. Null code on a
   /// line billed before the tax module, or with the module off.
-  taxCode            String?         @map("tax_code") @db.VarChar(40)
-  ppnTreatment       PpnTreatment?   @map("ppn_treatment")
-  fakturTransactionCode String?      @map("faktur_transaction_code") @db.VarChar(2)
+  taxCode               String?         @map("tax_code") @db.VarChar(40)
+  ppnTreatment          PpnTreatment?   @map("ppn_treatment")
+  fakturTransactionCode String?         @map("faktur_transaction_code") @db.VarChar(2)
   /// Price before PPN; the DPP (nilai lain for faktur code 04) is `taxBase`.
-  taxableAmount      Decimal?        @map("taxable_amount") @db.Decimal(12, 2)
-  taxBase            Decimal?        @map("tax_base") @db.Decimal(12, 2)
-  taxRatePercent     Decimal?        @map("tax_rate_percent") @db.Decimal(5, 2)
+  taxableAmount         Decimal?        @map("taxable_amount") @db.Decimal(12, 2)
+  taxBase               Decimal?        @map("tax_base") @db.Decimal(12, 2)
+  taxRatePercent        Decimal?        @map("tax_rate_percent") @db.Decimal(5, 2)
   /// The PPN inside `amount`. Never added on top: prices are tax-inclusive.
-  taxAmount          Decimal         @default(0) @map("tax_amount") @db.Decimal(12, 2)
-  createdAt          DateTime        @default(now()) @map("created_at")
-  updatedAt          DateTime        @updatedAt @map("updated_at")
+  taxAmount             Decimal         @default(0) @map("tax_amount") @db.Decimal(12, 2)
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @updatedAt @map("updated_at")
 
-  invoice          Invoice                 @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  serviceTariff    ServiceTariff?          @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
-  medication       Medication?             @relation(fields: [medicationId], references: [id], onDelete: SetNull)
-  labOrder         LabOrder?               @relation(fields: [labOrderId], references: [id], onDelete: SetNull)
-  prescriptionItem PrescriptionMedication? @relation(fields: [prescriptionItemId], references: [id], onDelete: SetNull)
+  invoice             Invoice                 @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  serviceTariff       ServiceTariff?          @relation(fields: [serviceTariffId], references: [id], onDelete: SetNull)
+  medication          Medication?             @relation(fields: [medicationId], references: [id], onDelete: SetNull)
+  labOrder            LabOrder?               @relation(fields: [labOrderId], references: [id], onDelete: SetNull)
+  prescriptionItem    PrescriptionMedication? @relation(fields: [prescriptionItemId], references: [id], onDelete: SetNull)
   clinicianFeeEntries ClinicianFeeEntry[]
 
   @@index([invoiceId])
@@ -3858,7 +3884,7 @@ model UserRole {
 /// One row per encounter: attempts increment in place, and the terminal
 /// FAILED state is re-opened only by the admin retry surface (P10-T06).
 model SatusehatSubmission {
-  id                   String                    @id @default(uuid()) @db.Uuid
+  id                     String                           @id @default(uuid()) @db.Uuid
   /// Set on ENCOUNTER rows and null on LAB_REPORT ones: this column says the
   /// row *is* that encounter's, not that it mentions one. A lab report reaches
   /// the encounter it must wait for through its order instead.
@@ -3867,41 +3893,41 @@ model SatusehatSubmission {
   /// (`satusehat_submissions_encounter_kind_key`, `WHERE kind = 'ENCOUNTER'`)
   /// because it only holds for one kind — Prisma cannot express the predicate,
   /// so `@unique` would state something stronger than the database does.
-  encounterId          String?                   @map("encounter_id") @db.Uuid
+  encounterId            String?                          @map("encounter_id") @db.Uuid
   /// Which chain this row reports. See `SatusehatSubmissionKind`.
-  kind                 SatusehatSubmissionKind   @default(ENCOUNTER)
+  kind                   SatusehatSubmissionKind          @default(ENCOUNTER)
   /// Set on LAB_REPORT rows and null on ENCOUNTER ones. Constrained the same
   /// way, by `satusehat_submissions_lab_order_open_key` — one *open* row per
   /// order, so an amendment can enqueue beside a report already sent.
-  labOrderId           String?                   @map("lab_order_id") @db.Uuid
+  labOrderId             String?                          @map("lab_order_id") @db.Uuid
   /// Set on EPISODE_OF_CARE_FINISH rows and null on the others. Constrained
   /// like the two above, by `satusehat_submissions_pregnancy_episode_open_key`
   /// — one *open* row per pregnancy, so a correction to the end date may
   /// enqueue beside a close already sent.
-  pregnancyEpisodeId   String?                   @map("pregnancy_episode_id") @db.Uuid
-  status               SatusehatSubmissionStatus @default(PENDING)
-  attempts             Int                       @default(0)
-  lastError            String?                   @map("last_error")
+  pregnancyEpisodeId     String?                          @map("pregnancy_episode_id") @db.Uuid
+  status                 SatusehatSubmissionStatus        @default(PENDING)
+  attempts               Int                              @default(0)
+  lastError              String?                          @map("last_error")
   /// Earliest instant the worker may (re)try; pushed forward exponentially on
   /// transient failures.
-  nextAttemptAt        DateTime                  @default(now()) @map("next_attempt_at")
-  lastAttemptAt        DateTime?                 @map("last_attempt_at")
-  submittedAt          DateTime?                 @map("submitted_at")
+  nextAttemptAt          DateTime                         @default(now()) @map("next_attempt_at")
+  lastAttemptAt          DateTime?                        @map("last_attempt_at")
+  submittedAt            DateTime?                        @map("submitted_at")
   /// IHS Encounter id returned by the platform on success — the provenance
   /// link between the local record and the national one.
-  satusehatEncounterId String?                   @map("satusehat_encounter_id")
+  satusehatEncounterId   String?                          @map("satusehat_encounter_id")
   /// Set when the Encounter this row sent named a fallback Location rather
   /// than the visit's poli (P24-T07). Kind-agnostic: a LAB_REPORT row names no
   /// poli, so it stays null. Written when the bundle is accepted, so it
   /// describes what actually reached the platform, and null on every row
   /// settled before the column existed.
   locationFallbackReason SatusehatLocationFallbackReason? @map("location_fallback_reason")
-  createdAt            DateTime                  @default(now()) @map("created_at")
-  updatedAt            DateTime                  @updatedAt @map("updated_at")
+  createdAt              DateTime                         @default(now()) @map("created_at")
+  updatedAt              DateTime                         @updatedAt @map("updated_at")
 
-  encounter        Encounter?        @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  labOrder         LabOrder?         @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
-  pregnancyEpisode PregnancyEpisode? @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Restrict)
+  encounter        Encounter?                    @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  labOrder         LabOrder?                     @relation(fields: [labOrderId], references: [id], onDelete: Restrict)
+  pregnancyEpisode PregnancyEpisode?             @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Restrict)
   resources        SatusehatSubmissionResource[]
 
   @@index([status, nextAttemptAt])
@@ -3925,29 +3951,29 @@ model SatusehatSubmission {
 /// keeps the P10-T06 promise that the outbox carries no clinical payload, so
 /// the ADMIN-gated monitor can render this table directly.
 model SatusehatSubmissionResource {
-  id           String                   @id @default(uuid()) @db.Uuid
-  submissionId String                   @map("submission_id") @db.Uuid
+  id            String                       @id @default(uuid()) @db.Uuid
+  submissionId  String                       @map("submission_id") @db.Uuid
   /// FHIR resource type as sent (`Encounter`, `Condition`, `Observation`, …).
   /// A plain string rather than an enum: the set is the platform's, not ours,
   /// and a new bundle entry type must not need a migration to be recorded.
-  resourceType String                   @map("resource_type")
-  outcome      SatusehatResourceOutcome
+  resourceType  String                       @map("resource_type")
+  outcome       SatusehatResourceOutcome
   /// Set on SKIPPED rows, null on SENT ones.
-  skipReason   SatusehatResourceSkipReason? @map("skip_reason")
+  skipReason    SatusehatResourceSkipReason? @map("skip_reason")
   /// The id SATUSEHAT assigned. Null on every SKIPPED row, and also on a SENT
   /// row whose id could not be paired out of the transaction response — the
   /// resource went, but which one it became is unknown, so it cannot be read
   /// back.
-  satusehatId  String?                  @map("satusehat_id")
+  satusehatId   String?                      @map("satusehat_id")
   /// The local row this item came from, when there is one. Null for resources
   /// that exist only in the bundle (the Composition, a lab-only Encounter) and
   /// for backfilled rows whose local record could not be identified.
-  localRecordId String?                 @map("local_record_id") @db.Uuid
+  localRecordId String?                      @map("local_record_id") @db.Uuid
   /// True when the row was reconstructed from the platform by the P21-T05
   /// backfill rather than recorded at submission time. Skipped items cannot be
   /// reconstructed, so a backfilled list says nothing about what was left out.
-  isBackfilled Boolean                  @default(false) @map("is_backfilled")
-  createdAt    DateTime                 @default(now()) @map("created_at")
+  isBackfilled  Boolean                      @default(false) @map("is_backfilled")
+  createdAt     DateTime                     @default(now()) @map("created_at")
 
   submission SatusehatSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
 
@@ -5134,23 +5160,23 @@ enum DischargeDisposition {
 /// Unique among live rows only, so a retired class frees its code — the same
 /// partial-index technique as {@link Ward.code}.
 model RoomClass {
-  id          String    @id @default(uuid()) @db.Uuid
-  code        String
-  name        String
-  description String?
+  id                    String                 @id @default(uuid()) @db.Uuid
+  code                  String
+  name                  String
+  description           String?
   /// How many beds the clinic plans to run in this class, clinic-wide. Null
   /// means uncapped, which is why it is nullable rather than defaulted: a
   /// clinic that has not thought about a ceiling must not be given one, and
   /// zero would mean "no beds allowed" rather than "no limit". When it is set,
   /// bed creation refuses to exceed it — a quota nothing checks is decoration.
-  quota       Int?
+  quota                 Int?
   /// Which SATUSEHAT service class this class reports as (FR-LOC-05). Null
   /// means unmapped, and rooms of an unmapped class cannot be registered.
   satusehatServiceClass SatusehatServiceClass? @map("satusehat_service_class")
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  isActive              Boolean                @default(true) @map("is_active")
+  createdAt             DateTime               @default(now()) @map("created_at")
+  updatedAt             DateTime               @updatedAt @map("updated_at")
+  deletedAt             DateTime?              @map("deleted_at")
 
   rooms          Room[]
   serviceTariffs ServiceTariff[]
@@ -5170,16 +5196,16 @@ model RoomClass {
 /// (`WHERE deleted_at IS NULL`) in the migration, so a closed ward's code can
 /// be reused by its replacement.
 model Ward {
-  id          String    @id @default(uuid()) @db.Uuid
-  code        String
-  name        String
-  description String?
+  id                  String    @id @default(uuid()) @db.Uuid
+  code                String
+  name                String
+  description         String?
   /// The ward's SATUSEHAT Location (`wa`) once registered (P24-T05/T06).
-  satusehatLocationId String? @map("satusehat_location_id")
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  satusehatLocationId String?   @map("satusehat_location_id")
+  isActive            Boolean   @default(true) @map("is_active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
 
   rooms Room[]
 
@@ -5195,18 +5221,18 @@ model Ward {
 /// `code` is unique per ward among live rows, hand-written as a partial unique
 /// index in the migration for the same reuse reason as {@link Ward.code}.
 model Room {
-  id          String    @id @default(uuid()) @db.Uuid
-  wardId      String    @map("ward_id") @db.Uuid
-  roomClassId String    @map("room_class_id") @db.Uuid
-  code        String
-  name        String
-  description String?
+  id                  String    @id @default(uuid()) @db.Uuid
+  wardId              String    @map("ward_id") @db.Uuid
+  roomClassId         String    @map("room_class_id") @db.Uuid
+  code                String
+  name                String
+  description         String?
   /// The room's SATUSEHAT Location (`ro`) once registered (P24-T05/T06).
-  satusehatLocationId String? @map("satusehat_location_id")
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  satusehatLocationId String?   @map("satusehat_location_id")
+  isActive            Boolean   @default(true) @map("is_active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
 
   ward      Ward      @relation(fields: [wardId], references: [id], onDelete: Restrict)
   roomClass RoomClass @relation(fields: [roomClassId], references: [id], onDelete: Restrict)
@@ -5230,16 +5256,16 @@ model Room {
 /// index on `bed_assignments (bed_id) WHERE ended_at IS NULL` is, so two
 /// concurrent admits race to the same constraint and one of them loses.
 model Bed {
-  id        String    @id @default(uuid()) @db.Uuid
-  roomId    String    @map("room_id") @db.Uuid
-  code      String
-  status    BedStatus @default(AVAILABLE)
+  id                  String    @id @default(uuid()) @db.Uuid
+  roomId              String    @map("room_id") @db.Uuid
+  code                String
+  status              BedStatus @default(AVAILABLE)
   /// The bed's SATUSEHAT Location (`bd`) once registered (P24-T05/T06).
-  satusehatLocationId String? @map("satusehat_location_id")
-  notes     String?
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  deletedAt DateTime? @map("deleted_at")
+  satusehatLocationId String?   @map("satusehat_location_id")
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  deletedAt           DateTime? @map("deleted_at")
 
   room        Room            @relation(fields: [roomId], references: [id], onDelete: Restrict)
   assignments BedAssignment[]
@@ -5269,17 +5295,17 @@ model Bed {
 /// (`WHERE status = 'ADMITTED' AND deleted_at IS NULL`) — the same technique
 /// `invoices_encounter_id_live_key` uses.
 model Admission {
-  id                String          @id @default(uuid()) @db.Uuid
-  patientId         String          @map("patient_id") @db.Uuid
-  admittingDoctorId String          @map("admitting_doctor_id") @db.Uuid
-  sourceEncounterId String?         @map("source_encounter_id") @db.Uuid
-  status            AdmissionStatus @default(ADMITTED)
+  id                       String                @id @default(uuid()) @db.Uuid
+  patientId                String                @map("patient_id") @db.Uuid
+  admittingDoctorId        String                @map("admitting_doctor_id") @db.Uuid
+  sourceEncounterId        String?               @map("source_encounter_id") @db.Uuid
+  status                   AdmissionStatus       @default(ADMITTED)
   /// Why the patient was admitted, in the admitting doctor's words. The coded
   /// conclusion stays on the encounter's `Diagnosis` rows.
-  reason            String?
-  admittedAt        DateTime        @default(now()) @map("admitted_at")
-  dischargedAt      DateTime?       @map("discharged_at")
-  dischargeSummary  String?         @map("discharge_summary")
+  reason                   String?
+  admittedAt               DateTime              @default(now()) @map("admitted_at")
+  dischargedAt             DateTime?             @map("discharged_at")
+  dischargeSummary         String?               @map("discharge_summary")
   /// How the stay ended (P24-T08). Null on every row discharged before this
   /// column existed; those keep reporting D-030's `home`, which is what they
   /// were already sent as.
@@ -5287,20 +5313,21 @@ model Admission {
   /// Required when the disposition is OTHER, enforced by a CHECK in the
   /// migration as well as by the request schema.
   dischargeDispositionNote String?               @map("discharge_disposition_note")
-  cancelledAt       DateTime?       @map("cancelled_at")
-  cancelReason      String?         @map("cancel_reason")
-  createdById       String?         @map("created_by_id") @db.Uuid
-  createdAt         DateTime        @default(now()) @map("created_at")
-  updatedAt         DateTime        @updatedAt @map("updated_at")
-  deletedAt         DateTime?       @map("deleted_at")
+  cancelledAt              DateTime?             @map("cancelled_at")
+  cancelReason             String?               @map("cancel_reason")
+  createdById              String?               @map("created_by_id") @db.Uuid
+  createdAt                DateTime              @default(now()) @map("created_at")
+  updatedAt                DateTime              @updatedAt @map("updated_at")
+  deletedAt                DateTime?             @map("deleted_at")
 
-  patient           PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  admittingDoctor   DoctorProfile   @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
-  sourceEncounter   Encounter?      @relation(fields: [sourceEncounterId], references: [id], onDelete: SetNull)
-  createdBy         User?           @relation("AdmissionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  patient           PatientProfile   @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  admittingDoctor   DoctorProfile    @relation(fields: [admittingDoctorId], references: [id], onDelete: Restrict)
+  sourceEncounter   Encounter?       @relation(fields: [sourceEncounterId], references: [id], onDelete: SetNull)
+  createdBy         User?            @relation("AdmissionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
   bedAssignments    BedAssignment[]
   invoices          Invoice[]
   clinicalDocuments Document[]
+  deliveryRecords   DeliveryRecord[]
 
   @@index([patientId, admittedAt])
   @@index([admittingDoctorId, admittedAt])
@@ -5308,7 +5335,6 @@ model Admission {
   @@index([sourceEncounterId])
   @@index([deletedAt])
   @@map("admissions")
-  deliveryRecords DeliveryRecord[]
 }
 
 /// Which bed an admission held, and when. A transfer closes one row and opens
@@ -5424,8 +5450,6 @@ enum NotificationType {
   /// grant that is told. Raised from the row's dates, never from the letter.
   DOCTOR_AUTHORITY_EXPIRING
   DOCTOR_AUTHORITY_EXPIRED
-
-  @@map("notification_type")
   /// The tax calendar (P27-T10): a due date approaching with the month's
   /// draft unfinalized, calendar-year turnover crossing a fraction of the PKP
   /// threshold, and the last year the clinic may use PP 55.
@@ -5435,6 +5459,8 @@ enum NotificationType {
   /// An SHK sample came back RECALL or INVALID_SAMPLE (P25-T10). Addressed to
   /// the delivery's attendant and every holder of `encounter.write:own`.
   SHK_RECALL
+
+  @@map("notification_type")
 }
 
 /// One row of a user's in-app bell feed. `title_key`/`body_key` are i18n
@@ -6455,48 +6481,48 @@ model LabReport {
 /// which an ICD-9-CM procedure row can carry — and a vaccination written as a
 /// procedure is a vaccination that cannot be reported (P10-T16).
 model Immunization {
-  id                      String             @id @default(uuid()) @db.Uuid
-  encounterId             String             @map("encounter_id") @db.Uuid
+  id                      String              @id @default(uuid()) @db.Uuid
+  encounterId             String              @map("encounter_id") @db.Uuid
   /// Denormalised from the encounter so a patient's immunisation history is
   /// one indexed read rather than a join through every visit. It is also the
   /// fact that outlives the visit: a vaccination belongs to a person's record,
   /// not to an appointment.
-  patientId               String             @map("patient_id") @db.Uuid
+  patientId               String              @map("patient_id") @db.Uuid
   /// The vaccine, from the medication catalog. Reportable only when the
   /// catalog row carries a `kfaCode`.
-  medicationId            String             @map("medication_id") @db.Uuid
-  occurredAt              DateTime           @map("occurred_at")
-  lotNumber               String?            @map("lot_number")
-  expirationDate          DateTime?          @map("expiration_date") @db.Date
-  doseNumber              Int?               @map("dose_number")
+  medicationId            String              @map("medication_id") @db.Uuid
+  occurredAt              DateTime            @map("occurred_at")
+  lotNumber               String?             @map("lot_number")
+  expirationDate          DateTime?           @map("expiration_date") @db.Date
+  doseNumber              Int?                @map("dose_number")
   route                   ImmunizationRoute?
   site                    ImmunizationSite?
-  performedById           String?            @map("performed_by_id") @db.Uuid
+  performedById           String?             @map("performed_by_id") @db.Uuid
   notes                   String?
   /// A dose copied from a card or KIA book rather than given here (P24-T12,
   /// FR-IM-02). Reported with `primarySource: false` and an entering
   /// performer, and without the lot and expiry a new dose must carry.
-  isHistorical            Boolean            @default(false) @map("is_historical")
+  isHistorical            Boolean             @default(false) @map("is_historical")
   /// Nullable only for rows recorded before the form required it; the bundle
   /// skips such a row with `IMMUNIZATION_REASON_MISSING` rather than inventing one.
   reason                  ImmunizationReason?
   /// IHS id returned by SATUSEHAT on first successful submission. Non-null
   /// means reported.
-  satusehatImmunizationId String?            @map("satusehat_immunization_id")
-  createdAt               DateTime           @default(now()) @map("created_at")
-  updatedAt               DateTime           @updatedAt @map("updated_at")
-  deletedAt               DateTime?          @map("deleted_at")
+  satusehatImmunizationId String?             @map("satusehat_immunization_id")
+  createdAt               DateTime            @default(now()) @map("created_at")
+  updatedAt               DateTime            @updatedAt @map("updated_at")
+  deletedAt               DateTime?           @map("deleted_at")
 
-  encounter   Encounter      @relation(fields: [encounterId], references: [id], onDelete: Restrict)
-  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
-  medication  Medication     @relation(fields: [medicationId], references: [id], onDelete: Restrict)
-  performedBy DoctorProfile? @relation("ImmunizationPerformedBy", fields: [performedById], references: [id], onDelete: SetNull)
+  encounter          Encounter           @relation(fields: [encounterId], references: [id], onDelete: Restrict)
+  patient            PatientProfile      @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  medication         Medication          @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  performedBy        DoctorProfile?      @relation("ImmunizationPerformedBy", fields: [performedById], references: [id], onDelete: SetNull)
+  newbornCareRecords NewbornCareRecord[] @relation("NewbornHb0")
 
   @@index([patientId, occurredAt])
   @@index([encounterId])
   @@index([deletedAt])
   @@map("immunizations")
-  newbornCareRecords NewbornCareRecord[] @relation("NewbornHb0")
 }
 
 /// Indonesian administrative regions (P19-T10), keyed by the Kemendagri
@@ -6781,9 +6807,9 @@ model PregnancyEpisode {
   satusehatEpisodeOfCareId          String? @map("satusehat_episode_of_care_id")
   satusehatPostnatalEpisodeOfCareId String? @map("satusehat_postnatal_episode_of_care_id")
 
-  createdById String   @map("created_by_id") @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdById String    @map("created_by_id") @db.Uuid
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
 
   patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Restrict)
@@ -6810,14 +6836,14 @@ model PregnancyEpisode {
 /// exactly the right thing reads as non-compliant. Only what the book can
 /// tell her is stored: where, when, and whether an ultrasound was done.
 model PregnancyExternalDoctorVisit {
-  id                 String   @id @default(uuid()) @db.Uuid
-  pregnancyEpisodeId String   @map("pregnancy_episode_id") @db.Uuid
-  facilityName       String   @map("facility_name")
-  visitedAt          DateTime @map("visited_at") @db.Date
-  isUltrasoundDone   Boolean  @default(false) @map("is_ultrasound_done")
-  recordedById       String   @map("recorded_by_id") @db.Uuid
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
+  id                 String    @id @default(uuid()) @db.Uuid
+  pregnancyEpisodeId String    @map("pregnancy_episode_id") @db.Uuid
+  facilityName       String    @map("facility_name")
+  visitedAt          DateTime  @map("visited_at") @db.Date
+  isUltrasoundDone   Boolean   @default(false) @map("is_ultrasound_done")
+  recordedById       String    @map("recorded_by_id") @db.Uuid
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
   deletedAt          DateTime? @map("deleted_at")
 
   pregnancyEpisode PregnancyEpisode @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Cascade)
@@ -6845,8 +6871,8 @@ model AntenatalVisit {
   pregnancyEpisode PregnancyEpisode @relation(fields: [pregnancyEpisodeId], references: [id], onDelete: Cascade)
   encounter        Encounter        @relation(fields: [encounterId], references: [id], onDelete: Cascade)
 
-  examination         AntenatalExamination?
-  referralDismissals  AntenatalReferralDismissal[]
+  examination        AntenatalExamination?
+  referralDismissals AntenatalReferralDismissal[]
 
   @@index([pregnancyEpisodeId])
   @@map("antenatal_visits")
@@ -6893,27 +6919,27 @@ enum BirthOutcome {
 /// arrives pushing has no recorded onset, and the checks in the migration
 /// order only the columns that are set.
 model DeliveryRecord {
-  id                 String @id @default(uuid()) @db.Uuid
-  pregnancyEpisodeId String @unique @map("pregnancy_episode_id") @db.Uuid
+  id                 String  @id @default(uuid()) @db.Uuid
+  pregnancyEpisodeId String  @unique @map("pregnancy_episode_id") @db.Uuid
   /// The stay this birth happened in, when the mother was admitted in labour
   /// (P24-T09). Null for a birth that never became an admission.
   admissionId        String? @map("admission_id") @db.Uuid
   attendantDoctorId  String  @map("attendant_doctor_id") @db.Uuid
 
   /// Kala I — the onset of labour.
-  labourOnsetAt              DateTime? @map("labour_onset_at") @db.Timestamptz(3)
+  labourOnsetAt               DateTime? @map("labour_onset_at") @db.Timestamptz(3)
   /// Kala II begins at full dilatation.
-  fullDilatationAt           DateTime? @map("full_dilatation_at") @db.Timestamptz(3)
+  fullDilatationAt            DateTime? @map("full_dilatation_at") @db.Timestamptz(3)
   /// The last baby's birth. This is what ends the pregnancy episode.
-  birthAt                    DateTime  @map("birth_at") @db.Timestamptz(3)
+  birthAt                     DateTime  @map("birth_at") @db.Timestamptz(3)
   /// Kala III ends when the placenta is delivered.
-  placentaDeliveredAt        DateTime? @map("placenta_delivered_at") @db.Timestamptz(3)
+  placentaDeliveredAt         DateTime? @map("placenta_delivered_at") @db.Timestamptz(3)
   /// Kala IV ends after the two hours of postpartum observation.
   postpartumMonitoringEndedAt DateTime? @map("postpartum_monitoring_ended_at") @db.Timestamptz(3)
 
   mode              DeliveryMode
-  episiotomy        Boolean            @default(false)
-  perinealTearGrade PerinealTearGrade  @default(NONE) @map("perineal_tear_grade")
+  episiotomy        Boolean           @default(false)
+  perinealTearGrade PerinealTearGrade @default(NONE) @map("perineal_tear_grade")
 
   /// The uterotonic given for the active management of the third stage —
   /// oxytocin, in almost every case — and when.
@@ -6970,25 +6996,25 @@ model NewbornCareRecord {
   newbornPatientId String?      @map("newborn_patient_id") @db.Uuid
   sex              PatientSex
 
-  birthWeightGrams     Int?     @map("birth_weight_grams")
-  lengthCm             Decimal? @map("length_cm") @db.Decimal(4, 1)
-  headCircumferenceCm  Decimal? @map("head_circumference_cm") @db.Decimal(4, 1)
+  birthWeightGrams    Int?     @map("birth_weight_grams")
+  lengthCm            Decimal? @map("length_cm") @db.Decimal(4, 1)
+  headCircumferenceCm Decimal? @map("head_circumference_cm") @db.Decimal(4, 1)
 
   apgar1Min Int? @map("apgar_1_min")
   apgar5Min Int? @map("apgar_5_min")
 
   /// Inisiasi menyusu dini.
-  imdStartedAt        DateTime? @map("imd_started_at") @db.Timestamptz(3)
-  imdDurationMinutes  Int?      @map("imd_duration_minutes")
-  cordCareAt          DateTime? @map("cord_care_at") @db.Timestamptz(3)
+  imdStartedAt       DateTime? @map("imd_started_at") @db.Timestamptz(3)
+  imdDurationMinutes Int?      @map("imd_duration_minutes")
+  cordCareAt         DateTime? @map("cord_care_at") @db.Timestamptz(3)
 
   /// Vitamin K1 and the eye ointment are a time and a medication, not
   /// Immunizations: neither is a vaccine, and filing them as one would put
   /// them in an immunisation history that is read as a vaccination record.
-  vitaminK1GivenAt        DateTime? @map("vitamin_k1_given_at") @db.Timestamptz(3)
-  vitaminK1MedicationId   String?   @map("vitamin_k1_medication_id") @db.Uuid
-  eyeProphylaxisGivenAt   DateTime? @map("eye_prophylaxis_given_at") @db.Timestamptz(3)
-  eyeProphylaxisMedicationId String? @map("eye_prophylaxis_medication_id") @db.Uuid
+  vitaminK1GivenAt           DateTime? @map("vitamin_k1_given_at") @db.Timestamptz(3)
+  vitaminK1MedicationId      String?   @map("vitamin_k1_medication_id") @db.Uuid
+  eyeProphylaxisGivenAt      DateTime? @map("eye_prophylaxis_given_at") @db.Timestamptz(3)
+  eyeProphylaxisMedicationId String?   @map("eye_prophylaxis_medication_id") @db.Uuid
 
   /// HB0 **is** a vaccination, so it goes through the ordinary immunisation
   /// path on the newborn's own encounter and is linked here.
@@ -6999,14 +7025,14 @@ model NewbornCareRecord {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  deliveryRecord      DeliveryRecord @relation(fields: [deliveryRecordId], references: [id], onDelete: Cascade)
-  newbornPatient      PatientProfile? @relation("NewbornCarePatient", fields: [newbornPatientId], references: [id], onDelete: Restrict)
-  vitaminK1Medication Medication?    @relation("NewbornVitaminK1", fields: [vitaminK1MedicationId], references: [id], onDelete: Restrict)
-  eyeProphylaxisMedication Medication? @relation("NewbornEyeProphylaxis", fields: [eyeProphylaxisMedicationId], references: [id], onDelete: Restrict)
-  hb0Immunization     Immunization?  @relation("NewbornHb0", fields: [hb0ImmunizationId], references: [id], onDelete: SetNull)
+  deliveryRecord           DeliveryRecord  @relation(fields: [deliveryRecordId], references: [id], onDelete: Cascade)
+  newbornPatient           PatientProfile? @relation("NewbornCarePatient", fields: [newbornPatientId], references: [id], onDelete: Restrict)
+  vitaminK1Medication      Medication?     @relation("NewbornVitaminK1", fields: [vitaminK1MedicationId], references: [id], onDelete: Restrict)
+  eyeProphylaxisMedication Medication?     @relation("NewbornEyeProphylaxis", fields: [eyeProphylaxisMedicationId], references: [id], onDelete: Restrict)
+  hb0Immunization          Immunization?   @relation("NewbornHb0", fields: [hb0ImmunizationId], references: [id], onDelete: SetNull)
 
   postnatalVisits PostnatalVisit[]
-  shkScreenings ShkScreening[]
+  shkScreenings   ShkScreening[]
 
   @@unique([newbornPatientId])
   @@unique([deliveryRecordId, stillbirthOrder])
@@ -7202,22 +7228,22 @@ model AntenatalExamination {
   antenatalVisitId String @unique @map("antenatal_visit_id") @db.Uuid
 
   /// LiLA, mid-upper arm circumference.
-  muacCm                  Decimal?             @map("muac_cm") @db.Decimal(4, 1)
-  fundalHeightCm          Decimal?             @map("fundal_height_cm") @db.Decimal(4, 1)
-  fetalHeartRateBpm       Int?                 @map("fetal_heart_rate_bpm")
-  fetalPresentation       FetalPresentation?   @map("fetal_presentation")
-  fetalHeadEngagement     FetalHeadEngagement? @map("fetal_head_engagement")
-  fetalCount              Int?                 @map("fetal_count")
-  estimatedFetalWeightGrams Int?               @map("estimated_fetal_weight_grams")
+  muacCm                    Decimal?             @map("muac_cm") @db.Decimal(4, 1)
+  fundalHeightCm            Decimal?             @map("fundal_height_cm") @db.Decimal(4, 1)
+  fetalHeartRateBpm         Int?                 @map("fetal_heart_rate_bpm")
+  fetalPresentation         FetalPresentation?   @map("fetal_presentation")
+  fetalHeadEngagement       FetalHeadEngagement? @map("fetal_head_engagement")
+  fetalCount                Int?                 @map("fetal_count")
+  estimatedFetalWeightGrams Int?                 @map("estimated_fetal_weight_grams")
 
-  tetanusStatus     TetanusImmunizationStatus? @map("tetanus_status")
-  ironTabletsGiven  Int?                       @map("iron_tablets_given")
+  tetanusStatus    TetanusImmunizationStatus? @map("tetanus_status")
+  ironTabletsGiven Int?                       @map("iron_tablets_given")
 
   /// Free text rather than an enum: the playbook's "Tema Konseling" list could
   /// not be read from a primary source, and an invented code list would be
   /// worse than the midwife's own words (P25-T07).
-  counsellingTopics  String[] @map("counselling_topics")
-  caseManagementNotes String? @map("case_management_notes")
+  counsellingTopics   String[] @map("counselling_topics")
+  caseManagementNotes String?  @map("case_management_notes")
 
   recordedById String   @map("recorded_by_id") @db.Uuid
   createdAt    DateTime @default(now()) @map("created_at")

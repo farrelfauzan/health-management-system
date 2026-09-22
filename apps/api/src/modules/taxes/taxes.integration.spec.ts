@@ -15,6 +15,9 @@ import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/
 import { TaxAssignmentRepository } from '../tax-core/repository/tax-assignment.repository';
 import { TaxCodeRepository } from '../tax-core/repository/tax-code.repository';
 import { TaxSettingsRepository } from '../tax-core/repository/tax-settings.repository';
+import { ClinicianFeeStatementService } from '../clinician-fee/service/clinician-fee-statement.service';
+import { ClinicianTaxIdentityRepository } from './repository/clinician-tax-identity.repository';
+import { Pph21TaxBracketRepository } from './repository/pph21-tax-bracket.repository';
 import { TaxReportRepository } from './repository/tax-report.repository';
 import { TaxReportDocumentRepository } from './repository/tax-report-document.repository';
 
@@ -81,6 +84,16 @@ describe('Tax settings integration', () => {
     saveReadyDocument: jest.fn(),
     saveFailedDocument: jest.fn(),
   };
+  const pph21TaxBracketRepositoryMock = { listBrackets: jest.fn() };
+  const clinicianTaxIdentityRepositoryMock = {
+    findIdentities: jest.fn(),
+    findIdentifiers: jest.fn(),
+  };
+  const clinicianFeeStatementServiceMock = {
+    getPeriodSummary: jest.fn(),
+    getStatement: jest.fn(),
+    exportStatement: jest.fn(),
+  };
   const pdfRendererMock = { render: jest.fn() };
   const objectStorageMock = {
     generateObjectKey: jest.fn(),
@@ -125,6 +138,12 @@ describe('Tax settings integration', () => {
       .useValue(taxReportRepositoryMock)
       .overrideProvider(TaxReportDocumentRepository)
       .useValue(taxReportDocumentRepositoryMock)
+      .overrideProvider(Pph21TaxBracketRepository)
+      .useValue(pph21TaxBracketRepositoryMock)
+      .overrideProvider(ClinicianTaxIdentityRepository)
+      .useValue(clinicianTaxIdentityRepositoryMock)
+      .overrideProvider(ClinicianFeeStatementService)
+      .useValue(clinicianFeeStatementServiceMock)
       .overrideProvider(PdfRendererService)
       .useValue(pdfRendererMock)
       .overrideProvider(ObjectStorageService)
@@ -446,6 +465,230 @@ describe('Tax settings integration', () => {
     });
   });
 
+  describe('PPh 21 bukan pegawai drafts (P27-T07)', () => {
+    const REPORTS_PATH = '/api/v1/v1/tax/reports';
+    const REPORT_ID = '7c6b5a4f-3e2d-4c1b-8a09-f8e7d6c5b4a3';
+    const DR_A_ID = '4f3e2d1c-0b9a-4877-8665-544332211000';
+    const DR_A_NIK = '3171000000000001';
+    const REPORT_PERMISSIONS = [
+      { action: 'read', resource: 'TaxReport', scope: 'ANY' as const },
+      { action: 'write', resource: 'TaxReport', scope: 'ANY' as const },
+    ];
+    const hppBrackets = [
+      {
+        id: 'b1',
+        effectiveFrom: '2022-01-01',
+        lowerBound: 0,
+        upperBound: 60000000,
+        ratePercent: 5,
+      },
+      {
+        id: 'b2',
+        effectiveFrom: '2022-01-01',
+        lowerBound: 60000000,
+        upperBound: 250000000,
+        ratePercent: 15,
+      },
+      {
+        id: 'b3',
+        effectiveFrom: '2022-01-01',
+        lowerBound: 250000000,
+        upperBound: 500000000,
+        ratePercent: 25,
+      },
+      {
+        id: 'b4',
+        effectiveFrom: '2022-01-01',
+        lowerBound: 500000000,
+        upperBound: 5000000000,
+        ratePercent: 30,
+      },
+      {
+        id: 'b5',
+        effectiveFrom: '2022-01-01',
+        lowerBound: 5000000000,
+        upperBound: null,
+        ratePercent: 35,
+      },
+    ];
+
+    function mockStoredPph21Report(lines: unknown[], summary: unknown): void {
+      taxReportRepositoryMock.findReportById.mockResolvedValue({
+        id: REPORT_ID,
+        period: '2026-08',
+        kind: 'PPH21_NON_EMPLOYEE',
+        status: 'DRAFT',
+        summary,
+        lines,
+        generatedAt: new Date('2026-11-02T00:00:00.000Z'),
+        generatedById: 'actor-user',
+        finalizedAt: null,
+        finalizedById: null,
+      });
+    }
+
+    beforeEach(() => {
+      taxSettingsRepositoryMock.findTaxSettings.mockResolvedValue({
+        taxpayerType: 'PT',
+        incomeTaxRegime: 'GENERAL',
+        pp55StartYear: null,
+        isPkp: false,
+        pkpSince: null,
+        nitku: null,
+        updatedById: null,
+        updatedAt: null,
+      });
+      pph21TaxBracketRepositoryMock.listBrackets.mockResolvedValue(hppBrackets);
+      clinicianFeeStatementServiceMock.getPeriodSummary.mockResolvedValue({
+        period: '2026-08',
+        clinicians: [
+          {
+            doctorId: DR_A_ID,
+            doctorName: 'Andi',
+            profession: 'DOCTOR',
+            totals: { entryCount: 40, lineAmount: 33333333, grossFee: 20000000, clinicShare: 0 },
+          },
+        ],
+        totals: { entryCount: 40, lineAmount: 33333333, grossFee: 20000000, clinicShare: 0 },
+      });
+      clinicianTaxIdentityRepositoryMock.findIdentities.mockResolvedValue([
+        { doctorId: DR_A_ID, fullName: 'Andi', profession: 'DOCTOR', npwp: null, nikLast4: '0001' },
+      ]);
+      clinicianTaxIdentityRepositoryMock.findIdentifiers.mockResolvedValue([
+        { doctorId: DR_A_ID, npwp: null, nik: DR_A_NIK },
+      ]);
+      taxReportRepositoryMock.findReportByPeriodAndKind.mockResolvedValue(null);
+      taxReportRepositoryMock.createReport.mockImplementation(async (payload) => ({
+        id: REPORT_ID,
+        period: payload.period,
+        kind: payload.kind,
+        status: 'DRAFT',
+        summary: payload.summary,
+        lines: payload.lines,
+        generatedAt: new Date('2026-11-02T00:00:00.000Z'),
+        generatedById: 'actor-user',
+        finalizedAt: null,
+        finalizedById: null,
+      }));
+    });
+
+    // August: a month that has ended, so finalizing is judged on identity
+    // and not refused as an open period.
+    it('drafts August for an ADMIN with tax-report.read/write: dr. A Rp20 juta → DPP Rp10 juta, PPh 21 Rp500.000', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .post(REPORTS_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ period: '2026-08', kind: 'PPH21_NON_EMPLOYEE' });
+
+      expect(response.status).toBe(201);
+      expect(response.body.data.summary).toMatchObject({
+        kind: 'PPH21_NON_EMPLOYEE',
+        totals: { grossFee: 20000000, taxBase: 10000000, taxAmount: 500000 },
+        paymentDueDate: '2026-09-15',
+        reportingDueDate: '2026-09-20',
+      });
+      expect(response.body.data.lines[0]).toMatchObject({
+        doctorName: 'Andi',
+        identityStatus: 'NIK',
+        identityMasked: '••••••••0001',
+        taxAmount: 500000,
+      });
+      expect(JSON.stringify(response.body)).not.toContain(DR_A_NIK);
+    });
+
+    it('lists PPH21_NON_EMPLOYEE as applicable for a clinic on the general regime that is not PKP', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      taxReportRepositoryMock.listReportsForYear.mockResolvedValue([]);
+
+      const response = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}?year=2026`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.meta.applicableKinds).toEqual(['PPH21_NON_EMPLOYEE']);
+    });
+
+    it('refuses the draft to a role without tax-report.read', async () => {
+      const token = await buildToken('doctor-user', 'doctor@hms.local');
+      mockActorWithPermissions('DOCTOR', [
+        { action: 'read', resource: 'ClinicianFee', scope: 'OWN' as const },
+      ]);
+      mockStoredPph21Report([], {});
+
+      const [read, revealed] = await Promise.all([
+        request(app.getHttpServer())
+          .get(`${REPORTS_PATH}/${REPORT_ID}`)
+          .set('Authorization', `Bearer ${token}`),
+        request(app.getHttpServer())
+          .get(`${REPORTS_PATH}/${REPORT_ID}/identifiers`)
+          .set('Authorization', `Bearer ${token}`),
+      ]);
+
+      expect(read.status).toBe(403);
+      expect(revealed.status).toBe(403);
+      expect(clinicianTaxIdentityRepositoryMock.findIdentifiers).not.toHaveBeenCalled();
+    });
+
+    it('reveals the full NIK to tax-report.read:any and audits it without the value', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      mockStoredPph21Report([{ doctorId: DR_A_ID, doctorName: 'Andi', identityStatus: 'NIK' }], {
+        kind: 'PPH21_NON_EMPLOYEE',
+        totals: {},
+      });
+
+      const response = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/identifiers`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.clinicians).toEqual([
+        { doctorId: DR_A_ID, identityKind: 'NIK', taxIdentityNumber: DR_A_NIK },
+      ]);
+      const unmaskCalls = auditServiceMock.record.mock.calls.filter(
+        ([input]) => input.action === 'DOCTOR_IDENTIFIER_UNMASKED',
+      );
+      expect(unmaskCalls).toHaveLength(1);
+      expect(unmaskCalls[0]?.[0]).toMatchObject({
+        resource: 'tax-report',
+        resourceId: REPORT_ID,
+        actorUserId: 'admin-user',
+        metadata: { period: '2026-08', doctorIds: [DR_A_ID], fields: ['NIK'] },
+      });
+      expect(JSON.stringify(unmaskCalls[0]?.[0].metadata)).not.toContain(DR_A_NIK);
+    });
+
+    it('flags a clinician without NIK or NPWP and blocks finalizing with 409 TAX_REPORT_IDENTITY_INCOMPLETE', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      clinicianTaxIdentityRepositoryMock.findIdentities.mockResolvedValue([
+        { doctorId: DR_A_ID, fullName: 'Andi', profession: 'DOCTOR', npwp: null, nikLast4: null },
+      ]);
+
+      const created = await request(app.getHttpServer())
+        .post(REPORTS_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ period: '2026-08', kind: 'PPH21_NON_EMPLOYEE' });
+      taxReportRepositoryMock.findReportById.mockResolvedValue(
+        await taxReportRepositoryMock.createReport.mock.results[0]?.value,
+      );
+      const finalized = await request(app.getHttpServer())
+        .post(`${REPORTS_PATH}/${REPORT_ID}/finalize`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(created.status).toBe(201);
+      expect(created.body.data.summary.incompleteIdentityCount).toBe(1);
+      expect(created.body.data.lines[0].identityStatus).toBe('MISSING');
+      expect(finalized.status).toBe(409);
+      expect(finalized.body.error.code).toBe('TAX_REPORT_IDENTITY_INCOMPLETE');
+      expect(taxReportRepositoryMock.finalizeReport).not.toHaveBeenCalled();
+    });
+  });
+
   describe('monthly tax report drafts (P27-T05)', () => {
     const REPORTS_PATH = '/api/v1/v1/tax/reports';
     const REPORT_PERMISSIONS = [
@@ -540,7 +783,11 @@ describe('Tax settings integration', () => {
         .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.meta).toEqual({ year: 2026, applicableKinds: ['PP55_OMZET'] });
+      // PPh 21 (P27-T07) is applicable to every clinic, so it rides along.
+      expect(response.body.meta).toEqual({
+        year: 2026,
+        applicableKinds: ['PP55_OMZET', 'PPH21_NON_EMPLOYEE'],
+      });
     });
 
     it('refuses the report routes without the tax-report permission', async () => {

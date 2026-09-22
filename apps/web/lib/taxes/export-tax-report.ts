@@ -25,7 +25,7 @@ export async function exportTaxReport({
     responseType: 'text',
   });
   downloadTextFile({
-    fileName: `pajak-${kind.toLowerCase().replace('_', '-')}-${period}.csv`,
+    fileName: `pajak-${kind.toLowerCase().replaceAll('_', '-')}-${period}.csv`,
     content: response.data,
     mimeType: CSV_MIME_TYPE,
   });

@@ -23,6 +23,11 @@ export function TaxReportLinesTable({ report }: TaxReportLinesTableProps) {
   if (report.lines.length === 0) {
     return <p className="text-sm text-slate-500">{t('empty')}</p>;
   }
+  if (report.kind === 'PPH21_NON_EMPLOYEE') {
+    // One BP21 per clinician with an audited identity reveal: its own
+    // component, rendered by the detail in place of this table.
+    return null;
+  }
   if (report.kind === 'PP55_OMZET') {
     const lines = report.lines as Pp55ReportLine[];
     return (
