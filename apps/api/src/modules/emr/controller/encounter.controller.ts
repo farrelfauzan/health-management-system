@@ -85,7 +85,7 @@ export class EncounterController {
 
   @Post()
   @HttpCode(201)
-  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Auth([{ action: 'open', subject: 'Encounter' }])
   @Audited({ resource: 'encounter', action: AuditAction.CREATE })
   @ApiEndpoint({
     summary: 'Open a clinical encounter',

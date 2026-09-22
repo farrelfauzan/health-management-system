@@ -58,6 +58,9 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // rule resolves to nothing and "Daftarkan bayi" never renders for the bidan
   // who is standing next to the baby.
   'create-newborn',
+  // `encounter.open:any` is what shows "Buka encounter" on the admin queue;
+  // without this entry the button silently never renders.
+  'open',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

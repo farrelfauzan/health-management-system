@@ -153,6 +153,14 @@ describe('EncounterService', () => {
     mockActor([{ action: 'write', resource: 'Encounter', scope: 'OWN' }]);
   }
 
+  function mockAdminOpener(): void {
+    mockActor([{ action: 'open', resource: 'Encounter', scope: 'ANY' }]);
+  }
+
+  function mockDoctorOpener(): void {
+    mockActor([{ action: 'open', resource: 'Encounter', scope: 'OWN' }]);
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -300,7 +308,7 @@ describe('EncounterService', () => {
 
   describe('openEncounter', () => {
     it('opens the record from a CHECKED_IN registration', async () => {
-      mockAdminWriter();
+      mockAdminOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
         checkedInRegistration,
       );
@@ -329,7 +337,7 @@ describe('EncounterService', () => {
 
     it('opens the record but flags it unreportable when the doctor has no NIK', async () => {
       const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
-      mockAdminWriter();
+      mockAdminOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
         checkedInRegistration,
       );
@@ -355,7 +363,7 @@ describe('EncounterService', () => {
     });
 
     it('refuses a registration that has not checked in', async () => {
-      mockAdminWriter();
+      mockAdminOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue({
         ...checkedInRegistration,
         status: 'PENDING',
@@ -367,7 +375,7 @@ describe('EncounterService', () => {
     });
 
     it('refuses a second encounter on the same registration', async () => {
-      mockAdminWriter();
+      mockAdminOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
         checkedInRegistration,
       );
@@ -381,7 +389,7 @@ describe('EncounterService', () => {
     });
 
     it('pins an OWN-scoped doctor to their own profile', async () => {
-      mockDoctorWriter();
+      mockDoctorOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
         checkedInRegistration,
       );
@@ -400,7 +408,7 @@ describe('EncounterService', () => {
     });
 
     it('refuses an OWN-scoped doctor naming another practitioner', async () => {
-      mockDoctorWriter();
+      mockDoctorOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
         checkedInRegistration,
       );
@@ -419,7 +427,7 @@ describe('EncounterService', () => {
     });
 
     it('requires a named doctor when opening on someone else behalf', async () => {
-      mockAdminWriter();
+      mockAdminOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue(
         checkedInRegistration,
       );
@@ -435,7 +443,7 @@ describe('EncounterService', () => {
     const midwifeProfile = { id: doctorId, ownerUserId: doctorUser.sub, profession: 'MIDWIFE' };
 
     function mockMidwifeOpening(dateOfBirth: string): void {
-      mockAdminWriter();
+      mockAdminOpener();
       (encounterRepositoryMock.findRegistrationForEncounter as jest.Mock).mockResolvedValue({
         ...checkedInRegistration,
         patient: { ...checkedInRegistration.patient, dateOfBirth: new Date(`${dateOfBirth}T00:00:00.000Z`) },

@@ -17,7 +17,7 @@ const FULL_ACCESS_RULES: AppRule[] = [
 
 const READ_ONLY_RULES: AppRule[] = [{ action: 'read', subject: 'Registration' }];
 
-const CLINICAL_RULES: AppRule[] = [...FULL_ACCESS_RULES, { action: 'write', subject: 'Encounter' }];
+const CLINICAL_RULES: AppRule[] = [...FULL_ACCESS_RULES, { action: 'open', subject: 'Encounter' }];
 
 const OVERRIDE_RULES: AppRule[] = [
   ...FULL_ACCESS_RULES,
@@ -172,9 +172,22 @@ describe('RegistrationsTableRow', () => {
     expect(screen.queryByRole('menuitem', { name: /Open Encounter/ })).not.toBeInTheDocument();
   });
 
-  it('hides the encounter action without the encounter write capability', async () => {
+  it('hides the encounter action without the encounter open capability', async () => {
     const user = userEvent.setup();
     renderRow({ status: 'CHECKED_IN', rules: FULL_ACCESS_RULES, variant: 'admin' });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.queryByRole('menuitem', { name: /Open Encounter/ })).not.toBeInTheDocument();
+  });
+
+  it('hides the encounter action from a holder of encounter write alone', async () => {
+    const user = userEvent.setup();
+    renderRow({
+      status: 'CHECKED_IN',
+      rules: [...FULL_ACCESS_RULES, { action: 'write', subject: 'Encounter' }],
+      variant: 'admin',
+    });
 
     await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
 

@@ -265,6 +265,8 @@ Recorded rather than guessed, because a spike that reports certainty it does not
 
   **Migration note for pilot clinics:** an administrator loses the Documents tab on a patient record and the message content in the chat support view on the deploy that carries this. Neither is recoverable by a setting — they are the decision.
 
+- **Amendment (2026-09-22): opening an encounter is split from writing one.** Excluding `encounter.write:any` from SUPER_ADMIN also took away the only way to open a visit off the admin queue on a doctor's behalf, and the seed creates no ADMIN user, so a freshly seeded clinic had no account that could start a consultation — the SUPER_ADMIN attempt fell into the `:own` branch and failed with "no active doctor profile". Opening now has its own action: `encounter.open:any` (ADMIN, and SUPER_ADMIN through the catalog-wide union) and `encounter.open:own` (DOCTOR, MIDWIFE — wherever `encounter.write:own` is). It is **not** clinical content under this record: the call names the registration and the attending doctor and returns counts, never SOAP, diagnoses or vitals, the same class of data as the queue it is opened from. SUPER_ADMIN still cannot read or write the record it opened. When the ADMIN `encounter.write:any` exemption above is retired, `encounter.open:any` is what keeps the front desk able to start a visit. `seed.sql` backfills `encounter.open:<scope>` for any custom role already holding `encounter.write:<scope>`, so re-seeding does not take the ability away from roles built in the admin UI.
+
 ## D-034: A Midwife Is a Profession on the Clinician Profile, Not a Second Aggregate (P24-T02)
 
 - **Status:** Accepted (Klinik Bidan PRD, `docs/product/prd-satusehat-klinik-bidan.md` §7.1, 12 September 2026).

@@ -51,9 +51,7 @@ export function RegistrationsTableRow({
   // The clinical record starts here: a checked-in patient is one the doctor
   // can see, and this is the only path from the queue into an encounter.
   const canOpenEncounter =
-    variant === 'admin' &&
-    registration.status === 'CHECKED_IN' &&
-    ability.can('write', 'Encounter');
+    variant === 'admin' && registration.status === 'CHECKED_IN' && ability.can('open', 'Encounter');
   const transitionActions: RowAction[] = canUpdate
     ? allowedTargets.flatMap((target) => {
         const isBlockedCheckIn = target === 'CHECKED_IN' && hasNoSessionToday;

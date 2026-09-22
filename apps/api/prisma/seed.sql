@@ -243,6 +243,15 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('encounter.read:own', 'Encounter', 'read', 'OWN', 'Read own clinical encounters'),
     ('encounter.write:any', 'Encounter', 'write', 'ANY', 'Open, record, and close any clinical encounter'),
     ('encounter.write:own', 'Encounter', 'write', 'OWN', 'Open, record, and close own clinical encounters'),
+    -- Opening a visit off the queue is a front-desk act, split from `write`
+    -- so D-033 can keep `encounter.write:any` from SUPER_ADMIN without leaving
+    -- the admin queue with no account able to start a consultation. The call
+    -- names the attending doctor and returns counts, never note content, so
+    -- neither key is clinical content and SUPER_ADMIN picks up `:any` from the
+    -- catalog-wide union. `:own` is the attending clinician opening for
+    -- themselves, granted wherever `encounter.write:own` is.
+    ('encounter.open:any', 'Encounter', 'open', 'ANY', 'Open a clinical encounter on behalf of any doctor'),
+    ('encounter.open:own', 'Encounter', 'open', 'OWN', 'Open a clinical encounter one attends'),
     ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
     ('icd9cm-code.read:any', 'Icd9cmCode', 'read', 'ANY', 'Search the ICD-9-CM procedure code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
@@ -585,6 +594,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- (`recorded_by_id`), so a shared write grant does not blur who wrote what.
     ('ADMIN', 'encounter.read:any'),
     ('ADMIN', 'encounter.write:any'),
+    ('ADMIN', 'encounter.open:any'),
     ('ADMIN', 'icd10-code.read:any'),
     ('ADMIN', 'icd9cm-code.read:any'),
     ('ADMIN', 'medication.read:any'),
@@ -787,6 +797,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- relationship exists.
     ('DOCTOR', 'encounter.read:own'),
     ('DOCTOR', 'encounter.write:own'),
+    ('DOCTOR', 'encounter.open:own'),
     -- P21-T04. What SATUSEHAT holds for a visit is clinical content, so the
     -- comparison is its own OWN-scoped key rather than a mode of
     -- `encounter.read`: ADMIN holds `encounter.read:any`, and reusing it would
@@ -1075,6 +1086,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'registration.read:any'),
     ('MIDWIFE', 'encounter.read:own'),
     ('MIDWIFE', 'encounter.write:own'),
+    ('MIDWIFE', 'encounter.open:own'),
     ('MIDWIFE', 'satusehat.record.read:own'),
     ('MIDWIFE', 'satusehat.kyc.verify:any'),
     ('MIDWIFE', 'icd10-code.read:any'),
@@ -1168,6 +1180,31 @@ SELECT
 FROM combined_role_permissions crp
 JOIN "roles" r ON r."code" = crp.role_code
 JOIN "permissions" p ON p."permission_key" = crp.permission_key
+ON CONFLICT ("role_id", "permission_id") DO NOTHING;
+
+-- `encounter.open` split from `encounter.write`. A custom role built in the
+-- admin UI before the split could open encounters through its `write` grant;
+-- give it the matching `open` scope so a re-seed does not take that away.
+INSERT INTO "role_permissions" (
+  "id",
+  "role_id",
+  "permission_id",
+  "created_at"
+)
+SELECT
+  md5('role_permission:' || r."code" || ':' || open_p."permission_key")::uuid,
+  r."id",
+  open_p."id",
+  NOW()
+FROM "role_permissions" rp
+JOIN "roles" r ON r."id" = rp."role_id"
+JOIN "permissions" write_p ON write_p."id" = rp."permission_id"
+JOIN "permissions" open_p
+  ON open_p."resource" = 'Encounter'
+  AND open_p."action" = 'open'
+  AND open_p."scope" = write_p."scope"
+WHERE write_p."resource" = 'Encounter'
+  AND write_p."action" = 'write'
 ON CONFLICT ("role_id", "permission_id") DO NOTHING;
 
 DELETE FROM "role_permissions" rp
