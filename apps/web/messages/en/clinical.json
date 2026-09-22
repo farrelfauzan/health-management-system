@@ -746,7 +746,10 @@
         "professionDescription": "Decides the account's role. It cannot change once this clinician has encounters, admissions or prescriptions.",
         "npwp": "Clinician NPWP",
         "npwpHelp": "The clinician’s own NPWP for the PPh 21 withholding slip on their fees. Leave blank if none: the NIK serves as NPWP.",
-        "npwpPlaceholder": "15–16 digits"
+        "npwpPlaceholder": "15–16 digits",
+        "ptkpStatus": "PTKP status",
+        "ptkpStatusHelp": "Needed only for the Coretax BP21 file of their PPh 21. It does not change the tax, which is 50% of the fee at the Pasal 17 rates.",
+        "ptkpStatusNone": "Not recorded"
       },
       "identity": "Practitioner Identity",
       "reveal": "Reveal",
@@ -970,7 +973,19 @@
         }
       },
       "npwp": "NPWP",
-      "npwpMissing": "None (NIK is used)"
+      "npwpMissing": "None (NIK is used)",
+      "ptkpStatus": "PTKP status",
+      "ptkpStatusMissing": "Not recorded",
+      "ptkpStatuses": {
+        "TK_0": "TK/0 — single, no dependants",
+        "TK_1": "TK/1 — single, 1 dependant",
+        "TK_2": "TK/2 — single, 2 dependants",
+        "TK_3": "TK/3 — single, 3 dependants",
+        "K_0": "K/0 — married, no dependants",
+        "K_1": "K/1 — married, 1 dependant",
+        "K_2": "K/2 — married, 2 dependants",
+        "K_3": "K/3 — married, 3 dependants"
+      }
     },
     "portal": {
       "documents": {

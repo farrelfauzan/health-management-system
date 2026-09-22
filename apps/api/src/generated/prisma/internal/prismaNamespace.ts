@@ -11137,6 +11137,7 @@ export const DoctorProfileScalarFieldEnum = {
   nikLast4: 'nikLast4',
   nikKeyVersion: 'nikKeyVersion',
   npwp: 'npwp',
+  ptkpStatus: 'ptkpStatus',
   satusehatPractitionerId: 'satusehatPractitionerId',
   bpjsDoctorCode: 'bpjsDoctorCode',
   title: 'title',
@@ -13572,6 +13573,20 @@ export type EnumClinicianProfessionFieldRefInput<$PrismaModel> = FieldRefInputTy
  * Reference to a field of type 'ClinicianProfession[]'
  */
 export type ListEnumClinicianProfessionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClinicianProfession[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PtkpStatus'
+ */
+export type EnumPtkpStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PtkpStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'PtkpStatus[]'
+ */
+export type ListEnumPtkpStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PtkpStatus[]'>
     
 
 

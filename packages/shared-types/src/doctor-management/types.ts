@@ -1,5 +1,6 @@
 import type {
   ClinicianProfessionValue,
+  ClinicianPtkpStatusValue,
   DoctorAuthorityGrantKindValue,
   DoctorAuthorityKindValue,
   DoctorEducationInput,
@@ -41,6 +42,7 @@ export type CreateDoctorRecordPayload = {
   degrees?: string;
   nik: string;
   npwp?: string;
+  ptkpStatus?: ClinicianPtkpStatusValue;
   licenses?: DoctorLicenseWritePayload[];
   educations?: DoctorEducationInput[];
   ownerUserId?: string;
@@ -58,6 +60,7 @@ export type UpdateDoctorRecordPayload = {
   degrees?: string | null;
   nik?: string;
   npwp?: string | null;
+  ptkpStatus?: ClinicianPtkpStatusValue | null;
   /** When present, replaces the whole active license list. */
   licenses?: DoctorLicenseWritePayload[];
   /** When present, replaces the whole active education list. */
@@ -94,6 +97,8 @@ export type DoctorRecord = {
   nikLast4: string | null;
   /** The clinician's own NPWP, digits only, for the BP21 on their fees (P27-T07). */
   npwp: string | null;
+  /** PTKP status for the Coretax BP21 export (P27-T08). */
+  ptkpStatus: ClinicianPtkpStatusValue | null;
   satusehatPractitionerId: string | null;
   ownerUserId: string | null;
   /** The doctor's email, read from their account — the only stored copy. */

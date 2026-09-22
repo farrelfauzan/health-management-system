@@ -8,6 +8,7 @@
 import type { UpdateDoctorDtoEducationsItem } from './updateDoctorDtoEducationsItem';
 import type { UpdateDoctorDtoLicensesItem } from './updateDoctorDtoLicensesItem';
 import type { UpdateDoctorDtoProfession } from './updateDoctorDtoProfession';
+import type { UpdateDoctorDtoPtkpStatus } from './updateDoctorDtoPtkpStatus';
 
 export interface UpdateDoctorDto {
   /**
@@ -41,6 +42,8 @@ export interface UpdateDoctorDto {
   nik?: string;
   /** @nullable */
   npwp?: string | null;
+  /** @nullable */
+  ptkpStatus?: UpdateDoctorDtoPtkpStatus;
   /** @maxItems 20 */
   licenses?: UpdateDoctorDtoLicensesItem[];
   /** @maxItems 20 */

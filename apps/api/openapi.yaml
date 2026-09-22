@@ -53604,6 +53604,172 @@ paths:
         - bearer: []
       summary: A signed link to a finalized report's PDF
       tags: *a76
+  /api/v1/tax/reports/{id}/coretax/bp21/validation:
+    get:
+      operationId: TaxReportCoretaxController_validateBp21_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: P27-T08. Every problem that would stop the BP21 file — the clinic
+            NPWP (16 digits) and NITKU (22), and per clinician a 16-digit NPWP
+            or NIK, a PTKP status and a positive gross — listed at once. Reads
+            no identifier back and is not audited. 409
+            `TAX_REPORT_NOT_APPLICABLE` for another report kind,
+            `TAX_REPORT_NOT_FINALIZED` for a draft.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reportId:
+                        type: string
+                      period:
+                        type: string
+                      template:
+                        type: object
+                        properties:
+                          format:
+                            type: string
+                          version:
+                            type: string
+                          title:
+                            type: string
+                          publishedOn:
+                            type: string
+                          sourceUrl:
+                            type: string
+                          catalogueUrl:
+                            type: string
+                          sha256:
+                            type: string
+                        required:
+                          - format
+                          - version
+                          - title
+                          - publishedOn
+                          - sourceUrl
+                          - catalogueUrl
+                          - sha256
+                      isExportable:
+                        type: boolean
+                      lineCount:
+                        type: integer
+                      skippedCount:
+                        type: integer
+                      issues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            field:
+                              type: string
+                            message:
+                              type: string
+                            subjectId:
+                              type: string
+                            subjectLabel:
+                              type: string
+                          required:
+                            - code
+                            - field
+                            - message
+                            - subjectId
+                            - subjectLabel
+                    required:
+                      - reportId
+                      - period
+                      - template
+                      - isExportable
+                      - lineCount
+                      - skippedCount
+                      - issues
+                required:
+                  - data
+                example:
+                  data:
+                    reportId: 7c6b5a4f-3e2d-4c1b-8a09-f8e7d6c5b4a3
+                    period: 2026-10
+                    template:
+                      format: BP21
+                      version: V4
+                      title: BP21 Excel to XML v.4
+                      publishedOn: 2025-04-17
+                      sourceUrl: https://pajak.go.id/sites/default/files/2025-04/BP21%20Excel%20to%20XML%20v.4.xlsx
+                      catalogueUrl: https://www.pajak.go.id/id/node/112031
+                      sha256: 511bec3d57f61f2273112fdbae66b373be372df12c3ae13146d8373d1ca840cf
+                    isExportable: false
+                    lineCount: 0
+                    skippedCount: 0
+                    issues:
+                      - code: PTKP_STATUS_MISSING
+                        field: ptkpStatus
+                        message: The BP21 template requires a PTKP status
+                        subjectId: 4f3e2d1c-0b9a-4877-8665-544332211000
+                        subjectLabel: dr. Sari Wulandari
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Check a PPh 21 report against the Coretax BP21 template
+      tags: &a77
+        - Tax Reports
+  /api/v1/tax/reports/{id}/coretax/bp21:
+    get:
+      description: P27-T08. The `Bp21Bulk` file DJP's BP21 v4 converter produces
+        (pajak.go.id node 112031), one `Bp21` per clinician with the full NPWP
+        or NIK. 422 `CORETAX_EXPORT_INVALID` with `details` listing every
+        problem; 409 `TAX_REPORT_NOT_FINALIZED` for a draft. Audited as an
+        export and as `DOCTOR_IDENTIFIER_UNMASKED`, without the values.
+      operationId: TaxReportCoretaxController_exportBp21_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: templateVersion
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - V4
+      responses:
+        "200":
+          description: The BP21 bulk-import XML.
+          content:
+            application/xml:
+              schema:
+                type: string
+                format: binary
+      summary: Export a finalized PPh 21 report as a Coretax BP21 XML file
+      tags: *a77
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -53673,7 +53839,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a77
+      tags: &a78
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -53744,7 +53910,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a77
+      tags: *a78
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -53852,7 +54018,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a77
+      tags: *a78
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -53947,7 +54113,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a77
+      tags: *a78
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -54006,7 +54172,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a78
+      tags: &a79
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -54197,7 +54363,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a78
+      tags: *a79
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -54369,7 +54535,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a78
+      tags: *a79
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -54473,7 +54639,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a78
+      tags: *a79
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -54598,7 +54764,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a78
+      tags: *a79
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -54872,7 +55038,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a79
+      tags: &a80
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -54987,7 +55153,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a79
+      tags: *a80
   /api/v1/satusehat/kyc/status:
     get:
       operationId: SatusehatKycController_getStatus_v1
@@ -55045,7 +55211,7 @@ paths:
       security:
         - bearer: []
       summary: Whether I can start a SATUSEHAT KYC verification
-      tags: &a80
+      tags: &a81
         - SATUSEHAT
   /api/v1/satusehat/kyc/sessions:
     post:
@@ -55123,7 +55289,7 @@ paths:
       security:
         - bearer: []
       summary: Start a SATUSEHAT KYC verification
-      tags: *a80
+      tags: *a81
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -55237,7 +55403,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a81
+      tags: &a82
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -55375,7 +55541,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a81
+      tags: *a82
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -55434,7 +55600,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -55500,7 +55666,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -55588,7 +55754,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a82
+      tags: &a83
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -55655,7 +55821,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -55749,7 +55915,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -55855,7 +56021,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -55943,7 +56109,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a83
+      tags: &a84
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -56037,7 +56203,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a83
+      tags: *a84
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -56126,7 +56292,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a83
+      tags: *a84
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -56220,7 +56386,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a83
+      tags: *a84
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -56520,7 +56686,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a84
+      tags: &a85
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -56629,7 +56795,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -56876,7 +57042,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a85
+      tags: &a86
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -57017,7 +57183,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a85
+      tags: *a86
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -57076,7 +57242,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a85
+      tags: *a86
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -57142,7 +57308,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a85
+      tags: *a86
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -57212,7 +57378,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a85
+      tags: *a86
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -57314,7 +57480,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a85
+      tags: *a86
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -57393,7 +57559,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a86
+      tags: &a87
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -57510,7 +57676,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a86
+      tags: *a87
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -57633,7 +57799,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a87
+      tags: &a88
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -57720,7 +57886,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a87
+      tags: *a88
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -57800,7 +57966,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a87
+      tags: *a88
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -57919,7 +58085,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a87
+      tags: *a88
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -58018,7 +58184,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a87
+      tags: *a88
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -58094,7 +58260,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a87
+      tags: *a88
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -58240,7 +58406,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a87
+      tags: *a88
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -58332,7 +58498,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a87
+      tags: *a88
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -58424,7 +58590,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a87
+      tags: *a88
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -58697,7 +58863,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort ibu for a month
-      tags: &a88
+      tags: &a89
         - Maternal Reports
   /api/v1/maternal-reports/kohort-bayi:
     get:
@@ -58946,7 +59112,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort bayi for a month
-      tags: *a88
+      tags: *a89
   /api/v1/maternal-reports/kohort-kb:
     get:
       operationId: MaternalReportsController_getKohortKb_v1
@@ -59193,7 +59359,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort KB for a month
-      tags: *a88
+      tags: *a89
   /api/v1/maternal-reports/monthly-kia:
     get:
       operationId: MaternalReportsController_getMonthlyKia_v1
@@ -59338,7 +59504,7 @@ paths:
       security:
         - bearer: []
       summary: Monthly KIA report for a month
-      tags: *a88
+      tags: *a89
   /api/v1/maternal-reports/births-deaths:
     get:
       operationId: MaternalReportsController_getBirthsDeaths_v1
@@ -59534,7 +59700,7 @@ paths:
       security:
         - bearer: []
       summary: Births and deaths report for a month
-      tags: *a88
+      tags: *a89
 info:
   title: HMS API
   description: Health Management System API
@@ -61931,6 +62097,17 @@ components:
           type: string
         npwp:
           type: string
+        ptkpStatus:
+          type: string
+          enum:
+            - TK_0
+            - TK_1
+            - TK_2
+            - TK_3
+            - K_0
+            - K_1
+            - K_2
+            - K_3
         licenses:
           type: array
           maxItems: 20
@@ -62040,6 +62217,18 @@ components:
           type: string
         npwp:
           type: string
+          nullable: true
+        ptkpStatus:
+          type: string
+          enum:
+            - TK_0
+            - TK_1
+            - TK_2
+            - TK_3
+            - K_0
+            - K_1
+            - K_2
+            - K_3
           nullable: true
         licenses:
           type: array

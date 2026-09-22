@@ -8,6 +8,7 @@
 import type { CreateDoctorDtoEducationsItem } from './createDoctorDtoEducationsItem';
 import type { CreateDoctorDtoLicensesItem } from './createDoctorDtoLicensesItem';
 import type { CreateDoctorDtoProfession } from './createDoctorDtoProfession';
+import type { CreateDoctorDtoPtkpStatus } from './createDoctorDtoPtkpStatus';
 
 export interface CreateDoctorDto {
   /**
@@ -45,6 +46,7 @@ export interface CreateDoctorDto {
   degrees?: string[];
   nik: string;
   npwp?: string;
+  ptkpStatus?: CreateDoctorDtoPtkpStatus;
   /** @maxItems 20 */
   licenses?: CreateDoctorDtoLicensesItem[];
   /** @maxItems 20 */

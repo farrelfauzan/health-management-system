@@ -746,7 +746,10 @@
         "professionDescription": "Menentukan peran akun. Tidak dapat diubah setelah tenaga klinis ini memiliki kunjungan, rawat inap, atau resep.",
         "npwp": "NPWP tenaga klinis",
         "npwpHelp": "NPWP pribadi untuk bukti potong PPh 21 atas jasa medis. Kosongkan bila belum ada: NIK dipakai sebagai NPWP.",
-        "npwpPlaceholder": "15–16 digit"
+        "npwpPlaceholder": "15–16 digit",
+        "ptkpStatus": "Status PTKP",
+        "ptkpStatusHelp": "Hanya dibutuhkan untuk file BP21 Coretax atas PPh 21-nya. Tidak mengubah pajak, yaitu 50% jasa dikali tarif Pasal 17.",
+        "ptkpStatusNone": "Belum dicatat"
       },
       "identity": "Identitas Tenaga Medis",
       "reveal": "Tampilkan",
@@ -970,7 +973,19 @@
         }
       },
       "npwp": "NPWP",
-      "npwpMissing": "Belum ada (NIK dipakai)"
+      "npwpMissing": "Belum ada (NIK dipakai)",
+      "ptkpStatus": "Status PTKP",
+      "ptkpStatusMissing": "Belum dicatat",
+      "ptkpStatuses": {
+        "TK_0": "TK/0 — tidak kawin, tanpa tanggungan",
+        "TK_1": "TK/1 — tidak kawin, 1 tanggungan",
+        "TK_2": "TK/2 — tidak kawin, 2 tanggungan",
+        "TK_3": "TK/3 — tidak kawin, 3 tanggungan",
+        "K_0": "K/0 — kawin, tanpa tanggungan",
+        "K_1": "K/1 — kawin, 1 tanggungan",
+        "K_2": "K/2 — kawin, 2 tanggungan",
+        "K_3": "K/3 — kawin, 3 tanggungan"
+      }
     },
     "portal": {
       "documents": {

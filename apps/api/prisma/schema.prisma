@@ -625,6 +625,22 @@ enum SatusehatServiceClass {
 /// profession on the clinician profile, not a second aggregate: every foreign
 /// key into `DoctorProfile` and every access check keys on the profile, so
 /// they already work for both.
+/// PTKP status on a BP21 (P27-T08), as DJP's BP21 v4 schema enumerates it:
+/// TK = tidak kawin, K = kawin, followed by the number of dependants. The
+/// Coretax label is `TK/0`; the enum spells the slash as an underscore.
+enum PtkpStatus {
+  TK_0
+  TK_1
+  TK_2
+  TK_3
+  K_0
+  K_1
+  K_2
+  K_3
+
+  @@map("ptkp_status")
+}
+
 enum ClinicianProfession {
   DOCTOR
   MIDWIFE
@@ -1994,26 +2010,31 @@ model DoctorProfile {
   // last four digits for masked display. See
   // docs/post-mvp/patient-identifiers.md — only STR/SIP numbers are
   // registry-public and stay plaintext, on DoctorLicense.
-  nikCiphertext           String? @map("nik_ciphertext")
-  nikIndex                String? @unique @map("nik_index")
-  nikLast4                String? @map("nik_last4")
-  nikKeyVersion           Int?    @map("nik_key_version") @db.SmallInt
+  nikCiphertext           String?     @map("nik_ciphertext")
+  nikIndex                String?     @unique @map("nik_index")
+  nikLast4                String?     @map("nik_last4")
+  nikKeyVersion           Int?        @map("nik_key_version") @db.SmallInt
   // The clinician's own NPWP, digits only, for the BP21 the clinic issues on
   // their jasa medis (P27-T07). Plaintext: a tax number is printed on every
   // bukti potong and is not the citizen identifier the NIK is. Nullable —
   // an individual's NIK serves as NPWP, so the withholding draft falls back
   // to the encrypted NIK above.
-  npwp                    String? @db.VarChar(16)
+  npwp                    String?     @db.VarChar(16)
+  // The clinician's PTKP status as the BP21 states it (P27-T08). Coretax's
+  // BP21 schema requires it on every line even though the bukan pegawai tax
+  // (50% x Pasal 17, non-cumulative) never reads it. Nullable: unknown until
+  // the clinic asks, and a missing status blocks only the Coretax XML export.
+  ptkpStatus              PtkpStatus? @map("ptkp_status")
   // IHS practitioner number, filled after the first successful SATUSEHAT
   // practitioner lookup. Plaintext: it is a pseudonymous Kemenkes-issued
   // identifier, read on every outbound FHIR call and never searched by value.
-  satusehatPractitionerId String? @map("satusehat_practitioner_id")
+  satusehatPractitionerId String?     @map("satusehat_practitioner_id")
   // BPJS PCare kdDokter, set by an admin from the synced DOKTER reference
   // catalog (P11-T03). Plaintext for the same reason as the IHS number: a
   // pseudonymous facility-scoped code read on every pendaftaran/kunjungan
   // submission. Nullable — an unmapped doctor fails a BPJS submission fast
   // with a readable message instead of sending garbage.
-  bpjsDoctorCode          String? @map("bpjs_doctor_code")
+  bpjsDoctorCode          String?     @map("bpjs_doctor_code")
 
   // Listing/profile fields clinics expect on doctor directories (P7-T04).
   // Specialty remains the existing Specialty reference table.

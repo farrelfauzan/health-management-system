@@ -58,6 +58,16 @@ export function DoctorIdentifiersCard({ doctor, isSatusehatEnabled }: DoctorIden
             </dd>
           </div>
           <div>
+            <dt className="font-heading text-xs font-medium text-slate-600">
+              {t('doctors.ptkpStatus')}
+            </dt>
+            <dd className="font-mono text-sm text-slate-800">
+              {doctor.ptkpStatus
+                ? t(`doctors.ptkpStatuses.${doctor.ptkpStatus}`)
+                : t('doctors.ptkpStatusMissing')}
+            </dd>
+          </div>
+          <div>
             <dt className="font-heading text-xs font-medium text-slate-600">SATUSEHAT (IHS)</dt>
             <dd className="font-mono text-sm text-slate-800">
               {doctor.satusehatPractitionerId ?? t('doctors.notLinked')}
