@@ -13170,6 +13170,10 @@ paths:
                         type: boolean
                       logoUrl:
                         type: string
+                      reportingPuskesmasName:
+                        type: string
+                      reportingPuskesmasCode:
+                        type: string
                       updatedAt:
                         type: string
                     required:
@@ -13182,6 +13186,8 @@ paths:
                       - taxId
                       - hasLogo
                       - logoUrl
+                      - reportingPuskesmasName
+                      - reportingPuskesmasCode
                       - updatedAt
                 required:
                   - data
@@ -13196,6 +13202,8 @@ paths:
                     taxId: 01.234.567.8-901.000
                     hasLogo: true
                     logoUrl: https://storage.example/clinic-profile/logo/stored/…?X-Amz-Signature=…
+                    reportingPuskesmasName: Puskesmas Cibeunying
+                    reportingPuskesmasCode: P3273110201
                     updatedAt: 2026-09-18T02:15:00.000Z
         "401":
           description: Authentication is required.
@@ -13277,6 +13285,10 @@ paths:
                         type: boolean
                       logoUrl:
                         type: string
+                      reportingPuskesmasName:
+                        type: string
+                      reportingPuskesmasCode:
+                        type: string
                       updatedAt:
                         type: string
                     required:
@@ -13289,6 +13301,8 @@ paths:
                       - taxId
                       - hasLogo
                       - logoUrl
+                      - reportingPuskesmasName
+                      - reportingPuskesmasCode
                       - updatedAt
                   message:
                     type: string
@@ -13306,6 +13320,8 @@ paths:
                     taxId: 01.234.567.8-901.000
                     hasLogo: true
                     logoUrl: https://storage.example/clinic-profile/logo/stored/…?X-Amz-Signature=…
+                    reportingPuskesmasName: Puskesmas Cibeunying
+                    reportingPuskesmasCode: P3273110201
                     updatedAt: 2026-09-18T02:15:00.000Z
                   message: Clinic profile updated
         "400":
@@ -58117,6 +58133,1091 @@ paths:
       summary: Check API liveness
       tags:
         - Health
+  /api/v1/maternal-reports/kohort-ibu:
+    get:
+      operationId: MaternalReportsController_getKohortIbu_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+        - name: villageCode
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 20
+            type: string
+        - name: format
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - json
+              - csv
+              - pdf
+      responses:
+        "200":
+          description: Every pregnancy active in the month, grouped by desa/kelurahan with
+            the mothers without a village under "Tanpa desa", in the Kemenkes
+            2020 53-column order (D-040). `villageCode` narrows to one village.
+            `format` answers the JSON preview by default; `csv` streams UTF-8
+            with BOM (`text/csv`), `pdf` an A4 landscape PDF
+            (`application/pdf`). Both file formats are audited as an export.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      register:
+                        type: string
+                      header:
+                        type: object
+                        properties:
+                          clinicName:
+                            type: string
+                          puskesmasName:
+                            type: string
+                          puskesmasCode:
+                            type: string
+                          month:
+                            type: string
+                          monthLabel:
+                            type: string
+                          generatedAt:
+                            type: string
+                        required:
+                          - clinicName
+                          - puskesmasName
+                          - puskesmasCode
+                          - month
+                          - monthLabel
+                          - generatedAt
+                      villageCode:
+                        nullable: true
+                      isProvisionalLayout:
+                        type: boolean
+                      columns:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field:
+                              type: string
+                            label:
+                              type: string
+                          required:
+                            - field
+                            - label
+                      villages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                      groups:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            villageCode:
+                              type: string
+                            villageName:
+                              type: string
+                            rows:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  villageCode:
+                                    type: string
+                                  villageName:
+                                    type: string
+                                  values:
+                                    type: array
+                                    items:
+                                      type: string
+                                required:
+                                  - id
+                                  - villageCode
+                                  - villageName
+                                  - values
+                          required:
+                            - villageCode
+                            - villageName
+                            - rows
+                      totalRows:
+                        type: integer
+                    required:
+                      - register
+                      - header
+                      - villageCode
+                      - isProvisionalLayout
+                      - columns
+                      - villages
+                      - groups
+                      - totalRows
+                required:
+                  - data
+                example:
+                  data:
+                    register: kohort-ibu
+                    header:
+                      clinicName: Klinik Bidan Sehati
+                      puskesmasName: Puskesmas Cibeunying
+                      puskesmasCode: P3273110201
+                      month: 2026-10
+                      monthLabel: Oktober 2026
+                      generatedAt: 2026-11-02T01:15:00.000Z
+                    villageCode: null
+                    isProvisionalLayout: false
+                    columns:
+                      - field: no
+                        label: NO
+                      - field: motherName
+                        label: NAMA IBU
+                      - field: nik
+                        label: NIK
+                    villages:
+                      - code: 32.73.11.1001
+                        name: Cihaurgeulis
+                      - code: null
+                        name: Tanpa desa
+                    groups:
+                      - villageCode: 32.73.11.1001
+                        villageName: Cihaurgeulis
+                        rows:
+                          - id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                            villageCode: 32.73.11.1001
+                            villageName: Cihaurgeulis
+                            values:
+                              - "1"
+                              - Siti Aminah
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - K1M
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                    totalRows: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Register kohort ibu for a month
+      tags: &a87
+        - Maternal Reports
+  /api/v1/maternal-reports/kohort-bayi:
+    get:
+      operationId: MaternalReportsController_getKohortBayi_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+        - name: villageCode
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 20
+            type: string
+        - name: format
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - json
+              - csv
+              - pdf
+      responses:
+        "200":
+          description: Every baby in her neonatal period during the month — birth
+            essentials, HB0, vitamin K1, KN1–KN3 and the SHK sample — in a
+            provisional layout (D-040). `format` answers the JSON preview by
+            default; `csv` streams UTF-8 with BOM (`text/csv`), `pdf` an A4
+            landscape PDF (`application/pdf`). Both file formats are audited as
+            an export.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      register:
+                        type: string
+                      header:
+                        type: object
+                        properties:
+                          clinicName:
+                            type: string
+                          puskesmasName:
+                            type: string
+                          puskesmasCode:
+                            type: string
+                          month:
+                            type: string
+                          monthLabel:
+                            type: string
+                          generatedAt:
+                            type: string
+                        required:
+                          - clinicName
+                          - puskesmasName
+                          - puskesmasCode
+                          - month
+                          - monthLabel
+                          - generatedAt
+                      villageCode:
+                        nullable: true
+                      isProvisionalLayout:
+                        type: boolean
+                      columns:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field:
+                              type: string
+                            label:
+                              type: string
+                          required:
+                            - field
+                            - label
+                      villages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                      groups:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            villageCode:
+                              type: string
+                            villageName:
+                              type: string
+                            rows:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  villageCode:
+                                    type: string
+                                  villageName:
+                                    type: string
+                                  values:
+                                    type: array
+                                    items:
+                                      type: string
+                                required:
+                                  - id
+                                  - villageCode
+                                  - villageName
+                                  - values
+                          required:
+                            - villageCode
+                            - villageName
+                            - rows
+                      totalRows:
+                        type: integer
+                    required:
+                      - register
+                      - header
+                      - villageCode
+                      - isProvisionalLayout
+                      - columns
+                      - villages
+                      - groups
+                      - totalRows
+                required:
+                  - data
+                example:
+                  data:
+                    register: kohort-bayi
+                    header:
+                      clinicName: Klinik Bidan Sehati
+                      puskesmasName: Puskesmas Cibeunying
+                      puskesmasCode: P3273110201
+                      month: 2026-10
+                      monthLabel: Oktober 2026
+                      generatedAt: 2026-11-02T01:15:00.000Z
+                    villageCode: null
+                    isProvisionalLayout: true
+                    columns:
+                      - field: no
+                        label: NO
+                      - field: motherName
+                        label: NAMA IBU
+                      - field: nik
+                        label: NIK
+                    villages:
+                      - code: 32.73.11.1001
+                        name: Cihaurgeulis
+                      - code: null
+                        name: Tanpa desa
+                    groups:
+                      - villageCode: 32.73.11.1001
+                        villageName: Cihaurgeulis
+                        rows:
+                          - id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                            villageCode: 32.73.11.1001
+                            villageName: Cihaurgeulis
+                            values:
+                              - "1"
+                              - Siti Aminah
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - K1M
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                    totalRows: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Register kohort bayi for a month
+      tags: *a87
+  /api/v1/maternal-reports/kohort-kb:
+    get:
+      operationId: MaternalReportsController_getKohortKb_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+        - name: villageCode
+          required: false
+          in: query
+          schema:
+            minLength: 1
+            maxLength: 20
+            type: string
+        - name: format
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - json
+              - csv
+              - pdf
+      responses:
+        "200":
+          description: Every family planning course live in the month with its services,
+            in a provisional layout (D-040). `format` answers the JSON preview
+            by default; `csv` streams UTF-8 with BOM (`text/csv`), `pdf` an A4
+            landscape PDF (`application/pdf`). Both file formats are audited as
+            an export.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      register:
+                        type: string
+                      header:
+                        type: object
+                        properties:
+                          clinicName:
+                            type: string
+                          puskesmasName:
+                            type: string
+                          puskesmasCode:
+                            type: string
+                          month:
+                            type: string
+                          monthLabel:
+                            type: string
+                          generatedAt:
+                            type: string
+                        required:
+                          - clinicName
+                          - puskesmasName
+                          - puskesmasCode
+                          - month
+                          - monthLabel
+                          - generatedAt
+                      villageCode:
+                        nullable: true
+                      isProvisionalLayout:
+                        type: boolean
+                      columns:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            field:
+                              type: string
+                            label:
+                              type: string
+                          required:
+                            - field
+                            - label
+                      villages:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            name:
+                              type: string
+                          required:
+                            - code
+                            - name
+                      groups:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            villageCode:
+                              type: string
+                            villageName:
+                              type: string
+                            rows:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  villageCode:
+                                    type: string
+                                  villageName:
+                                    type: string
+                                  values:
+                                    type: array
+                                    items:
+                                      type: string
+                                required:
+                                  - id
+                                  - villageCode
+                                  - villageName
+                                  - values
+                          required:
+                            - villageCode
+                            - villageName
+                            - rows
+                      totalRows:
+                        type: integer
+                    required:
+                      - register
+                      - header
+                      - villageCode
+                      - isProvisionalLayout
+                      - columns
+                      - villages
+                      - groups
+                      - totalRows
+                required:
+                  - data
+                example:
+                  data:
+                    register: kohort-kb
+                    header:
+                      clinicName: Klinik Bidan Sehati
+                      puskesmasName: Puskesmas Cibeunying
+                      puskesmasCode: P3273110201
+                      month: 2026-10
+                      monthLabel: Oktober 2026
+                      generatedAt: 2026-11-02T01:15:00.000Z
+                    villageCode: null
+                    isProvisionalLayout: true
+                    columns:
+                      - field: no
+                        label: NO
+                      - field: motherName
+                        label: NAMA IBU
+                      - field: nik
+                        label: NIK
+                    villages:
+                      - code: 32.73.11.1001
+                        name: Cihaurgeulis
+                      - code: null
+                        name: Tanpa desa
+                    groups:
+                      - villageCode: 32.73.11.1001
+                        villageName: Cihaurgeulis
+                        rows:
+                          - id: 7c1d5e83-2a64-4f19-b8d3-91e4a6c05b72
+                            villageCode: 32.73.11.1001
+                            villageName: Cihaurgeulis
+                            values:
+                              - "1"
+                              - Siti Aminah
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - K1M
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                              - ""
+                    totalRows: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Register kohort KB for a month
+      tags: *a87
+  /api/v1/maternal-reports/monthly-kia:
+    get:
+      operationId: MaternalReportsController_getMonthlyKia_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+        - name: format
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - json
+              - csv
+              - pdf
+      responses:
+        "200":
+          description: The provisional indicator set (K1 = K1A + K1M, K4, K6, deliveries,
+            KF lengkap, KN1, KN lengkap, KB new and active per method, HB0) and
+            the LB3-KIA antenatal laboratory block, each with the rule it was
+            counted by (D-040). `format` answers the JSON preview by default;
+            `csv` streams UTF-8 with BOM (`text/csv`), `pdf` an A4 landscape PDF
+            (`application/pdf`). Both file formats are audited as an export.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      header:
+                        type: object
+                        properties:
+                          clinicName:
+                            type: string
+                          puskesmasName:
+                            type: string
+                          puskesmasCode:
+                            type: string
+                          month:
+                            type: string
+                          monthLabel:
+                            type: string
+                          generatedAt:
+                            type: string
+                        required:
+                          - clinicName
+                          - puskesmasName
+                          - puskesmasCode
+                          - month
+                          - monthLabel
+                          - generatedAt
+                      isProvisionalLayout:
+                        type: boolean
+                      indicators:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            label:
+                              type: string
+                            definition:
+                              type: string
+                            value:
+                              type: integer
+                          required:
+                            - id
+                            - label
+                            - definition
+                            - value
+                      antenatalLab:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            label:
+                              type: string
+                            definition:
+                              type: string
+                            value:
+                              type: integer
+                          required:
+                            - id
+                            - label
+                            - definition
+                            - value
+                    required:
+                      - header
+                      - isProvisionalLayout
+                      - indicators
+                      - antenatalLab
+                required:
+                  - data
+                example:
+                  data:
+                    header:
+                      clinicName: Klinik Bidan Sehati
+                      puskesmasName: Puskesmas Cibeunying
+                      puskesmasCode: P3273110201
+                      month: 2026-10
+                      monthLabel: Oktober 2026
+                      generatedAt: 2026-11-02T01:15:00.000Z
+                    isProvisionalLayout: true
+                    indicators:
+                      - id: k1
+                        label: K1 (K1 akses + K1 murni)
+                        definition: Kunjungan antenatal berkode K1A atau K1M yang dimulai pada bulan
+                          laporan.
+                        value: 12
+                    antenatalLab:
+                      - id: hbK1Examined
+                        label: Diperiksa Hb K1
+                        definition: Ibu hamil dengan hasil Hb pada kunjungan K1A/K1M bulan laporan.
+                        value: 9
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Monthly KIA report for a month
+      tags: *a87
+  /api/v1/maternal-reports/births-deaths:
+    get:
+      operationId: MaternalReportsController_getBirthsDeaths_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+        - name: format
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - json
+              - csv
+              - pdf
+      responses:
+        "200":
+          description: Live births and stillbirths from the newborn records, and deaths
+            from stays discharged DIED, attributed to the mother, the newborn or
+            another patient. Deaths outside the clinic are not captured, and the
+            header says so. `format` answers the JSON preview by default; `csv`
+            streams UTF-8 with BOM (`text/csv`), `pdf` an A4 landscape PDF
+            (`application/pdf`). Both file formats are audited as an export.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      header:
+                        type: object
+                        properties:
+                          clinicName:
+                            type: string
+                          puskesmasName:
+                            type: string
+                          puskesmasCode:
+                            type: string
+                          month:
+                            type: string
+                          monthLabel:
+                            type: string
+                          generatedAt:
+                            type: string
+                        required:
+                          - clinicName
+                          - puskesmasName
+                          - puskesmasCode
+                          - month
+                          - monthLabel
+                          - generatedAt
+                      coverageNote:
+                        type: string
+                      summary:
+                        type: object
+                        properties:
+                          liveBirths:
+                            type: integer
+                          stillbirths:
+                            type: integer
+                          maternalDeaths:
+                            type: integer
+                          newbornDeaths:
+                            type: integer
+                          otherDeaths:
+                            type: integer
+                        required:
+                          - liveBirths
+                          - stillbirths
+                          - maternalDeaths
+                          - newbornDeaths
+                          - otherDeaths
+                      births:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            birthAt:
+                              type: string
+                            outcome:
+                              type: string
+                            sex:
+                              type: string
+                            birthWeightGrams:
+                              type: integer
+                            motherName:
+                              type: string
+                            villageName:
+                              type: string
+                            attendantName:
+                              type: string
+                          required:
+                            - id
+                            - birthAt
+                            - outcome
+                            - sex
+                            - birthWeightGrams
+                            - motherName
+                            - villageName
+                            - attendantName
+                      deaths:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            diedAt:
+                              type: string
+                            patientKind:
+                              type: string
+                            patientName:
+                              type: string
+                            ageLabel:
+                              type: string
+                            villageName:
+                              nullable: true
+                          required:
+                            - id
+                            - diedAt
+                            - patientKind
+                            - patientName
+                            - ageLabel
+                            - villageName
+                    required:
+                      - header
+                      - coverageNote
+                      - summary
+                      - births
+                      - deaths
+                required:
+                  - data
+                example:
+                  data:
+                    header:
+                      clinicName: Klinik Bidan Sehati
+                      puskesmasName: Puskesmas Cibeunying
+                      puskesmasCode: P3273110201
+                      month: 2026-10
+                      monthLabel: Oktober 2026
+                      generatedAt: 2026-11-02T01:15:00.000Z
+                    coverageNote: "Kematian di luar klinik tidak tercatat: laporan ini hanya memuat
+                      kelahiran yang dicatat klinik dan pasien yang meninggal
+                      selama dirawat."
+                    summary:
+                      liveBirths: 5
+                      stillbirths: 1
+                      maternalDeaths: 0
+                      newbornDeaths: 1
+                      otherDeaths: 0
+                    births:
+                      - id: b2e7f409-6c13-4a85-9d27-5f8a0c3b1e69
+                        birthAt: 2026-10-31T16:59:00.000Z
+                        outcome: LIVE_BIRTH
+                        sex: FEMALE
+                        birthWeightGrams: 3100
+                        motherName: Siti Aminah
+                        villageName: Cihaurgeulis
+                        attendantName: Bidan Sari, S.Tr.Keb.
+                    deaths:
+                      - id: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                        diedAt: 2026-10-12T03:20:00.000Z
+                        patientKind: NEWBORN
+                        patientName: Bayi Ny. Rina
+                        ageLabel: 2 hari
+                        villageName: null
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Births and deaths report for a month
+      tags: *a87
 info:
   title: HMS API
   description: Health Management System API
@@ -59512,6 +60613,14 @@ components:
           type: string
           minLength: 1
           maxLength: 255
+          nullable: true
+        reportingPuskesmasName:
+          type: string
+          maxLength: 255
+          nullable: true
+        reportingPuskesmasCode:
+          type: string
+          maxLength: 32
           nullable: true
         latitude:
           type: number

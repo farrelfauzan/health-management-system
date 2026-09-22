@@ -62,6 +62,15 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('write', 'TaxReport')).toBe(false);
   });
 
+  it('maps the maternal-report key to the MaternalReport subject (P25-T15)', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['maternal-report.read:any'] }),
+    );
+
+    expect(ability.can('read', 'MaternalReport')).toBe(true);
+    expect(ability.can('write', 'MaternalReport')).toBe(false);
+  });
+
   it('maps the clinician-fee keys to the ClinicianFee subject (P27-T06)', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({ permissions: ['clinician-fee.read:any'] }),

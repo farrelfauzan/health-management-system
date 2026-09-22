@@ -135,6 +135,10 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- reading their own statement is a follow-up (`:own`).
     ('clinician-fee.read:any', 'ClinicianFee', 'read', 'ANY', 'Read jasa medis rules and monthly clinician fee statements'),
     ('clinician-fee.write:any', 'ClinicianFee', 'write', 'ANY', 'Create, change and delete jasa medis rules'),
+    -- P25-T15 (SJ-238, D-040). The KIA registers and the monthly KIA and
+    -- births/deaths reports. Clinical record content under D-033: the
+    -- clinicians who examine the mothers hold it, ADMIN does not.
+    ('maternal-report.read:any', 'MaternalReport', 'read', 'ANY', 'Read and export the kohort registers and monthly KIA reports'),
     ('portal.patient-access:own', 'Portal', 'patient-access', 'OWN', 'Access the patient portal'),
     ('role.assign:any', 'Role', 'assign', 'ANY', 'Assign roles to users'),
     ('role.read:any', 'Role', 'read', 'ANY', 'Read role catalog'),
@@ -1022,6 +1026,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- two service accounts are excluded on purpose.
     ('ADMIN', 'bug-report.create:own'),
     ('DOCTOR', 'bug-report.create:own'),
+    -- P25-T15. The KIA registers and monthly reports; a clinician grant (D-033).
+    ('DOCTOR', 'maternal-report.read:any'),
     ('PHARMACIST', 'bug-report.create:own'),
     ('LAB_TECHNICIAN', 'bug-report.create:own'),
     -- D-034 (P24-T02). MIDWIFE holds every DOCTOR grant above except
@@ -1082,7 +1088,8 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'admission.discharge:any'),
     ('MIDWIFE', 'notification.read:own'),
     ('MIDWIFE', 'notification.manage:own'),
-    ('MIDWIFE', 'bug-report.create:own')
+    ('MIDWIFE', 'bug-report.create:own'),
+    ('MIDWIFE', 'maternal-report.read:any')
 ),
 -- P22-T02 enforcing D-033: the keys that reach clinical record *content*.
 -- SUPER_ADMIN is a platform and IT role and receives none of them — the
@@ -1107,7 +1114,10 @@ clinical_content_keys(permission_key) AS (
     ('patient-document.read:any'),
     ('patient-document.write:any'),
     ('patient-document.delete:any'),
-    ('chat.message.read:any')
+    ('chat.message.read:any'),
+    -- P25-T15. A register of every mother's visits, labs and births is the
+    -- clinical record in table form; SUPER_ADMIN's union stops here too.
+    ('maternal-report.read:any')
 ),
 combined_role_permissions AS (
   SELECT 'SUPER_ADMIN'::text AS role_code, p."permission_key"

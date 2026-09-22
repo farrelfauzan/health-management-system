@@ -43,6 +43,7 @@ import { FeatureEntitlementModule } from './modules/feature-entitlement/feature-
 import { BillingModule } from './modules/billing/billing.module';
 import { LaboratoryModule } from './modules/laboratory/laboratory.module';
 import { TaxesModule } from './modules/taxes/taxes.module';
+import { MaternalReportsModule } from './modules/maternal-reports/maternal-reports.module';
 import { EmrModule } from './modules/emr/emr.module';
 import { HealthModule } from './modules/health/health.module';
 import { OrganizationStructureModule } from './modules/organization-structure/organization-structure.module';
@@ -121,6 +122,8 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     AuthModule,
     RbacModule,
     HealthModule,
+    // Appended, never inserted: an early module has shadowed routes before.
+    MaternalReportsModule,
   ],
 })
 export class AppModule {}

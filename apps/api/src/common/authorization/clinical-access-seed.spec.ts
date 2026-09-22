@@ -50,6 +50,8 @@ describe('D-033 clinical access seed guard', () => {
     'patient-document.write:any',
     'patient-document.delete:any',
     'chat.message.read:any',
+    // P25-T15. The kohort registers and KIA reports are the record in table form.
+    'maternal-report.read:any',
   ];
 
   /**

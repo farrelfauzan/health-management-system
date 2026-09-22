@@ -121,6 +121,8 @@ export type AppSubject =
   | 'TaxReport'
   // P27-T06. Jasa medis rules and the monthly clinician fee statements.
   | 'ClinicianFee'
+  // P25-T15. The kohort registers and monthly KIA reports; clinicians only (D-033).
+  | 'MaternalReport'
   | 'Invoice'
   | 'Payment'
   | 'ChatSession'

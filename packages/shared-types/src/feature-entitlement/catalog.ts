@@ -153,8 +153,13 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     name: 'Maternal Care',
     description:
       'Pregnancy episodes, antenatal visit numbering and the ANC examination for midwife practice.',
-    // P25-T10. The SHK sample worklist, in both shells.
-    navHrefs: ['/doctor/shk', '/admin/shk'],
+    // P25-T10. The SHK sample worklist, and P25-T15 the KIA reports, in both shells.
+    navHrefs: [
+      '/doctor/shk',
+      '/admin/shk',
+      '/doctor/maternal-reports',
+      '/admin/maternal-reports',
+    ],
   },
   {
     // P27-T02. The tax profile, and in later P27 tickets the tax codes, the

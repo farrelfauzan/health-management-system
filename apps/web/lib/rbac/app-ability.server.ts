@@ -125,6 +125,8 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'tax-report': 'TaxReport',
   // P27-T06. `clinician-fee.read:any` → resource `clinician-fee`, action `read`.
   'clinician-fee': 'ClinicianFee',
+  // P25-T15. `maternal-report.read:any` → resource `maternal-report`, action `read`.
+  'maternal-report': 'MaternalReport',
   invoice: 'Invoice',
   payment: 'Payment',
   'chat.session': 'ChatSession',
