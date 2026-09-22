@@ -22,6 +22,7 @@ import { InlineNotice } from '#components/client/shared/inline-notice';
 import { TaxReportDifferencesNotice } from '#components/client/taxes/tax-report-differences-notice';
 import { TaxReportLinesTable } from '#components/client/taxes/tax-report-lines-table';
 import { TaxReportPp55Summary } from '#components/client/taxes/tax-report-pp55-summary';
+import { TaxReportPph21Section } from '#components/client/taxes/tax-report-pph21-section';
 import { TaxReportPpnSummary } from '#components/client/taxes/tax-report-ppn-summary';
 import {
   taxReportControllerFinalizeReportV1,
@@ -167,9 +168,17 @@ export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
           <TaxReportDifferencesNotice report={report} />
           {report.summary.kind === 'PP55_OMZET' ? (
             <TaxReportPp55Summary summary={report.summary} />
-          ) : (
+          ) : null}
+          {report.summary.kind === 'PPN_OUTPUT' ? (
             <TaxReportPpnSummary summary={report.summary} />
-          )}
+          ) : null}
+          {report.summary.kind === 'PPH21_NON_EMPLOYEE' ? (
+            <TaxReportPph21Section
+              reportId={report.id}
+              summary={report.summary}
+              lines={report.lines}
+            />
+          ) : null}
           <TaxReportLinesTable report={report} />
         </CardContent>
       </Card>

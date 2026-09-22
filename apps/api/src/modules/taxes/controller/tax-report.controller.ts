@@ -43,7 +43,7 @@ export class TaxReportController {
   @ApiEndpoint({
     summary: "List a year's monthly tax reports",
     responseDescription:
-      'Every stored report of the year with its headline figure and whether it still matches the books (`isOutOfDate`). `meta.applicableKinds` names the reports the tax profile calls for: PP55_OMZET on the 0.5% regime, PPN_OUTPUT for a PKP.',
+      'Every stored report of the year with its headline figure and whether it still matches the books (`isOutOfDate`). `meta.applicableKinds` names the reports the tax profile calls for: PP55_OMZET on the 0.5% regime, PPN_OUTPUT for a PKP, PPH21_NON_EMPLOYEE for every clinic.',
     responseExample: {
       data: [TAXES_EXAMPLES.taxReports.listItem],
       meta: TAXES_EXAMPLES.taxReports.listMeta,
@@ -112,7 +112,7 @@ export class TaxReportController {
   @ApiEndpoint({
     summary: 'Finalize a monthly tax report',
     responseDescription:
-      'Recomputes and freezes the month. Refused while the month is running (409 `TAX_REPORT_PERIOD_OPEN`) and for an already finalized report (409 `TAX_REPORT_FINALIZED`). Audited as `TAX_REPORT_FINALIZED`.',
+      'Recomputes and freezes the month. Refused while the month is running (409 `TAX_REPORT_PERIOD_OPEN`), for an already finalized report (409 `TAX_REPORT_FINALIZED`) and for a PPh 21 draft with a clinician who has neither NPWP nor NIK (409 `TAX_REPORT_IDENTITY_INCOMPLETE`). Audited as `TAX_REPORT_FINALIZED`.',
     responseExample: {
       data: { ...TAXES_EXAMPLES.taxReports.view, status: 'FINALIZED' },
       message: 'Tax report finalized',
@@ -128,13 +128,33 @@ export class TaxReportController {
     };
   }
 
+  @Get(':id/identifiers')
+  @Auth([{ action: 'read', subject: 'TaxReport' }])
+  @ApiEndpoint({
+    summary: "Reveal the clinicians' tax identities on a PPh 21 report",
+    responseDescription:
+      'P27-T07. The full NPWP, or the NIK serving as NPWP, of every clinician on the report, for the BP21. The report itself carries only masked identities; this read decrypts and is audited as `DOCTOR_IDENTIFIER_UNMASKED` without the values. 409 `TAX_REPORT_NOT_APPLICABLE` for a report of another kind.',
+    responseExample: { data: TAXES_EXAMPLES.taxReports.identifiers },
+  })
+  async revealIdentifiers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.taxReportService.revealIdentifiers(
+        id,
+        this.assertAuthenticated(currentUser),
+      ),
+    };
+  }
+
   @Get(':id/export')
   @Auth([{ action: 'read', subject: 'TaxReport' }])
   // Plain Swagger decorators: this route returns a file, not a JSON envelope.
   @ApiOperation({ summary: 'Export one monthly tax report as CSV' })
   @ApiOkResponse({
     description:
-      'The stored report as CSV: a header block with totals, billing code and due dates, then one row per payment or invoice. Totals equal the report to the rupiah. Audited as an export.',
+      'The stored report as CSV: a header block with totals, billing code and due dates, then one row per payment or invoice — or, for PPh 21, one BP21 row per clinician with the full NPWP or NIK (that read is audited as `DOCTOR_IDENTIFIER_UNMASKED`). Totals equal the report to the rupiah. Audited as an export.',
   })
   @ApiProduces('text/csv')
   async exportReport(

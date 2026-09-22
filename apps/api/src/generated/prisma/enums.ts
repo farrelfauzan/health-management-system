@@ -870,7 +870,8 @@ export type TaxDefaultTarget = (typeof TaxDefaultTarget)[keyof typeof TaxDefault
 
 export const TaxReportKind = {
   PP55_OMZET: 'PP55_OMZET',
-  PPN_OUTPUT: 'PPN_OUTPUT'
+  PPN_OUTPUT: 'PPN_OUTPUT',
+  PPH21_NON_EMPLOYEE: 'PPH21_NON_EMPLOYEE'
 } as const
 
 export type TaxReportKind = (typeof TaxReportKind)[keyof typeof TaxReportKind]

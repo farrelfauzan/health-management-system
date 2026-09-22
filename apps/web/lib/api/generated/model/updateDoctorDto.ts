@@ -39,6 +39,8 @@ export interface UpdateDoctorDto {
      */
   degrees?: string[] | null;
   nik?: string;
+  /** @nullable */
+  npwp?: string | null;
   /** @maxItems 20 */
   licenses?: UpdateDoctorDtoLicensesItem[];
   /** @maxItems 20 */

@@ -309,8 +309,11 @@ export type UpdateTaxCategoryDefaultsInput = z.infer<typeof updateTaxCategoryDef
 export type BulkAssignTaxCodeInput = z.infer<typeof bulkAssignTaxCodeSchema>;
 export type ListTaxAssignmentsQuery = z.infer<typeof listTaxAssignmentsQuerySchema>;
 
-/** The monthly drafts P27-T05 prepares; P27-T07 adds PPh 21. */
-export const taxReportKindSchema = z.enum(['PP55_OMZET', 'PPN_OUTPUT']);
+/**
+ * The monthly drafts P27-T05 prepares, plus the PPh 21 bukan pegawai draft
+ * (BP21 per clinician) P27-T07 adds on the jasa medis ledger.
+ */
+export const taxReportKindSchema = z.enum(['PP55_OMZET', 'PPN_OUTPUT', 'PPH21_NON_EMPLOYEE']);
 export const TAX_REPORT_KINDS = taxReportKindSchema.options;
 
 /** A draft is recomputed at will; a finalized report is a frozen snapshot. */
@@ -336,7 +339,28 @@ export const PP55_INDIVIDUAL_NON_TAXABLE_OMZET = 500_000_000;
 export const PP55_TAX_ACCOUNT_CODE = '411128';
 export const PP55_DEPOSIT_TYPE_CODE = '420';
 
+/**
+ * PPh 21 bukan pegawai (P27-T07, PMK 168/2023 Pasal 5(1)(e)): the taxable
+ * base is 50% of the gross fee, taxed at the Pasal 17(1)(a) brackets, per
+ * period and non-cumulative. The brackets themselves are an effective-dated
+ * table, never constants (D-038): a new law is a new set of rows.
+ */
+export const PPH21_NON_EMPLOYEE_DPP_PERCENT = 50;
+/** The billing code for PPh 21 masa: KAP 411121, KJS 100. */
+export const PPH21_TAX_ACCOUNT_CODE = '411121';
+export const PPH21_DEPOSIT_TYPE_CODE = '100';
+/** The tax identity a BP21 names: the clinician's NPWP, else the NIK (which serves as NPWP). */
+export const clinicianTaxIdentityKindSchema = z.enum(['NPWP', 'NIK']);
+/** Whether a clinician's line can be issued as a BP21. */
+export const clinicianTaxIdentityStatusSchema = z.enum(['NPWP', 'NIK', 'MISSING']);
+/** The Indonesian wording the draft shows on a line with no NPWP and no NIK. */
+export const CLINICIAN_TAX_IDENTITY_INCOMPLETE_LABEL = 'identitas pajak belum lengkap';
+
 export const TAX_REPORT_NOT_APPLICABLE_ERROR_CODE = 'TAX_REPORT_NOT_APPLICABLE';
+/** P27-T07: a PPh 21 draft with a clinician who has neither NPWP nor NIK cannot be finalized. */
+export const TAX_REPORT_IDENTITY_INCOMPLETE_ERROR_CODE = 'TAX_REPORT_IDENTITY_INCOMPLETE';
+/** P27-T07: no PPh 21 bracket set is in force for the period (the table is unseeded). */
+export const TAX_BRACKETS_UNAVAILABLE_ERROR_CODE = 'TAX_BRACKETS_UNAVAILABLE';
 export const TAX_REPORT_EXISTS_ERROR_CODE = 'TAX_REPORT_EXISTS';
 export const TAX_REPORT_FINALIZED_ERROR_CODE = 'TAX_REPORT_FINALIZED';
 export const TAX_REPORT_PERIOD_OPEN_ERROR_CODE = 'TAX_REPORT_PERIOD_OPEN';
@@ -353,6 +377,8 @@ export const TAX_REPORT_PDF_UNAVAILABLE_ERROR_CODE = 'TAX_REPORT_PDF_UNAVAILABLE
 export const taxReportDocumentStatusSchema = z.enum(['READY', 'FAILED']);
 
 export type TaxReportKindValue = z.infer<typeof taxReportKindSchema>;
+export type ClinicianTaxIdentityKindValue = z.infer<typeof clinicianTaxIdentityKindSchema>;
+export type ClinicianTaxIdentityStatusValue = z.infer<typeof clinicianTaxIdentityStatusSchema>;
 export type TaxReportStatusValue = z.infer<typeof taxReportStatusSchema>;
 export type TaxReportDocumentStatusValue = z.infer<typeof taxReportDocumentStatusSchema>;
 export type CreateTaxReportInput = z.infer<typeof createTaxReportSchema>;

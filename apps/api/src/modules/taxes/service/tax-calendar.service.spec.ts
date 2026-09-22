@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 
+import { ClinicianFeeStatementService } from '../../clinician-fee/service/clinician-fee-statement.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { TaxReminderRepository } from '../repository/tax-reminder.repository';
 import { TaxCalendarService } from './tax-calendar.service';
@@ -18,16 +19,34 @@ describe('TaxCalendarService (P27-T10)', () => {
   const taxProfileServiceMock = {
     getTaxSettings: jest.fn(),
   } as unknown as TaxProfileService;
+  const clinicianFeeStatementServiceMock = {
+    getPeriodSummary: jest.fn(),
+  } as unknown as ClinicianFeeStatementService;
 
   function buildService(): TaxCalendarService {
     const configService = {
       get: jest.fn((key: string) => (key === 'CLINIC_TIMEZONE' ? 'Asia/Jakarta' : undefined)),
     } as unknown as ConfigService;
-    return new TaxCalendarService(taxReminderRepositoryMock, taxProfileServiceMock, configService);
+    return new TaxCalendarService(
+      taxReminderRepositoryMock,
+      taxProfileServiceMock,
+      clinicianFeeStatementServiceMock,
+      configService,
+    );
   }
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // No jasa medis in any month: the PPh 21 dates stay calendar information
+    // (P27-T07) and this spec keeps testing the PP 55 reminder alone.
+    (clinicianFeeStatementServiceMock.getPeriodSummary as jest.Mock).mockImplementation(
+      (period: string) =>
+        Promise.resolve({
+          period,
+          clinicians: [],
+          totals: { entryCount: 0, lineAmount: 0, grossFee: 0, clinicShare: 0 },
+        }),
+    );
     (taxProfileServiceMock.getTaxSettings as jest.Mock).mockResolvedValue({
       taxpayerType: 'PT',
       incomeTaxRegime: 'PP55_FINAL',
@@ -109,9 +128,9 @@ describe('TaxCalendarService (P27-T10)', () => {
       const service = buildService();
 
       // A PT starting in 2026 has three tax years: 2026, 2027, 2028.
-      await expect(service.findPp55LastYearWarning(new Date('2028-10-01T02:00:00.000Z'))).resolves.toBe(
-        2028,
-      );
+      await expect(
+        service.findPp55LastYearWarning(new Date('2028-10-01T02:00:00.000Z')),
+      ).resolves.toBe(2028);
       await expect(
         service.findPp55LastYearWarning(new Date('2028-09-30T02:00:00.000Z')),
       ).resolves.toBeNull();

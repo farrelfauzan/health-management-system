@@ -743,7 +743,10 @@
         "emailNoAccount": "Dokter ini belum memiliki akun sehingga belum bisa masuk. Gunakan Kirim Undangan di daftar dokter untuk memberi akses.",
         "createAction": "Buat Tenaga Klinis",
         "profession": "Profesi",
-        "professionDescription": "Menentukan peran akun. Tidak dapat diubah setelah tenaga klinis ini memiliki kunjungan, rawat inap, atau resep."
+        "professionDescription": "Menentukan peran akun. Tidak dapat diubah setelah tenaga klinis ini memiliki kunjungan, rawat inap, atau resep.",
+        "npwp": "NPWP tenaga klinis",
+        "npwpHelp": "NPWP pribadi untuk bukti potong PPh 21 atas jasa medis. Kosongkan bila belum ada: NIK dipakai sebagai NPWP.",
+        "npwpPlaceholder": "15–16 digit"
       },
       "identity": "Identitas Tenaga Medis",
       "reveal": "Tampilkan",
@@ -965,7 +968,9 @@
           "description": "Cabut pelimpahan yang diberikan {doctor} kepada {name}. Tindakan yang sudah tercatat di bawahnya tetap menyebut pelimpahan ini.",
           "error": "Pelimpahan gagal dicabut. Silakan coba lagi."
         }
-      }
+      },
+      "npwp": "NPWP",
+      "npwpMissing": "Belum ada (NIK dipakai)"
     },
     "portal": {
       "documents": {

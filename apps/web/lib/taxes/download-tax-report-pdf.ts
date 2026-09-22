@@ -25,6 +25,6 @@ export async function downloadTaxReportPdf(report: DownloadTaxReportPdfParams): 
     return;
   }
   const response = await taxReportControllerRenderPdfV1(report.id);
-  const kind = report.kind.toLowerCase().replace('_', '-');
+  const kind = report.kind.toLowerCase().replaceAll('_', '-');
   saveBlobFile({ blob: response.data, fileName: `pajak-${kind}-${report.period}-draft.pdf` });
 }

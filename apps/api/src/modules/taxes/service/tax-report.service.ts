@@ -1,26 +1,38 @@
 import {
+  ClinicianFeeClinicianSummaryView,
+  ClinicianTaxIdentifier,
+  ClinicianTaxIdentifierRecord,
   ComputedTaxReport,
   CreateTaxReportInput,
   PP55_DEPOSIT_TYPE_CODE,
   PP55_RATE_PERCENT,
   PP55_TAX_ACCOUNT_CODE,
+  Pph21BracketSet,
+  Pph21ReportLine,
+  Pph21SourceClinicianFee,
+  TAX_BRACKETS_UNAVAILABLE_ERROR_CODE,
   TAX_REPORT_EXISTS_ERROR_CODE,
   TAX_REPORT_FINALIZED_ERROR_CODE,
+  TAX_REPORT_IDENTITY_INCOMPLETE_ERROR_CODE,
   TAX_REPORT_NOT_APPLICABLE_ERROR_CODE,
   TAX_REPORT_PERIOD_IN_FUTURE_ERROR_CODE,
   TAX_REPORT_PERIOD_OPEN_ERROR_CODE,
   TaxReportCsvExport,
+  TaxReportIdentifiersView,
   TaxReportKindValue,
   TaxReportListItem,
   TaxReportPeriodRange,
   TaxReportRecord,
+  TaxReportSummary,
   TaxReportView,
   TaxReportsListMeta,
   computePp55MonthlyTax,
   diffTaxReportTotals,
   getCalendarDateInTimeZone,
   getStartOfCalendarDateInTimeZone,
+  resolvePph21BracketSet,
   resolveTaxReportDueDates,
+  summarizePph21Withholding,
   summarizePpnOutput,
 } from '@hms/shared-types';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
@@ -28,7 +40,10 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { ClinicianFeeStatementService } from '../../clinician-fee/service/clinician-fee-statement.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
+import { ClinicianTaxIdentityRepository } from '../repository/clinician-tax-identity.repository';
+import { Pph21TaxBracketRepository } from '../repository/pph21-tax-bracket.repository';
 import { TaxReportRepository } from '../repository/tax-report.repository';
 import { buildTaxReportCsv } from './build-tax-report-csv';
 
@@ -36,6 +51,32 @@ const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_REPORT_AUDIT_RESOURCE = 'tax-report';
 const PERIOD_LENGTH = 7;
 const DECEMBER = 12;
+const FIRST_DAY_SUFFIX = '-01';
+
+function toSourceFee(clinician: ClinicianFeeClinicianSummaryView): Pph21SourceClinicianFee {
+  return {
+    doctorId: clinician.doctorId,
+    entryCount: clinician.totals.entryCount,
+    lineAmount: clinician.totals.lineAmount,
+    grossFee: clinician.totals.grossFee,
+  };
+}
+
+/** The headline figure of a report: PPh final due, output PPN, or PPh 21 withheld. */
+function resolveTaxDue(summary: TaxReportSummary): number {
+  return summary.kind === 'PP55_OMZET' ? summary.totals.taxDue : summary.totals.taxAmount;
+}
+
+/** The NPWP when there is one, else the NIK as NPWP; nothing for a clinician with neither. */
+function toTaxIdentifier(record: ClinicianTaxIdentifierRecord): ClinicianTaxIdentifier | null {
+  if (record.npwp !== null) {
+    return { doctorId: record.doctorId, identityKind: 'NPWP', taxIdentityNumber: record.npwp };
+  }
+  if (record.nik !== null) {
+    return { doctorId: record.doctorId, identityKind: 'NIK', taxIdentityNumber: record.nik };
+  }
+  return null;
+}
 
 /**
  * The monthly tax report drafts (P27-T05, `docs/post-mvp/decisions.md` D-038):
@@ -56,6 +97,9 @@ export class TaxReportService {
     private readonly taxReportRepository: TaxReportRepository,
     private readonly taxProfileService: TaxProfileService,
     private readonly auditService: AuditService,
+    private readonly pph21TaxBracketRepository: Pph21TaxBracketRepository,
+    private readonly clinicianTaxIdentityRepository: ClinicianTaxIdentityRepository,
+    private readonly clinicianFeeStatementService: ClinicianFeeStatementService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -76,10 +120,7 @@ export class TaxReportService {
           period: report.period,
           kind: report.kind,
           status: report.status,
-          taxDue:
-            report.summary.kind === 'PP55_OMZET'
-              ? report.summary.totals.taxDue
-              : report.summary.totals.taxAmount,
+          taxDue: resolveTaxDue(report.summary),
           isOutOfDate: view.isOutOfDate,
         };
       }),
@@ -136,6 +177,7 @@ export class TaxReportService {
       });
     }
     const computed = await this.computeReport(report.period, report.kind);
+    this.assertIdentitiesComplete(computed);
     const finalized = await this.taxReportRepository.finalizeReport({
       ...computed,
       id,
@@ -146,12 +188,40 @@ export class TaxReportService {
     return this.toView(finalized);
   }
 
+  /**
+   * The CSV the accountant enters in Coretax. A PPh 21 export carries each
+   * clinician's full NPWP or NIK — a bukti potong needs it — so that read is
+   * audited as an identifier unmask on top of the export itself.
+   */
   async exportReport(id: string, actor: CurrentUser): Promise<TaxReportCsvExport> {
     const report = await this.findReportOrThrow(id);
+    const identifiers =
+      report.kind === 'PPH21_NON_EMPLOYEE' ? await this.unmaskIdentifiers(report, actor) : [];
     await this.recordAudit('EXPORT', report, actor);
     return {
-      fileName: `pajak-${report.kind.toLowerCase().replace('_', '-')}-${report.period}.csv`,
-      csv: buildTaxReportCsv(report),
+      fileName: `pajak-${report.kind.toLowerCase().replaceAll('_', '-')}-${report.period}.csv`,
+      csv: buildTaxReportCsv({ report, identifiers }),
+    };
+  }
+
+  /**
+   * The full NPWP or NIK of every clinician on a PPh 21 draft (P27-T07). The
+   * stored draft holds only the masked form; this read decrypts and is
+   * audited as `DOCTOR_IDENTIFIER_UNMASKED` on every call, never carrying the
+   * value itself.
+   */
+  async revealIdentifiers(id: string, actor: CurrentUser): Promise<TaxReportIdentifiersView> {
+    const report = await this.findReportOrThrow(id);
+    if (report.kind !== 'PPH21_NON_EMPLOYEE') {
+      throw new ConflictException({
+        code: TAX_REPORT_NOT_APPLICABLE_ERROR_CODE,
+        message: 'Only a PPh 21 report names clinician tax identities',
+      });
+    }
+    return {
+      reportId: report.id,
+      period: report.period,
+      clinicians: await this.unmaskIdentifiers(report, actor),
     };
   }
 
@@ -159,7 +229,94 @@ export class TaxReportService {
     period: string,
     kind: TaxReportKindValue,
   ): Promise<ComputedTaxReport> {
+    if (kind === 'PPH21_NON_EMPLOYEE') {
+      return this.computePph21(period);
+    }
     return kind === 'PP55_OMZET' ? this.computePp55(period) : this.computePpnOutput(period);
+  }
+
+  /**
+   * PPh 21 bukan pegawai on the month's jasa medis (P27-T07): one BP21 line
+   * per clinician on the ledger, taxed on the bracket set in force on the
+   * first day of the month. Non-cumulative by rule, so nothing earlier in the
+   * year is read.
+   */
+  private async computePph21(period: string): Promise<ComputedTaxReport> {
+    const [feeSummary, bracketSet] = await Promise.all([
+      this.clinicianFeeStatementService.getPeriodSummary(period),
+      this.resolveBracketSetOrThrow(period),
+    ]);
+    const identities = await this.clinicianTaxIdentityRepository.findIdentities(
+      feeSummary.clinicians.map((clinician) => clinician.doctorId),
+    );
+    return summarizePph21Withholding({
+      fees: feeSummary.clinicians.map(toSourceFee),
+      identities,
+      bracketSet,
+      dueDates: resolveTaxReportDueDates(period, 'PPH21_NON_EMPLOYEE'),
+    });
+  }
+
+  private async resolveBracketSetOrThrow(
+    period: string,
+  ): Promise<Pph21BracketSet & { effectiveFrom: string }> {
+    const bracketSet = resolvePph21BracketSet({
+      brackets: await this.pph21TaxBracketRepository.listBrackets(),
+      onDate: `${period}${FIRST_DAY_SUFFIX}`,
+    });
+    if (bracketSet.effectiveFrom === null) {
+      throw new ConflictException({
+        code: TAX_BRACKETS_UNAVAILABLE_ERROR_CODE,
+        message: `No PPh 21 bracket set is in force for ${period}; seed the Pasal 17 brackets first`,
+      });
+    }
+    return { effectiveFrom: bracketSet.effectiveFrom, brackets: bracketSet.brackets };
+  }
+
+  /** A BP21 without a tax number cannot be entered in Coretax, so the month cannot be frozen. */
+  private assertIdentitiesComplete(computed: ComputedTaxReport): void {
+    if (computed.summary.kind !== 'PPH21_NON_EMPLOYEE') {
+      return;
+    }
+    const missing = (computed.lines as Pph21ReportLine[]).filter(
+      (line) => line.identityStatus === 'MISSING',
+    );
+    if (missing.length === 0) {
+      return;
+    }
+    throw new ConflictException({
+      code: TAX_REPORT_IDENTITY_INCOMPLETE_ERROR_CODE,
+      message: `${missing.length} clinician(s) have no NPWP or NIK on file; complete their tax identity before finalizing`,
+      details: missing.map((line) => ({ doctorId: line.doctorId, doctorName: line.doctorName })),
+    });
+  }
+
+  private async unmaskIdentifiers(
+    report: TaxReportRecord,
+    actor: CurrentUser,
+  ): Promise<ClinicianTaxIdentifier[]> {
+    const lines = report.lines as Pph21ReportLine[];
+    const records = await this.clinicianTaxIdentityRepository.findIdentifiers(
+      lines.map((line) => line.doctorId),
+    );
+    const identifiers = records
+      .map(toTaxIdentifier)
+      .filter((identifier): identifier is ClinicianTaxIdentifier => identifier !== null);
+    // The audit row records that identities were revealed and for which
+    // report, never the numbers themselves.
+    await this.auditService.record({
+      action: 'DOCTOR_IDENTIFIER_UNMASKED',
+      resource: TAX_REPORT_AUDIT_RESOURCE,
+      resourceId: report.id,
+      actorUserId: actor.sub,
+      metadata: {
+        period: report.period,
+        kind: report.kind,
+        doctorIds: identifiers.map((identifier) => identifier.doctorId),
+        fields: [...new Set(identifiers.map((identifier) => identifier.identityKind))],
+      },
+    });
+    return identifiers;
   }
 
   private async computePp55(period: string): Promise<ComputedTaxReport> {
@@ -205,13 +362,15 @@ export class TaxReportService {
 
   /**
    * Which reports the clinic's tax profile calls for (P27-T02): PP 55 on the
-   * 0.5% regime, PPN keluaran for a PKP.
+   * 0.5% regime, PPN keluaran for a PKP, and PPh 21 bukan pegawai for every
+   * clinic — one that pays no clinician simply drafts an empty month.
    */
   private async resolveApplicableKinds(): Promise<TaxReportKindValue[]> {
     const settings = await this.taxProfileService.getTaxSettings();
     return [
       ...(settings.incomeTaxRegime === 'PP55_FINAL' ? (['PP55_OMZET'] as const) : []),
       ...(settings.isPkp ? (['PPN_OUTPUT'] as const) : []),
+      'PPH21_NON_EMPLOYEE',
     ];
   }
 

@@ -599,6 +599,16 @@ export type TaxCodeRate = Prisma.TaxCodeRateModel
  */
 export type TaxCategoryDefault = Prisma.TaxCategoryDefaultModel
 /**
+ * Model Pph21TaxBracket
+ * One Pasal 17(1)(a) income-tax bracket (P27-T07, D-038: tax is data). Rows
+ * sharing an `effectiveFrom` form one bracket set; the set in force on a
+ * date is the latest one starting on or before it, so a new law is a new
+ * set of rows and an old period keeps the rates it was taxed under.
+ * Bounds are rupiah of taxable base: `lowerBound` inclusive, `upperBound`
+ * exclusive and null for the open top bracket.
+ */
+export type Pph21TaxBracket = Prisma.Pph21TaxBracketModel
+/**
  * Model TaxReminderNotice
  * One tax reminder that has already been raised (P27-T10).
  * 
