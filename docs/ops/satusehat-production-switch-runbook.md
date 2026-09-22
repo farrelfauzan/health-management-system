@@ -97,6 +97,7 @@ reopening.
 SATUSEHAT_FHIR_BASE_URL="https://api-satusehat.dto.kemkes.go.id/fhir-r4/v1"
 SATUSEHAT_AUTH_BASE_URL="https://api-satusehat.dto.kemkes.go.id/oauth2/v1"
 SATUSEHAT_KFA_BASE_URL="https://api-satusehat.dto.kemkes.go.id/kfa-v2"
+SATUSEHAT_KYC_BASE_URL="https://api-satusehat.dto.kemkes.go.id/kyc/v1"
 SATUSEHAT_ORGANIZATION_ID="<production organization id>"
 SATUSEHAT_CLIENT_ID="<production client id>"
 SATUSEHAT_CLIENT_SECRET="<production client secret>"
@@ -104,9 +105,19 @@ SATUSEHAT_LOCATION_ID="<production Location id from step 3>"
 SATUSEHAT_LOCATION_NAME="<the same name registered on the platform>"
 ```
 
-The three URLs move together. The environment card reads the FHIR one, so a
+The four URLs move together. The environment card reads the FHIR one, so a
 half-switched deployment — production FHIR, sandbox auth — shows "Production"
 while failing to authenticate; changing them as a set is what avoids that.
+The KYC URL is the one exception with a guard of its own: when it and the
+FHIR URL resolve to different platforms, KYC reports itself disabled with
+`KYC_PLATFORM_MISMATCH` rather than send an operator's NIK to the wrong one
+(P24-T14).
+
+The KYC key material (`SATUSEHAT_KYC_PRIVATE_KEY`, `SATUSEHAT_KYC_PUBLIC_KEY`,
+`SATUSEHAT_KYC_SERVER_PUBLIC_KEY`) is **per platform**: the platform public
+key Kemenkes issues for staging is not the production one, and the deployment
+pair may be regenerated at the switch. See "SATUSEHAT KYC keys" in
+`docs/security/secrets.md` for what is known about where each comes from.
 
 ### 5. Clear every cached sandbox id
 

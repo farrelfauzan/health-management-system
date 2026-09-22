@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { SatusehatFhirMapper } from './satusehat-fhir.mapper';
 import { SatusehatHttpClient } from './satusehat-http.client';
 import { SatusehatKfaClient } from './satusehat-kfa.client';
+import { SatusehatKycClient } from './satusehat-kyc.client';
 import { SatusehatEpisodeOfCareClient } from './satusehat-episode-of-care.client';
 import { SatusehatLocationClient } from './satusehat-location.client';
 import { SatusehatMasterDataClient } from './satusehat-master-data.client';
@@ -11,8 +12,8 @@ import { SatusehatTokenClient } from './satusehat-token.client';
 
 /**
  * SATUSEHAT platform adapter (P10-T01..T03): OAuth2 token client, the
- * resilient authenticated HTTP client, master-data lookups, and the FHIR
- * mappers. Feature modules inject the clients and the mapper — FHIR resource
+ * resilient authenticated HTTP client, master-data lookups, the KYC client
+ * (P24-T14), and the FHIR mappers. Feature modules inject the clients and the mapper — FHIR resource
  * shapes must never leak into domain services.
  */
 @Module({
@@ -20,6 +21,7 @@ import { SatusehatTokenClient } from './satusehat-token.client';
     SatusehatTokenClient,
     SatusehatHttpClient,
     SatusehatKfaClient,
+    SatusehatKycClient,
     SatusehatEpisodeOfCareClient,
     SatusehatLocationClient,
     SatusehatMasterDataClient,
@@ -29,6 +31,7 @@ import { SatusehatTokenClient } from './satusehat-token.client';
   exports: [
     SatusehatHttpClient,
     SatusehatKfaClient,
+    SatusehatKycClient,
     SatusehatEpisodeOfCareClient,
     SatusehatLocationClient,
     SatusehatMasterDataClient,

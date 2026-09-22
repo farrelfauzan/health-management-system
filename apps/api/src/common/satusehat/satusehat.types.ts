@@ -1,9 +1,17 @@
+import { KeyObject } from 'node:crypto';
+
 export type SatusehatConfig = {
   readonly isConfigured: boolean;
   readonly fhirBaseUrl: string;
   readonly authBaseUrl: string;
   /** KFA dictionary service — product lookups, not FHIR. */
   readonly kfaBaseUrl: string;
+  /**
+   * KYC (SATUSEHAT Mobile profile verification) service (P24-T14). A fourth
+   * service on the same platform, `/kyc/v1`, speaking neither FHIR nor plain
+   * JSON: every body is hybrid-encrypted, so it has a client of its own.
+   */
+  readonly kycBaseUrl: string;
   readonly organizationId?: string;
   readonly clientId?: string;
   readonly clientSecret?: string;
@@ -74,7 +82,9 @@ export type SatusehatErrorCode =
   | 'SATUSEHAT_UNAVAILABLE'
   | 'SATUSEHAT_CIRCUIT_OPEN'
   | 'SATUSEHAT_REQUEST_REJECTED'
-  | 'SATUSEHAT_AMBIGUOUS_MATCH';
+  | 'SATUSEHAT_AMBIGUOUS_MATCH'
+  | 'SATUSEHAT_KYC_DISABLED'
+  | 'SATUSEHAT_KYC_REJECTED';
 
 export type SatusehatHttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -121,4 +131,84 @@ export type SatusehatSearchBundleEntry = {
 export type SatusehatSearchBundle = {
   readonly total?: unknown;
   readonly entry?: readonly SatusehatSearchBundleEntry[];
+};
+
+/**
+ * The KYC key material after parsing (P24-T14). `isEnabled` is false with a
+ * reason whenever any of the three PEMs is absent or unparsable — the API
+ * still boots, and the reason is what the status route shows an
+ * administrator. When enabled, all three keys are present.
+ */
+export type SatusehatKycConfig =
+  | {
+      readonly isEnabled: true;
+      readonly privateKey: KeyObject;
+      /** Our public key, PEM, sent inside every request so the platform can encrypt its answer. */
+      readonly publicKeyPem: string;
+      readonly serverPublicKey: KeyObject;
+    }
+  | {
+      readonly isEnabled: false;
+      readonly disabledReason: SatusehatKycDisabledReason;
+    };
+
+/**
+ * Why KYC is off, as a code the status route can translate. Never the key
+ * contents, never a path.
+ */
+export type SatusehatKycDisabledReason =
+  | 'SATUSEHAT_NOT_CONFIGURED'
+  | 'KYC_KEYS_NOT_CONFIGURED'
+  | 'KYC_KEYS_INCOMPLETE'
+  | 'KYC_PRIVATE_KEY_INVALID'
+  | 'KYC_PUBLIC_KEY_INVALID'
+  | 'KYC_SERVER_PUBLIC_KEY_INVALID'
+  | 'KYC_KEY_PAIR_MISMATCH'
+  | 'KYC_PLATFORM_MISMATCH';
+
+/** What {@link SatusehatKycClient.getStatus} answers (P24-T14, read by P24-T16). */
+export type SatusehatKycStatus = {
+  readonly isEnabled: boolean;
+  readonly disabledReason: SatusehatKycDisabledReason | null;
+};
+
+/** The operator on whose behalf a validation URL is generated (`agent_*` on the wire). */
+export type SatusehatKycAgent = {
+  readonly name: string;
+  readonly nik: string;
+};
+
+/**
+ * A validation URL, as returned once to the caller. The URL embeds the
+ * token; neither is ever persisted or logged (FR-KYC-06).
+ */
+export type SatusehatKycValidationUrl = {
+  readonly url: string;
+  readonly token: string;
+};
+
+/**
+ * The KYC platform's envelope. It answers HTTP 200 for failures too, so
+ * `metadata.code` — a string, e.g. `"400"` — is the real status (P21-T01). A
+ * success arrives armoured and decrypts to this same shape.
+ */
+export type SatusehatKycResponseEnvelope = {
+  readonly metadata?: { readonly code?: unknown; readonly message?: unknown };
+  readonly data?: {
+    readonly error?: unknown;
+    readonly url?: unknown;
+    readonly token?: unknown;
+  };
+};
+
+/** Inputs to the hybrid encryption of one request body. */
+export type EncryptSatusehatKycMessageInput = {
+  readonly plaintext: string;
+  readonly serverPublicKey: KeyObject;
+};
+
+/** Inputs to decrypting one armoured response. */
+export type DecryptSatusehatKycMessageInput = {
+  readonly armoured: string;
+  readonly privateKey: KeyObject;
 };
