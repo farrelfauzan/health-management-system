@@ -10825,6 +10825,10 @@ export const UserScalarFieldEnum = {
   isSystem: 'isSystem',
   offboardedAt: 'offboardedAt',
   organizationUnitId: 'organizationUnitId',
+  nikCiphertext: 'nikCiphertext',
+  nikIndex: 'nikIndex',
+  nikLast4: 'nikLast4',
+  nikKeyVersion: 'nikKeyVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'

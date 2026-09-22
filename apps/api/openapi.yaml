@@ -29088,9 +29088,10 @@ paths:
       parameters: []
       responses:
         "200":
-          description: "The signed-in account: its id, sign-in address and name. The name
-            is null for an account created before names were collected, which is
-            not an error."
+          description: "The signed-in account: its id, sign-in address, name and the last
+            four digits of its NIK. The name is null for an account created
+            before names were collected, which is not an error; the NIK digits
+            are null until the person adds one."
           content:
             application/json:
               schema:
@@ -29105,10 +29106,13 @@ paths:
                         type: string
                       fullName:
                         type: string
+                      nikLast4:
+                        type: string
                     required:
                       - id
                       - email
                       - fullName
+                      - nikLast4
                 required:
                   - data
                 example:
@@ -29116,6 +29120,7 @@ paths:
                     id: 7f3a9c62-1d54-4c8b-9f2e-6b0a1d3c5e7f
                     email: apoteker@klinik.id
                     fullName: Rani Putri, S.Farm., Apt.
+                    nikLast4: "0000"
         "401":
           description: Authentication is required.
           content:
@@ -29171,10 +29176,13 @@ paths:
                         type: string
                       fullName:
                         type: string
+                      nikLast4:
+                        type: string
                     required:
                       - id
                       - email
                       - fullName
+                      - nikLast4
                   message:
                     type: string
                 required:
@@ -29185,6 +29193,7 @@ paths:
                     id: 7f3a9c62-1d54-4c8b-9f2e-6b0a1d3c5e7f
                     email: apoteker@klinik.id
                     fullName: Rani Putri, S.Farm., Apt.
+                    nikLast4: "0000"
                   message: Name updated
         "400":
           description: Request validation failed.
@@ -29216,6 +29225,93 @@ paths:
       security:
         - bearer: []
       summary: Correct the name on my account
+      tags: *a40
+  /api/v1/me/account/nik:
+    put:
+      operationId: OwnAccountController_updateOwnAccountNik_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOwnAccountNikDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  nik: "0000000000000000"
+      responses:
+        "200":
+          description: "Seals the caller's own NIK onto the account (D-039): stored
+            encrypted with a blind index, returned only as its last four digits,
+            never logged. It is what SATUSEHAT's KYC requires of the operator at
+            the desk. A clinician's Practitioner NIK stays on the clinician
+            profile and is used first. 409 when another account already holds
+            the same NIK."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      fullName:
+                        type: string
+                      nikLast4:
+                        type: string
+                    required:
+                      - id
+                      - email
+                      - fullName
+                      - nikLast4
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 7f3a9c62-1d54-4c8b-9f2e-6b0a1d3c5e7f
+                    email: apoteker@klinik.id
+                    fullName: Rani Putri, S.Farm., Apt.
+                    nikLast4: "0000"
+                  message: NIK saved
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Add or replace the NIK on my account
       tags: *a40
   /api/v1/users/invitations:
     get:
@@ -61104,6 +61200,13 @@ components:
           maxLength: 120
       required:
         - fullName
+    UpdateOwnAccountNikDto:
+      type: object
+      properties:
+        nik:
+          type: string
+      required:
+        - nik
     CreateUserInvitationDto:
       type: object
       properties:

@@ -2459,6 +2459,32 @@
           }
         }
       }
+    },
+    "account": {
+      "title": "My account",
+      "subtitle": "Your account details and the NIK you present as the operator when verifying a patient with SATUSEHAT.",
+      "loadErrorTitle": "Account could not be loaded",
+      "loadErrorDescription": "Something went wrong while loading your account. Please try again.",
+      "identity": {
+        "title": "Managed by the clinic",
+        "description": "Your name and sign-in address are set by an administrator. Ask an administrator to change them.",
+        "fullName": "Name",
+        "email": "Sign-in email",
+        "unnamed": "Not named yet"
+      },
+      "nik": {
+        "title": "Operator NIK",
+        "description": "SATUSEHAT requires the NIK of the operator who verifies a patient's profile (KYC). It is stored encrypted and only its last four digits are ever shown.",
+        "current": "NIK on file: {masked}",
+        "none": "No NIK is on file for this account yet.",
+        "addLabel": "NIK (16 digits)",
+        "replaceLabel": "New NIK (16 digits)",
+        "invalid": "A NIK is exactly 16 digits.",
+        "save": "Save NIK",
+        "saving": "Saving...",
+        "saved": "Your NIK has been saved.",
+        "saveError": "Your NIK could not be saved. Please try again."
+      }
     }
   },
   "channelArrivals": {

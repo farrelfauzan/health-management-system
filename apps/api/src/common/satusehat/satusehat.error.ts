@@ -20,6 +20,14 @@ import { SatusehatErrorCode } from './satusehat.types';
  *   NIK in its responses, so nothing in the code can pick the right record,
  *   and a retry would face the same ambiguity. A human resolves it in the
  *   SATUSEHAT portal. The message carries the match count, never the NIK.
+ * - `SATUSEHAT_KYC_DISABLED` — the KYC key material is absent or unparsable
+ *   (P24-T14). Distinct from `SATUSEHAT_NOT_CONFIGURED`: the rest of the
+ *   integration can be live while KYC alone is off. The message names the
+ *   reason code, never a key.
+ * - `SATUSEHAT_KYC_REJECTED` — the KYC service answered HTTP 200 with a
+ *   failing `metadata.code`, the only way it reports a refused request
+ *   (P21-T01). Permanent for the same payload; the message carries the
+ *   platform's `data.error` text with any NIK masked.
  */
 export class SatusehatError extends Error {
   constructor(

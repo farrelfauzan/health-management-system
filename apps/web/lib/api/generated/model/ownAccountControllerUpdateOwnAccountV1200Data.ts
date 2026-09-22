@@ -10,4 +10,5 @@ export type OwnAccountControllerUpdateOwnAccountV1200Data = {
   id: string;
   email: string;
   fullName: string;
+  nikLast4: string;
 };

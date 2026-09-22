@@ -157,7 +157,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- `auth.logout:own`, which is the existing precedent for "a thing anyone
     -- signed in may do to themselves"; the two service-account roles are
     -- deliberately left out, because nobody is behind them to have a name.
-    ('user.update:own', 'User', 'update', 'OWN', 'Correct the name on own account'),
+    ('user.update:own', 'User', 'update', 'OWN', 'Correct the name and NIK on own account'),
     -- P16-T41. A super-admin action and not deactivation (§7.3.10.2): it
     -- opens a 30-day vault-only window rather than locking the person out.
     -- Bound to no seeded role below; SUPER_ADMIN holds it through the

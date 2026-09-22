@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { nikSchema } from '#patient-management/schemas';
+
 /**
  * The password policy for anywhere a password is *set* (SJ-7).
  *
@@ -74,7 +76,19 @@ export const updateOwnAccountSchema = z.object({
   fullName: userFullNameSchema,
 });
 
+/**
+ * The operator's own NIK (P24-T15, D-039): the `agent_nik` SATUSEHAT's KYC
+ * requires of whoever is at the desk. Sixteen digits, normalised by the same
+ * schema a patient's NIK goes through, stored encrypted with a blind index.
+ * There is no clearing form: an operator who no longer wants KYC simply does
+ * not use it, and a NIK on file costs nothing.
+ */
+export const updateOwnAccountNikSchema = z.object({
+  nik: nikSchema,
+});
+
 export type ListUsersQueryInput = z.infer<typeof listUsersQuerySchema>;
 export type UpdateOwnAccountInput = z.infer<typeof updateOwnAccountSchema>;
+export type UpdateOwnAccountNikInput = z.infer<typeof updateOwnAccountNikSchema>;
 export type CreateAdminUserInput = z.infer<typeof createAdminUserSchema>;
 export type UpdateAdminUserInput = z.infer<typeof updateAdminUserSchema>;
