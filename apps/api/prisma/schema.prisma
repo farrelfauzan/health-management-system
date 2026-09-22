@@ -1129,6 +1129,16 @@ model User {
   /// Membership lives here rather than in a join table because a person belongs
   /// to one unit — matrix reporting is a second edge type, not a second row.
   organizationUnitId String?   @map("organization_unit_id") @db.Uuid
+  /// The operator's own NIK (D-039, P24-T15): the `agent_nik` SATUSEHAT's KYC
+  /// requires of the person at the desk. Stored exactly as a patient's or a
+  /// clinician's — ciphertext, unique blind index, last four digits for
+  /// display, and the key version that sealed it — and written only through
+  /// the self-service route under `me/account`. A clinician's Practitioner
+  /// NIK stays on `DoctorProfile`; KYC reads that one first.
+  nikCiphertext      String?   @map("nik_ciphertext")
+  nikIndex           String?   @unique @map("nik_index")
+  nikLast4           String?   @map("nik_last4")
+  nikKeyVersion      Int?      @map("nik_key_version") @db.SmallInt
   createdAt          DateTime  @default(now()) @map("created_at")
   updatedAt          DateTime  @updatedAt @map("updated_at")
   deletedAt          DateTime? @map("deleted_at")

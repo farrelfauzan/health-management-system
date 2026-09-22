@@ -2,8 +2,18 @@ import { randomUUID } from 'node:crypto';
 
 import { ConfigService } from '@nestjs/config';
 
+import { NationalIdentifierCryptoService } from '../../common/crypto/national-identifier-crypto.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { OwnAccountRepository } from './repository/own-account.repository';
+
+/**
+ * Sixteen-digit placeholders that are nobody's number. Distinct per test:
+ * `users.nik_index` is unique, and rows live until `afterAll`.
+ */
+const NIK_PLACEHOLDER = '0000000000000000';
+const REPLACED_NIK_PLACEHOLDER = '0000000000000011';
+const REPLACEMENT_NIK_PLACEHOLDER = '0000000000000012';
+const SHARED_NIK_PLACEHOLDER = '0000000000000021';
 
 /**
  * What renaming an account is worth only the database can say (P20-T05).
@@ -37,7 +47,10 @@ describe('Own account against Postgres', () => {
   beforeAll(async () => {
     prisma = new PrismaService(new ConfigService());
     await prisma.$connect();
-    repository = new OwnAccountRepository(prisma);
+    repository = new OwnAccountRepository(
+      prisma,
+      new NationalIdentifierCryptoService(new ConfigService()),
+    );
   });
 
   afterAll(async () => {
@@ -86,6 +99,51 @@ describe('Own account against Postgres', () => {
     ).resolves.toEqual({ fullName: 'dr. Olivia Kirana, Sp.OG' });
   });
 
+  it('stores an operator NIK only as ciphertext and blind index, and reads it back masked (P24-T15)', async () => {
+    const userId = await createUser('Rani Putri');
+
+    await expect(repository.saveAccountNik({ userId, nik: NIK_PLACEHOLDER })).resolves.toBe(
+      'SAVED',
+    );
+
+    const stored = await prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+      select: { nikCiphertext: true, nikIndex: true, nikLast4: true, nikKeyVersion: true },
+    });
+    expect(stored.nikCiphertext).not.toBeNull();
+    expect(stored.nikCiphertext).not.toContain(NIK_PLACEHOLDER);
+    expect(stored.nikIndex).not.toBeNull();
+    expect(stored.nikIndex).not.toContain(NIK_PLACEHOLDER);
+    expect(stored.nikLast4).toBe('0000');
+    expect(stored.nikKeyVersion).toBe(1);
+    await expect(repository.findAccountById(userId)).resolves.toMatchObject({ nikLast4: '0000' });
+  });
+
+  it('replaces an operator NIK in place, keeping one per account', async () => {
+    const userId = await createUser('Rani Putri');
+    await repository.saveAccountNik({ userId, nik: REPLACED_NIK_PLACEHOLDER });
+
+    await expect(
+      repository.saveAccountNik({ userId, nik: REPLACEMENT_NIK_PLACEHOLDER }),
+    ).resolves.toBe('SAVED');
+
+    await expect(repository.findAccountById(userId)).resolves.toMatchObject({ nikLast4: '0012' });
+  });
+
+  it('refuses a second account with the same NIK', async () => {
+    const firstUserId = await createUser('Rani Putri');
+    const secondUserId = await createUser('Dewi Lestari');
+    await repository.saveAccountNik({ userId: firstUserId, nik: SHARED_NIK_PLACEHOLDER });
+
+    await expect(
+      repository.saveAccountNik({ userId: secondUserId, nik: SHARED_NIK_PLACEHOLDER }),
+    ).resolves.toBe('DUPLICATE_NIK');
+
+    await expect(repository.findAccountById(secondUserId)).resolves.toMatchObject({
+      nikLast4: null,
+    });
+  });
+
   it('renames an account that owns no profile without touching anybody else', async () => {
     const pharmacistId = await createUser(null);
     const otherId = await createUser('Nama Lain');
@@ -99,5 +157,4 @@ describe('Own account against Postgres', () => {
       prisma.user.findUnique({ where: { id: otherId }, select: { fullName: true } }),
     ).resolves.toEqual({ fullName: 'Nama Lain' });
   });
-
 });
