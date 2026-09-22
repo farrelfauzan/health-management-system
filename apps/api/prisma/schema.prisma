@@ -103,6 +103,11 @@ enum AuditAction {
   SATUSEHAT_LOCATION_REGISTERED
   /// A registered row's name or status was pushed to SATUSEHAT (FR-LOC-08).
   SATUSEHAT_LOCATION_UPDATED
+  /// An operator asked SATUSEHAT for a KYC validation URL (P24-T16,
+  /// FR-KYC-05). Carries the operator (actor), the patient when started from
+  /// a patient page, and on failure the error code — never the token, the
+  /// URL or any NIK.
+  SATUSEHAT_KYC_STARTED
   /// The midwife formulary template was applied to the catalog (P25-T04):
   /// the clinic confirmed which matched rows a bidan may prescribe. Metadata
   /// carries the ids newly flagged; the action never unflags.

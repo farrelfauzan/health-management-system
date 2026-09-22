@@ -179,6 +179,10 @@ export type AppSubject =
   // P24-T06. The clinic's Location tree on SATUSEHAT. Its own subject: reading
   // it is harmless, registering writes the national facility record.
   | 'SatusehatLocation'
+  // P24-T16. Starting a patient's SATUSEHAT Mobile profile verification at the
+  // desk. Its own subject: it neither links nor reads a record, and the
+  // operator's own NIK goes to the platform with every session.
+  | 'SatusehatKyc'
   // P23-T04/T05. Saling Jaga's Notion bug-report connector. Its own subject
   // rather than a mode of `BpjsConfig` or a generic integrations one, because
   // the two grants answer to different owners: a clinic administrator

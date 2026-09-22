@@ -184,6 +184,10 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // predates the keys.
   { action: 'read', subject: 'SatusehatLocation' },
   { action: 'write', subject: 'SatusehatLocation' },
+  // P24-T16. Mirrors the KYC grant `seed.sql` gives ADMIN; without it the
+  // "Verifikasi SATUSEHAT" button never renders for a session hint that
+  // predates the key.
+  { action: 'verify', subject: 'SatusehatKyc' },
   { action: 'read', subject: 'Notification' },
   { action: 'manage', subject: 'Notification' },
   // SJ-1. Mirrors the three organization grants `seed.sql` gives ADMIN, so an

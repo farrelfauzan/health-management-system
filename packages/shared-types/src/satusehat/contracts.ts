@@ -1,5 +1,6 @@
 import type {
   SatusehatEnvironmentValue,
+  SatusehatKycDisabledReasonValue,
   SatusehatLocationBlockReasonValue,
   SatusehatLocationFallbackReasonValue,
   SatusehatLocationKindValue,
@@ -283,4 +284,26 @@ export type SatusehatLocationRegistrationResultView = {
   outcomes: SatusehatLocationRegistrationOutcomeView[];
   processedCount: number;
   stoppedEarly: boolean;
+};
+
+/**
+ * Whether the signed-in operator can start a SATUSEHAT KYC verification now
+ * (P24-T16, FR-KYC-07), and the one reason they cannot. `hasOperatorNik` is
+ * separate from the reason so the screen can say "add your NIK" even while a
+ * deployment-level reason takes precedence.
+ */
+export type SatusehatKycStatusView = {
+  isEnabled: boolean;
+  disabledReason: SatusehatKycDisabledReasonValue | null;
+  hasOperatorNik: boolean;
+};
+
+/**
+ * One validation URL (FR-KYC-02). Returned once, never persisted or logged;
+ * the token is inside the URL and is not exposed separately. `expiresAt` is
+ * null because the platform does not state one.
+ */
+export type SatusehatKycSessionView = {
+  url: string;
+  expiresAt: string | null;
 };

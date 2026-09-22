@@ -54988,6 +54988,142 @@ paths:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
       tags: *a79
+  /api/v1/satusehat/kyc/status:
+    get:
+      operationId: SatusehatKycController_getStatus_v1
+      parameters: []
+      responses:
+        "200":
+          description: 'Enabled, or the one reason it is not: SATUSEHAT credentials
+            absent, KYC key material absent or invalid, the KYC URL on a
+            different platform than the FHIR URL, or the signed-in operator has
+            no NIK or no name on file (FR-KYC-07). The rule is "KYC keys not
+            configured", never "sandbox".'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      isEnabled:
+                        type: boolean
+                      disabledReason:
+                        type: string
+                      hasOperatorNik:
+                        type: boolean
+                    required:
+                      - isEnabled
+                      - disabledReason
+                      - hasOperatorNik
+                required:
+                  - data
+                example:
+                  data:
+                    isEnabled: false
+                    disabledReason: KYC_KEYS_NOT_CONFIGURED
+                    hasOperatorNik: true
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Whether I can start a SATUSEHAT KYC verification
+      tags: &a80
+        - SATUSEHAT
+  /api/v1/satusehat/kyc/sessions:
+    post:
+      operationId: SatusehatKycController_startSession_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSatusehatKycSessionDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  patientId: 4f1c2a9e-6b3d-4e8a-9c7f-1a2b3c4d5e6f
+      responses:
+        "200":
+          description: Asks the platform for a validation URL on the signed-in operator's
+            behalf — their account name and NIK (clinician profile first, then
+            account; D-039) travel inside SATUSEHAT's encrypted request. The URL
+            is returned once and is never persisted or logged; open it in the
+            dialog or a new tab. Audits SATUSEHAT_KYC_STARTED with the operator
+            and, when given, the patient. 422 when the operator has no NIK or no
+            name; 503 when SATUSEHAT or its KYC keys are not configured; 502
+            when the platform refused or is unreachable.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                      expiresAt:
+                        nullable: true
+                    required:
+                      - url
+                      - expiresAt
+                required:
+                  - data
+                example:
+                  data:
+                    url: https://kyc-satusehat.kemkes.go.id/validation?token=example-token
+                    expiresAt: null
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Start a SATUSEHAT KYC verification
+      tags: *a80
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -55101,7 +55237,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a80
+      tags: &a81
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -55239,7 +55375,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a80
+      tags: *a81
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -55298,7 +55434,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a80
+      tags: *a81
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -55364,7 +55500,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a80
+      tags: *a81
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -55452,7 +55588,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a81
+      tags: &a82
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -55519,7 +55655,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -55613,7 +55749,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -55719,7 +55855,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a81
+      tags: *a82
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -55807,7 +55943,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a82
+      tags: &a83
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -55901,7 +56037,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -55990,7 +56126,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -56084,7 +56220,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -56384,7 +56520,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a83
+      tags: &a84
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -56493,7 +56629,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a83
+      tags: *a84
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -56740,7 +56876,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a84
+      tags: &a85
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -56881,7 +57017,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a84
+      tags: *a85
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -56940,7 +57076,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -57006,7 +57142,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -57076,7 +57212,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -57178,7 +57314,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a84
+      tags: *a85
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -57257,7 +57393,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a85
+      tags: &a86
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -57374,7 +57510,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a85
+      tags: *a86
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -57497,7 +57633,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a86
+      tags: &a87
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -57584,7 +57720,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a86
+      tags: *a87
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -57664,7 +57800,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a86
+      tags: *a87
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -57783,7 +57919,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a86
+      tags: *a87
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -57882,7 +58018,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a86
+      tags: *a87
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -57958,7 +58094,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a86
+      tags: *a87
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -58104,7 +58240,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a86
+      tags: *a87
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -58196,7 +58332,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a86
+      tags: *a87
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -58288,7 +58424,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a86
+      tags: *a87
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -64954,6 +65090,12 @@ components:
             required:
               - kind
               - id
+    CreateSatusehatKycSessionDto:
+      type: object
+      properties:
+        patientId:
+          type: string
+          format: uuid
     UpsertBpjsPcareConfigDto:
       type: object
       properties:

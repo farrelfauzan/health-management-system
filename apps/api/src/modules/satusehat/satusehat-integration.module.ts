@@ -2,14 +2,17 @@ import { Module } from '@nestjs/common';
 
 import { SatusehatModule } from '../../common/satusehat/satusehat.module';
 import { DoctorManagementModule } from '../doctor-management/doctor-management.module';
+import { SatusehatKycController } from './controller/satusehat-kyc.controller';
 import { SatusehatLinkController } from './controller/satusehat-link.controller';
 import { SatusehatLocationController } from './controller/satusehat-location.controller';
 import { SatusehatRecordController } from './controller/satusehat-record.controller';
 import { SatusehatSubmissionController } from './controller/satusehat-submission.controller';
+import { SatusehatKycOperatorRepository } from './repository/satusehat-kyc-operator.repository';
 import { SatusehatLinkRepository } from './repository/satusehat-link.repository';
 import { SatusehatLocationRepository } from './repository/satusehat-location.repository';
 import { SatusehatPostnatalRepository } from './repository/satusehat-postnatal.repository';
 import { SatusehatSubmissionRepository } from './repository/satusehat-submission.repository';
+import { SatusehatKycService } from './service/satusehat-kyc.service';
 import { SatusehatLinkService } from './service/satusehat-link.service';
 import { SatusehatLocationRegistrationService } from './service/satusehat-location-registration.service';
 import { SatusehatLocationTreeService } from './service/satusehat-location-tree.service';
@@ -24,7 +27,8 @@ import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker
  * Feature module for SATUSEHAT master-data linkage (P10-T02), the submission
  * pipeline (P10-T04), the admin ops surface over the outbox (P10-T06), and the
  * treating doctor's comparison with what SATUSEHAT holds (P21-T04), and the
- * clinic's Location tree registration (P24-T06).
+ * clinic's Location tree registration (P24-T06), and the front desk's KYC
+ * verification of a patient's SATUSEHAT Mobile profile (P24-T16).
  * Named distinctly from the common {@link SatusehatModule} adapter it builds
  * on. Outbox rows are created by the EMR close transaction — this module only
  * ever consumes them.
@@ -39,6 +43,7 @@ import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker
     SatusehatSubmissionController,
     SatusehatRecordController,
     SatusehatLocationController,
+    SatusehatKycController,
   ],
   providers: [
     SatusehatLinkRepository,
@@ -54,6 +59,8 @@ import { SatusehatSubmissionWorker } from './service/satusehat-submission.worker
     SatusehatLocationRepository,
     SatusehatLocationTreeService,
     SatusehatLocationRegistrationService,
+    SatusehatKycOperatorRepository,
+    SatusehatKycService,
   ],
 })
 export class SatusehatIntegrationModule {}
