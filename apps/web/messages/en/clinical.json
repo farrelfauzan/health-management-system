@@ -438,6 +438,25 @@
         "cancel": "Cancel",
         "registered": "The newborn was registered.",
         "error": "Unable to register this newborn."
+      },
+      "kyc": {
+        "action": "Verify with SATUSEHAT",
+        "starting": "Preparing verification...",
+        "startError": "The SATUSEHAT verification could not be started. Please try again.",
+        "disabled": {
+          "notConfigured": "The SATUSEHAT integration is not configured.",
+          "keysNotConfigured": "The SATUSEHAT KYC keys are not configured. Contact an administrator.",
+          "operatorNikMissing": "Add your NIK to your profile to verify patients",
+          "operatorNameMissing": "Your account has no name yet. Ask an administrator to add one."
+        },
+        "dialog": {
+          "title": "SATUSEHAT Mobile verification",
+          "description": "Enter the access code from the patient's SATUSEHAT Mobile app, check the NIK, name and photo, then submit.",
+          "frameTitle": "SATUSEHAT verification page",
+          "frameBlocked": "The verification page cannot be shown here. Open it in a new tab to continue.",
+          "openInNewTab": "Open in a new tab",
+          "close": "Close"
+        }
       }
     },
     "privacyNotice": {

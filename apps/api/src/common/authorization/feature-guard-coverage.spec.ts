@@ -74,6 +74,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   SatusehatSubmissionController: 'satusehat',
   // P24-T06. Registering the clinic's Locations writes to SATUSEHAT.
   SatusehatLocationController: 'satusehat',
+  // P24-T16. Front-desk KYC asks the platform for a validation URL.
+  SatusehatKycController: 'satusehat',
   ChannelGatewayAdminController: 'cs-channels',
   TelegramWebhookController: 'cs-channels',
   WhatsappWebhookController: 'cs-channels',

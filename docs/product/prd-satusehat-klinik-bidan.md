@@ -282,11 +282,11 @@ Organization (SATUSEHAT_ORGANIZATION_ID)
 | --- | --- | --- |
 | FR-KYC-01 | MUST | A KYC client implementing SATUSEHAT's hybrid encryption. The deployment holds an RSA key pair. Each request is AES-256-GCM encrypted, the AES key is wrapped with SATUSEHAT's RSA public key (OAEP, SHA-256), and the body is sent as `text/plain` armoured `-----BEGIN ENCRYPTED MESSAGE-----`. Responses are decrypted with the private key |
 | FR-KYC-02 | MUST | `POST /kyc/v1/generate-url` with `agent_name` and `agent_nik` of the signed-in operator. The returned validation URL opens in a dialog frame, with a new-tab fallback if the frame is refused. There the operator enters the patient's SATUSEHAT Mobile access code, checks NIK, name and photo, and submits |
-| FR-KYC-03 | MUST | The operator's NIK is stored encrypted with a blind index, using the patient-identifier pattern (`docs/post-mvp/patient-identifiers.md`), on the staff profile from P20-T04. An operator without a NIK sees "Tambahkan NIK Anda di profil untuk memverifikasi pasien" instead of the button |
-| FR-KYC-04 | MUST | New key `satusehat-kyc.verify:any` for `ADMIN` and `MIDWIFE`. In a klinik bidan the bidan is often also the desk |
+| FR-KYC-03 | MUST | The operator's NIK is stored encrypted with a blind index, using the patient-identifier pattern (`docs/post-mvp/patient-identifiers.md`), on **`User`** (D-039, P24-T15 — P20-T04 decided there is no staff profile table; a clinician's Practitioner NIK on `DoctorProfile` is read first). An operator without a NIK sees the button disabled with "Tambahkan NIK Anda di profil untuk memverifikasi pasien" |
+| FR-KYC-04 | MUST | New key `satusehat.kyc.verify:any` (repo naming; the draft said `satusehat-kyc.verify:any`) for `ADMIN` and `MIDWIFE` — and `DOCTOR`, because the seed defines MIDWIFE as DOCTOR minus `lab-result.verify:any` (D-034). `PHARMACIST`, `LAB_TECHNICIAN` and `PATIENT` get 403. In a klinik bidan the bidan is often also the desk |
 | FR-KYC-05 | MUST | Audit `SATUSEHAT_KYC_STARTED` with the operator user id and, when launched from a patient page, the patient id. Never the token, the URL or any NIK |
 | FR-KYC-06 | MUST | The validation token and URL are neither persisted nor logged. `lastError`-style fields store the error code only |
-| FR-KYC-07 | MUST | KYC is disabled with an explanation when SATUSEHAT is unconfigured, or when the environment is sandbox and the spike finds no KYC sandbox. Production depends on P21-T06 |
+| FR-KYC-07 | MUST | KYC is disabled with an explanation when SATUSEHAT is unconfigured, when the **KYC key material is not configured or invalid** (`SATUSEHAT_KYC_*`, P24-T14), when the KYC URL points at a different platform than the FHIR URL, or when the operator has no NIK. *Amended 2026-09-22:* the rule is "KYC keys not configured", **not** "sandbox" — the P24-T01 spike found a KYC endpoint on staging (`klinik-bidan-sandbox-spike.md` §3). Production depends on P21-T06 |
 | FR-KYC-08 | COULD | The challenge-code method (`POST /kyc/v1/challenge-code`, per NIK). The access-code flow in FR-KYC-02 is the one the operational guide documents for the desk |
 
 **User stories**
@@ -295,15 +295,15 @@ Organization (SATUSEHAT_ORGANIZATION_ID)
   - *Given* an operator with a NIK on file and the patient's app access code, *when* the operator clicks "Verifikasi SATUSEHAT" on the patient page, *then* the validation page opens in a dialog, and closing it returns to the patient page.
   - *Then* the audit has one `SATUSEHAT_KYC_STARTED` row with operator and patient ids and no NIK.
 - **US-KYC-02** — As a clinic admin, I want KYC to fail loudly when it cannot work.
-  - *Given* the deployment runs on the sandbox without KYC, *when* anyone opens a patient page, *then* the KYC button is disabled with the reason.
+  - *Given* the deployment has no KYC key material (whichever platform it points at), *when* anyone opens a patient page, *then* the KYC button is disabled with the reason.
 
-**Data model delta** — the operator NIK (ciphertext, index, last4, key version) on the P20-T04 staff profile. No KYC table: a session is audited, not stored.
+**Data model delta** — the operator NIK (ciphertext, index, last4, key version) on `User` (D-039). No KYC table: a session is audited, not stored.
 
-**API surface** — `POST /api/v1/satusehat/kyc/sessions` (`satusehat-kyc.verify:any`), body `{ patientId? }`, response `{ data: { url, expiresAt? } }`. The URL is returned once and never logged.
+**API surface** — `POST /api/v1/satusehat/kyc/sessions` (`satusehat.kyc.verify:any`), body `{ patientId? }`, response `{ data: { url, expiresAt } }` (`expiresAt` is null: the platform states none), and `GET /api/v1/satusehat/kyc/status` → `{ isEnabled, disabledReason, hasOperatorNik }` for the disabled copy. The URL is returned once and never logged.
 
 **RBAC** — `verify` is already in `SUPPORTED_ACTIONS`. The ADMIN preset must add the resource.
 
-**Config** — `SATUSEHAT_KYC_PRIVATE_KEY` and `SATUSEHAT_KYC_PUBLIC_KEY` (PEM, from the secret store; see `docs/security/secrets.md`) and `SATUSEHAT_KYC_SERVER_PUBLIC_KEY`. A missing key disables KYC; it does not crash the API.
+**Config** — `SATUSEHAT_KYC_BASE_URL`, `SATUSEHAT_KYC_PRIVATE_KEY` and `SATUSEHAT_KYC_PUBLIC_KEY` (PEM, from the secret store; see `docs/security/secrets.md`) and `SATUSEHAT_KYC_SERVER_PUBLIC_KEY`. A missing key disables KYC; it does not crash the API.
 
 **Edge cases** — SATUSEHAT may refuse framing. The dialog detects a blocked frame and offers the new-tab link. The URL is short-lived, so the dialog never caches it.
 

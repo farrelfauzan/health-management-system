@@ -315,3 +315,38 @@ export const registerSatusehatLocationsSchema = z
   });
 
 export type RegisterSatusehatLocationsInput = z.infer<typeof registerSatusehatLocationsSchema>;
+
+/**
+ * Why "Verifikasi SATUSEHAT" is unavailable (P24-T16, FR-KYC-07). The first
+ * eight come from the adapter's key check (P24-T14); the last two are about
+ * the signed-in operator. The rule is "KYC keys not configured", never
+ * "sandbox": staging has a KYC endpoint (klinik-bidan-sandbox-spike §3).
+ */
+export const SATUSEHAT_KYC_DISABLED_REASONS = [
+  'SATUSEHAT_NOT_CONFIGURED',
+  'KYC_KEYS_NOT_CONFIGURED',
+  'KYC_KEYS_INCOMPLETE',
+  'KYC_PRIVATE_KEY_INVALID',
+  'KYC_PUBLIC_KEY_INVALID',
+  'KYC_SERVER_PUBLIC_KEY_INVALID',
+  'KYC_KEY_PAIR_MISMATCH',
+  'KYC_PLATFORM_MISMATCH',
+  'OPERATOR_NIK_MISSING',
+  'OPERATOR_NAME_MISSING',
+] as const;
+
+export const satusehatKycDisabledReasonSchema = z.enum(SATUSEHAT_KYC_DISABLED_REASONS);
+
+export type SatusehatKycDisabledReasonValue = z.infer<typeof satusehatKycDisabledReasonSchema>;
+
+/**
+ * `POST /satusehat/kyc/sessions` (P24-T16). The patient is optional: the
+ * validation page asks for the patient's own access code, so the session is
+ * about the operator; the id is only what the audit row records when the
+ * button was pressed on a patient page.
+ */
+export const createSatusehatKycSessionSchema = z.object({
+  patientId: z.string().uuid().optional(),
+});
+
+export type CreateSatusehatKycSessionInput = z.infer<typeof createSatusehatKycSessionSchema>;

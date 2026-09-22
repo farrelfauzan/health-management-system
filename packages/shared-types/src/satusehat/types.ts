@@ -1010,3 +1010,13 @@ export type SatusehatLocationEntryRegistration = {
   view: SatusehatLocationRegistrationOutcomeView;
   shouldStopBatch: boolean;
 };
+
+/**
+ * The signed-in operator as SATUSEHAT's KYC wants them (P24-T16, D-039): the
+ * account name and the NIK resolved clinician profile first, account second.
+ * Plaintext, so this never leaves the service that asked for it.
+ */
+export type SatusehatKycOperator = {
+  readonly name: string | null;
+  readonly nik: string | null;
+};

@@ -302,6 +302,10 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- clinic's national facility record.
     ('satusehat.location.read:any', 'SatusehatLocation', 'read', 'ANY', 'Read which clinic locations are registered on SATUSEHAT'),
     ('satusehat.location.write:any', 'SatusehatLocation', 'write', 'ANY', 'Register clinic locations on SATUSEHAT and push their changes'),
+    -- P24-T16 (FR-KYC-04). Starting a SATUSEHAT Mobile profile verification at
+    -- the desk. Its own subject: it neither links a record nor reads one, and
+    -- the operator's own NIK goes to the platform with every session.
+    ('satusehat.kyc.verify:any', 'SatusehatKyc', 'verify', 'ANY', 'Start a SATUSEHAT Mobile profile verification (KYC) for a patient at the desk'),
     ('bpjs.config.manage:any', 'BpjsConfig', 'manage', 'ANY', 'Manage BPJS bridging credentials and connection settings (PCare and Antrean Online)'),
     -- P23-T04. Read-only in practice: the Notion connector is configured by
     -- environment (P23-T02), so this grants the status view and the Bug Board
@@ -632,6 +636,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'satusehat.submission.retry:any'),
     ('ADMIN', 'satusehat.location.read:any'),
     ('ADMIN', 'satusehat.location.write:any'),
+    ('ADMIN', 'satusehat.kyc.verify:any'),
     -- BPJS credential custody is a back-office operation: the stored PCare
     -- login can create and delete claims, so only ADMIN manages it. Secrets
     -- are write-only in the API regardless of this grant.
@@ -770,6 +775,11 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     -- `encounter.read`: ADMIN holds `encounter.read:any`, and reusing it would
     -- hand this view to the front desk. The treating clinician only (D-033).
     ('DOCTOR', 'satusehat.record.read:own'),
+    -- P24-T16 (FR-KYC-04). The ticket names ADMIN and MIDWIFE; DOCTOR holds it
+    -- too because MIDWIFE is seeded as DOCTOR minus `lab-result.verify:any`
+    -- (D-034, `midwife-rbac-seed.spec.ts`), and in a klinik bidan the
+    -- clinician is often also the desk. PHARMACIST and LAB_TECHNICIAN get none.
+    ('DOCTOR', 'satusehat.kyc.verify:any'),
     -- The doctor codes the diagnosis and the procedures, so both lookups are
     -- clinical tools, not admin ones. Pharmacists and patients get no grant.
     ('DOCTOR', 'icd10-code.read:any'),
@@ -1047,6 +1057,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'encounter.read:own'),
     ('MIDWIFE', 'encounter.write:own'),
     ('MIDWIFE', 'satusehat.record.read:own'),
+    ('MIDWIFE', 'satusehat.kyc.verify:any'),
     ('MIDWIFE', 'icd10-code.read:any'),
     ('MIDWIFE', 'icd9cm-code.read:any'),
     ('MIDWIFE', 'medication.read:any'),
