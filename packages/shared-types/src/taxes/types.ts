@@ -772,6 +772,14 @@ export type CoretaxBp21Line = {
   withholdingDate: string;
 };
 
+/** What every line of one BP21 file shares: the period, its last day, the DPP share, the withholder. */
+export type CoretaxBp21LineContext = {
+  period: string;
+  lastDay: string;
+  deemedPercent: number;
+  withholderPlaceOfBusinessId: string;
+};
+
 /** The whole `Bp21Bulk` file: the withholder's NPWP and one line per clinician. */
 export type CoretaxBp21Document = {
   withholderTin: string;

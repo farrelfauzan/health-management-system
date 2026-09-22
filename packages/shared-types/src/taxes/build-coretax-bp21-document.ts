@@ -11,6 +11,7 @@ import type {
   BuiltCoretaxBp21Document,
   CoretaxBp21ClinicianSource,
   CoretaxBp21Line,
+  CoretaxBp21LineContext,
   CoretaxExportIssue,
   Pph21ReportLine,
   Pph21ReportSummary,
@@ -22,13 +23,6 @@ const DOCTOR_ID_REFERENCE_LENGTH = 8;
 const MAX_DECIMAL_PLACES = 2;
 const NPWP_PATTERN = new RegExp(`^\\d{${NPWP_DIGIT_COUNT}}$`);
 const NITKU_PATTERN = new RegExp(`^\\d{${NITKU_DIGIT_COUNT}}$`);
-
-type LineContext = {
-  period: string;
-  lastDay: string;
-  deemedPercent: number;
-  withholderPlaceOfBusinessId: string;
-};
 
 function resolveLastDayOfPeriod(period: string): string {
   const [year = 0, month = 1] = period.split('-').map(Number);
@@ -124,7 +118,7 @@ function validateLine(
 function toCoretaxLine(params: {
   line: Pph21ReportLine;
   clinician: CoretaxBp21ClinicianSource;
-  context: LineContext;
+  context: CoretaxBp21LineContext;
 }): CoretaxBp21Line {
   const { line, clinician, context } = params;
   const tin = clinician.taxIdentityNumber ?? '';
@@ -175,7 +169,7 @@ export function buildCoretaxBp21Document(
   if (issues.length > 0) {
     return { document: null, issues, skippedDoctorIds };
   }
-  const context: LineContext = {
+  const context: CoretaxBp21LineContext = {
     period: params.report.period,
     lastDay: resolveLastDayOfPeriod(params.report.period),
     deemedPercent: (params.report.summary as Pph21ReportSummary).dppPercent,
