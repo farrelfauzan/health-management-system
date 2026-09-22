@@ -1507,14 +1507,6 @@ export type EnumPatientStatusFieldUpdateOperationsInput = {
   set?: $Enums.PatientStatus
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableEnumBloodTypeFieldUpdateOperationsInput = {
   set?: $Enums.BloodType | null
 }
@@ -11417,16 +11409,6 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     deliveryConsents: Prisma.$PatientDeliveryConsentPayload<ExtArgs>[]
     deliveries: Prisma.$DocumentDeliveryPayload<ExtArgs>[]
     managedDocuments: Prisma.$ManagedDocumentPayload<ExtArgs>[]
-    /**
-     * The arrival worklist (§5.2) asks exactly this question: which records did
-     * the chat channel create that a human has not completed yet.
-     * 
-     * There is deliberately **no index on `phoneNumber`**. The channel's
-     * phone match (§5.1) compares digits after normalisation — `0812…` and
-     * `+62812…` are the same number written two ways — so a plain b-tree on the
-     * stored text could never serve it, and carrying one would be an index that
-     * costs every write and answers no query anyone asks.
-     */
     newbornCareRecord: Prisma.$NewbornCareRecordPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{

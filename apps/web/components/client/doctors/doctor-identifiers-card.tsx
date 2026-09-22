@@ -52,6 +52,12 @@ export function DoctorIdentifiersCard({ doctor, isSatusehatEnabled }: DoctorIden
             </dd>
           </div>
           <div>
+            <dt className="font-heading text-xs font-medium text-slate-600">{t('doctors.npwp')}</dt>
+            <dd className="font-mono text-sm text-slate-800">
+              {doctor.npwp ?? t('doctors.npwpMissing')}
+            </dd>
+          </div>
+          <div>
             <dt className="font-heading text-xs font-medium text-slate-600">SATUSEHAT (IHS)</dt>
             <dd className="font-mono text-sm text-slate-800">
               {doctor.satusehatPractitionerId ?? t('doctors.notLinked')}

@@ -96,6 +96,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           <SidebarInset className="min-w-0">
             <TopBar
               profile={profile}
+              // P24-T15: the operator's own account — name, address and the
+              // NIK the front desk presents to SATUSEHAT's KYC (D-039).
+              profileHref="/admin/profile"
               excludedNavHrefs={excludedNavHrefs}
               isBugReportingEnabled={isBugReportingEnabled}
             />

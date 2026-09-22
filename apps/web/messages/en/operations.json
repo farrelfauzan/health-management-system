@@ -2358,7 +2358,8 @@
         "finalized": "Report finalized",
         "kind": {
           "PP55_OMZET": "PPh final PP 55 (0.5% of turnover)",
-          "PPN_OUTPUT": "Output VAT (PPN keluaran)"
+          "PPN_OUTPUT": "Output VAT (PPN keluaran)",
+          "PPH21_NON_EMPLOYEE": "PPh 21 non-employee (clinician fees)"
         },
         "status": {
           "NONE": "Not drafted",
@@ -2375,7 +2376,8 @@
           "taxDue": "PPh final due",
           "taxableAmount": "Selling price",
           "taxBase": "DPP",
-          "taxAmount": "PPN"
+          "taxAmount": "PPN",
+          "grossFee": "Gross clinician fees"
         },
         "pp55": {
           "grossOmzet": "Gross turnover (payments received)",
@@ -2421,8 +2423,70 @@
           "TAX_REPORT_FINALIZED": "This report is finalized and kept as filed.",
           "TAX_REPORT_PERIOD_OPEN": "The month has not ended yet; finalize it once it is over.",
           "TAX_REPORT_PERIOD_IN_FUTURE": "That month has not started yet.",
-          "TAX_REPORT_PDF_UNAVAILABLE": "The PDF service is unavailable right now. Try again shortly."
+          "TAX_REPORT_PDF_UNAVAILABLE": "The PDF service is unavailable right now. Try again shortly.",
+          "TAX_REPORT_IDENTITY_INCOMPLETE": "A recipient has an incomplete tax identity. Add their NPWP or NIK, recompute, then finalize.",
+          "TAX_BRACKETS_UNAVAILABLE": "No Article 17 brackets are in force for this period. Seed the PPh 21 brackets first."
+        },
+        "pph21": {
+          "grossFee": "Gross clinician fees",
+          "dpp": "Taxable base ({percent}% of gross)",
+          "bracketsEffectiveFrom": "Article 17 brackets in force since",
+          "taxAmount": "PPh 21 withheld",
+          "clinicianCount": "{count} recipients",
+          "billingCode": "Billing code (KAP-KJS)",
+          "paymentDueDate": "Deposit by",
+          "reportingDueDate": "File SPT Masa PPh 21/26 by",
+          "incompleteIdentity": "{count} recipients have an incomplete tax identity. Add their NPWP or NIK on the clinician profile and recompute; the draft cannot be finalized until then.",
+          "nonCumulative": "Computed per period, non-cumulative (PMK 168/2023 Art. 5(1)(e)).",
+          "lines": {
+            "doctor": "Recipient",
+            "profession": "Profession",
+            "identity": "Tax identity",
+            "identityIncomplete": "tax identity incomplete",
+            "entryCount": "Lines",
+            "grossFee": "Gross",
+            "taxBase": "Taxable base",
+            "taxAmount": "PPh 21",
+            "total": "Total"
+          },
+          "identifiers": {
+            "reveal": "Show full NPWP/NIK",
+            "hide": "Hide",
+            "revealing": "Revealing identities…",
+            "audit": "Revealing tax identities is recorded in the audit log. The full numbers are for the withholding slip only; do not copy them elsewhere.",
+            "error": "Tax identities could not be loaded."
+          },
+          "profession": {
+            "DOCTOR": "Doctor",
+            "MIDWIFE": "Midwife"
+          }
         }
+      }
+    },
+    "account": {
+      "title": "My account",
+      "subtitle": "Your account details and the NIK you present as the operator when verifying a patient with SATUSEHAT.",
+      "loadErrorTitle": "Account could not be loaded",
+      "loadErrorDescription": "Something went wrong while loading your account. Please try again.",
+      "identity": {
+        "title": "Managed by the clinic",
+        "description": "Your name and sign-in address are set by an administrator. Ask an administrator to change them.",
+        "fullName": "Name",
+        "email": "Sign-in email",
+        "unnamed": "Not named yet"
+      },
+      "nik": {
+        "title": "Operator NIK",
+        "description": "SATUSEHAT requires the NIK of the operator who verifies a patient's profile (KYC). It is stored encrypted and only its last four digits are ever shown.",
+        "current": "NIK on file: {masked}",
+        "none": "No NIK is on file for this account yet.",
+        "addLabel": "NIK (16 digits)",
+        "replaceLabel": "New NIK (16 digits)",
+        "invalid": "A NIK is exactly 16 digits.",
+        "save": "Save NIK",
+        "saving": "Saving...",
+        "saved": "Your NIK has been saved.",
+        "saveError": "Your NIK could not be saved. Please try again."
       }
     }
   },

@@ -724,7 +724,10 @@
         "emailNoAccount": "This doctor has no account yet and cannot sign in. Use Send Invitation on the doctor list to give them access.",
         "createAction": "Create Clinician",
         "profession": "Profession",
-        "professionDescription": "Decides the account's role. It cannot change once this clinician has encounters, admissions or prescriptions."
+        "professionDescription": "Decides the account's role. It cannot change once this clinician has encounters, admissions or prescriptions.",
+        "npwp": "Clinician NPWP",
+        "npwpHelp": "The clinician’s own NPWP for the PPh 21 withholding slip on their fees. Leave blank if none: the NIK serves as NPWP.",
+        "npwpPlaceholder": "15–16 digits"
       },
       "identity": "Practitioner Identity",
       "reveal": "Reveal",
@@ -946,7 +949,9 @@
           "description": "Revoke the pelimpahan {doctor} granted to {name}. Procedures already recorded under it keep naming it.",
           "error": "The mandate could not be revoked. Please try again."
         }
-      }
+      },
+      "npwp": "NPWP",
+      "npwpMissing": "None (NIK is used)"
     },
     "portal": {
       "documents": {

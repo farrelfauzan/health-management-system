@@ -2358,7 +2358,8 @@
         "finalized": "Laporan difinalkan",
         "kind": {
           "PP55_OMZET": "PPh final PP 55 (0,5% omzet)",
-          "PPN_OUTPUT": "PPN keluaran"
+          "PPN_OUTPUT": "PPN keluaran",
+          "PPH21_NON_EMPLOYEE": "PPh 21 bukan pegawai (jasa medis)"
         },
         "status": {
           "NONE": "Belum dibuat",
@@ -2375,7 +2376,8 @@
           "taxDue": "PPh final terutang",
           "taxableAmount": "Harga jual",
           "taxBase": "DPP",
-          "taxAmount": "PPN"
+          "taxAmount": "PPN",
+          "grossFee": "Bruto jasa medis"
         },
         "pp55": {
           "grossOmzet": "Omzet bruto (pembayaran diterima)",
@@ -2421,8 +2423,70 @@
           "TAX_REPORT_FINALIZED": "Laporan ini sudah final dan disimpan sesuai yang dilaporkan.",
           "TAX_REPORT_PERIOD_OPEN": "Bulan ini belum berakhir; finalkan setelah bulan selesai.",
           "TAX_REPORT_PERIOD_IN_FUTURE": "Bulan itu belum dimulai.",
-          "TAX_REPORT_PDF_UNAVAILABLE": "Layanan PDF sedang tidak tersedia. Coba lagi sebentar lagi."
+          "TAX_REPORT_PDF_UNAVAILABLE": "Layanan PDF sedang tidak tersedia. Coba lagi sebentar lagi.",
+          "TAX_REPORT_IDENTITY_INCOMPLETE": "Ada penerima dengan identitas pajak belum lengkap. Lengkapi NPWP atau NIK-nya, hitung ulang, lalu finalkan.",
+          "TAX_BRACKETS_UNAVAILABLE": "Tarif Pasal 17 belum tersedia untuk masa ini. Jalankan seed tarif PPh 21 terlebih dahulu."
+        },
+        "pph21": {
+          "grossFee": "Jumlah bruto jasa medis",
+          "dpp": "DPP ({percent}% × bruto)",
+          "bracketsEffectiveFrom": "Tarif Pasal 17 berlaku sejak",
+          "taxAmount": "PPh 21 dipotong",
+          "clinicianCount": "{count} penerima penghasilan",
+          "billingCode": "Kode billing (KAP-KJS)",
+          "paymentDueDate": "Batas setor",
+          "reportingDueDate": "Batas lapor SPT Masa PPh 21/26",
+          "incompleteIdentity": "{count} penerima dengan identitas pajak belum lengkap. Lengkapi NPWP atau NIK pada profil tenaga klinis, lalu hitung ulang; draft tidak dapat difinalkan sebelum itu.",
+          "nonCumulative": "Dihitung per masa, tidak kumulatif (PMK 168/2023 Pasal 5(1)(e)).",
+          "lines": {
+            "doctor": "Penerima",
+            "profession": "Profesi",
+            "identity": "Identitas pajak",
+            "identityIncomplete": "identitas pajak belum lengkap",
+            "entryCount": "Baris",
+            "grossFee": "Bruto",
+            "taxBase": "DPP",
+            "taxAmount": "PPh 21",
+            "total": "Total"
+          },
+          "identifiers": {
+            "reveal": "Tampilkan NPWP/NIK lengkap",
+            "hide": "Sembunyikan",
+            "revealing": "Membuka identitas…",
+            "audit": "Pembukaan identitas pajak dicatat di audit. Angka lengkap hanya untuk bukti potong; jangan disalin ke tempat lain.",
+            "error": "Identitas pajak tidak dapat dimuat."
+          },
+          "profession": {
+            "DOCTOR": "Dokter",
+            "MIDWIFE": "Bidan"
+          }
         }
+      }
+    },
+    "account": {
+      "title": "Akun saya",
+      "subtitle": "Data akun Anda dan NIK yang Anda gunakan sebagai petugas saat memverifikasi pasien di SATUSEHAT.",
+      "loadErrorTitle": "Akun tidak dapat dimuat",
+      "loadErrorDescription": "Terjadi kesalahan saat memuat akun Anda. Silakan coba lagi.",
+      "identity": {
+        "title": "Dikelola oleh klinik",
+        "description": "Nama dan alamat email untuk masuk diatur oleh administrator. Minta administrator untuk mengubahnya.",
+        "fullName": "Nama",
+        "email": "Email untuk masuk",
+        "unnamed": "Belum diberi nama"
+      },
+      "nik": {
+        "title": "NIK petugas",
+        "description": "SATUSEHAT memerlukan NIK petugas yang memverifikasi profil pasien (KYC). NIK disimpan terenkripsi dan hanya ditampilkan empat digit terakhirnya.",
+        "current": "NIK tersimpan: {masked}",
+        "none": "Belum ada NIK tersimpan di akun ini.",
+        "addLabel": "NIK (16 digit)",
+        "replaceLabel": "NIK baru (16 digit)",
+        "invalid": "NIK harus terdiri dari 16 digit angka.",
+        "save": "Simpan NIK",
+        "saving": "Menyimpan...",
+        "saved": "NIK Anda berhasil disimpan.",
+        "saveError": "NIK gagal disimpan. Silakan coba lagi."
       }
     }
   },

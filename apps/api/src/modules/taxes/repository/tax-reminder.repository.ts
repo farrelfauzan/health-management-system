@@ -1,3 +1,4 @@
+import { TaxReportKindValue } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -36,7 +37,7 @@ export class TaxReminderRepository {
   /** The periods whose draft of this kind is FINALIZED, among those asked about. */
   async listFinalizedPeriods(
     periods: readonly string[],
-    kind: 'PP55_OMZET' | 'PPN_OUTPUT',
+    kind: TaxReportKindValue,
   ): Promise<string[]> {
     if (periods.length === 0) {
       return [];

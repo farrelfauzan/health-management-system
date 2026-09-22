@@ -1,6 +1,9 @@
 import type { InvoiceItemTypeValue } from '#billing/schemas';
 import type { ClinicLetterhead } from '#billing/types';
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
 import type {
+  ClinicianTaxIdentityKindValue,
+  ClinicianTaxIdentityStatusValue,
   CreateTaxCodeRateInput,
   FakturTransactionCodeValue,
   IncomeTaxRegimeValue,
@@ -331,7 +334,138 @@ export type PpnOutputReportSummary = {
   reportingDueDate: string;
 };
 
-export type TaxReportSummary = Pp55ReportSummary | PpnOutputReportSummary;
+/**
+ * One Pasal 17(1)(a) bracket as the repository returns it (P27-T07). Bounds
+ * are rupiah of taxable base: `lowerBound` inclusive, `upperBound` exclusive
+ * and `null` for the open top bracket. Rows sharing an `effectiveFrom` form
+ * one bracket set; the set in force on a date is the latest one that starts
+ * on or before it.
+ */
+export type Pph21TaxBracketRecord = {
+  id: string;
+  /** Calendar date, `YYYY-MM-DD`. */
+  effectiveFrom: string;
+  lowerBound: number;
+  upperBound: number | null;
+  ratePercent: number;
+};
+
+export type ResolvePph21BracketSetParams = {
+  brackets: readonly Pph21TaxBracketRecord[];
+  /** Calendar date in the clinic's timezone, `YYYY-MM-DD`. */
+  onDate: string;
+};
+
+/** The bracket set in force on a date, lowest bracket first; empty when none has started yet. */
+export type Pph21BracketSet = {
+  effectiveFrom: string | null;
+  brackets: Pph21TaxBracketRecord[];
+};
+
+export type ComputePph21NonEmployeeParams = {
+  /** The clinician's gross fee for the period, in rupiah. */
+  grossFee: number;
+  brackets: readonly Pph21TaxBracketRecord[];
+};
+
+/** How much of the base fell in one bracket and what it cost. */
+export type Pph21BracketSlice = {
+  lowerBound: number;
+  upperBound: number | null;
+  ratePercent: number;
+  taxableAmount: number;
+  taxAmount: number;
+};
+
+/** PPh 21 on one clinician's month, non-cumulative: the base is this month's alone. */
+export type Pph21NonEmployeeTax = {
+  grossFee: number;
+  dppPercent: number;
+  taxBase: number;
+  slices: Pph21BracketSlice[];
+  taxAmount: number;
+};
+
+/**
+ * A clinician's tax identity as the withholding draft reads it (P27-T07):
+ * the NPWP when one is stored, else the NIK, which serves as NPWP (Coretax);
+ * the number itself stays masked here — the draft is stored as JSON and the
+ * PDF as a file, and neither may hold a plaintext NIK.
+ */
+export type ClinicianTaxIdentityRecord = {
+  doctorId: string;
+  fullName: string;
+  profession: ClinicianProfessionValue;
+  npwp: string | null;
+  nikLast4: string | null;
+};
+
+/** The full identifier, produced only by the repository's explicit unmask query, and audited. */
+export type ClinicianTaxIdentifierRecord = {
+  doctorId: string;
+  npwp: string | null;
+  nik: string | null;
+};
+
+export type ResolveClinicianTaxIdentityParams = {
+  npwp: string | null;
+  nikLast4: string | null;
+};
+
+/** Which identity a BP21 line would carry, with its masked display form. */
+export type ClinicianTaxIdentity = {
+  status: ClinicianTaxIdentityStatusValue;
+  /** `••••••••1234` or the NPWP; absent when there is nothing to show. */
+  masked: string | null;
+};
+
+/** One clinician's summed gross fee for the period, as the ledger reads it. */
+export type Pph21SourceClinicianFee = {
+  doctorId: string;
+  entryCount: number;
+  /** Sum of the line amounts the fees were taken from, carried for the §6 hook. */
+  lineAmount: number;
+  grossFee: number;
+};
+
+/**
+ * One clinician's BP21 line for the month (P27-T07). `identityStatus` is
+ * `MISSING` when the clinician has neither NPWP nor NIK: the line stays on
+ * the draft, flagged, and blocks finalization.
+ */
+export type Pph21ReportLine = {
+  doctorId: string;
+  doctorName: string;
+  profession: ClinicianProfessionValue;
+  identityStatus: ClinicianTaxIdentityStatusValue;
+  identityMasked: string | null;
+  entryCount: number;
+  lineAmount: number;
+  grossFee: number;
+  taxBase: number;
+  slices: Pph21BracketSlice[];
+  taxAmount: number;
+};
+
+/**
+ * The PPh 21 bukan pegawai draft for one month (P27-T07): one BP21 per
+ * clinician on the jasa medis ledger. `bracketsEffectiveFrom` names the
+ * bracket set the month was taxed under.
+ */
+export type Pph21ReportSummary = {
+  kind: 'PPH21_NON_EMPLOYEE';
+  dppPercent: number;
+  bracketsEffectiveFrom: string;
+  clinicianCount: number;
+  incompleteIdentityCount: number;
+  totals: { grossFee: number; taxBase: number; taxAmount: number };
+  taxAccountCode: string;
+  depositTypeCode: string;
+  paymentDueDate: string;
+  reportingDueDate: string;
+};
+
+export type TaxReportSummary = Pp55ReportSummary | PpnOutputReportSummary | Pph21ReportSummary;
 
 /** A payment counted in a PP 55 month. */
 export type Pp55ReportLine = {
@@ -354,7 +488,7 @@ export type PpnOutputReportLine = {
   taxAmount: number;
 };
 
-export type TaxReportLine = Pp55ReportLine | PpnOutputReportLine;
+export type TaxReportLine = Pp55ReportLine | PpnOutputReportLine | Pph21ReportLine;
 
 /** A computed report, before it is stored. */
 export type ComputedTaxReport = {
@@ -433,6 +567,25 @@ export type SummarizePpnOutputParams = {
 export type SummarizedPpnOutput = {
   summary: PpnOutputReportSummary;
   lines: PpnOutputReportLine[];
+};
+
+export type SummarizePph21WithholdingParams = {
+  fees: readonly Pph21SourceClinicianFee[];
+  identities: readonly ClinicianTaxIdentityRecord[];
+  bracketSet: Pph21BracketSet & { effectiveFrom: string };
+  dueDates: TaxReportDueDates;
+};
+
+export type SummarizedPph21Withholding = {
+  summary: Pph21ReportSummary;
+  lines: Pph21ReportLine[];
+};
+
+/** A clinician's BP21 identity with the full number, for the audited reveal and the CSV. */
+export type ClinicianTaxIdentifier = {
+  doctorId: string;
+  identityKind: ClinicianTaxIdentityKindValue;
+  taxIdentityNumber: string;
 };
 
 /** A draft or finalized report's figures after a recompute. */
@@ -548,6 +701,7 @@ export type BuildTaxReportPdfHtmlParams = {
 export type TaxObligationCode =
   | 'PP55_INCOME_TAX_DEPOSIT'
   | 'PPN_DEPOSIT_AND_RETURN'
+  | 'PPH21_WITHHOLDING_DEPOSIT'
   | 'WITHHOLDING_RETURN_PPH_21_26'
   | 'WITHHOLDING_RETURN_UNIFICATION'
   | 'ANNUAL_RETURN_INDIVIDUAL'
@@ -565,7 +719,7 @@ export type TaxObligationDueDate = {
   obligation: TaxObligationCode;
   /** `YYYY-MM-DD`, the statutory date with no working-day shift applied. */
   dueDate: string;
-  reportKind: 'PP55_OMZET' | 'PPN_OUTPUT' | null;
+  reportKind: TaxReportKindValue | null;
 };
 
 /** One reminder a sweep decided to raise, before it has been claimed. */

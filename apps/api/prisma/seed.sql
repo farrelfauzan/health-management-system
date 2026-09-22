@@ -161,7 +161,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- `auth.logout:own`, which is the existing precedent for "a thing anyone
     -- signed in may do to themselves"; the two service-account roles are
     -- deliberately left out, because nobody is behind them to have a name.
-    ('user.update:own', 'User', 'update', 'OWN', 'Correct the name on own account'),
+    ('user.update:own', 'User', 'update', 'OWN', 'Correct the name and NIK on own account'),
     -- P16-T41. A super-admin action and not deactivation (§7.3.10.2): it
     -- opens a 30-day vault-only window rather than locking the person out.
     -- Bound to no seeded role below; SUPER_ADMIN holds it through the
@@ -2189,6 +2189,38 @@ SELECT
   NOW()
 FROM seed_tax_code_rates
 ON CONFLICT ("tax_code_id", "effective_from") DO NOTHING;
+
+-- P27-T07 (SJ-248, D-038). The Pasal 17(1)(a) income-tax brackets as set by
+-- UU 7/2021 (HPP), in force from tax year 2022, that PPh 21 bukan pegawai on
+-- clinician fees is computed with. Baseline, not demo data: without a set in
+-- force the PPh 21 draft refuses to compute. DO NOTHING: a reseed must not
+-- undo a set the clinic added for a later law. Bounds are rupiah of taxable
+-- base; a NULL upper bound is the open top bracket.
+WITH seed_pph21_brackets(effective_from, lower_bound, upper_bound, rate_percent) AS (
+  VALUES
+    (DATE '2022-01-01', 0, 60000000, 5.00),
+    (DATE '2022-01-01', 60000000, 250000000, 15.00),
+    (DATE '2022-01-01', 250000000, 500000000, 25.00),
+    (DATE '2022-01-01', 500000000, 5000000000, 30.00),
+    (DATE '2022-01-01', 5000000000, NULL, 35.00)
+)
+INSERT INTO "pph21_tax_brackets" (
+  "id",
+  "effective_from",
+  "lower_bound",
+  "upper_bound",
+  "rate_percent",
+  "created_at"
+)
+SELECT
+  md5('pph21_tax_bracket:' || effective_from::text || ':' || lower_bound::text)::uuid,
+  effective_from,
+  lower_bound,
+  upper_bound,
+  rate_percent,
+  NOW()
+FROM seed_pph21_brackets
+ON CONFLICT ("effective_from", "lower_bound") DO NOTHING;
 
 -- Every tariff category is a medical service until the clinic says otherwise;
 -- medications are taxable goods. A clinic with aesthetic or administrative
