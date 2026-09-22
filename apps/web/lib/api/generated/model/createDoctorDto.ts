@@ -44,6 +44,7 @@ export interface CreateDoctorDto {
      */
   degrees?: string[];
   nik: string;
+  npwp?: string;
   /** @maxItems 20 */
   licenses?: CreateDoctorDtoLicensesItem[];
   /** @maxItems 20 */

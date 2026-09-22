@@ -13,6 +13,7 @@ const TOTAL_FIELDS = [
   'taxableAmount',
   'taxBase',
   'taxAmount',
+  'grossFee',
 ] as const;
 
 type TaxReportDifferencesNoticeProps = {

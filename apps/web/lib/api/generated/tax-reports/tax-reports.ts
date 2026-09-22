@@ -28,7 +28,8 @@ import type {
   TaxReportControllerGetReportV1200,
   TaxReportControllerListReportsV1200,
   TaxReportControllerListReportsV1Params,
-  TaxReportControllerRecomputeReportV1200
+  TaxReportControllerRecomputeReportV1200,
+  TaxReportControllerRevealIdentifiersV1200
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -503,6 +504,98 @@ export function useTaxReportControllerFinalizeReportV1<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTaxReportControllerFinalizeReportV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Reveal the clinicians' tax identities on a PPh 21 report
+ */
+export const taxReportControllerRevealIdentifiersV1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<TaxReportControllerRevealIdentifiersV1200>(
+      {url: `/api/v1/tax/reports/${id}/identifiers`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportControllerRevealIdentifiersV1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/tax/reports/${id}/identifiers`
+    ] as const;
+    }
+
+
+export const getTaxReportControllerRevealIdentifiersV1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportControllerRevealIdentifiersV1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>> = ({ signal }) => taxReportControllerRevealIdentifiersV1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportControllerRevealIdentifiersV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>>
+export type TaxReportControllerRevealIdentifiersV1QueryError = unknown
+
+
+export function useTaxReportControllerRevealIdentifiersV1<TData = Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportControllerRevealIdentifiersV1<TData = Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportControllerRevealIdentifiersV1<TData = Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Reveal the clinicians' tax identities on a PPh 21 report
+ */
+
+export function useTaxReportControllerRevealIdentifiersV1<TData = Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportControllerRevealIdentifiersV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportControllerRevealIdentifiersV1QueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

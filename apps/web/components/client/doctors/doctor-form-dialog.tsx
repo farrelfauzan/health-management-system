@@ -8,6 +8,7 @@ import {
   CLINICIAN_PROFESSIONS,
   createDoctorSchema,
   doctorEmailSchema,
+  optionalClinicianNpwpSchema,
   type ClinicianProfessionValue,
   type CreateDoctorInput,
   type DoctorEducation,
@@ -71,6 +72,7 @@ import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
 const LICENSE_DESCRIPTION_ID = 'licenseNumber-description';
 const PROFESSION_DESCRIPTION_ID = 'doctor-profession-description';
+const NPWP_DESCRIPTION_ID = 'doctor-form-npwp-description';
 const EMAIL_DESCRIPTION_ID = 'email-description';
 
 type DoctorFormDialogProps = {
@@ -155,6 +157,9 @@ export function DoctorFormDialog({
       // Write-only, like the patient NIK: the profile carries only a mask, so
       // a blank leaves the stored value alone rather than clearing it.
       nik: '',
+      // Plain, unlike the NIK: the profile carries it in full, and clearing
+      // the box clears the stored value (P27-T07).
+      npwp: doctor?.npwp ?? '',
       isActive: doctor?.isActive ?? true,
       patientIds: [] as string[],
     },
@@ -162,6 +167,7 @@ export function DoctorFormDialog({
       setFormError(null);
       const trimmedTitle = value.title.trim();
       const trimmedNik = value.nik.trim();
+      const trimmedNpwp = value.npwp.trim();
       const credentials = {
         licenses: buildLicensePayload(licenseRows),
         educations: buildEducationPayload(educationRows),
@@ -182,6 +188,7 @@ export function DoctorFormDialog({
               profession: value.profession,
               phoneNumber: value.phoneNumber,
               isActive: value.isActive,
+              npwp: trimmedNpwp.length > 0 ? trimmedNpwp : null,
               ...profileFields,
               ...credentials,
             },
@@ -200,6 +207,7 @@ export function DoctorFormDialog({
             ...credentials,
             email: value.email.trim(),
             nik: trimmedNik,
+            ...(trimmedNpwp.length > 0 ? { npwp: trimmedNpwp } : {}),
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
         }
@@ -521,6 +529,29 @@ export function DoctorFormDialog({
                 )}
               </form.Field>
             </div>
+            <form.Field name="npwp" validators={{ onSubmit: optionalClinicianNpwpSchema }}>
+              {(field) => (
+                <div className="space-y-1.5">
+                  <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
+                    {t('doctors.form.npwp')}
+                  </FormLabel>
+                  <Input
+                    id={field.name}
+                    inputMode="numeric"
+                    value={field.state.value}
+                    placeholder={t('doctors.form.npwpPlaceholder')}
+                    aria-describedby={NPWP_DESCRIPTION_ID}
+                    onChange={(event) => field.handleChange(event.target.value)}
+                    onBlur={field.handleBlur}
+                    aria-invalid={field.state.meta.errors.length > 0}
+                  />
+                  <FieldDescription id={NPWP_DESCRIPTION_ID}>
+                    {t('doctors.form.npwpHelp')}
+                  </FieldDescription>
+                  <FieldError errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
             {isEditMode ? (
               <>
                 <DoctorAccountEmailNotice
