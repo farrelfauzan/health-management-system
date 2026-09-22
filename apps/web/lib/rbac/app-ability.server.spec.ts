@@ -64,6 +64,18 @@ describe('resolveAppAbilityRules integration permissions', () => {
     expect(ability.can('write', 'TaxReport')).toBe(false);
   });
 
+  it('maps the bpjs.non-capitation keys to the BpjsNonCapitation subject (P25-T16)', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: ['bpjs.non-capitation.read:any', 'bpjs.non-capitation.write:any'],
+      }),
+    );
+
+    expect(ability.can('read', 'BpjsNonCapitation')).toBe(true);
+    expect(ability.can('write', 'BpjsNonCapitation')).toBe(true);
+    expect(ability.can('read', 'BpjsSubmission')).toBe(false);
+  });
+
   it('maps the maternal-report key to the MaternalReport subject (P25-T15)', () => {
     const ability = buildAppAbility(
       resolveAppAbilityRules({ permissions: ['maternal-report.read:any'] }),

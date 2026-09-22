@@ -176,6 +176,11 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'check', subject: 'BpjsEligibility' },
   { action: 'read', subject: 'BpjsSubmission' },
   { action: 'retry', subject: 'BpjsSubmission' },
+  // P25-T16. Mirrors the two non-capitation grants `seed.sql` gives ADMIN;
+  // without them the "Klaim non-kapitasi" tab never renders for a session
+  // hint that predates the keys.
+  { action: 'read', subject: 'BpjsNonCapitation' },
+  { action: 'write', subject: 'BpjsNonCapitation' },
   { action: 'link', subject: 'Satusehat' },
   { action: 'read', subject: 'SatusehatSubmission' },
   { action: 'retry', subject: 'SatusehatSubmission' },

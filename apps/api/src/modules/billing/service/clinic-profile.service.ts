@@ -134,6 +134,8 @@ export class ClinicProfileService {
       clinicName: name === '' ? DEFAULT_CLINIC_LABEL : name,
       puskesmasName: record?.reportingPuskesmasName ?? null,
       puskesmasCode: record?.reportingPuskesmasCode ?? null,
+      address: record?.address ?? null,
+      phoneNumber: record?.phoneNumber ?? null,
     };
   }
 
