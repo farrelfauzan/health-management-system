@@ -119,7 +119,7 @@ export class EncounterService {
     payload: OpenEncounterDto,
     currentUser: CurrentUser,
   ): Promise<EncounterListItem> {
-    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'write');
+    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'open');
     const registration = await this.findRegistrationOrThrow(payload.registrationId);
     this.assertRegistrationReadyForEncounter(registration);
     await this.assertRegistrationHasNoEncounter(registration.id);
@@ -274,7 +274,9 @@ export class EncounterService {
       );
 
       if (!ownDoctor) {
-        throw new ForbiddenException('You do not have an active doctor profile');
+        throw new ForbiddenException(
+          'This account has no active doctor profile of its own, and opening an encounter on behalf of a doctor requires encounter.open:any',
+        );
       }
 
       if (payload.doctorId && payload.doctorId !== ownDoctor.id) {

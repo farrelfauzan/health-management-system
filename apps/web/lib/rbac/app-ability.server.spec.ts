@@ -543,6 +543,28 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('checkin-override', 'Registration')).toBe(true);
   });
 
+  it('maps the encounter open key apart from encounter write', () => {
+    // SUPER_ADMIN holds `encounter.open:any` without `encounter.write:any`
+    // (D-033); without `open` in SUPPORTED_ACTIONS the queue's "Open
+    // Encounter" action never renders for it, and a `write:own` holder must
+    // not read as one who may open on a doctor's behalf.
+    const superAdmin = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['encounter.open:any', 'encounter.write:own'] }),
+    );
+    const writerOnly = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['encounter.write:any'] }),
+    );
+
+    expect(superAdmin.can('open', 'Encounter')).toBe(true);
+    expect(writerOnly.can('open', 'Encounter')).toBe(false);
+  });
+
+  it('gives the ADMIN fallback preset the encounter open grant', () => {
+    const ability = buildAppAbility(resolveAppAbilityRules({ roles: ['ADMIN'] }));
+
+    expect(ability.can('open', 'Encounter')).toBe(true);
+  });
+
   it('maps the Notion connector grant to its own subject', () => {
     // P23-T05. The allowlist trap again, and this one is invisible without a
     // test: a session hint carrying `notion-connector.manage:any` resolves to

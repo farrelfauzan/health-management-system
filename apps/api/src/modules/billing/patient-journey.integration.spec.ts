@@ -59,6 +59,7 @@ describe('Billing patient journey (end to end)', () => {
     ['registration.update:any', 'Registration', 'update'],
     ['encounter.read:any', 'Encounter', 'read'],
     ['encounter.write:any', 'Encounter', 'write'],
+    ['encounter.open:any', 'Encounter', 'open'],
     ['medication.create:any', 'Medication', 'create'],
     ['medication.read:any', 'Medication', 'read'],
     ['inventory.write:any', 'Inventory', 'write'],

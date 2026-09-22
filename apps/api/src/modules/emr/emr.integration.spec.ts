@@ -260,7 +260,7 @@ describe('EMR integration', () => {
 
   it('opens an encounter from a CHECKED_IN registration', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
-    mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+    mockActorWithPermissions([{ action: 'open', resource: 'Encounter', scope: 'ANY' }]);
     encounterRepositoryMock.findRegistrationForEncounter.mockResolvedValue({
       id: registrationId,
       patientId,
@@ -278,6 +278,19 @@ describe('EMR integration', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('Encounter opened');
+  });
+
+  it('refuses to open an encounter for an actor holding only encounter.write:any', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/encounters')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ registrationId, doctorId });
+
+    expect(response.status).toBe(403);
+    expect(encounterRepositoryMock.createEncounter).not.toHaveBeenCalled();
   });
 
   describe('midwife authority enforcement (P25-T03)', () => {
@@ -398,7 +411,7 @@ describe('EMR integration', () => {
       jest.useFakeTimers({ doNotFake: ['nextTick', 'setImmediate', 'setTimeout'] });
       jest.setSystemTime(new Date('2026-09-15T03:00:00.000Z'));
       const token = await buildToken('admin-user', 'admin@hms.local');
-      mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+      mockActorWithPermissions([{ action: 'open', resource: 'Encounter', scope: 'ANY' }]);
       encounterRepositoryMock.findRegistrationForEncounter.mockResolvedValue({
         id: registrationId,
         patientId,
@@ -437,7 +450,7 @@ describe('EMR integration', () => {
 
   it('returns 409 when the registration has not checked in', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
-    mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);
+    mockActorWithPermissions([{ action: 'open', resource: 'Encounter', scope: 'ANY' }]);
     encounterRepositoryMock.findRegistrationForEncounter.mockResolvedValue({
       id: registrationId,
       patientId,
