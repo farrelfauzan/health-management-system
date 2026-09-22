@@ -242,6 +242,9 @@
           "MEDICAL_CERTIFICATE": "Surat keterangan dokter",
           "PREGNANCY_CERTIFICATE": "Surat keterangan hamil",
           "BIRTH_CERTIFICATE": "Surat keterangan lahir",
+          "KIA_BOOK_COPY": "Salinan buku KIA / kartu ibu",
+          "PARTOGRAPH": "Partograf",
+          "FAMILY_PLANNING_BOOK": "Buku peserta KB",
           "INSURANCE": "Asuransi",
           "IDENTITY": "Identitas",
           "OTHER": "Lainnya"
@@ -997,6 +1000,9 @@
           "MEDICAL_CERTIFICATE": "Surat keterangan sehat",
           "PREGNANCY_CERTIFICATE": "Surat keterangan hamil",
           "BIRTH_CERTIFICATE": "Surat keterangan lahir",
+          "KIA_BOOK_COPY": "Salinan buku KIA / kartu ibu",
+          "PARTOGRAPH": "Partograf",
+          "FAMILY_PLANNING_BOOK": "Buku peserta KB",
           "INSURANCE": "Asuransi",
           "IDENTITY": "Identitas",
           "OTHER": "Lainnya"

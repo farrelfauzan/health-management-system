@@ -9,6 +9,7 @@ import { BpjsAntreanSettingsPanel } from '#components/client/integrations/bpjs-a
 import { BpjsMappingsPanel } from '#components/client/integrations/bpjs-mappings-panel';
 import { BpjsSettingsPanel } from '#components/client/integrations/bpjs-settings-panel';
 import { IntegrationSubmissionMonitor } from '#components/client/integrations/integration-submission-monitor';
+import { NonCapitationPanel } from '#components/client/integrations/non-capitation-panel';
 import { NotionConnectorCard } from '#components/client/integrations/notion-connector-card';
 import { SatusehatEnvironmentCard } from '#components/client/integrations/satusehat-environment-card';
 import { SatusehatLocationsPanel } from '#components/client/integrations/satusehat-locations-panel';
@@ -20,9 +21,11 @@ import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 type IntegrationsPanelProps = {
   /** A tab asked for by the URL; honoured only when this person may see it (SJ-162). */
   initialTab?: IntegrationsTab;
+  /** The month the non-capitation recap opens on, resolved on the server (P25-T16). */
+  nonCapitationMonth: string;
 };
 
-export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
+export function IntegrationsPanel({ initialTab, nonCapitationMonth }: IntegrationsPanelProps) {
   const t = useTranslations('operations.integrations');
   const root = useShellBreadcrumbRoot();
   const ability = useAbility();
@@ -32,10 +35,12 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
   const canMap = ability.can('manage', 'BpjsMapping');
   const canReadLocations = ability.can('read', 'SatusehatLocation');
   const canSeeNotionConnector = ability.can('manage', 'NotionConnector');
+  const canReadNonCapitation = ability.can('read', 'BpjsNonCapitation');
   const readableTabs: Record<IntegrationsTab, boolean> = {
     monitor: canMonitor,
     settings: canConfigure,
     antrean: canConfigure,
+    'non-capitation': canReadNonCapitation,
     mappings: canMap,
     locations: canReadLocations,
   };
@@ -47,7 +52,9 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
         ? 'settings'
         : canMap
           ? 'mappings'
-          : 'locations',
+          : canReadNonCapitation
+            ? 'non-capitation'
+            : 'locations',
     initialTab,
   });
 
@@ -81,7 +88,7 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
       {/* P23-T05. Somebody whose only grant here is the Notion connector has
           no readable tab, and an empty tab strip reads as a broken page rather
           than as "nothing for you in here". */}
-      {canMonitor || canConfigure || canMap || canReadLocations ? (
+      {canMonitor || canConfigure || canMap || canReadLocations || canReadNonCapitation ? (
       <Tabs
         value={tab}
         onValueChange={(value) => setTab(value as IntegrationsTab)}
@@ -91,6 +98,9 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
           {canMonitor ? <TabsTrigger value="monitor">{t('monitor')}</TabsTrigger> : null}
           {canConfigure ? <TabsTrigger value="settings">{t('settings')}</TabsTrigger> : null}
           {canConfigure ? <TabsTrigger value="antrean">{t('antrean.tab')}</TabsTrigger> : null}
+          {canReadNonCapitation ? (
+            <TabsTrigger value="non-capitation">{t('nonCapitation.tab')}</TabsTrigger>
+          ) : null}
           {canMap ? <TabsTrigger value="mappings">{t('mappings')}</TabsTrigger> : null}
           {canReadLocations ? (
             <TabsTrigger value="locations">{t('satusehatLocations.tab')}</TabsTrigger>
@@ -109,6 +119,11 @@ export function IntegrationsPanel({ initialTab }: IntegrationsPanelProps) {
         {canConfigure ? (
           <TabsContent value="antrean">
             <BpjsAntreanSettingsPanel />
+          </TabsContent>
+        ) : null}
+        {canReadNonCapitation ? (
+          <TabsContent value="non-capitation">
+            <NonCapitationPanel initialMonth={nonCapitationMonth} />
           </TabsContent>
         ) : null}
         {canMap ? (
