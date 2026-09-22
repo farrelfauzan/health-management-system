@@ -20,6 +20,7 @@ import { DeliveryRecordService } from './service/delivery-record.service';
 import { FamilyPlanningAuthorityService } from './service/family-planning-authority.service';
 import { FamilyPlanningService } from './service/family-planning.service';
 import { MaternalCareService } from './service/maternal-care.service';
+import { MaternalVisitDueService } from './service/maternal-visit-due.service';
 import { PostnatalEpisodeCloseService } from './service/postnatal-episode-close.service';
 import { PostnatalEpisodeCloseWorker } from './service/postnatal-episode-close.worker';
 import { PostnatalVisitService } from './service/postnatal-visit.service';
@@ -78,7 +79,10 @@ import { ShkScreeningService } from './service/shk-screening.service';
     ShkScreeningRepository,
     ShkScreeningService,
     ShkRecallNotificationService,
+    MaternalVisitDueService,
   ],
-  exports: [MaternalCareService],
+  // `MaternalVisitDueService` is exported for the reminder module (P25-T17),
+  // which reads the due list through it and never through these repositories.
+  exports: [MaternalCareService, MaternalVisitDueService],
 })
 export class MaternalCareModule {}

@@ -1,5 +1,13 @@
 import {
   buildPostnatalSchedule,
+  doesDueWindowTouchRange,
+  getCalendarDateInTimeZone,
+  getStartOfCalendarDateInTimeZone,
+  MaternalDueRange,
+  MaternalDueReach,
+  MaternalDueRecord,
+  PostnatalDueBirthRecord,
+  PostnatalScheduleEntry,
   EncounterPostnatalVisitResponse,
   EncounterWithRelationsRecord,
   LinkPostnatalVisitInput,
@@ -29,6 +37,9 @@ import { PostnatalVisitRepository } from '../repository/postnatal-visit.reposito
 const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const FINISHED_ENCOUNTER_STATUS = 'FINISHED';
 const CANCELLED_ENCOUNTER_STATUS = 'CANCELLED';
+const MILLISECONDS_PER_DAY = 86_400_000;
+/** KF4 closes at the end of day 42; a day more covers the clinic-local shift. */
+const POSTNATAL_DUE_LOOKBACK_DAYS = 43;
 
 /**
  * Nifas (KF1–KF4) and neonatal (KN1–KN3) visits after a birth (P25-T12).
@@ -73,19 +84,80 @@ export class PostnatalVisitService {
     return {
       pregnancyEpisodeId,
       birthAt: birth.birthAt.toISOString(),
-      entries: buildPostnatalSchedule({
-        birthAt: birth.birthAt,
-        timeZone: this.clinicTimeZone,
-        visits: visits.map((visit) => ({
-          encounterId: visit.encounterId,
-          startedAt: visit.encounterStartedAt,
-          subject: visit.subject,
-          visitCode: this.resolveEffectiveCode(visit, birth.birthAt),
-          isCancelled: visit.encounterStatus === CANCELLED_ENCOUNTER_STATUS,
-        })),
-        asOf: new Date(),
-      }),
+      entries: this.buildScheduleEntries(birth.birthAt, visits, new Date()),
     };
+  }
+
+  /**
+   * KF/KN windows not yet fulfilled that open or close inside the range
+   * (P25-T17), for the due worklist and the reminder worker. Each window is
+   * the schedule's own entry, so the worklist and the PNC tab never disagree.
+   */
+  async listPostnatalDueRecords(
+    range: MaternalDueRange,
+    reach: MaternalDueReach,
+  ): Promise<MaternalDueRecord[]> {
+    const rangeStart = getStartOfCalendarDateInTimeZone(range.from, this.clinicTimeZone);
+    const births = await this.postnatalVisitRepository.listBirthsForDue({
+      bornOnOrAfter: new Date(rangeStart.getTime() - POSTNATAL_DUE_LOOKBACK_DAYS * MILLISECONDS_PER_DAY),
+      reach,
+    });
+    const asOf = new Date();
+    const perBirth = await Promise.all(
+      births.map(async (birth) => {
+        const visits = await this.postnatalVisitRepository.listVisitsByPregnancyEpisodeId(
+          birth.pregnancyEpisodeId,
+        );
+        return this.buildScheduleEntries(birth.birthAt, visits, asOf).flatMap((entry) =>
+          this.toPostnatalDueRecords(birth, entry, range),
+        );
+      }),
+    );
+    return perBirth.flat();
+  }
+
+  private buildScheduleEntries(
+    birthAt: Date,
+    visits: readonly PostnatalVisitRecord[],
+    asOf: Date,
+  ): PostnatalScheduleEntry[] {
+    return buildPostnatalSchedule({
+      birthAt,
+      timeZone: this.clinicTimeZone,
+      visits: visits.map((visit) => ({
+        encounterId: visit.encounterId,
+        startedAt: visit.encounterStartedAt,
+        subject: visit.subject,
+        visitCode: this.resolveEffectiveCode(visit, birthAt),
+        isCancelled: visit.encounterStatus === CANCELLED_ENCOUNTER_STATUS,
+      })),
+      asOf,
+    });
+  }
+
+  private toPostnatalDueRecords(
+    birth: PostnatalDueBirthRecord,
+    entry: PostnatalScheduleEntry,
+    range: MaternalDueRange,
+  ): MaternalDueRecord[] {
+    const dueFrom = getCalendarDateInTimeZone(new Date(entry.startsAt), this.clinicTimeZone);
+    const dueUntil = getCalendarDateInTimeZone(new Date(entry.endsAt), this.clinicTimeZone);
+    if (entry.status === 'FULFILLED' || !doesDueWindowTouchRange({ dueFrom, dueUntil, range })) {
+      return [];
+    }
+    return [
+      {
+        visitKey: `PNC:${birth.pregnancyEpisodeId}:${entry.code}`,
+        source: 'POSTNATAL',
+        code: entry.code,
+        subject: entry.subject === 'NEWBORN' ? 'NEWBORN' : 'PATIENT',
+        patientId: birth.patientId,
+        patientName: birth.patientName,
+        medicalRecordNumber: birth.medicalRecordNumber,
+        dueFrom,
+        dueUntil,
+      },
+    ];
   }
 
   /** Counts an open encounter as a nifas visit of the mother or a baby's neonatal one. */

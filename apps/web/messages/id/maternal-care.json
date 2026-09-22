@@ -525,6 +525,46 @@
           "OTHER": "Lainnya"
         }
       }
+    },
+    "dueThisWeek": {
+      "title": "Jatuh tempo minggu ini",
+      "subtitle": "Kunjungan trimester, jendela nifas dan neonatal, KB, dan sampel SHK yang jatuh tempo hari ini hingga enam hari ke depan.",
+      "empty": "Tidak ada yang jatuh tempo dalam 7 hari ke depan.",
+      "loadError": "Daftar jatuh tempo tidak dapat dimuat.",
+      "sources": {
+        "ANTENATAL": "Kehamilan",
+        "POSTNATAL": "Nifas",
+        "FAMILY_PLANNING": "KB",
+        "SHK": "SHK"
+      },
+      "trimester": "Trimester {number}",
+      "shkSample": "Sampel {number}",
+      "newborn": "Bayi",
+      "window": "{from} – {until}",
+      "reminder": {
+        "SENT": "Pengingat terkirim",
+        "FAILED": "Pengingat gagal",
+        "pending": "Pengingat belum dikirim",
+        "noConsent": "Tanpa persetujuan pengingat"
+      }
+    },
+    "visitReminderConsent": {
+      "title": "Pengingat kunjungan WhatsApp",
+      "description": "Izin mengirim pengingat singkat lewat WhatsApp saat kunjungan ibu dan anak jatuh tempo. Terpisah dari pengiriman dokumen. Hanya dikirim ke nomor WhatsApp yang sudah terverifikasi; pasien dapat membalas BERHENTI untuk berhenti.",
+      "loadError": "Persetujuan pengingat tidak dapat dimuat.",
+      "updateError": "Persetujuan pengingat tidak dapat diperbarui.",
+      "state": {
+        "granted": "Disetujui",
+        "withdrawn": "Ditarik",
+        "optedOut": "Dihentikan oleh pasien",
+        "notAsked": "Belum ditanyakan"
+      },
+      "capture": "Catat persetujuan",
+      "recapture": "Catat ulang persetujuan",
+      "withdraw": "Cabut",
+      "grantedBy": "Dicatat oleh {name} pada {date}",
+      "noticeVersion": "Pemberitahuan privasi v{version}",
+      "revokedAt": "Ditarik pada {date}"
     }
   }
 }

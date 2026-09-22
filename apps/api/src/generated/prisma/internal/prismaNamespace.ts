@@ -524,7 +524,9 @@ export const ModelName = {
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal',
   PostnatalVisit: 'PostnatalVisit',
-  PostnatalExamination: 'PostnatalExamination'
+  PostnatalExamination: 'PostnatalExamination',
+  PatientVisitReminderConsent: 'PatientVisitReminderConsent',
+  MaternalVisitReminder: 'MaternalVisitReminder'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -540,7 +542,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "bpjsNonCapitationSettings" | "bpjsNonCapitationTariff" | "bpjsNonCapitationClaimMark" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "bpjsNonCapitationSettings" | "bpjsNonCapitationTariff" | "bpjsNonCapitationClaimMark" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination" | "patientVisitReminderConsent" | "maternalVisitReminder"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -10978,6 +10980,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PatientVisitReminderConsent: {
+      payload: Prisma.$PatientVisitReminderConsentPayload<ExtArgs>
+      fields: Prisma.PatientVisitReminderConsentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PatientVisitReminderConsentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PatientVisitReminderConsentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>
+        }
+        findFirst: {
+          args: Prisma.PatientVisitReminderConsentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PatientVisitReminderConsentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>
+        }
+        findMany: {
+          args: Prisma.PatientVisitReminderConsentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>[]
+        }
+        create: {
+          args: Prisma.PatientVisitReminderConsentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>
+        }
+        createMany: {
+          args: Prisma.PatientVisitReminderConsentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PatientVisitReminderConsentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>[]
+        }
+        delete: {
+          args: Prisma.PatientVisitReminderConsentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>
+        }
+        update: {
+          args: Prisma.PatientVisitReminderConsentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>
+        }
+        deleteMany: {
+          args: Prisma.PatientVisitReminderConsentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PatientVisitReminderConsentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PatientVisitReminderConsentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>[]
+        }
+        upsert: {
+          args: Prisma.PatientVisitReminderConsentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PatientVisitReminderConsentPayload>
+        }
+        aggregate: {
+          args: Prisma.PatientVisitReminderConsentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePatientVisitReminderConsent>
+        }
+        groupBy: {
+          args: Prisma.PatientVisitReminderConsentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientVisitReminderConsentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PatientVisitReminderConsentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PatientVisitReminderConsentCountAggregateOutputType> | number
+        }
+      }
+    }
+    MaternalVisitReminder: {
+      payload: Prisma.$MaternalVisitReminderPayload<ExtArgs>
+      fields: Prisma.MaternalVisitReminderFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MaternalVisitReminderFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MaternalVisitReminderFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>
+        }
+        findFirst: {
+          args: Prisma.MaternalVisitReminderFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MaternalVisitReminderFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>
+        }
+        findMany: {
+          args: Prisma.MaternalVisitReminderFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>[]
+        }
+        create: {
+          args: Prisma.MaternalVisitReminderCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>
+        }
+        createMany: {
+          args: Prisma.MaternalVisitReminderCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MaternalVisitReminderCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>[]
+        }
+        delete: {
+          args: Prisma.MaternalVisitReminderDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>
+        }
+        update: {
+          args: Prisma.MaternalVisitReminderUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>
+        }
+        deleteMany: {
+          args: Prisma.MaternalVisitReminderDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MaternalVisitReminderUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MaternalVisitReminderUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>[]
+        }
+        upsert: {
+          args: Prisma.MaternalVisitReminderUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MaternalVisitReminderPayload>
+        }
+        aggregate: {
+          args: Prisma.MaternalVisitReminderAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMaternalVisitReminder>
+        }
+        groupBy: {
+          args: Prisma.MaternalVisitReminderGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaternalVisitReminderGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MaternalVisitReminderCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MaternalVisitReminderCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -13475,6 +13625,40 @@ export const PostnatalExaminationScalarFieldEnum = {
 export type PostnatalExaminationScalarFieldEnum = (typeof PostnatalExaminationScalarFieldEnum)[keyof typeof PostnatalExaminationScalarFieldEnum]
 
 
+export const PatientVisitReminderConsentScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  purpose: 'purpose',
+  isGranted: 'isGranted',
+  noticeVersionId: 'noticeVersionId',
+  grantedAt: 'grantedAt',
+  grantedById: 'grantedById',
+  revokedAt: 'revokedAt',
+  revokedReason: 'revokedReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatientVisitReminderConsentScalarFieldEnum = (typeof PatientVisitReminderConsentScalarFieldEnum)[keyof typeof PatientVisitReminderConsentScalarFieldEnum]
+
+
+export const MaternalVisitReminderScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  visitKey: 'visitKey',
+  source: 'source',
+  dueFrom: 'dueFrom',
+  status: 'status',
+  attemptedAt: 'attemptedAt',
+  sentAt: 'sentAt',
+  failureReason: 'failureReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MaternalVisitReminderScalarFieldEnum = (typeof MaternalVisitReminderScalarFieldEnum)[keyof typeof MaternalVisitReminderScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -15469,6 +15653,20 @@ export type ListEnumBreastMilkProductionFieldRefInput<$PrismaModel> = FieldRefIn
 
 
 /**
+ * Reference to a field of type 'MaternalVisitReminderStatus'
+ */
+export type EnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaternalVisitReminderStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MaternalVisitReminderStatus[]'
+ */
+export type ListEnumMaternalVisitReminderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MaternalVisitReminderStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -15732,6 +15930,8 @@ export type GlobalOmitConfig = {
   antenatalReferralDismissal?: Prisma.AntenatalReferralDismissalOmit
   postnatalVisit?: Prisma.PostnatalVisitOmit
   postnatalExamination?: Prisma.PostnatalExaminationOmit
+  patientVisitReminderConsent?: Prisma.PatientVisitReminderConsentOmit
+  maternalVisitReminder?: Prisma.MaternalVisitReminderOmit
 }
 
 /* Types for Logging */

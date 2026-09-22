@@ -7,6 +7,7 @@ import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuditAction } from '../../../generated/prisma/client';
 import { WhatsappGatewayService } from '../../channel-gateway/infrastructure/whatsapp-gateway.service';
 import { InboundOptOutHandler } from '../../channel-gateway/service/inbound-opt-out-handler.service';
+import { VisitReminderConsentService } from '../../visit-reminder-consent/service/visit-reminder-consent.service';
 import { DeliveryGateRepository } from '../repository/delivery-gate.repository';
 import { PatientDeliveryConsentRepository } from '../repository/patient-delivery-consent.repository';
 import { DELIVERY_OPT_OUT_CONFIRMATION } from './delivery-opt-out-reply';
@@ -15,7 +16,8 @@ const CONSENT_AUDIT_RESOURCE = 'PatientDeliveryConsent';
 
 /**
  * `STOP` / `BERHENTI` on WhatsApp revokes delivery consent (`P16-T24`,
- * FR-E4-16, US-E4-05).
+ * FR-E4-16, US-E4-05) and, since P25-T17, visit-reminder consent too — the
+ * one inbound opt-out handler for every outbound WhatsApp purpose.
  *
  * The chat is the identity here, not the number the counter typed: consent is
  * revoked for every patient this chat has been *proven* for, because those
@@ -37,6 +39,7 @@ export class DeliveryOptOutService extends InboundOptOutHandler {
     private readonly gateRepository: DeliveryGateRepository,
     private readonly whatsappGateway: WhatsappGatewayService,
     private readonly auditService: AuditService,
+    private readonly visitReminderConsentService: VisitReminderConsentService,
   ) {
     super();
   }
@@ -67,6 +70,11 @@ export class DeliveryOptOutService extends InboundOptOutHandler {
         metadata: { channel: 'WHATSAPP', revokedReason: 'PATIENT_KEYWORD' },
       });
     }
+    // The same keyword stops visit reminders (P25-T17, D-042): one STOP
+    // means stop, whichever consent the message it answers was sent under.
+    // Reminders go only to verified links, so the chat that received one is
+    // always among the chats proven for her.
+    await this.visitReminderConsentService.revokeByPatientKeyword(patientIds, revokedAt);
     await this.sendConfirmation(message.externalChatId, patientIds.length);
     return true;
   }
