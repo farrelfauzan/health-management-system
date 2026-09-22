@@ -132,6 +132,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   TaxPriceBreakdownController: 'taxes',
   // P27-T05. The monthly report drafts go with the tax module.
   TaxReportController: 'taxes',
+  TaxReportCoretaxController: 'taxes',
   TaxReportCoretaxFakturController: 'taxes',
 };
 

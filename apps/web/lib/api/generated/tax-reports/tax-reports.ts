@@ -30,6 +30,8 @@ import type {
   TaxReportControllerListReportsV1Params,
   TaxReportControllerRecomputeReportV1200,
   TaxReportControllerRevealIdentifiersV1200,
+  TaxReportCoretaxControllerExportBp21V1Params,
+  TaxReportCoretaxControllerValidateBp21V1200,
   TaxReportCoretaxFakturControllerExportFakturV1Params,
   TaxReportCoretaxFakturControllerValidateFakturV1200
 } from '../model';
@@ -876,6 +878,200 @@ export function useTaxReportControllerCreatePdfDownloadUrlV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTaxReportControllerCreatePdfDownloadUrlV1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Check a PPh 21 report against the Coretax BP21 template
+ */
+export const taxReportCoretaxControllerValidateBp21V1 = (
+    id: string,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<TaxReportCoretaxControllerValidateBp21V1200>(
+      {url: `/api/v1/tax/reports/${id}/coretax/bp21/validation`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportCoretaxControllerValidateBp21V1QueryKey = (id: string,) => {
+    return [
+    `/api/v1/tax/reports/${id}/coretax/bp21/validation`
+    ] as const;
+    }
+
+
+export const getTaxReportCoretaxControllerValidateBp21V1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportCoretaxControllerValidateBp21V1QueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>> = ({ signal }) => taxReportCoretaxControllerValidateBp21V1(id, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportCoretaxControllerValidateBp21V1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>>
+export type TaxReportCoretaxControllerValidateBp21V1QueryError = unknown
+
+
+export function useTaxReportCoretaxControllerValidateBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxControllerValidateBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxControllerValidateBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Check a PPh 21 report against the Coretax BP21 template
+ */
+
+export function useTaxReportCoretaxControllerValidateBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerValidateBp21V1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportCoretaxControllerValidateBp21V1QueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * P27-T08. The `Bp21Bulk` file DJP's BP21 v4 converter produces (pajak.go.id node 112031), one `Bp21` per clinician with the full NPWP or NIK. 422 `CORETAX_EXPORT_INVALID` with `details` listing every problem; 409 `TAX_REPORT_NOT_FINALIZED` for a draft. Audited as an export and as `DOCTOR_IDENTIFIER_UNMASKED`, without the values.
+ * @summary Export a finalized PPh 21 report as a Coretax BP21 XML file
+ */
+export const taxReportCoretaxControllerExportBp21V1 = (
+    id: string,
+    params?: TaxReportCoretaxControllerExportBp21V1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<Blob>(
+      {url: `/api/v1/tax/reports/${id}/coretax/bp21`, method: 'GET',
+        params,
+        responseType: 'blob', signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxReportCoretaxControllerExportBp21V1QueryKey = (id: string,
+    params?: TaxReportCoretaxControllerExportBp21V1Params,) => {
+    return [
+    `/api/v1/tax/reports/${id}/coretax/bp21`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getTaxReportCoretaxControllerExportBp21V1QueryOptions = <TData = Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError = unknown>(id: string,
+    params?: TaxReportCoretaxControllerExportBp21V1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxReportCoretaxControllerExportBp21V1QueryKey(id,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>> = ({ signal }) => taxReportCoretaxControllerExportBp21V1(id,params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxReportCoretaxControllerExportBp21V1QueryResult = NonNullable<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>>
+export type TaxReportCoretaxControllerExportBp21V1QueryError = unknown
+
+
+export function useTaxReportCoretaxControllerExportBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError = unknown>(
+ id: string,
+    params: undefined |  TaxReportCoretaxControllerExportBp21V1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxControllerExportBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError = unknown>(
+ id: string,
+    params?: TaxReportCoretaxControllerExportBp21V1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>,
+          TError,
+          Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxReportCoretaxControllerExportBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError = unknown>(
+ id: string,
+    params?: TaxReportCoretaxControllerExportBp21V1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export a finalized PPh 21 report as a Coretax BP21 XML file
+ */
+
+export function useTaxReportCoretaxControllerExportBp21V1<TData = Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError = unknown>(
+ id: string,
+    params?: TaxReportCoretaxControllerExportBp21V1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxReportCoretaxControllerExportBp21V1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxReportCoretaxControllerExportBp21V1QueryOptions(id,params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

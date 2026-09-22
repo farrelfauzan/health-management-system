@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DJP BP21 bulk-import schema, template v4 (P27-T08). Extracted verbatim, and
+  unchanged, from the XML map embedded in DJP's own converter workbook
+  (xl/xmlMaps.xml, map "Bp21Bulk_Map"):
+
+    Title:     BP21 Excel to XML v.4 (catalogue date 17/04/2025)
+    Workbook:  https://pajak.go.id/sites/default/files/2025-04/BP21%20Excel%20to%20XML%20v.4.xlsx
+    SHA-256:   511bec3d57f61f2273112fdbae66b373be372df12c3ae13146d8373d1ca840cf
+    Catalogue: https://www.pajak.go.id/id/node/112031
+    Obtained:  2026-09-22
+
+  Known gap in DJP's own files: the v4 REF sheet lists more reference-document
+  codes (Announcement, Decree, Other, ...) than this schema's DocType
+  enumeration. The export only uses PaymentProof, which is in both.
+-->
+<xsd:schema id="BP21" elementFormDefault="qualified" attributeFormDefault="unqualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+			<xsd:simpleType name="TinType">
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[0-9]{15,16}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="NonEmptyStringType">
+				<xsd:restriction base="xsd:string">
+					<xsd:minLength value="1"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="TaxBaseRateType">
+				<xsd:restriction base="xsd:decimal">
+					<xsd:minExclusive value="0"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="TaxType">
+				<xsd:restriction base="xsd:decimal">
+					<xsd:minInclusive value="0"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="TaxCertificateType" final="restriction">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="N/A"/>
+					<xsd:enumeration value="TaxExAr21"/>
+					<xsd:enumeration value="DTP"/>
+					<xsd:enumeration value="ETC"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:simpleType name="DocType" final="restriction">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="TaxInvoice"/>
+					<xsd:enumeration value="CommercialInvoice"/>
+					<xsd:enumeration value="Announchment"/>
+					<xsd:enumeration value="Contract"/>
+					<xsd:enumeration value="PaymentProof"/>
+					<xsd:enumeration value="DeedofEngangement"/>
+					<xsd:enumeration value="DeedofGeneralMeetingStakeholder"/>
+					<xsd:enumeration value="StatementLetter"/>
+					<xsd:enumeration value="BankAccountNumber"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:element name="Bp21Bulk" type="Bp21BulkType"></xsd:element>
+			<xsd:complexType name="Bp21BulkType">
+				<xsd:sequence>
+					<xsd:element name="TIN" type="TinType" maxOccurs="1" minOccurs="1"></xsd:element>
+					<xsd:element name="ListOfBp21" minOccurs="1" maxOccurs="1" type="ListOfBp21Type"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:complexType name="ListOfBp21Type">
+				<xsd:sequence>
+					<xsd:element name="Bp21" type="Bp21Type" maxOccurs="unbounded" minOccurs="1"/>
+				</xsd:sequence>
+			</xsd:complexType>
+			<xsd:simpleType name="PtkpType" final="restriction">
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="TK/0"/>
+					<xsd:enumeration value="TK/1"/>
+					<xsd:enumeration value="TK/2"/>
+					<xsd:enumeration value="TK/3"/>
+					<xsd:enumeration value="K/0"/>
+					<xsd:enumeration value="K/1"/>
+					<xsd:enumeration value="K/2"/>
+					<xsd:enumeration value="K/3"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+			<xsd:complexType name="Bp21Type">
+				<xsd:sequence>
+					<xsd:element name="TaxPeriodMonth" type="xsd:integer" nillable="false"/>
+					<xsd:element name="TaxPeriodYear" type="xsd:integer" nillable="false"/>
+					<xsd:element name="CounterpartTin" type="xsd:string" nillable="false"/>
+					<xsd:element name="IDPlaceOfBusinessActivityOfIncomeRecipient" type="xsd:string" nillable="false"/>
+					<xsd:element name="StatusTaxExemption" type="PtkpType"/>
+					<xsd:element name="TaxCertificate" type="TaxCertificateType"/>
+					<xsd:element name="TaxObjectCode" type="NonEmptyStringType"/>
+					<xsd:element name="Gross" type="TaxBaseRateType"/>
+					<xsd:element name="Deemed" type="TaxType"/>
+					<xsd:element name="Rate" type="TaxType"/>
+					<xsd:element name="Document" type="DocType"/>
+					<xsd:element name="DocumentNumber" type="NonEmptyStringType"/>
+					<xsd:element name="DocumentDate" type="xsd:date" nillable="true"/>
+					<xsd:element name="IDPlaceOfBusinessActivity" type="NonEmptyStringType"/>
+					<xsd:element name="WithholdingDate" type="xsd:date"/>
+				</xsd:sequence>
+			</xsd:complexType>
+		</xsd:schema>

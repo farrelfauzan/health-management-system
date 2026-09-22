@@ -51,6 +51,7 @@ export type DoctorProfileMinAggregateOutputType = {
   nikLast4: string | null
   nikKeyVersion: number | null
   npwp: string | null
+  ptkpStatus: $Enums.PtkpStatus | null
   satusehatPractitionerId: string | null
   bpjsDoctorCode: string | null
   title: string | null
@@ -74,6 +75,7 @@ export type DoctorProfileMaxAggregateOutputType = {
   nikLast4: string | null
   nikKeyVersion: number | null
   npwp: string | null
+  ptkpStatus: $Enums.PtkpStatus | null
   satusehatPractitionerId: string | null
   bpjsDoctorCode: string | null
   title: string | null
@@ -97,6 +99,7 @@ export type DoctorProfileCountAggregateOutputType = {
   nikLast4: number
   nikKeyVersion: number
   npwp: number
+  ptkpStatus: number
   satusehatPractitionerId: number
   bpjsDoctorCode: number
   title: number
@@ -130,6 +133,7 @@ export type DoctorProfileMinAggregateInputType = {
   nikLast4?: true
   nikKeyVersion?: true
   npwp?: true
+  ptkpStatus?: true
   satusehatPractitionerId?: true
   bpjsDoctorCode?: true
   title?: true
@@ -153,6 +157,7 @@ export type DoctorProfileMaxAggregateInputType = {
   nikLast4?: true
   nikKeyVersion?: true
   npwp?: true
+  ptkpStatus?: true
   satusehatPractitionerId?: true
   bpjsDoctorCode?: true
   title?: true
@@ -176,6 +181,7 @@ export type DoctorProfileCountAggregateInputType = {
   nikLast4?: true
   nikKeyVersion?: true
   npwp?: true
+  ptkpStatus?: true
   satusehatPractitionerId?: true
   bpjsDoctorCode?: true
   title?: true
@@ -286,6 +292,7 @@ export type DoctorProfileGroupByOutputType = {
   nikLast4: string | null
   nikKeyVersion: number | null
   npwp: string | null
+  ptkpStatus: $Enums.PtkpStatus | null
   satusehatPractitionerId: string | null
   bpjsDoctorCode: string | null
   title: string | null
@@ -332,6 +339,7 @@ export type DoctorProfileWhereInput = {
   nikLast4?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   nikKeyVersion?: Prisma.IntNullableFilter<"DoctorProfile"> | number | null
   npwp?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  ptkpStatus?: Prisma.EnumPtkpStatusNullableFilter<"DoctorProfile"> | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   bpjsDoctorCode?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
@@ -377,6 +385,7 @@ export type DoctorProfileOrderByWithRelationInput = {
   nikLast4?: Prisma.SortOrderInput | Prisma.SortOrder
   nikKeyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   npwp?: Prisma.SortOrderInput | Prisma.SortOrder
+  ptkpStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrderInput | Prisma.SortOrder
   bpjsDoctorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -425,6 +434,7 @@ export type DoctorProfileWhereUniqueInput = Prisma.AtLeast<{
   nikLast4?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   nikKeyVersion?: Prisma.IntNullableFilter<"DoctorProfile"> | number | null
   npwp?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  ptkpStatus?: Prisma.EnumPtkpStatusNullableFilter<"DoctorProfile"> | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   bpjsDoctorCode?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
@@ -470,6 +480,7 @@ export type DoctorProfileOrderByWithAggregationInput = {
   nikLast4?: Prisma.SortOrderInput | Prisma.SortOrder
   nikKeyVersion?: Prisma.SortOrderInput | Prisma.SortOrder
   npwp?: Prisma.SortOrderInput | Prisma.SortOrder
+  ptkpStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrderInput | Prisma.SortOrder
   bpjsDoctorCode?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -501,6 +512,7 @@ export type DoctorProfileScalarWhereWithAggregatesInput = {
   nikLast4?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   nikKeyVersion?: Prisma.IntNullableWithAggregatesFilter<"DoctorProfile"> | number | null
   npwp?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
+  ptkpStatus?: Prisma.EnumPtkpStatusNullableWithAggregatesFilter<"DoctorProfile"> | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   bpjsDoctorCode?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableWithAggregatesFilter<"DoctorProfile"> | string | null
@@ -522,6 +534,7 @@ export type DoctorProfileCreateInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -567,6 +580,7 @@ export type DoctorProfileUncheckedCreateInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -608,6 +622,7 @@ export type DoctorProfileUpdateInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -653,6 +668,7 @@ export type DoctorProfileUncheckedUpdateInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -696,6 +712,7 @@ export type DoctorProfileCreateManyInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -717,6 +734,7 @@ export type DoctorProfileUpdateManyMutationInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -740,6 +758,7 @@ export type DoctorProfileUncheckedUpdateManyInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -783,6 +802,7 @@ export type DoctorProfileCountOrderByAggregateInput = {
   nikLast4?: Prisma.SortOrder
   nikKeyVersion?: Prisma.SortOrder
   npwp?: Prisma.SortOrder
+  ptkpStatus?: Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrder
   bpjsDoctorCode?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -810,6 +830,7 @@ export type DoctorProfileMaxOrderByAggregateInput = {
   nikLast4?: Prisma.SortOrder
   nikKeyVersion?: Prisma.SortOrder
   npwp?: Prisma.SortOrder
+  ptkpStatus?: Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrder
   bpjsDoctorCode?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -833,6 +854,7 @@ export type DoctorProfileMinOrderByAggregateInput = {
   nikLast4?: Prisma.SortOrder
   nikKeyVersion?: Prisma.SortOrder
   npwp?: Prisma.SortOrder
+  ptkpStatus?: Prisma.SortOrder
   satusehatPractitionerId?: Prisma.SortOrder
   bpjsDoctorCode?: Prisma.SortOrder
   title?: Prisma.SortOrder
@@ -963,6 +985,10 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyNestedInput = {
 
 export type EnumClinicianProfessionFieldUpdateOperationsInput = {
   set?: $Enums.ClinicianProfession
+}
+
+export type NullableEnumPtkpStatusFieldUpdateOperationsInput = {
+  set?: $Enums.PtkpStatus | null
 }
 
 export type DoctorProfileCreateNestedOneWithoutEducationsInput = {
@@ -1226,6 +1252,7 @@ export type DoctorProfileCreateWithoutMandatesReceivedInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1270,6 +1297,7 @@ export type DoctorProfileUncheckedCreateWithoutMandatesReceivedInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1315,6 +1343,7 @@ export type DoctorProfileCreateWithoutMandatesGrantedInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1359,6 +1388,7 @@ export type DoctorProfileUncheckedCreateWithoutMandatesGrantedInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1415,6 +1445,7 @@ export type DoctorProfileUpdateWithoutMandatesReceivedInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1459,6 +1490,7 @@ export type DoctorProfileUncheckedUpdateWithoutMandatesReceivedInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1510,6 +1542,7 @@ export type DoctorProfileUpdateWithoutMandatesGrantedInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1554,6 +1587,7 @@ export type DoctorProfileUncheckedUpdateWithoutMandatesGrantedInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1594,6 +1628,7 @@ export type DoctorProfileCreateWithoutOwnerUserInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1637,6 +1672,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerUserInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1694,6 +1730,7 @@ export type DoctorProfileUpdateWithoutOwnerUserInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1737,6 +1774,7 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerUserInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1778,6 +1816,7 @@ export type DoctorProfileCreateWithoutOwnerInvitationsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1822,6 +1861,7 @@ export type DoctorProfileUncheckedCreateWithoutOwnerInvitationsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -1878,6 +1918,7 @@ export type DoctorProfileUpdateWithoutOwnerInvitationsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1922,6 +1963,7 @@ export type DoctorProfileUncheckedUpdateWithoutOwnerInvitationsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1962,6 +2004,7 @@ export type DoctorProfileCreateWithoutSpecialtyInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2005,6 +2048,7 @@ export type DoctorProfileUncheckedCreateWithoutSpecialtyInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2077,6 +2121,7 @@ export type DoctorProfileScalarWhereInput = {
   nikLast4?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   nikKeyVersion?: Prisma.IntNullableFilter<"DoctorProfile"> | number | null
   npwp?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
+  ptkpStatus?: Prisma.EnumPtkpStatusNullableFilter<"DoctorProfile"> | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   bpjsDoctorCode?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
   title?: Prisma.StringNullableFilter<"DoctorProfile"> | string | null
@@ -2098,6 +2143,7 @@ export type DoctorProfileCreateWithoutEducationsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2142,6 +2188,7 @@ export type DoctorProfileUncheckedCreateWithoutEducationsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2198,6 +2245,7 @@ export type DoctorProfileUpdateWithoutEducationsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2242,6 +2290,7 @@ export type DoctorProfileUncheckedUpdateWithoutEducationsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2282,6 +2331,7 @@ export type DoctorProfileCreateWithoutLicensesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2326,6 +2376,7 @@ export type DoctorProfileUncheckedCreateWithoutLicensesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2382,6 +2433,7 @@ export type DoctorProfileUpdateWithoutLicensesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2426,6 +2478,7 @@ export type DoctorProfileUncheckedUpdateWithoutLicensesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2466,6 +2519,7 @@ export type DoctorProfileCreateWithoutAuthoritiesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2510,6 +2564,7 @@ export type DoctorProfileUncheckedCreateWithoutAuthoritiesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2566,6 +2621,7 @@ export type DoctorProfileUpdateWithoutAuthoritiesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2610,6 +2666,7 @@ export type DoctorProfileUncheckedUpdateWithoutAuthoritiesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2650,6 +2707,7 @@ export type DoctorProfileCreateWithoutSchedulesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2694,6 +2752,7 @@ export type DoctorProfileUncheckedCreateWithoutSchedulesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2750,6 +2809,7 @@ export type DoctorProfileUpdateWithoutSchedulesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2794,6 +2854,7 @@ export type DoctorProfileUncheckedUpdateWithoutSchedulesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2834,6 +2895,7 @@ export type DoctorProfileCreateWithoutAppointmentSessionsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2878,6 +2940,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentSessionsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -2934,6 +2997,7 @@ export type DoctorProfileUpdateWithoutAppointmentSessionsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2978,6 +3042,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentSessionsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3018,6 +3083,7 @@ export type DoctorProfileCreateWithoutPatientsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3062,6 +3128,7 @@ export type DoctorProfileUncheckedCreateWithoutPatientsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3118,6 +3185,7 @@ export type DoctorProfileUpdateWithoutPatientsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3162,6 +3230,7 @@ export type DoctorProfileUncheckedUpdateWithoutPatientsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3202,6 +3271,7 @@ export type DoctorProfileCreateWithoutAppointmentsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3246,6 +3316,7 @@ export type DoctorProfileUncheckedCreateWithoutAppointmentsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3302,6 +3373,7 @@ export type DoctorProfileUpdateWithoutAppointmentsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3346,6 +3418,7 @@ export type DoctorProfileUncheckedUpdateWithoutAppointmentsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3386,6 +3459,7 @@ export type DoctorProfileCreateWithoutEncountersInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3430,6 +3504,7 @@ export type DoctorProfileUncheckedCreateWithoutEncountersInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3486,6 +3561,7 @@ export type DoctorProfileUpdateWithoutEncountersInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3530,6 +3606,7 @@ export type DoctorProfileUncheckedUpdateWithoutEncountersInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3570,6 +3647,7 @@ export type DoctorProfileCreateWithoutPrescriptionsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3614,6 +3692,7 @@ export type DoctorProfileUncheckedCreateWithoutPrescriptionsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3670,6 +3749,7 @@ export type DoctorProfileUpdateWithoutPrescriptionsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3714,6 +3794,7 @@ export type DoctorProfileUncheckedUpdateWithoutPrescriptionsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3754,6 +3835,7 @@ export type DoctorProfileCreateWithoutClinicianFeeRulesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3798,6 +3880,7 @@ export type DoctorProfileUncheckedCreateWithoutClinicianFeeRulesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3854,6 +3937,7 @@ export type DoctorProfileUpdateWithoutClinicianFeeRulesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3898,6 +3982,7 @@ export type DoctorProfileUncheckedUpdateWithoutClinicianFeeRulesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3938,6 +4023,7 @@ export type DoctorProfileCreateWithoutClinicianFeeEntriesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -3982,6 +4068,7 @@ export type DoctorProfileUncheckedCreateWithoutClinicianFeeEntriesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4038,6 +4125,7 @@ export type DoctorProfileUpdateWithoutClinicianFeeEntriesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4082,6 +4170,7 @@ export type DoctorProfileUncheckedUpdateWithoutClinicianFeeEntriesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4122,6 +4211,7 @@ export type DoctorProfileCreateWithoutAdmissionsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4166,6 +4256,7 @@ export type DoctorProfileUncheckedCreateWithoutAdmissionsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4222,6 +4313,7 @@ export type DoctorProfileUpdateWithoutAdmissionsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4266,6 +4358,7 @@ export type DoctorProfileUncheckedUpdateWithoutAdmissionsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4306,6 +4399,7 @@ export type DoctorProfileCreateWithoutManagedDocumentsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4350,6 +4444,7 @@ export type DoctorProfileUncheckedCreateWithoutManagedDocumentsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4406,6 +4501,7 @@ export type DoctorProfileUpdateWithoutManagedDocumentsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4450,6 +4546,7 @@ export type DoctorProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4490,6 +4587,7 @@ export type DoctorProfileCreateWithoutLabOrdersInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4534,6 +4632,7 @@ export type DoctorProfileUncheckedCreateWithoutLabOrdersInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4590,6 +4689,7 @@ export type DoctorProfileUpdateWithoutLabOrdersInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4634,6 +4734,7 @@ export type DoctorProfileUncheckedUpdateWithoutLabOrdersInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4674,6 +4775,7 @@ export type DoctorProfileCreateWithoutImmunizationsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4718,6 +4820,7 @@ export type DoctorProfileUncheckedCreateWithoutImmunizationsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4774,6 +4877,7 @@ export type DoctorProfileUpdateWithoutImmunizationsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4818,6 +4922,7 @@ export type DoctorProfileUncheckedUpdateWithoutImmunizationsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4858,6 +4963,7 @@ export type DoctorProfileCreateWithoutAttendedDeliveriesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4902,6 +5008,7 @@ export type DoctorProfileUncheckedCreateWithoutAttendedDeliveriesInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -4958,6 +5065,7 @@ export type DoctorProfileUpdateWithoutAttendedDeliveriesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5002,6 +5110,7 @@ export type DoctorProfileUncheckedUpdateWithoutAttendedDeliveriesInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5042,6 +5151,7 @@ export type DoctorProfileCreateWithoutProvidedFamilyPlanningRecordsInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -5086,6 +5196,7 @@ export type DoctorProfileUncheckedCreateWithoutProvidedFamilyPlanningRecordsInpu
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -5142,6 +5253,7 @@ export type DoctorProfileUpdateWithoutProvidedFamilyPlanningRecordsInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5186,6 +5298,7 @@ export type DoctorProfileUncheckedUpdateWithoutProvidedFamilyPlanningRecordsInpu
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5227,6 +5340,7 @@ export type DoctorProfileCreateManySpecialtyInput = {
   nikLast4?: string | null
   nikKeyVersion?: number | null
   npwp?: string | null
+  ptkpStatus?: $Enums.PtkpStatus | null
   satusehatPractitionerId?: string | null
   bpjsDoctorCode?: string | null
   title?: string | null
@@ -5248,6 +5362,7 @@ export type DoctorProfileUpdateWithoutSpecialtyInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5291,6 +5406,7 @@ export type DoctorProfileUncheckedUpdateWithoutSpecialtyInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5333,6 +5449,7 @@ export type DoctorProfileUncheckedUpdateManyWithoutSpecialtyInput = {
   nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   npwp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ptkpStatus?: Prisma.NullableEnumPtkpStatusFieldUpdateOperationsInput | $Enums.PtkpStatus | null
   satusehatPractitionerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bpjsDoctorCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5558,6 +5675,7 @@ export type DoctorProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   nikLast4?: boolean
   nikKeyVersion?: boolean
   npwp?: boolean
+  ptkpStatus?: boolean
   satusehatPractitionerId?: boolean
   bpjsDoctorCode?: boolean
   title?: boolean
@@ -5604,6 +5722,7 @@ export type DoctorProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   nikLast4?: boolean
   nikKeyVersion?: boolean
   npwp?: boolean
+  ptkpStatus?: boolean
   satusehatPractitionerId?: boolean
   bpjsDoctorCode?: boolean
   title?: boolean
@@ -5629,6 +5748,7 @@ export type DoctorProfileSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   nikLast4?: boolean
   nikKeyVersion?: boolean
   npwp?: boolean
+  ptkpStatus?: boolean
   satusehatPractitionerId?: boolean
   bpjsDoctorCode?: boolean
   title?: boolean
@@ -5654,13 +5774,14 @@ export type DoctorProfileSelectScalar = {
   nikLast4?: boolean
   nikKeyVersion?: boolean
   npwp?: boolean
+  ptkpStatus?: boolean
   satusehatPractitionerId?: boolean
   bpjsDoctorCode?: boolean
   title?: boolean
   degrees?: boolean
 }
 
-export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "profession" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "npwp" | "satusehatPractitionerId" | "bpjsDoctorCode" | "title" | "degrees", ExtArgs["result"]["doctorProfile"]>
+export type DoctorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "licenseNumber" | "fullName" | "specialtyId" | "profession" | "phoneNumber" | "ownerUserId" | "isActive" | "createdAt" | "updatedAt" | "deletedAt" | "nikCiphertext" | "nikIndex" | "nikLast4" | "nikKeyVersion" | "npwp" | "ptkpStatus" | "satusehatPractitionerId" | "bpjsDoctorCode" | "title" | "degrees", ExtArgs["result"]["doctorProfile"]>
 export type DoctorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   specialty?: boolean | Prisma.SpecialtyDefaultArgs<ExtArgs>
   ownerUser?: boolean | Prisma.DoctorProfile$ownerUserArgs<ExtArgs>
@@ -5759,6 +5880,7 @@ export type $DoctorProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     nikLast4: string | null
     nikKeyVersion: number | null
     npwp: string | null
+    ptkpStatus: $Enums.PtkpStatus | null
     satusehatPractitionerId: string | null
     bpjsDoctorCode: string | null
     title: string | null
@@ -6224,6 +6346,7 @@ export interface DoctorProfileFieldRefs {
   readonly nikLast4: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly nikKeyVersion: Prisma.FieldRef<"DoctorProfile", 'Int'>
   readonly npwp: Prisma.FieldRef<"DoctorProfile", 'String'>
+  readonly ptkpStatus: Prisma.FieldRef<"DoctorProfile", 'PtkpStatus'>
   readonly satusehatPractitionerId: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly bpjsDoctorCode: Prisma.FieldRef<"DoctorProfile", 'String'>
   readonly title: Prisma.FieldRef<"DoctorProfile", 'String'>

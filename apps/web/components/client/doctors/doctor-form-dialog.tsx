@@ -10,6 +10,7 @@ import {
   doctorEmailSchema,
   optionalClinicianNpwpSchema,
   type ClinicianProfessionValue,
+  type ClinicianPtkpStatusValue,
   type CreateDoctorInput,
   type DoctorEducation,
   type DoctorLicense,
@@ -40,6 +41,7 @@ import { DoctorDegreesPicker } from '#components/client/doctors/doctor-degrees-p
 import { DoctorEducationsField } from '#components/client/doctors/doctor-educations-field';
 import { DoctorLicensesField } from '#components/client/doctors/doctor-licenses-field';
 import { DoctorPatientPicker } from '#components/client/doctors/doctor-patient-picker';
+import { DoctorPtkpStatusSelect } from '#components/client/doctors/doctor-ptkp-status-select';
 import { DoctorTitleSelect } from '#components/client/doctors/doctor-title-select';
 import { SpecialtyCombobox } from '#components/client/doctors/specialty-combobox';
 import { FieldDescription } from '#components/client/shared/field-description';
@@ -73,6 +75,7 @@ const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
 const LICENSE_DESCRIPTION_ID = 'licenseNumber-description';
 const PROFESSION_DESCRIPTION_ID = 'doctor-profession-description';
 const NPWP_DESCRIPTION_ID = 'doctor-form-npwp-description';
+const PTKP_DESCRIPTION_ID = 'doctor-form-ptkp-description';
 const EMAIL_DESCRIPTION_ID = 'email-description';
 
 type DoctorFormDialogProps = {
@@ -160,6 +163,8 @@ export function DoctorFormDialog({
       // Plain, unlike the NIK: the profile carries it in full, and clearing
       // the box clears the stored value (P27-T07).
       npwp: doctor?.npwp ?? '',
+      // Only the Coretax BP21 file reads it (P27-T08); blank clears it.
+      ptkpStatus: (doctor?.ptkpStatus ?? '') as ClinicianPtkpStatusValue | '',
       isActive: doctor?.isActive ?? true,
       patientIds: [] as string[],
     },
@@ -189,6 +194,7 @@ export function DoctorFormDialog({
               phoneNumber: value.phoneNumber,
               isActive: value.isActive,
               npwp: trimmedNpwp.length > 0 ? trimmedNpwp : null,
+              ptkpStatus: value.ptkpStatus === '' ? null : value.ptkpStatus,
               ...profileFields,
               ...credentials,
             },
@@ -208,6 +214,7 @@ export function DoctorFormDialog({
             email: value.email.trim(),
             nik: trimmedNik,
             ...(trimmedNpwp.length > 0 ? { npwp: trimmedNpwp } : {}),
+            ...(value.ptkpStatus !== '' ? { ptkpStatus: value.ptkpStatus } : {}),
           });
           parseApiSuccess<DoctorProfile>(response, t('doctors.form.saveError'));
         }
@@ -549,6 +556,24 @@ export function DoctorFormDialog({
                     {t('doctors.form.npwpHelp')}
                   </FieldDescription>
                   <FieldError errors={field.state.meta.errors} />
+                </div>
+              )}
+            </form.Field>
+            <form.Field name="ptkpStatus">
+              {(field) => (
+                <div className="space-y-1.5">
+                  <FormLabel htmlFor={field.name} className="font-heading text-xs text-slate-600">
+                    {t('doctors.form.ptkpStatus')}
+                  </FormLabel>
+                  <DoctorPtkpStatusSelect
+                    id={field.name}
+                    value={field.state.value}
+                    describedBy={PTKP_DESCRIPTION_ID}
+                    onChange={(status) => field.handleChange(status)}
+                  />
+                  <FieldDescription id={PTKP_DESCRIPTION_ID}>
+                    {t('doctors.form.ptkpStatusHelp')}
+                  </FieldDescription>
                 </div>
               )}
             </form.Field>

@@ -120,6 +120,32 @@ export const TAXES_EXAMPLES = {
     },
     listMeta: { year: 2026, applicableKinds: ['PP55_OMZET', 'PPH21_NON_EMPLOYEE'] },
     createRequest: { period: '2026-08', kind: 'PP55_OMZET' },
+    coretaxBp21Validation: {
+      reportId: '7c6b5a4f-3e2d-4c1b-8a09-f8e7d6c5b4a3',
+      period: '2026-10',
+      template: {
+        format: 'BP21',
+        version: 'V4',
+        title: 'BP21 Excel to XML v.4',
+        publishedOn: '2025-04-17',
+        sourceUrl:
+          'https://pajak.go.id/sites/default/files/2025-04/BP21%20Excel%20to%20XML%20v.4.xlsx',
+        catalogueUrl: 'https://www.pajak.go.id/id/node/112031',
+        sha256: '511bec3d57f61f2273112fdbae66b373be372df12c3ae13146d8373d1ca840cf',
+      },
+      isExportable: false,
+      lineCount: 0,
+      skippedCount: 0,
+      issues: [
+        {
+          code: 'PTKP_STATUS_MISSING',
+          field: 'ptkpStatus',
+          message: 'The BP21 template requires a PTKP status',
+          subjectId: '4f3e2d1c-0b9a-4877-8665-544332211000',
+          subjectLabel: 'dr. Sari Wulandari',
+        },
+      ],
+    },
     coretaxFakturValidation: {
       reportId: '5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a',
       period: '2026-10',

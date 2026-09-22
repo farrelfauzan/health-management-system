@@ -2583,6 +2583,30 @@
             "MIDWIFE": "Midwife"
           }
         },
+        "coretax": {
+          "title": "Coretax BP21 file",
+          "description": "The bulk-import XML DJP’s own converter produces ({template}, {publishedOn}). The clinic imports it into Coretax and files there; this product never files.",
+          "source": "Template source",
+          "checking": "Checking the report against the template…",
+          "loadError": "The report could not be checked against the Coretax template.",
+          "ready": "{count, plural, one {# bukti potong is ready.} other {# bukti potong are ready.}}",
+          "skipped": "{count, plural, one {# clinician with a zero month is left out.} other {# clinicians with a zero month are left out.}}",
+          "blocked": "Fix these before downloading:",
+          "clinic": "Clinic",
+          "download": "Download Coretax XML",
+          "downloaded": "Coretax BP21 file downloaded.",
+          "downloadError": "The Coretax file could not be downloaded.",
+          "audit": "The file contains every clinician’s full NPWP or NIK. The download is recorded in the audit log.",
+          "issues": {
+            "CLINIC_NPWP_INVALID": "The clinic NPWP must be 16 digits. Update it in Settings › Clinic profile.",
+            "CLINIC_NITKU_INVALID": "The clinic NITKU must be 22 digits starting with the NPWP. Update it in Settings › Taxes.",
+            "TAX_IDENTITY_MISSING": "No NPWP or NIK on file. Add one on the clinician profile.",
+            "TAX_IDENTITY_NOT_16_DIGITS": "Coretax needs a 16-digit NPWP or NIK; replace the 15-digit NPWP on the clinician profile.",
+            "PTKP_STATUS_MISSING": "No PTKP status. Set it on the clinician profile.",
+            "GROSS_NOT_POSITIVE": "The month nets below zero (reversals only) and cannot be a bukti potong.",
+            "AMOUNT_PRECISION": "An amount has more than two decimal places."
+          }
+        },
         "coretaxFaktur": {
           "title": "Coretax Faktur Keluaran file",
           "description": "The bulk-import XML DJP’s own converter produces ({template}, {publishedOn}): one faktur per invoice and faktur code, the patient named by NIK. The clinic imports it into Coretax and files there; this product never files.",

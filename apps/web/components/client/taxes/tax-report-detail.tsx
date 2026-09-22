@@ -19,6 +19,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { TaxReportCoretaxBp21Card } from '#components/client/taxes/tax-report-coretax-bp21-card';
 import { TaxReportCoretaxFakturCard } from '#components/client/taxes/tax-report-coretax-faktur-card';
 import { TaxReportDifferencesNotice } from '#components/client/taxes/tax-report-differences-notice';
 import { TaxReportLinesTable } from '#components/client/taxes/tax-report-lines-table';
@@ -47,6 +48,8 @@ type TaxReportDetailProps = {
  * One monthly tax report (P27-T05): the figures, what they came from, and —
  * for a finalized report — what has changed in the books since. A draft is
  * recomputed or finalized here; either can be exported as CSV or, since
+ * P27-T12, downloaded as PDF. A finalized PPh 21 month also becomes the
+ * Coretax BP21 import file (P27-T08).
  * P27-T12, downloaded as PDF. A finalized PPN keluaran month also becomes
  * the Coretax Faktur Keluaran import file (P27-T09).
  */
@@ -183,6 +186,9 @@ export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
               summary={report.summary}
               lines={report.lines}
             />
+          ) : null}
+          {report.kind === 'PPH21_NON_EMPLOYEE' && report.status === 'FINALIZED' ? (
+            <TaxReportCoretaxBp21Card reportId={report.id} period={report.period} />
           ) : null}
           <TaxReportLinesTable report={report} />
         </CardContent>
