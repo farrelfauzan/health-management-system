@@ -36,6 +36,8 @@ describe('the tax calendar (P27-T10)', () => {
         isPkp: false,
       });
 
+      // No `hasWithholding`: the PPh 21 dates stay calendar information, as
+      // before P27-T07 gave them a draft to gate on.
       expect(actual).toEqual([
         {
           obligation: 'PP55_INCOME_TAX_DEPOSIT',

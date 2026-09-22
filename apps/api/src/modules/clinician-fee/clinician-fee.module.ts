@@ -25,6 +25,8 @@ import { ClinicianFeeStatementService } from './service/clinician-fee-statement.
     ClinicianFeeLedgerService,
     ClinicianFeeStatementService,
   ],
-  exports: [ClinicianFeeLedgerService],
+  // The statement service is what the PPh 21 draft reads a month's gross fees
+  // from (P27-T07): the taxes module never touches this module's tables.
+  exports: [ClinicianFeeLedgerService, ClinicianFeeStatementService],
 })
 export class ClinicianFeeModule {}

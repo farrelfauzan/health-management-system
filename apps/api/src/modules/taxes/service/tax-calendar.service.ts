@@ -7,11 +7,13 @@ import {
   resolvePp55Eligibility,
   resolveTaxObligationDueDates,
   TAX_REMINDER_LEAD_DAYS,
+  TAX_REPORT_KINDS,
   TaxObligationDueDate,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { ClinicianFeeStatementService } from '../../clinician-fee/service/clinician-fee-statement.service';
 import { TaxReminderRepository } from '../repository/tax-reminder.repository';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 
@@ -42,6 +44,7 @@ export class TaxCalendarService {
   constructor(
     private readonly taxReminderRepository: TaxReminderRepository,
     private readonly taxProfileService: TaxProfileService,
+    private readonly clinicianFeeStatementService: ClinicianFeeStatementService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -60,7 +63,7 @@ export class TaxCalendarService {
   async findDueReminders(now: Date): Promise<DueTaxReminder[]> {
     const settings = await this.taxProfileService.getTaxSettings();
     const today = this.resolveClinicToday(now);
-    const dueDates = this.collectDueDates(settings, today);
+    const dueDates = await this.collectDueDates(settings, today);
     const reportedPeriods = await this.resolveFinalizedPeriods(dueDates);
     const reminders: DueTaxReminder[] = [];
     for (const leadDays of TAX_REMINDER_LEAD_DAYS) {
@@ -132,16 +135,17 @@ export class TaxCalendarService {
     return this.taxReminderRepository.claimNotice(kind, noticeKey);
   }
 
-  private collectDueDates(
+  private async collectDueDates(
     settings: TaxSettingsRecord,
     today: string,
-  ): Array<TaxObligationDueDate & { period: string }> {
+  ): Promise<Array<TaxObligationDueDate & { period: string }>> {
     const collected: Array<TaxObligationDueDate & { period: string }> = [];
     for (const period of this.recentPeriods(today)) {
       const dueDates = resolveTaxObligationDueDates({
         period,
         incomeTaxRegime: settings.incomeTaxRegime === 'PP55_FINAL' ? 'PP55' : 'GENERAL',
         isPkp: settings.isPkp,
+        hasWithholding: await this.hasWithholding(period),
       });
       collected.push(...dueDates.map((dueDate) => ({ ...dueDate, period })));
     }
@@ -160,7 +164,7 @@ export class TaxCalendarService {
     dueDates: ReadonlyArray<TaxObligationDueDate & { period: string }>,
   ): Promise<Set<string>> {
     const finalized = new Set<string>();
-    for (const kind of ['PP55_OMZET', 'PPN_OUTPUT'] as const) {
+    for (const kind of TAX_REPORT_KINDS) {
       const periods = dueDates
         .filter((dueDate) => dueDate.reportKind === kind)
         .map((dueDate) => dueDate.period);
@@ -170,6 +174,16 @@ export class TaxCalendarService {
       }
     }
     return finalized;
+  }
+
+  /**
+   * Whether any clinician earned a fee in the period (P27-T07): a clinic with
+   * no jasa medis that month has no PPh 21 to deposit and no BP21 to issue,
+   * so it is not chased for one.
+   */
+  private async hasWithholding(period: string): Promise<boolean> {
+    const summary = await this.clinicianFeeStatementService.getPeriodSummary(period);
+    return summary.clinicians.length > 0;
   }
 
   /** This month and the one before it, as `YYYY-MM`. */

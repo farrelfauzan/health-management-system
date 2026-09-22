@@ -436,6 +436,7 @@ export const ModelName = {
   TaxCode: 'TaxCode',
   TaxCodeRate: 'TaxCodeRate',
   TaxCategoryDefault: 'TaxCategoryDefault',
+  Pph21TaxBracket: 'Pph21TaxBracket',
   TaxReminderNotice: 'TaxReminderNotice',
   TaxReportDraft: 'TaxReportDraft',
   TaxReportDocument: 'TaxReportDocument',
@@ -536,7 +537,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4385,6 +4386,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TaxCategoryDefaultCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TaxCategoryDefaultCountAggregateOutputType> | number
+        }
+      }
+    }
+    Pph21TaxBracket: {
+      payload: Prisma.$Pph21TaxBracketPayload<ExtArgs>
+      fields: Prisma.Pph21TaxBracketFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.Pph21TaxBracketFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.Pph21TaxBracketFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>
+        }
+        findFirst: {
+          args: Prisma.Pph21TaxBracketFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.Pph21TaxBracketFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>
+        }
+        findMany: {
+          args: Prisma.Pph21TaxBracketFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>[]
+        }
+        create: {
+          args: Prisma.Pph21TaxBracketCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>
+        }
+        createMany: {
+          args: Prisma.Pph21TaxBracketCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.Pph21TaxBracketCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>[]
+        }
+        delete: {
+          args: Prisma.Pph21TaxBracketDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>
+        }
+        update: {
+          args: Prisma.Pph21TaxBracketUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>
+        }
+        deleteMany: {
+          args: Prisma.Pph21TaxBracketDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.Pph21TaxBracketUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.Pph21TaxBracketUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>[]
+        }
+        upsert: {
+          args: Prisma.Pph21TaxBracketUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$Pph21TaxBracketPayload>
+        }
+        aggregate: {
+          args: Prisma.Pph21TaxBracketAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePph21TaxBracket>
+        }
+        groupBy: {
+          args: Prisma.Pph21TaxBracketGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Pph21TaxBracketGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.Pph21TaxBracketCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Pph21TaxBracketCountAggregateOutputType> | number
         }
       }
     }
@@ -11057,6 +11132,7 @@ export const DoctorProfileScalarFieldEnum = {
   nikIndex: 'nikIndex',
   nikLast4: 'nikLast4',
   nikKeyVersion: 'nikKeyVersion',
+  npwp: 'npwp',
   satusehatPractitionerId: 'satusehatPractitionerId',
   bpjsDoctorCode: 'bpjsDoctorCode',
   title: 'title',
@@ -11605,6 +11681,18 @@ export const TaxCategoryDefaultScalarFieldEnum = {
 } as const
 
 export type TaxCategoryDefaultScalarFieldEnum = (typeof TaxCategoryDefaultScalarFieldEnum)[keyof typeof TaxCategoryDefaultScalarFieldEnum]
+
+
+export const Pph21TaxBracketScalarFieldEnum = {
+  id: 'id',
+  effectiveFrom: 'effectiveFrom',
+  lowerBound: 'lowerBound',
+  upperBound: 'upperBound',
+  ratePercent: 'ratePercent',
+  createdAt: 'createdAt'
+} as const
+
+export type Pph21TaxBracketScalarFieldEnum = (typeof Pph21TaxBracketScalarFieldEnum)[keyof typeof Pph21TaxBracketScalarFieldEnum]
 
 
 export const TaxReminderNoticeScalarFieldEnum = {
@@ -15266,6 +15354,7 @@ export type GlobalOmitConfig = {
   taxCode?: Prisma.TaxCodeOmit
   taxCodeRate?: Prisma.TaxCodeRateOmit
   taxCategoryDefault?: Prisma.TaxCategoryDefaultOmit
+  pph21TaxBracket?: Prisma.Pph21TaxBracketOmit
   taxReminderNotice?: Prisma.TaxReminderNoticeOmit
   taxReportDraft?: Prisma.TaxReportDraftOmit
   taxReportDocument?: Prisma.TaxReportDocumentOmit

@@ -52518,7 +52518,8 @@ paths:
           description: "Every stored report of the year with its headline figure and
             whether it still matches the books (`isOutOfDate`).
             `meta.applicableKinds` names the reports the tax profile calls for:
-            PP55_OMZET on the 0.5% regime, PPN_OUTPUT for a PKP."
+            PP55_OMZET on the 0.5% regime, PPN_OUTPUT for a PKP,
+            PPH21_NON_EMPLOYEE for every clinic."
           content:
             application/json:
               schema:
@@ -52575,6 +52576,7 @@ paths:
                     year: 2026
                     applicableKinds:
                       - PP55_OMZET
+                      - PPH21_NON_EMPLOYEE
         "401":
           description: Authentication is required.
           content:
@@ -53143,8 +53145,10 @@ paths:
       responses:
         "200":
           description: Recomputes and freezes the month. Refused while the month is
-            running (409 `TAX_REPORT_PERIOD_OPEN`) and for an already finalized
-            report (409 `TAX_REPORT_FINALIZED`). Audited as
+            running (409 `TAX_REPORT_PERIOD_OPEN`), for an already finalized
+            report (409 `TAX_REPORT_FINALIZED`) and for a PPh 21 draft with a
+            clinician who has neither NPWP nor NIK (409
+            `TAX_REPORT_IDENTITY_INCOMPLETE`). Audited as
             `TAX_REPORT_FINALIZED`.
           content:
             application/json:
@@ -53306,6 +53310,85 @@ paths:
         - bearer: []
       summary: Finalize a monthly tax report
       tags: *a76
+  /api/v1/tax/reports/{id}/identifiers:
+    get:
+      operationId: TaxReportController_revealIdentifiers_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: P27-T07. The full NPWP, or the NIK serving as NPWP, of every
+            clinician on the report, for the BP21. The report itself carries
+            only masked identities; this read decrypts and is audited as
+            `DOCTOR_IDENTIFIER_UNMASKED` without the values. 409
+            `TAX_REPORT_NOT_APPLICABLE` for a report of another kind.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reportId:
+                        type: string
+                      period:
+                        type: string
+                      clinicians:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            doctorId:
+                              type: string
+                            identityKind:
+                              type: string
+                            taxIdentityNumber:
+                              type: string
+                          required:
+                            - doctorId
+                            - identityKind
+                            - taxIdentityNumber
+                    required:
+                      - reportId
+                      - period
+                      - clinicians
+                required:
+                  - data
+                example:
+                  data:
+                    reportId: 7c6b5a4f-3e2d-4c1b-8a09-f8e7d6c5b4a3
+                    period: 2026-10
+                    clinicians:
+                      - doctorId: 4f3e2d1c-0b9a-4877-8665-544332211000
+                        identityKind: NIK
+                        taxIdentityNumber: "3171000000000001"
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Reveal the clinicians' tax identities on a PPh 21 report
+      tags: *a76
   /api/v1/tax/reports/{id}/export:
     get:
       operationId: TaxReportController_exportReport_v1
@@ -53318,8 +53401,10 @@ paths:
       responses:
         "200":
           description: "The stored report as CSV: a header block with totals, billing code
-            and due dates, then one row per payment or invoice. Totals equal the
-            report to the rupiah. Audited as an export."
+            and due dates, then one row per payment or invoice — or, for PPh 21,
+            one BP21 row per clinician with the full NPWP or NIK (that read is
+            audited as `DOCTOR_IDENTIFIER_UNMASKED`). Totals equal the report to
+            the rupiah. Audited as an export."
       summary: Export one monthly tax report as CSV
       tags: *a76
   /api/v1/tax/reports/{id}/pdf:
@@ -60503,6 +60588,8 @@ components:
             pattern: ^[A-Z][A-Z0-9_]*$
         nik:
           type: string
+        npwp:
+          type: string
         licenses:
           type: array
           maxItems: 20
@@ -60610,6 +60697,9 @@ components:
           nullable: true
         nik:
           type: string
+        npwp:
+          type: string
+          nullable: true
         licenses:
           type: array
           maxItems: 20
@@ -63613,6 +63703,7 @@ components:
           enum:
             - PP55_OMZET
             - PPN_OUTPUT
+            - PPH21_NON_EMPLOYEE
       required:
         - period
         - kind

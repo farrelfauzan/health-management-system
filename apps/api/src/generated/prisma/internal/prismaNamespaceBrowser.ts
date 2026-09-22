@@ -103,6 +103,7 @@ export const ModelName = {
   TaxCode: 'TaxCode',
   TaxCodeRate: 'TaxCodeRate',
   TaxCategoryDefault: 'TaxCategoryDefault',
+  Pph21TaxBracket: 'Pph21TaxBracket',
   TaxReminderNotice: 'TaxReminderNotice',
   TaxReportDraft: 'TaxReportDraft',
   TaxReportDocument: 'TaxReportDocument',
@@ -546,6 +547,7 @@ export const DoctorProfileScalarFieldEnum = {
   nikIndex: 'nikIndex',
   nikLast4: 'nikLast4',
   nikKeyVersion: 'nikKeyVersion',
+  npwp: 'npwp',
   satusehatPractitionerId: 'satusehatPractitionerId',
   bpjsDoctorCode: 'bpjsDoctorCode',
   title: 'title',
@@ -1094,6 +1096,18 @@ export const TaxCategoryDefaultScalarFieldEnum = {
 } as const
 
 export type TaxCategoryDefaultScalarFieldEnum = (typeof TaxCategoryDefaultScalarFieldEnum)[keyof typeof TaxCategoryDefaultScalarFieldEnum]
+
+
+export const Pph21TaxBracketScalarFieldEnum = {
+  id: 'id',
+  effectiveFrom: 'effectiveFrom',
+  lowerBound: 'lowerBound',
+  upperBound: 'upperBound',
+  ratePercent: 'ratePercent',
+  createdAt: 'createdAt'
+} as const
+
+export type Pph21TaxBracketScalarFieldEnum = (typeof Pph21TaxBracketScalarFieldEnum)[keyof typeof Pph21TaxBracketScalarFieldEnum]
 
 
 export const TaxReminderNoticeScalarFieldEnum = {
