@@ -170,6 +170,8 @@ export type AppSubject =
   | 'BpjsMapping'
   | 'BpjsEligibility'
   | 'BpjsSubmission'
+  // P25-T16. The bidan jejaring's monthly non-capitation claim recap; billing, so ADMIN (D-033).
+  | 'BpjsNonCapitation'
   | 'Satusehat'
   | 'SatusehatSubmission'
   // P21-T04. The doctor's comparison of the local record with SATUSEHAT —

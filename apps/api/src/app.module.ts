@@ -44,6 +44,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { LaboratoryModule } from './modules/laboratory/laboratory.module';
 import { TaxesModule } from './modules/taxes/taxes.module';
 import { MaternalReportsModule } from './modules/maternal-reports/maternal-reports.module';
+import { BpjsNonCapitationModule } from './modules/bpjs-non-capitation/bpjs-non-capitation.module';
 import { MaternalVisitReminderModule } from './modules/maternal-visit-reminder/maternal-visit-reminder.module';
 import { VisitReminderConsentModule } from './modules/visit-reminder-consent/visit-reminder-consent.module';
 import { EmrModule } from './modules/emr/emr.module';
@@ -126,6 +127,8 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     HealthModule,
     // Appended, never inserted: an early module has shadowed routes before.
     MaternalReportsModule,
+    // P25-T16. Appended for the same reason.
+    BpjsNonCapitationModule,
     VisitReminderConsentModule,
     MaternalVisitReminderModule,
   ],

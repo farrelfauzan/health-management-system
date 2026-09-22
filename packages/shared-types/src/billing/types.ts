@@ -407,6 +407,9 @@ export type ClinicReportingIdentity = {
   clinicName: string;
   puskesmasName: string | null;
   puskesmasCode: string | null;
+  /** The letterhead of the non-capitation letter to the induk (P25-T16). */
+  address: string | null;
+  phoneNumber: string | null;
 };
 
 export type ClinicProfileRecord = {

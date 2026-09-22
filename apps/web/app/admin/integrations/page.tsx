@@ -6,9 +6,11 @@ import { IntegrationsPanel } from '#components/client/integrations/integrations-
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
+import { resolvePreviousMonth } from '#lib/bpjs-non-capitation/resolve-previous-month';
 import { INTEGRATIONS_TABS } from '#lib/integrations/integrations-tabs';
 import { parseTabSearchParam } from '#lib/navigation/parse-tab-search-param';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
+import { resolveClinicToday } from '#lib/shared/clinic-today';
 
 type AdminIntegrationsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -29,6 +31,8 @@ export default async function AdminIntegrationsPage({ searchParams }: AdminInteg
     ability.can('manage', 'BpjsMapping') ||
     // P24-T06. The "Lokasi SATUSEHAT" tab.
     ability.can('read', 'SatusehatLocation') ||
+    // P25-T16. The "Klaim non-kapitasi" tab.
+    ability.can('read', 'BpjsNonCapitation') ||
     // P23-T05. A super admin whose only integrations grant is the Notion
     // connector still belongs on this page — the card is the only place the
     // Bug Board's health is visible.
@@ -38,5 +42,10 @@ export default async function AdminIntegrationsPage({ searchParams }: AdminInteg
     redirect('/admin/dashboard');
   }
 
-  return <IntegrationsPanel initialTab={parseTabSearchParam(params.tab, INTEGRATIONS_TABS)} />;
+  return (
+    <IntegrationsPanel
+      initialTab={parseTabSearchParam(params.tab, INTEGRATIONS_TABS)}
+      nonCapitationMonth={resolvePreviousMonth(resolveClinicToday())}
+    />
+  );
 }

@@ -960,6 +960,32 @@ export type BpjsSubmission = Prisma.BpjsSubmissionModel
  */
 export type BpjsReferral = Prisma.BpjsReferralModel
 /**
+ * Model BpjsNonCapitationSettings
+ * The induk FKTP a bidan jejaring files her non-capitation claims through,
+ * and when it files (P25-T16, D-043). Its own row rather than columns on
+ * `BpjsPcareConfig`: a jejaring holds no PCare web-service credentials of
+ * its own (spike §1), so a PMB with no PCare config must still be able to
+ * name its induk. Every field is what Q12 will answer, so none is hard-coded:
+ * the filing day defaults to the 10th (Permenkes 28/2014 lampiran p. 31) and
+ * the rest start unknown. A singleton per facility, like the clinic profile.
+ */
+export type BpjsNonCapitationSettings = Prisma.BpjsNonCapitationSettingsModel
+/**
+ * Model BpjsNonCapitationTariff
+ * One tariff of one non-capitation service type over a validity window
+ * (P25-T16). The recap picks the row valid on the service date, so a new
+ * Permenkes is a new row, never an edit of the old one. Seeded from the
+ * spike's verified figures; an ADMIN adds rows.
+ */
+export type BpjsNonCapitationTariff = Prisma.BpjsNonCapitationTariffModel
+/**
+ * Model BpjsNonCapitationClaimMark
+ * A recap line handed to the induk (P25-T16). The line itself is derived
+ * on read from the encounter, delivery or KB record; only the fact that it
+ * was sent is stored. Unique per source and type, so marking twice is a no-op.
+ */
+export type BpjsNonCapitationClaimMark = Prisma.BpjsNonCapitationClaimMarkModel
+/**
  * Model AiProviderConfig
  * A clinic's upstream AI credentials and model defaults (P13-T01). HMS ships
  * no vendor of its own: the admin picks a kind, supplies a key, and every

@@ -176,6 +176,10 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'bpjs.mapping': 'BpjsMapping',
   'bpjs.eligibility': 'BpjsEligibility',
   'bpjs.submission': 'BpjsSubmission',
+  // P25-T16. `bpjs.non-capitation.read:any` → resource `bpjs.non-capitation`
+  // (split on the last dot), action `read`. Without this row the "Klaim
+  // non-kapitasi" tab never renders.
+  'bpjs.non-capitation': 'BpjsNonCapitation',
   satusehat: 'Satusehat',
   'satusehat.submission': 'SatusehatSubmission',
   // P21-T04. Without this row `satusehat.record.read:own` resolves to no rule
