@@ -130,6 +130,9 @@ export const ModelName = {
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
   BpjsSubmission: 'BpjsSubmission',
   BpjsReferral: 'BpjsReferral',
+  BpjsNonCapitationSettings: 'BpjsNonCapitationSettings',
+  BpjsNonCapitationTariff: 'BpjsNonCapitationTariff',
+  BpjsNonCapitationClaimMark: 'BpjsNonCapitationClaimMark',
   AiProviderConfig: 'AiProviderConfig',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
@@ -1578,6 +1581,50 @@ export const BpjsReferralScalarFieldEnum = {
 } as const
 
 export type BpjsReferralScalarFieldEnum = (typeof BpjsReferralScalarFieldEnum)[keyof typeof BpjsReferralScalarFieldEnum]
+
+
+export const BpjsNonCapitationSettingsScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  networkParentProviderCode: 'networkParentProviderCode',
+  networkParentProviderName: 'networkParentProviderName',
+  isNetworkParentGovernmentOwned: 'isNetworkParentGovernmentOwned',
+  hasOwnEclaimLogin: 'hasOwnEclaimLogin',
+  filingDayOfMonth: 'filingDayOfMonth',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsNonCapitationSettingsScalarFieldEnum = (typeof BpjsNonCapitationSettingsScalarFieldEnum)[keyof typeof BpjsNonCapitationSettingsScalarFieldEnum]
+
+
+export const BpjsNonCapitationTariffScalarFieldEnum = {
+  id: 'id',
+  serviceType: 'serviceType',
+  amount: 'amount',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  regulationReference: 'regulationReference',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsNonCapitationTariffScalarFieldEnum = (typeof BpjsNonCapitationTariffScalarFieldEnum)[keyof typeof BpjsNonCapitationTariffScalarFieldEnum]
+
+
+export const BpjsNonCapitationClaimMarkScalarFieldEnum = {
+  id: 'id',
+  serviceType: 'serviceType',
+  sourceId: 'sourceId',
+  claimMonth: 'claimMonth',
+  markedAt: 'markedAt',
+  markedById: 'markedById',
+  createdAt: 'createdAt'
+} as const
+
+export type BpjsNonCapitationClaimMarkScalarFieldEnum = (typeof BpjsNonCapitationClaimMarkScalarFieldEnum)[keyof typeof BpjsNonCapitationClaimMarkScalarFieldEnum]
 
 
 export const AiProviderConfigScalarFieldEnum = {

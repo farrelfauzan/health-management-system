@@ -54,7 +54,11 @@ export type AppAction =
   // than `create`: the general patient create is front-desk work with a form
   // full of identifiers, while this is a clinical act at the bedside that a
   // midwife performs and holds no `patient.create:any` for.
-  | 'create-newborn';
+  | 'create-newborn'
+  // Opening a visit off the queue. Split from `write` because D-033 keeps
+  // `encounter.write:any` from SUPER_ADMIN, and starting a consultation on a
+  // doctor's behalf is front-desk work rather than writing the record.
+  | 'open';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -170,6 +174,8 @@ export type AppSubject =
   | 'BpjsMapping'
   | 'BpjsEligibility'
   | 'BpjsSubmission'
+  // P25-T16. The bidan jejaring's monthly non-capitation claim recap; billing, so ADMIN (D-033).
+  | 'BpjsNonCapitation'
   | 'Satusehat'
   | 'SatusehatSubmission'
   // P21-T04. The doctor's comparison of the local record with SATUSEHAT —

@@ -463,6 +463,9 @@ export const ModelName = {
   BpjsEligibilityCheck: 'BpjsEligibilityCheck',
   BpjsSubmission: 'BpjsSubmission',
   BpjsReferral: 'BpjsReferral',
+  BpjsNonCapitationSettings: 'BpjsNonCapitationSettings',
+  BpjsNonCapitationTariff: 'BpjsNonCapitationTariff',
+  BpjsNonCapitationClaimMark: 'BpjsNonCapitationClaimMark',
   AiProviderConfig: 'AiProviderConfig',
   ChatSession: 'ChatSession',
   ChatMessage: 'ChatMessage',
@@ -537,7 +540,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "bpjsNonCapitationSettings" | "bpjsNonCapitationTariff" | "bpjsNonCapitationClaimMark" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -6387,6 +6390,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    BpjsNonCapitationSettings: {
+      payload: Prisma.$BpjsNonCapitationSettingsPayload<ExtArgs>
+      fields: Prisma.BpjsNonCapitationSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsNonCapitationSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsNonCapitationSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsNonCapitationSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsNonCapitationSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsNonCapitationSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsNonCapitationSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsNonCapitationSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsNonCapitationSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsNonCapitationSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>
+        }
+        update: {
+          args: Prisma.BpjsNonCapitationSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsNonCapitationSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsNonCapitationSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsNonCapitationSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsNonCapitationSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsNonCapitationSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsNonCapitationSettings>
+        }
+        groupBy: {
+          args: Prisma.BpjsNonCapitationSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsNonCapitationSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsNonCapitationSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsNonCapitationSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    BpjsNonCapitationTariff: {
+      payload: Prisma.$BpjsNonCapitationTariffPayload<ExtArgs>
+      fields: Prisma.BpjsNonCapitationTariffFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsNonCapitationTariffFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsNonCapitationTariffFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsNonCapitationTariffFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsNonCapitationTariffFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsNonCapitationTariffFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsNonCapitationTariffCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsNonCapitationTariffCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsNonCapitationTariffCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsNonCapitationTariffDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>
+        }
+        update: {
+          args: Prisma.BpjsNonCapitationTariffUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsNonCapitationTariffDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsNonCapitationTariffUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsNonCapitationTariffUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsNonCapitationTariffUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationTariffPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsNonCapitationTariffAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsNonCapitationTariff>
+        }
+        groupBy: {
+          args: Prisma.BpjsNonCapitationTariffGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsNonCapitationTariffGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsNonCapitationTariffCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsNonCapitationTariffCountAggregateOutputType> | number
+        }
+      }
+    }
+    BpjsNonCapitationClaimMark: {
+      payload: Prisma.$BpjsNonCapitationClaimMarkPayload<ExtArgs>
+      fields: Prisma.BpjsNonCapitationClaimMarkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BpjsNonCapitationClaimMarkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BpjsNonCapitationClaimMarkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>
+        }
+        findFirst: {
+          args: Prisma.BpjsNonCapitationClaimMarkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BpjsNonCapitationClaimMarkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>
+        }
+        findMany: {
+          args: Prisma.BpjsNonCapitationClaimMarkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>[]
+        }
+        create: {
+          args: Prisma.BpjsNonCapitationClaimMarkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>
+        }
+        createMany: {
+          args: Prisma.BpjsNonCapitationClaimMarkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BpjsNonCapitationClaimMarkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>[]
+        }
+        delete: {
+          args: Prisma.BpjsNonCapitationClaimMarkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>
+        }
+        update: {
+          args: Prisma.BpjsNonCapitationClaimMarkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>
+        }
+        deleteMany: {
+          args: Prisma.BpjsNonCapitationClaimMarkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BpjsNonCapitationClaimMarkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BpjsNonCapitationClaimMarkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>[]
+        }
+        upsert: {
+          args: Prisma.BpjsNonCapitationClaimMarkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BpjsNonCapitationClaimMarkPayload>
+        }
+        aggregate: {
+          args: Prisma.BpjsNonCapitationClaimMarkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBpjsNonCapitationClaimMark>
+        }
+        groupBy: {
+          args: Prisma.BpjsNonCapitationClaimMarkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsNonCapitationClaimMarkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BpjsNonCapitationClaimMarkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BpjsNonCapitationClaimMarkCountAggregateOutputType> | number
+        }
+      }
+    }
     AiProviderConfig: {
       payload: Prisma.$AiProviderConfigPayload<ExtArgs>
       fields: Prisma.AiProviderConfigFieldRefs
@@ -12165,6 +12390,50 @@ export const BpjsReferralScalarFieldEnum = {
 export type BpjsReferralScalarFieldEnum = (typeof BpjsReferralScalarFieldEnum)[keyof typeof BpjsReferralScalarFieldEnum]
 
 
+export const BpjsNonCapitationSettingsScalarFieldEnum = {
+  id: 'id',
+  facilityId: 'facilityId',
+  networkParentProviderCode: 'networkParentProviderCode',
+  networkParentProviderName: 'networkParentProviderName',
+  isNetworkParentGovernmentOwned: 'isNetworkParentGovernmentOwned',
+  hasOwnEclaimLogin: 'hasOwnEclaimLogin',
+  filingDayOfMonth: 'filingDayOfMonth',
+  updatedById: 'updatedById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsNonCapitationSettingsScalarFieldEnum = (typeof BpjsNonCapitationSettingsScalarFieldEnum)[keyof typeof BpjsNonCapitationSettingsScalarFieldEnum]
+
+
+export const BpjsNonCapitationTariffScalarFieldEnum = {
+  id: 'id',
+  serviceType: 'serviceType',
+  amount: 'amount',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  regulationReference: 'regulationReference',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BpjsNonCapitationTariffScalarFieldEnum = (typeof BpjsNonCapitationTariffScalarFieldEnum)[keyof typeof BpjsNonCapitationTariffScalarFieldEnum]
+
+
+export const BpjsNonCapitationClaimMarkScalarFieldEnum = {
+  id: 'id',
+  serviceType: 'serviceType',
+  sourceId: 'sourceId',
+  claimMonth: 'claimMonth',
+  markedAt: 'markedAt',
+  markedById: 'markedById',
+  createdAt: 'createdAt'
+} as const
+
+export type BpjsNonCapitationClaimMarkScalarFieldEnum = (typeof BpjsNonCapitationClaimMarkScalarFieldEnum)[keyof typeof BpjsNonCapitationClaimMarkScalarFieldEnum]
+
+
 export const AiProviderConfigScalarFieldEnum = {
   id: 'id',
   facilityId: 'facilityId',
@@ -14368,6 +14637,20 @@ export type ListEnumBpjsSubmissionStatusFieldRefInput<$PrismaModel> = FieldRefIn
 
 
 /**
+ * Reference to a field of type 'NonCapitationServiceType'
+ */
+export type EnumNonCapitationServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NonCapitationServiceType'>
+    
+
+
+/**
+ * Reference to a field of type 'NonCapitationServiceType[]'
+ */
+export type ListEnumNonCapitationServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NonCapitationServiceType[]'>
+    
+
+
+/**
  * Reference to a field of type 'AiProviderKind'
  */
 export type EnumAiProviderKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiProviderKind'>
@@ -15395,6 +15678,9 @@ export type GlobalOmitConfig = {
   bpjsEligibilityCheck?: Prisma.BpjsEligibilityCheckOmit
   bpjsSubmission?: Prisma.BpjsSubmissionOmit
   bpjsReferral?: Prisma.BpjsReferralOmit
+  bpjsNonCapitationSettings?: Prisma.BpjsNonCapitationSettingsOmit
+  bpjsNonCapitationTariff?: Prisma.BpjsNonCapitationTariffOmit
+  bpjsNonCapitationClaimMark?: Prisma.BpjsNonCapitationClaimMarkOmit
   aiProviderConfig?: Prisma.AiProviderConfigOmit
   chatSession?: Prisma.ChatSessionOmit
   chatMessage?: Prisma.ChatMessageOmit

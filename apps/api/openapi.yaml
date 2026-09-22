@@ -4167,6 +4167,9 @@ paths:
               - MEDICAL_CERTIFICATE
               - PREGNANCY_CERTIFICATE
               - BIRTH_CERTIFICATE
+              - KIA_BOOK_COPY
+              - PARTOGRAPH
+              - FAMILY_PLANNING_BOOK
               - INSURANCE
               - IDENTITY
               - OTHER
@@ -5407,6 +5410,9 @@ paths:
               - MEDICAL_CERTIFICATE
               - PREGNANCY_CERTIFICATE
               - BIRTH_CERTIFICATE
+              - KIA_BOOK_COPY
+              - PARTOGRAPH
+              - FAMILY_PLANNING_BOOK
               - INSURANCE
               - IDENTITY
               - OTHER
@@ -59829,6 +59835,696 @@ paths:
         - bearer: []
       summary: Births and deaths report for a month
       tags: *a89
+  /api/v1/bpjs/non-capitation/recap:
+    get:
+      operationId: BpjsNonCapitationRecapController_getRecap_v1
+      parameters:
+        - name: month
+          required: true
+          in: query
+          schema:
+            pattern: ^\d{4}-(0[1-9]|1[0-2])$
+            type: string
+        - name: format
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - json
+              - csv
+              - pdf
+      responses:
+        "200":
+          description: "One line per payable unit of the month for BPJS participants (a
+            patient with a BPJS number), derived from FINISHED antenatal and
+            nifas encounters, recorded births and KB acts — not the PCare
+            outbox. Each line carries the Permenkes 3/2023 tariff valid on its
+            date with its article and page, the Peraturan BPJS 7/2018 document
+            checklist by filed category, and a status: SENT once marked, else
+            OPEN, DUE_SOON in the 5 days before the induk's filing date, LATE
+            after it, EXPIRED six months after the service. `format` answers the
+            JSON preview by default; `csv` streams UTF-8 with BOM (`text/csv`),
+            `pdf` the letter to the induk (`application/pdf`); both files are
+            audited as an export."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      month:
+                        type: string
+                      monthLabel:
+                        type: string
+                      clinicName:
+                        type: string
+                      generatedAt:
+                        type: string
+                      settings:
+                        type: object
+                        properties:
+                          networkParentProviderCode:
+                            type: string
+                          networkParentProviderName:
+                            type: string
+                          isNetworkParentGovernmentOwned:
+                            type: boolean
+                          hasOwnEclaimLogin:
+                            nullable: true
+                          filingDayOfMonth:
+                            type: integer
+                          isConfigured:
+                            type: boolean
+                          updatedAt:
+                            type: string
+                        required:
+                          - networkParentProviderCode
+                          - networkParentProviderName
+                          - isNetworkParentGovernmentOwned
+                          - hasOwnEclaimLogin
+                          - filingDayOfMonth
+                          - isConfigured
+                          - updatedAt
+                      filingDeadline:
+                        type: string
+                      daysUntilFilingDeadline:
+                        type: integer
+                      lines:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            serviceType:
+                              type: string
+                            sourceId:
+                              type: string
+                            serviceDate:
+                              type: string
+                            patientId:
+                              type: string
+                            patientName:
+                              type: string
+                            bpjsNumberLast4:
+                              type: string
+                            visitLabel:
+                              type: string
+                            examinerProfession:
+                              type: string
+                            tariffAmount:
+                              type: integer
+                            regulationReference:
+                              type: string
+                            documents:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  category:
+                                    type: string
+                                  isPresent:
+                                    type: boolean
+                                required:
+                                  - category
+                                  - isPresent
+                            isDocumentationComplete:
+                              type: boolean
+                            status:
+                              type: string
+                            markedAt:
+                              nullable: true
+                            expiresOn:
+                              type: string
+                          required:
+                            - serviceType
+                            - sourceId
+                            - serviceDate
+                            - patientId
+                            - patientName
+                            - bpjsNumberLast4
+                            - visitLabel
+                            - examinerProfession
+                            - tariffAmount
+                            - regulationReference
+                            - documents
+                            - isDocumentationComplete
+                            - status
+                            - markedAt
+                            - expiresOn
+                      summary:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            serviceType:
+                              type: string
+                            count:
+                              type: integer
+                            totalAmount:
+                              type: integer
+                          required:
+                            - serviceType
+                            - count
+                            - totalAmount
+                      totalAmount:
+                        type: integer
+                      unpricedCount:
+                        type: integer
+                      statusCounts:
+                        type: object
+                        properties:
+                          OPEN:
+                            type: integer
+                          DUE_SOON:
+                            type: integer
+                          LATE:
+                            type: integer
+                          EXPIRED:
+                            type: integer
+                          SENT:
+                            type: integer
+                        required:
+                          - OPEN
+                          - DUE_SOON
+                          - LATE
+                          - EXPIRED
+                          - SENT
+                      maximumCoachingFeeAmount:
+                        type: integer
+                    required:
+                      - month
+                      - monthLabel
+                      - clinicName
+                      - generatedAt
+                      - settings
+                      - filingDeadline
+                      - daysUntilFilingDeadline
+                      - lines
+                      - summary
+                      - totalAmount
+                      - unpricedCount
+                      - statusCounts
+                      - maximumCoachingFeeAmount
+                required:
+                  - data
+                example:
+                  data:
+                    month: 2026-10
+                    monthLabel: Oktober 2026
+                    clinicName: Klinik Bidan Sehati
+                    generatedAt: 6 Nov 2026, 09.15
+                    settings:
+                      networkParentProviderCode: 0114U001
+                      networkParentProviderName: Klinik Pratama Induk Sejahtera
+                      isNetworkParentGovernmentOwned: false
+                      hasOwnEclaimLogin: null
+                      filingDayOfMonth: 10
+                      isConfigured: true
+                      updatedAt: 2026-11-01T02:00:00.000Z
+                    filingDeadline: 2026-11-10
+                    daysUntilFilingDeadline: 4
+                    lines:
+                      - serviceType: ANTENATAL_MIDWIFE
+                        sourceId: 6f1c2a90-3d4b-4c1e-9a55-2d7f0b8e1a01
+                        serviceDate: 2026-10-14
+                        patientId: 0b4d8f5e-7a2c-4e61-8d3b-5c9a1f2e6b02
+                        patientName: Siti Aminah
+                        bpjsNumberLast4: "4821"
+                        visitLabel: K2
+                        examinerProfession: MIDWIFE
+                        tariffAmount: 70000
+                        regulationReference: Permenkes 3/2023 Pasal 19 ayat (2) huruf c, hlm. 13 (ANC
+                          per kunjungan oleh bidan, termasuk bidan jejaring)
+                        documents:
+                          - category: KIA_BOOK_COPY
+                            isPresent: true
+                        isDocumentationComplete: true
+                        status: DUE_SOON
+                        markedAt: null
+                        expiresOn: 2027-04-14
+                    summary:
+                      - serviceType: ANTENATAL_MIDWIFE
+                        count: 1
+                        totalAmount: 70000
+                    totalAmount: 70000
+                    unpricedCount: 0
+                    statusCounts:
+                      OPEN: 0
+                      DUE_SOON: 1
+                      LATE: 0
+                      EXPIRED: 0
+                      SENT: 0
+                    maximumCoachingFeeAmount: 7000
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Monthly BPJS non-capitation claim recap
+      tags: &a90
+        - BPJS Non-Capitation
+  /api/v1/bpjs/non-capitation/marks:
+    post:
+      operationId: BpjsNonCapitationRecapController_markLines_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarkNonCapitationLinesDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  month: 2026-10
+                  items:
+                    - serviceType: ANTENATAL_MIDWIFE
+                      sourceId: 6f1c2a90-3d4b-4c1e-9a55-2d7f0b8e1a01
+      responses:
+        "200":
+          description: "Per-item result: MARKED, ALREADY_MARKED (a second mark is a no-op)
+            or NOT_IN_RECAP when the source is not a line of that month. Each
+            newly marked line writes one NON_CAPITATION_CLAIM_MARKED audit row."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      month:
+                        type: string
+                      markedCount:
+                        type: integer
+                      results:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            serviceType:
+                              type: string
+                            sourceId:
+                              type: string
+                            outcome:
+                              type: string
+                          required:
+                            - serviceType
+                            - sourceId
+                            - outcome
+                    required:
+                      - month
+                      - markedCount
+                      - results
+                required:
+                  - data
+                example:
+                  data:
+                    month: 2026-10
+                    markedCount: 1
+                    results:
+                      - serviceType: ANTENATAL_MIDWIFE
+                        sourceId: 6f1c2a90-3d4b-4c1e-9a55-2d7f0b8e1a01
+                        outcome: MARKED
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Mark recap lines as sent to the induk FKTP
+      tags: *a90
+  /api/v1/bpjs/non-capitation/settings:
+    get:
+      operationId: BpjsNonCapitationSettingsController_getSettings_v1
+      parameters: []
+      responses:
+        "200":
+          description: The induk FKTP the recap is addressed to and its filing day. Before
+            anything is saved every field is null except the filing day, which
+            defaults to the 10th (Permenkes 28/2014 lampiran p. 31).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      networkParentProviderCode:
+                        type: string
+                      networkParentProviderName:
+                        type: string
+                      isNetworkParentGovernmentOwned:
+                        type: boolean
+                      hasOwnEclaimLogin:
+                        nullable: true
+                      filingDayOfMonth:
+                        type: integer
+                      isConfigured:
+                        type: boolean
+                      updatedAt:
+                        type: string
+                    required:
+                      - networkParentProviderCode
+                      - networkParentProviderName
+                      - isNetworkParentGovernmentOwned
+                      - hasOwnEclaimLogin
+                      - filingDayOfMonth
+                      - isConfigured
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    networkParentProviderCode: 0114U001
+                    networkParentProviderName: Klinik Pratama Induk Sejahtera
+                    isNetworkParentGovernmentOwned: false
+                    hasOwnEclaimLogin: null
+                    filingDayOfMonth: 10
+                    isConfigured: true
+                    updatedAt: 2026-11-01T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the induk FKTP settings
+      tags: &a91
+        - BPJS Non-Capitation
+    put:
+      operationId: BpjsNonCapitationSettingsController_updateSettings_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNonCapitationSettingsDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  networkParentProviderCode: 0114U001
+                  networkParentProviderName: Klinik Pratama Induk Sejahtera
+                  isNetworkParentGovernmentOwned: false
+                  hasOwnEclaimLogin: null
+                  filingDayOfMonth: 10
+      responses:
+        "200":
+          description: The saved settings. `null` keeps a field unknown. The filing day is
+            1–28. Audited as NON_CAPITATION_SETTINGS_CHANGED.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      networkParentProviderCode:
+                        type: string
+                      networkParentProviderName:
+                        type: string
+                      isNetworkParentGovernmentOwned:
+                        type: boolean
+                      hasOwnEclaimLogin:
+                        nullable: true
+                      filingDayOfMonth:
+                        type: integer
+                      isConfigured:
+                        type: boolean
+                      updatedAt:
+                        type: string
+                    required:
+                      - networkParentProviderCode
+                      - networkParentProviderName
+                      - isNetworkParentGovernmentOwned
+                      - hasOwnEclaimLogin
+                      - filingDayOfMonth
+                      - isConfigured
+                      - updatedAt
+                required:
+                  - data
+                example:
+                  data:
+                    networkParentProviderCode: 0114U001
+                    networkParentProviderName: Klinik Pratama Induk Sejahtera
+                    isNetworkParentGovernmentOwned: false
+                    hasOwnEclaimLogin: null
+                    filingDayOfMonth: 10
+                    isConfigured: true
+                    updatedAt: 2026-11-01T02:00:00.000Z
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Save the induk FKTP settings
+      tags: *a91
+  /api/v1/bpjs/non-capitation/tariffs:
+    get:
+      operationId: BpjsNonCapitationSettingsController_listTariffs_v1
+      parameters: []
+      responses:
+        "200":
+          description: Every tariff row by service type and validity window, with its
+            regulation reference. Seeded from Permenkes 3/2023 Pasal 19–22, pp.
+            13–16.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        serviceType:
+                          type: string
+                        amount:
+                          type: integer
+                        validFrom:
+                          type: string
+                        validUntil:
+                          nullable: true
+                        regulationReference:
+                          type: string
+                      required:
+                        - id
+                        - serviceType
+                        - amount
+                        - validFrom
+                        - validUntil
+                        - regulationReference
+                required:
+                  - data
+                example:
+                  data:
+                    - id: 9a7e5c3b-1f2d-4e6a-8b9c-0d1e2f3a4b05
+                      serviceType: ANTENATAL_MIDWIFE
+                      amount: 70000
+                      validFrom: 2023-01-09
+                      validUntil: null
+                      regulationReference: Permenkes 3/2023 Pasal 19 ayat (2) huruf c, hlm. 13 (ANC
+                        per kunjungan oleh bidan, termasuk bidan jejaring)
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List the non-capitation tariffs
+      tags: *a91
+    post:
+      operationId: BpjsNonCapitationSettingsController_createTariff_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNonCapitationTariffDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  serviceType: ANTENATAL_MIDWIFE
+                  amount: 75000
+                  validFrom: 2027-01-01
+                  regulationReference: Permenkes x/2027 Pasal 19 ayat (2) huruf c, hlm. 13
+      responses:
+        "201":
+          description: The new row. The open row of the same service type is closed the
+            day before `validFrom`. 409 NON_CAPITATION_TARIFF_OVERLAP when a row
+            of the type already starts on or after that date. Audited as
+            NON_CAPITATION_TARIFF_CHANGED.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      serviceType:
+                        type: string
+                      amount:
+                        type: integer
+                      validFrom:
+                        type: string
+                      validUntil:
+                        nullable: true
+                      regulationReference:
+                        type: string
+                    required:
+                      - id
+                      - serviceType
+                      - amount
+                      - validFrom
+                      - validUntil
+                      - regulationReference
+                required:
+                  - data
+                example:
+                  data:
+                    id: 9a7e5c3b-1f2d-4e6a-8b9c-0d1e2f3a4b05
+                    serviceType: ANTENATAL_MIDWIFE
+                    amount: 70000
+                    validFrom: 2023-01-09
+                    validUntil: null
+                    regulationReference: Permenkes 3/2023 Pasal 19 ayat (2) huruf c, hlm. 13 (ANC
+                      per kunjungan oleh bidan, termasuk bidan jejaring)
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Add a non-capitation tariff from a date
+      tags: *a91
 info:
   title: HMS API
   description: Health Management System API
@@ -60140,6 +60836,9 @@ components:
             - MEDICAL_CERTIFICATE
             - PREGNANCY_CERTIFICATE
             - BIRTH_CERTIFICATE
+            - KIA_BOOK_COPY
+            - PARTOGRAPH
+            - FAMILY_PLANNING_BOOK
             - INSURANCE
             - IDENTITY
             - OTHER
@@ -60185,6 +60884,9 @@ components:
             - MEDICAL_CERTIFICATE
             - PREGNANCY_CERTIFICATE
             - BIRTH_CERTIFICATE
+            - KIA_BOOK_COPY
+            - PARTOGRAPH
+            - FAMILY_PLANNING_BOOK
             - INSURANCE
             - IDENTITY
             - OTHER
@@ -65649,3 +66351,105 @@ components:
       required:
         - userId
         - roleCode
+    MarkNonCapitationLinesDto:
+      type: object
+      properties:
+        month:
+          type: string
+          pattern: ^\d{4}-(0[1-9]|1[0-2])$
+        items:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items:
+            type: object
+            properties:
+              serviceType:
+                type: string
+                enum:
+                  - ANTENATAL_MIDWIFE
+                  - ANTENATAL_DOCTOR
+                  - ANTENATAL_DOCTOR_ULTRASOUND
+                  - PRE_REFERRAL
+                  - DELIVERY_WITH_DOCTOR
+                  - DELIVERY_HEALTH_WORKER_TEAM
+                  - POSTNATAL_MOTHER_NEWBORN
+                  - POSTNATAL_MOTHER
+                  - FAMILY_PLANNING_IUD
+                  - FAMILY_PLANNING_IMPLANT
+                  - FAMILY_PLANNING_INJECTION
+              sourceId:
+                type: string
+                format: uuid
+            required:
+              - serviceType
+              - sourceId
+      required:
+        - month
+        - items
+    UpdateNonCapitationSettingsDto:
+      type: object
+      properties:
+        networkParentProviderCode:
+          type: string
+          minLength: 1
+          maxLength: 20
+          nullable: true
+        networkParentProviderName:
+          type: string
+          minLength: 1
+          maxLength: 200
+          nullable: true
+        isNetworkParentGovernmentOwned:
+          type: boolean
+          nullable: true
+        hasOwnEclaimLogin:
+          type: boolean
+          nullable: true
+        filingDayOfMonth:
+          type: integer
+          minimum: 1
+          exclusiveMinimum: false
+          maximum: 28
+          exclusiveMaximum: false
+      required:
+        - networkParentProviderCode
+        - networkParentProviderName
+        - isNetworkParentGovernmentOwned
+        - hasOwnEclaimLogin
+        - filingDayOfMonth
+    CreateNonCapitationTariffDto:
+      type: object
+      properties:
+        serviceType:
+          type: string
+          enum:
+            - ANTENATAL_MIDWIFE
+            - ANTENATAL_DOCTOR
+            - ANTENATAL_DOCTOR_ULTRASOUND
+            - PRE_REFERRAL
+            - DELIVERY_WITH_DOCTOR
+            - DELIVERY_HEALTH_WORKER_TEAM
+            - POSTNATAL_MOTHER_NEWBORN
+            - POSTNATAL_MOTHER
+            - FAMILY_PLANNING_IUD
+            - FAMILY_PLANNING_IMPLANT
+            - FAMILY_PLANNING_INJECTION
+        amount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 100000000
+          exclusiveMaximum: false
+        validFrom:
+          type: string
+          pattern: ^\d{4}-\d{2}-\d{2}$
+        regulationReference:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - serviceType
+        - amount
+        - validFrom
+        - regulationReference

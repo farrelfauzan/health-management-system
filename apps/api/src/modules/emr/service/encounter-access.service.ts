@@ -49,7 +49,7 @@ export class EncounterAccessService {
 
   async resolveScopeOrThrow(
     currentUser: CurrentUser,
-    action: 'read' | 'write',
+    action: 'open' | 'read' | 'write',
   ): Promise<ActorScopeResolution> {
     const actor = await this.getActorOrThrow(currentUser);
     const scope = this.resolveScope(actor, action);
