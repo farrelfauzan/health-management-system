@@ -21,8 +21,11 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateSatusehatKycSessionDto,
   LinkDoctorByIhsDto,
   RegisterSatusehatLocationsDto,
+  SatusehatKycControllerGetStatusV1200,
+  SatusehatKycControllerStartSessionV1200,
   SatusehatLinkControllerLinkDoctorByIhsV1200,
   SatusehatLinkControllerLinkDoctorV1200,
   SatusehatLinkControllerLinkPatientV1200,
@@ -1172,6 +1175,192 @@ export function useSatusehatLocationControllerRegisterLocationsV1<TData = Awaite
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSatusehatLocationControllerRegisterLocationsV1QueryOptions(registerSatusehatLocationsDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Whether I can start a SATUSEHAT KYC verification
+ */
+export const satusehatKycControllerGetStatusV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatKycControllerGetStatusV1200>(
+      {url: `/api/v1/satusehat/kyc/status`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatKycControllerGetStatusV1QueryKey = () => {
+    return [
+    `/api/v1/satusehat/kyc/status`
+    ] as const;
+    }
+
+
+export const getSatusehatKycControllerGetStatusV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatKycControllerGetStatusV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>> = ({ signal }) => satusehatKycControllerGetStatusV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatKycControllerGetStatusV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>>
+export type SatusehatKycControllerGetStatusV1QueryError = unknown
+
+
+export function useSatusehatKycControllerGetStatusV1<TData = Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatKycControllerGetStatusV1<TData = Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatKycControllerGetStatusV1<TData = Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Whether I can start a SATUSEHAT KYC verification
+ */
+
+export function useSatusehatKycControllerGetStatusV1<TData = Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerGetStatusV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatKycControllerGetStatusV1QueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Start a SATUSEHAT KYC verification
+ */
+export const satusehatKycControllerStartSessionV1 = (
+    createSatusehatKycSessionDto: CreateSatusehatKycSessionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SatusehatKycControllerStartSessionV1200>(
+      {url: `/api/v1/satusehat/kyc/sessions`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createSatusehatKycSessionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getSatusehatKycControllerStartSessionV1QueryKey = (createSatusehatKycSessionDto?: CreateSatusehatKycSessionDto,) => {
+    return [
+    'POST', `/api/v1/satusehat/kyc/sessions`, createSatusehatKycSessionDto
+    ] as const;
+    }
+
+
+export const getSatusehatKycControllerStartSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError = unknown>(createSatusehatKycSessionDto: CreateSatusehatKycSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSatusehatKycControllerStartSessionV1QueryKey(createSatusehatKycSessionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>> = ({ signal }) => satusehatKycControllerStartSessionV1(createSatusehatKycSessionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SatusehatKycControllerStartSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>>
+export type SatusehatKycControllerStartSessionV1QueryError = unknown
+
+
+export function useSatusehatKycControllerStartSessionV1<TData = Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError = unknown>(
+ createSatusehatKycSessionDto: CreateSatusehatKycSessionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatKycControllerStartSessionV1<TData = Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError = unknown>(
+ createSatusehatKycSessionDto: CreateSatusehatKycSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSatusehatKycControllerStartSessionV1<TData = Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError = unknown>(
+ createSatusehatKycSessionDto: CreateSatusehatKycSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Start a SATUSEHAT KYC verification
+ */
+
+export function useSatusehatKycControllerStartSessionV1<TData = Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError = unknown>(
+ createSatusehatKycSessionDto: CreateSatusehatKycSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof satusehatKycControllerStartSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSatusehatKycControllerStartSessionV1QueryOptions(createSatusehatKycSessionDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

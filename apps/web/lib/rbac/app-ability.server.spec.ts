@@ -56,7 +56,9 @@ describe('resolveAppAbilityRules integration permissions', () => {
   });
 
   it('maps the tax-report keys to the TaxReport subject (P27-T05)', () => {
-    const ability = buildAppAbility(resolveAppAbilityRules({ permissions: ['tax-report.read:any'] }));
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['tax-report.read:any'] }),
+    );
 
     expect(ability.can('read', 'TaxReport')).toBe(true);
     expect(ability.can('write', 'TaxReport')).toBe(false);
@@ -131,12 +133,14 @@ describe('resolveAppAbilityRules integration permissions', () => {
           'satusehat.submission.retry:any',
           'satusehat.location.read:any',
           'satusehat.location.write:any',
+          'satusehat.kyc.verify:any',
         ],
       }),
     );
 
     expect(ability.can('read', 'SatusehatLocation')).toBe(true);
     expect(ability.can('write', 'SatusehatLocation')).toBe(true);
+    expect(ability.can('verify', 'SatusehatKyc')).toBe(true);
     expect(ability.can('link', 'Satusehat')).toBe(true);
     expect(ability.can('read', 'SatusehatSubmission')).toBe(true);
     expect(ability.can('retry', 'SatusehatSubmission')).toBe(true);

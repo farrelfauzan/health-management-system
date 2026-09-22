@@ -25,6 +25,7 @@ import { PatientDemographicsCard } from '#components/client/patients/patient-dem
 import { PatientDeliveryConsentCard } from '#components/client/patients/patient-delivery-consent-card';
 import { PatientIdentifiersCard } from '#components/client/patients/patient-identifiers-card';
 import { PatientImmunizationsCard } from '#components/client/patients/patient-immunizations-card';
+import { PatientKycVerifyButton } from '#components/client/patients/patient-kyc-verify-button';
 import { PatientPrivacyHistoryCard } from '#components/client/patients/patient-privacy-history-card';
 import { PatientDoctorsCard } from '#components/client/patients/patient-doctors-card';
 import { PatientFormDialog } from '#components/client/patients/patient-form-dialog';
@@ -153,12 +154,12 @@ export function PatientDetailPanel({
         ]}
         actions={
           <>
+            <PatientKycVerifyButton
+              patientId={patient.id}
+              isSatusehatEnabled={isSatusehatEnabled}
+            />
             {canRegisterNewborn ? (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsNewbornDialogOpen(true)}
-              >
+              <Button type="button" variant="outline" onClick={() => setIsNewbornDialogOpen(true)}>
                 <Icon name="child_care" size={18} />
                 {t('patients.newborn.action')}
               </Button>

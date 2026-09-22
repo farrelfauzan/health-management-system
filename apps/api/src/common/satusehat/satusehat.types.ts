@@ -1,5 +1,7 @@
 import { KeyObject } from 'node:crypto';
 
+import { SatusehatKycDisabledReasonValue } from '@hms/shared-types';
+
 export type SatusehatConfig = {
   readonly isConfigured: boolean;
   readonly fhirBaseUrl: string;
@@ -153,18 +155,14 @@ export type SatusehatKycConfig =
     };
 
 /**
- * Why KYC is off, as a code the status route can translate. Never the key
- * contents, never a path.
+ * Why KYC is off at the deployment level, as a code the status route can
+ * translate. Never the key contents, never a path. The operator-level reasons
+ * of the shared enum are the feature module's, not the adapter's.
  */
-export type SatusehatKycDisabledReason =
-  | 'SATUSEHAT_NOT_CONFIGURED'
-  | 'KYC_KEYS_NOT_CONFIGURED'
-  | 'KYC_KEYS_INCOMPLETE'
-  | 'KYC_PRIVATE_KEY_INVALID'
-  | 'KYC_PUBLIC_KEY_INVALID'
-  | 'KYC_SERVER_PUBLIC_KEY_INVALID'
-  | 'KYC_KEY_PAIR_MISMATCH'
-  | 'KYC_PLATFORM_MISMATCH';
+export type SatusehatKycDisabledReason = Exclude<
+  SatusehatKycDisabledReasonValue,
+  'OPERATOR_NIK_MISSING' | 'OPERATOR_NAME_MISSING'
+>;
 
 /** What {@link SatusehatKycClient.getStatus} answers (P24-T14, read by P24-T16). */
 export type SatusehatKycStatus = {

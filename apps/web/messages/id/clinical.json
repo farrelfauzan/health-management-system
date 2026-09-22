@@ -438,6 +438,25 @@
         "cancel": "Batal",
         "registered": "Bayi berhasil didaftarkan.",
         "error": "Bayi tidak dapat didaftarkan."
+      },
+      "kyc": {
+        "action": "Verifikasi SATUSEHAT",
+        "starting": "Menyiapkan verifikasi...",
+        "startError": "Verifikasi SATUSEHAT tidak dapat dimulai. Silakan coba lagi.",
+        "disabled": {
+          "notConfigured": "Integrasi SATUSEHAT belum dikonfigurasi.",
+          "keysNotConfigured": "Kunci KYC SATUSEHAT belum dikonfigurasi. Hubungi administrator.",
+          "operatorNikMissing": "Tambahkan NIK Anda di profil untuk memverifikasi pasien",
+          "operatorNameMissing": "Akun Anda belum memiliki nama. Minta administrator untuk melengkapinya."
+        },
+        "dialog": {
+          "title": "Verifikasi SATUSEHAT Mobile",
+          "description": "Masukkan kode akses dari aplikasi SATUSEHAT Mobile pasien, periksa NIK, nama, dan foto, lalu kirim.",
+          "frameTitle": "Halaman verifikasi SATUSEHAT",
+          "frameBlocked": "Halaman verifikasi tidak dapat ditampilkan di sini. Buka di tab baru untuk melanjutkan.",
+          "openInNewTab": "Buka di tab baru",
+          "close": "Tutup"
+        }
       }
     },
     "privacyNotice": {

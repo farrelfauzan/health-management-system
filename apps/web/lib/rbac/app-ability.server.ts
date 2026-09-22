@@ -181,6 +181,10 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'satusehat.record': 'SatusehatRecord',
   // P24-T06. `satusehat.location.read:any` → resource `satusehat.location`.
   'satusehat.location': 'SatusehatLocation',
+  // P24-T16. `satusehat.kyc.verify:any` → resource `satusehat.kyc`, action
+  // `verify` (already supported for lab results). Without this row the
+  // "Verifikasi SATUSEHAT" button never renders.
+  'satusehat.kyc': 'SatusehatKyc',
   // P23-T05. Hyphenated single segment, like `service-tariff`:
   // `notion-connector.manage:any` → resource `notion-connector`, action
   // `manage`. Without this row a super admin's grant resolves to no rule at

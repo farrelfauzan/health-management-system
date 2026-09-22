@@ -309,4 +309,18 @@ export const SATUSEHAT_EXAMPLES = {
     processedCount: 3,
     stoppedEarly: false,
   },
+  /**
+   * P24-T16. The disabled state an unconfigured checkout reports: SATUSEHAT
+   * credentials present, no KYC key material.
+   */
+  kycStatus: {
+    isEnabled: false,
+    disabledReason: 'KYC_KEYS_NOT_CONFIGURED',
+    hasOperatorNik: true,
+  },
+  /** The URL is the platform's; the token inside it is illustrative. */
+  kycSession: {
+    url: 'https://kyc-satusehat.kemkes.go.id/validation?token=example-token',
+    expiresAt: null,
+  },
 } as const;
