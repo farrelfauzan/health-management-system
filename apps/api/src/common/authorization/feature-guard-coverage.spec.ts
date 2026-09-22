@@ -72,6 +72,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   ShkScreeningController: 'maternal-care',
   // P25-T15 — the registers and monthly reports read the same records.
   MaternalReportsController: 'maternal-care',
+  MaternalVisitDueController: 'maternal-care',
+  PatientVisitReminderConsentController: 'maternal-care',
   BpjsAntreanConfigController: 'bpjs-antrean',
   BpjsAntreanWsController: 'bpjs-antrean',
   SatusehatLinkController: 'satusehat',

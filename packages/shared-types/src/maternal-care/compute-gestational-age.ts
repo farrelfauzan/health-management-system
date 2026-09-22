@@ -24,9 +24,7 @@ export function computeGestationalAge(params: {
   estimatedDeliveryDate: Date;
   asOf: Date;
 }): GestationalAge {
-  const startDate =
-    params.lastMenstrualPeriodDate ??
-    new Date(params.estimatedDeliveryDate.getTime() - GESTATION_DAYS * ONE_DAY_IN_MILLISECONDS);
+  const startDate = resolvePregnancyStartDate(params);
   const elapsedDays = Math.floor(
     (params.asOf.getTime() - startDate.getTime()) / ONE_DAY_IN_MILLISECONDS,
   );
@@ -37,4 +35,19 @@ export function computeGestationalAge(params: {
     weeks: Math.floor(elapsedDays / DAYS_IN_WEEK),
     days: elapsedDays % DAYS_IN_WEEK,
   };
+}
+
+/**
+ * Day 0 of the pregnancy: the HPHT, or the HPL less 280 days when no HPHT was
+ * recorded. Shared with the trimester windows (P25-T17) so both count from
+ * the same day.
+ */
+export function resolvePregnancyStartDate(params: {
+  lastMenstrualPeriodDate: Date | null;
+  estimatedDeliveryDate: Date;
+}): Date {
+  return (
+    params.lastMenstrualPeriodDate ??
+    new Date(params.estimatedDeliveryDate.getTime() - GESTATION_DAYS * ONE_DAY_IN_MILLISECONDS)
+  );
 }

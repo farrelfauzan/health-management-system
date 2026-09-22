@@ -574,6 +574,8 @@ export type PatientProfileWhereInput = {
   clinicalDocuments?: Prisma.DocumentListRelationFilter
   deliveryConsents?: Prisma.PatientDeliveryConsentListRelationFilter
   deliveries?: Prisma.DocumentDeliveryListRelationFilter
+  visitReminderConsent?: Prisma.XOR<Prisma.PatientVisitReminderConsentNullableScalarRelationFilter, Prisma.PatientVisitReminderConsentWhereInput> | null
+  maternalVisitReminders?: Prisma.MaternalVisitReminderListRelationFilter
   managedDocuments?: Prisma.ManagedDocumentListRelationFilter
   newbornCareRecord?: Prisma.XOR<Prisma.NewbornCareRecordNullableScalarRelationFilter, Prisma.NewbornCareRecordWhereInput> | null
 }
@@ -650,6 +652,8 @@ export type PatientProfileOrderByWithRelationInput = {
   clinicalDocuments?: Prisma.DocumentOrderByRelationAggregateInput
   deliveryConsents?: Prisma.PatientDeliveryConsentOrderByRelationAggregateInput
   deliveries?: Prisma.DocumentDeliveryOrderByRelationAggregateInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentOrderByWithRelationInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderOrderByRelationAggregateInput
   managedDocuments?: Prisma.ManagedDocumentOrderByRelationAggregateInput
   newbornCareRecord?: Prisma.NewbornCareRecordOrderByWithRelationInput
 }
@@ -729,6 +733,8 @@ export type PatientProfileWhereUniqueInput = Prisma.AtLeast<{
   clinicalDocuments?: Prisma.DocumentListRelationFilter
   deliveryConsents?: Prisma.PatientDeliveryConsentListRelationFilter
   deliveries?: Prisma.DocumentDeliveryListRelationFilter
+  visitReminderConsent?: Prisma.XOR<Prisma.PatientVisitReminderConsentNullableScalarRelationFilter, Prisma.PatientVisitReminderConsentWhereInput> | null
+  maternalVisitReminders?: Prisma.MaternalVisitReminderListRelationFilter
   managedDocuments?: Prisma.ManagedDocumentListRelationFilter
   newbornCareRecord?: Prisma.XOR<Prisma.NewbornCareRecordNullableScalarRelationFilter, Prisma.NewbornCareRecordWhereInput> | null
 }, "id" | "mrn" | "nikIndex" | "bpjsNumberIndex">
@@ -903,6 +909,8 @@ export type PatientProfileCreateInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -973,6 +981,8 @@ export type PatientProfileUncheckedCreateInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -1043,6 +1053,8 @@ export type PatientProfileUpdateInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -1113,6 +1125,8 @@ export type PatientProfileUncheckedUpdateInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -2035,6 +2049,34 @@ export type PatientProfileUpdateOneRequiredWithoutFamilyPlanningRecordsNestedInp
   update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutFamilyPlanningRecordsInput, Prisma.PatientProfileUpdateWithoutFamilyPlanningRecordsInput>, Prisma.PatientProfileUncheckedUpdateWithoutFamilyPlanningRecordsInput>
 }
 
+export type PatientProfileCreateNestedOneWithoutVisitReminderConsentInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutVisitReminderConsentInput, Prisma.PatientProfileUncheckedCreateWithoutVisitReminderConsentInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutVisitReminderConsentInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+}
+
+export type PatientProfileUpdateOneRequiredWithoutVisitReminderConsentNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutVisitReminderConsentInput, Prisma.PatientProfileUncheckedCreateWithoutVisitReminderConsentInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutVisitReminderConsentInput
+  upsert?: Prisma.PatientProfileUpsertWithoutVisitReminderConsentInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutVisitReminderConsentInput, Prisma.PatientProfileUpdateWithoutVisitReminderConsentInput>, Prisma.PatientProfileUncheckedUpdateWithoutVisitReminderConsentInput>
+}
+
+export type PatientProfileCreateNestedOneWithoutMaternalVisitRemindersInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUncheckedCreateWithoutMaternalVisitRemindersInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutMaternalVisitRemindersInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+}
+
+export type PatientProfileUpdateOneRequiredWithoutMaternalVisitRemindersNestedInput = {
+  create?: Prisma.XOR<Prisma.PatientProfileCreateWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUncheckedCreateWithoutMaternalVisitRemindersInput>
+  connectOrCreate?: Prisma.PatientProfileCreateOrConnectWithoutMaternalVisitRemindersInput
+  upsert?: Prisma.PatientProfileUpsertWithoutMaternalVisitRemindersInput
+  connect?: Prisma.PatientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PatientProfileUpdateToOneWithWhereWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUpdateWithoutMaternalVisitRemindersInput>, Prisma.PatientProfileUncheckedUpdateWithoutMaternalVisitRemindersInput>
+}
+
 export type PatientProfileCreateWithoutOwnerUserInput = {
   id?: string
   mrn: string
@@ -2100,6 +2142,8 @@ export type PatientProfileCreateWithoutOwnerUserInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2169,6 +2213,8 @@ export type PatientProfileUncheckedCreateWithoutOwnerUserInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2315,6 +2361,8 @@ export type PatientProfileCreateWithoutNewbornsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2384,6 +2432,8 @@ export type PatientProfileUncheckedCreateWithoutNewbornsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2458,6 +2508,8 @@ export type PatientProfileCreateWithoutMotherInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2527,6 +2579,8 @@ export type PatientProfileUncheckedCreateWithoutMotherInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2617,6 +2671,8 @@ export type PatientProfileUpdateWithoutNewbornsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -2686,6 +2742,8 @@ export type PatientProfileUncheckedUpdateWithoutNewbornsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -2771,6 +2829,8 @@ export type PatientProfileCreateWithoutPrivacyNoticeRecordsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2840,6 +2900,8 @@ export type PatientProfileUncheckedCreateWithoutPrivacyNoticeRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -2925,6 +2987,8 @@ export type PatientProfileUpdateWithoutPrivacyNoticeRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -2994,6 +3058,8 @@ export type PatientProfileUncheckedUpdateWithoutPrivacyNoticeRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3063,6 +3129,8 @@ export type PatientProfileCreateWithoutDeliveryConsentsInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutPatientInput
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -3132,6 +3200,8 @@ export type PatientProfileUncheckedCreateWithoutDeliveryConsentsInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutPatientInput
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -3217,6 +3287,8 @@ export type PatientProfileUpdateWithoutDeliveryConsentsInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutPatientNestedInput
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3286,6 +3358,8 @@ export type PatientProfileUncheckedUpdateWithoutDeliveryConsentsInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutPatientNestedInput
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3355,6 +3429,8 @@ export type PatientProfileCreateWithoutDeliveriesInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutPatientInput
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -3424,6 +3500,8 @@ export type PatientProfileUncheckedCreateWithoutDeliveriesInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutPatientInput
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -3509,6 +3587,8 @@ export type PatientProfileUpdateWithoutDeliveriesInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutPatientNestedInput
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3578,6 +3658,8 @@ export type PatientProfileUncheckedUpdateWithoutDeliveriesInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutPatientNestedInput
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3647,6 +3729,8 @@ export type PatientProfileCreateWithoutAllergiesInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -3716,6 +3800,8 @@ export type PatientProfileUncheckedCreateWithoutAllergiesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -3801,6 +3887,8 @@ export type PatientProfileUpdateWithoutAllergiesInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3870,6 +3958,8 @@ export type PatientProfileUncheckedUpdateWithoutAllergiesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -3939,6 +4029,8 @@ export type PatientProfileCreateWithoutDoctorsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4008,6 +4100,8 @@ export type PatientProfileUncheckedCreateWithoutDoctorsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4093,6 +4187,8 @@ export type PatientProfileUpdateWithoutDoctorsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -4162,6 +4258,8 @@ export type PatientProfileUncheckedUpdateWithoutDoctorsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -4231,6 +4329,8 @@ export type PatientProfileCreateWithoutAppointmentsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4300,6 +4400,8 @@ export type PatientProfileUncheckedCreateWithoutAppointmentsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4385,6 +4487,8 @@ export type PatientProfileUpdateWithoutAppointmentsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -4454,6 +4558,8 @@ export type PatientProfileUncheckedUpdateWithoutAppointmentsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -4523,6 +4629,8 @@ export type PatientProfileCreateWithoutRegistrationsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4592,6 +4700,8 @@ export type PatientProfileUncheckedCreateWithoutRegistrationsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4677,6 +4787,8 @@ export type PatientProfileUpdateWithoutRegistrationsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -4746,6 +4858,8 @@ export type PatientProfileUncheckedUpdateWithoutRegistrationsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -4815,6 +4929,8 @@ export type PatientProfileCreateWithoutEncountersInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4884,6 +5000,8 @@ export type PatientProfileUncheckedCreateWithoutEncountersInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -4969,6 +5087,8 @@ export type PatientProfileUpdateWithoutEncountersInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5038,6 +5158,8 @@ export type PatientProfileUncheckedUpdateWithoutEncountersInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5107,6 +5229,8 @@ export type PatientProfileCreateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -5176,6 +5300,8 @@ export type PatientProfileUncheckedCreateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -5261,6 +5387,8 @@ export type PatientProfileUpdateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5330,6 +5458,8 @@ export type PatientProfileUncheckedUpdateWithoutPrescriptionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5399,6 +5529,8 @@ export type PatientProfileCreateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -5468,6 +5600,8 @@ export type PatientProfileUncheckedCreateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -5553,6 +5687,8 @@ export type PatientProfileUpdateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5622,6 +5758,8 @@ export type PatientProfileUncheckedUpdateWithoutInvoicesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5691,6 +5829,8 @@ export type PatientProfileCreateWithoutBpjsEligibilityChecksInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -5760,6 +5900,8 @@ export type PatientProfileUncheckedCreateWithoutBpjsEligibilityChecksInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -5845,6 +5987,8 @@ export type PatientProfileUpdateWithoutBpjsEligibilityChecksInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5914,6 +6058,8 @@ export type PatientProfileUncheckedUpdateWithoutBpjsEligibilityChecksInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -5983,6 +6129,8 @@ export type PatientProfileCreateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6052,6 +6200,8 @@ export type PatientProfileUncheckedCreateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6137,6 +6287,8 @@ export type PatientProfileUpdateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -6206,6 +6358,8 @@ export type PatientProfileUncheckedUpdateWithoutClinicalDocumentsInput = {
   admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -6275,6 +6429,8 @@ export type PatientProfileCreateWithoutChannelLinksInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6344,6 +6500,8 @@ export type PatientProfileUncheckedCreateWithoutChannelLinksInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6429,6 +6587,8 @@ export type PatientProfileUpdateWithoutChannelLinksInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -6498,6 +6658,8 @@ export type PatientProfileUncheckedUpdateWithoutChannelLinksInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -6567,6 +6729,8 @@ export type PatientProfileCreateWithoutProspectiveRecordsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6636,6 +6800,8 @@ export type PatientProfileUncheckedCreateWithoutProspectiveRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6721,6 +6887,8 @@ export type PatientProfileUpdateWithoutProspectiveRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -6790,6 +6958,8 @@ export type PatientProfileUncheckedUpdateWithoutProspectiveRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -6859,6 +7029,8 @@ export type PatientProfileCreateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -6928,6 +7100,8 @@ export type PatientProfileUncheckedCreateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -7013,6 +7187,8 @@ export type PatientProfileUpdateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -7082,6 +7258,8 @@ export type PatientProfileUncheckedUpdateWithoutAdmissionsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -7152,6 +7330,8 @@ export type PatientProfileCreateWithoutManagedDocumentsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
 
@@ -7221,6 +7401,8 @@ export type PatientProfileUncheckedCreateWithoutManagedDocumentsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
 
@@ -7306,6 +7488,8 @@ export type PatientProfileUpdateWithoutManagedDocumentsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
 
@@ -7375,6 +7559,8 @@ export type PatientProfileUncheckedUpdateWithoutManagedDocumentsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
 
@@ -7443,6 +7629,8 @@ export type PatientProfileCreateWithoutLabOrdersInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -7512,6 +7700,8 @@ export type PatientProfileUncheckedCreateWithoutLabOrdersInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -7597,6 +7787,8 @@ export type PatientProfileUpdateWithoutLabOrdersInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -7666,6 +7858,8 @@ export type PatientProfileUncheckedUpdateWithoutLabOrdersInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -7735,6 +7929,8 @@ export type PatientProfileCreateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -7804,6 +8000,8 @@ export type PatientProfileUncheckedCreateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -7889,6 +8087,8 @@ export type PatientProfileUpdateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -7958,6 +8158,8 @@ export type PatientProfileUncheckedUpdateWithoutImmunizationsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -8027,6 +8229,8 @@ export type PatientProfileCreateWithoutProvinceInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8096,6 +8300,8 @@ export type PatientProfileUncheckedCreateWithoutProvinceInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8191,6 +8397,8 @@ export type PatientProfileCreateWithoutRegencyInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8260,6 +8468,8 @@ export type PatientProfileUncheckedCreateWithoutRegencyInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8355,6 +8565,8 @@ export type PatientProfileCreateWithoutDistrictInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8424,6 +8636,8 @@ export type PatientProfileUncheckedCreateWithoutDistrictInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8519,6 +8733,8 @@ export type PatientProfileCreateWithoutVillageInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8588,6 +8804,8 @@ export type PatientProfileUncheckedCreateWithoutVillageInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8683,6 +8901,8 @@ export type PatientProfileCreateWithoutPregnancyEpisodesInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8752,6 +8972,8 @@ export type PatientProfileUncheckedCreateWithoutPregnancyEpisodesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -8837,6 +9059,8 @@ export type PatientProfileUpdateWithoutPregnancyEpisodesInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -8906,6 +9130,8 @@ export type PatientProfileUncheckedUpdateWithoutPregnancyEpisodesInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -8976,6 +9202,8 @@ export type PatientProfileCreateWithoutNewbornCareRecordInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
 }
 
@@ -9045,6 +9273,8 @@ export type PatientProfileUncheckedCreateWithoutNewbornCareRecordInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
 }
 
@@ -9130,6 +9360,8 @@ export type PatientProfileUpdateWithoutNewbornCareRecordInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
 }
 
@@ -9199,6 +9431,8 @@ export type PatientProfileUncheckedUpdateWithoutNewbornCareRecordInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
 }
 
@@ -9267,6 +9501,8 @@ export type PatientProfileCreateWithoutFamilyPlanningRecordsInput = {
   clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
 }
@@ -9336,6 +9572,8 @@ export type PatientProfileUncheckedCreateWithoutFamilyPlanningRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
   deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
 }
@@ -9421,6 +9659,8 @@ export type PatientProfileUpdateWithoutFamilyPlanningRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -9490,6 +9730,608 @@ export type PatientProfileUncheckedUpdateWithoutFamilyPlanningRecordsInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
+}
+
+export type PatientProfileCreateWithoutVisitReminderConsentInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex: $Enums.PatientSex
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  rtRw?: string | null
+  postalCode?: string | null
+  birthOrder?: number | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
+  ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
+  mother?: Prisma.PatientProfileCreateNestedOneWithoutNewbornsInput
+  newborns?: Prisma.PatientProfileCreateNestedManyWithoutMotherInput
+  province?: Prisma.ProvinceCreateNestedOneWithoutPatientsInput
+  regency?: Prisma.RegencyCreateNestedOneWithoutPatientsInput
+  district?: Prisma.DistrictCreateNestedOneWithoutPatientsInput
+  village?: Prisma.VillageCreateNestedOneWithoutPatientsInput
+  doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
+  prospectiveRecords?: Prisma.ProspectivePatientCreateNestedManyWithoutPatientInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutPatientInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderCreateNestedManyWithoutPatientInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
+  newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
+}
+
+export type PatientProfileUncheckedCreateWithoutVisitReminderConsentInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex: $Enums.PatientSex
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  provinceCode?: string | null
+  regencyCode?: string | null
+  districtCode?: string | null
+  villageCode?: string | null
+  rtRw?: string | null
+  postalCode?: string | null
+  motherPatientId?: string | null
+  birthOrder?: number | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
+  newborns?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutMotherInput
+  doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
+  prospectiveRecords?: Prisma.ProspectivePatientUncheckedCreateNestedManyWithoutPatientInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutPatientInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedCreateNestedManyWithoutPatientInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
+}
+
+export type PatientProfileCreateOrConnectWithoutVisitReminderConsentInput = {
+  where: Prisma.PatientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutVisitReminderConsentInput, Prisma.PatientProfileUncheckedCreateWithoutVisitReminderConsentInput>
+}
+
+export type PatientProfileUpsertWithoutVisitReminderConsentInput = {
+  update: Prisma.XOR<Prisma.PatientProfileUpdateWithoutVisitReminderConsentInput, Prisma.PatientProfileUncheckedUpdateWithoutVisitReminderConsentInput>
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutVisitReminderConsentInput, Prisma.PatientProfileUncheckedCreateWithoutVisitReminderConsentInput>
+  where?: Prisma.PatientProfileWhereInput
+}
+
+export type PatientProfileUpdateToOneWithWhereWithoutVisitReminderConsentInput = {
+  where?: Prisma.PatientProfileWhereInput
+  data: Prisma.XOR<Prisma.PatientProfileUpdateWithoutVisitReminderConsentInput, Prisma.PatientProfileUncheckedUpdateWithoutVisitReminderConsentInput>
+}
+
+export type PatientProfileUpdateWithoutVisitReminderConsentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.EnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  rtRw?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
+  mother?: Prisma.PatientProfileUpdateOneWithoutNewbornsNestedInput
+  newborns?: Prisma.PatientProfileUpdateManyWithoutMotherNestedInput
+  province?: Prisma.ProvinceUpdateOneWithoutPatientsNestedInput
+  regency?: Prisma.RegencyUpdateOneWithoutPatientsNestedInput
+  district?: Prisma.DistrictUpdateOneWithoutPatientsNestedInput
+  village?: Prisma.VillageUpdateOneWithoutPatientsNestedInput
+  doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
+  prospectiveRecords?: Prisma.ProspectivePatientUpdateManyWithoutPatientNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutPatientNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
+}
+
+export type PatientProfileUncheckedUpdateWithoutVisitReminderConsentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.EnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  provinceCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regencyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  districtCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  villageCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rtRw?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  motherPatientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  newborns?: Prisma.PatientProfileUncheckedUpdateManyWithoutMotherNestedInput
+  doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
+  prospectiveRecords?: Prisma.ProspectivePatientUncheckedUpdateManyWithoutPatientNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutPatientNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
+}
+
+export type PatientProfileCreateWithoutMaternalVisitRemindersInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex: $Enums.PatientSex
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  rtRw?: string | null
+  postalCode?: string | null
+  birthOrder?: number | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
+  ownerUser?: Prisma.UserCreateNestedOneWithoutPatientProfilesInput
+  mother?: Prisma.PatientProfileCreateNestedOneWithoutNewbornsInput
+  newborns?: Prisma.PatientProfileCreateNestedManyWithoutMotherInput
+  province?: Prisma.ProvinceCreateNestedOneWithoutPatientsInput
+  regency?: Prisma.RegencyCreateNestedOneWithoutPatientsInput
+  district?: Prisma.DistrictCreateNestedOneWithoutPatientsInput
+  village?: Prisma.VillageCreateNestedOneWithoutPatientsInput
+  doctors?: Prisma.DoctorPatientCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyCreateNestedManyWithoutPatientInput
+  immunizations?: Prisma.ImmunizationCreateNestedManyWithoutPatientInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutPatientInput
+  labOrders?: Prisma.LabOrderCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkCreateNestedManyWithoutPatientInput
+  prospectiveRecords?: Prisma.ProspectivePatientCreateNestedManyWithoutPatientInput
+  admissions?: Prisma.AdmissionCreateNestedManyWithoutPatientInput
+  clinicalDocuments?: Prisma.DocumentCreateNestedManyWithoutPatientInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutPatientInput
+  deliveries?: Prisma.DocumentDeliveryCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentCreateNestedOneWithoutPatientInput
+  managedDocuments?: Prisma.ManagedDocumentCreateNestedManyWithoutPatientInput
+  newbornCareRecord?: Prisma.NewbornCareRecordCreateNestedOneWithoutNewbornPatientInput
+}
+
+export type PatientProfileUncheckedCreateWithoutMaternalVisitRemindersInput = {
+  id?: string
+  mrn: string
+  source?: $Enums.PatientRecordSource
+  fullName: string
+  dateOfBirth: Date | string
+  placeOfBirth?: string | null
+  sex: $Enums.PatientSex
+  status?: $Enums.PatientStatus
+  phoneNumber: string
+  address: string
+  provinceCode?: string | null
+  regencyCode?: string | null
+  districtCode?: string | null
+  villageCode?: string | null
+  rtRw?: string | null
+  postalCode?: string | null
+  motherPatientId?: string | null
+  birthOrder?: number | null
+  ownerUserId?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  lastVisitAt?: Date | string | null
+  email?: string | null
+  bloodType?: $Enums.BloodType | null
+  rhesusFactor?: $Enums.RhesusFactor | null
+  maritalStatus?: $Enums.MaritalStatus | null
+  occupation?: string | null
+  religion?: $Enums.Religion | null
+  emergencyContactName?: string | null
+  emergencyContactPhone?: string | null
+  guardianName?: string | null
+  guardianRelation?: string | null
+  nikCiphertext?: string | null
+  nikIndex?: string | null
+  nikLast4?: string | null
+  nikKeyVersion?: number | null
+  bpjsNumberCiphertext?: string | null
+  bpjsNumberIndex?: string | null
+  bpjsNumberLast4?: string | null
+  bpjsNumberKeyVersion?: number | null
+  satusehatPatientIdCiphertext?: string | null
+  satusehatPatientIdKeyVersion?: number | null
+  satusehatPatientIdLast4?: string | null
+  newborns?: Prisma.PatientProfileUncheckedCreateNestedManyWithoutMotherInput
+  doctors?: Prisma.DoctorPatientUncheckedCreateNestedManyWithoutPatientInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
+  registrations?: Prisma.RegistrationUncheckedCreateNestedManyWithoutPatientInput
+  prescriptions?: Prisma.PrescriptionUncheckedCreateNestedManyWithoutPatientInput
+  allergies?: Prisma.PatientAllergyUncheckedCreateNestedManyWithoutPatientInput
+  immunizations?: Prisma.ImmunizationUncheckedCreateNestedManyWithoutPatientInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedCreateNestedManyWithoutPatientInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedCreateNestedManyWithoutPatientInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutPatientInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutPatientInput
+  labOrders?: Prisma.LabOrderUncheckedCreateNestedManyWithoutPatientInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedCreateNestedManyWithoutPatientInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutPatientInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedCreateNestedManyWithoutPatientInput
+  prospectiveRecords?: Prisma.ProspectivePatientUncheckedCreateNestedManyWithoutPatientInput
+  admissions?: Prisma.AdmissionUncheckedCreateNestedManyWithoutPatientInput
+  clinicalDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutPatientInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutPatientInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedCreateNestedManyWithoutPatientInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedOneWithoutPatientInput
+  managedDocuments?: Prisma.ManagedDocumentUncheckedCreateNestedManyWithoutPatientInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUncheckedCreateNestedOneWithoutNewbornPatientInput
+}
+
+export type PatientProfileCreateOrConnectWithoutMaternalVisitRemindersInput = {
+  where: Prisma.PatientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUncheckedCreateWithoutMaternalVisitRemindersInput>
+}
+
+export type PatientProfileUpsertWithoutMaternalVisitRemindersInput = {
+  update: Prisma.XOR<Prisma.PatientProfileUpdateWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUncheckedUpdateWithoutMaternalVisitRemindersInput>
+  create: Prisma.XOR<Prisma.PatientProfileCreateWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUncheckedCreateWithoutMaternalVisitRemindersInput>
+  where?: Prisma.PatientProfileWhereInput
+}
+
+export type PatientProfileUpdateToOneWithWhereWithoutMaternalVisitRemindersInput = {
+  where?: Prisma.PatientProfileWhereInput
+  data: Prisma.XOR<Prisma.PatientProfileUpdateWithoutMaternalVisitRemindersInput, Prisma.PatientProfileUncheckedUpdateWithoutMaternalVisitRemindersInput>
+}
+
+export type PatientProfileUpdateWithoutMaternalVisitRemindersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.EnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  rtRw?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  ownerUser?: Prisma.UserUpdateOneWithoutPatientProfilesNestedInput
+  mother?: Prisma.PatientProfileUpdateOneWithoutNewbornsNestedInput
+  newborns?: Prisma.PatientProfileUpdateManyWithoutMotherNestedInput
+  province?: Prisma.ProvinceUpdateOneWithoutPatientsNestedInput
+  regency?: Prisma.RegencyUpdateOneWithoutPatientsNestedInput
+  district?: Prisma.DistrictUpdateOneWithoutPatientsNestedInput
+  village?: Prisma.VillageUpdateOneWithoutPatientsNestedInput
+  doctors?: Prisma.DoctorPatientUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUpdateManyWithoutPatientNestedInput
+  immunizations?: Prisma.ImmunizationUpdateManyWithoutPatientNestedInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutPatientNestedInput
+  labOrders?: Prisma.LabOrderUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUpdateManyWithoutPatientNestedInput
+  prospectiveRecords?: Prisma.ProspectivePatientUpdateManyWithoutPatientNestedInput
+  admissions?: Prisma.AdmissionUpdateManyWithoutPatientNestedInput
+  clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
+  deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
+  newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
+}
+
+export type PatientProfileUncheckedUpdateWithoutMaternalVisitRemindersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  mrn?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.EnumPatientRecordSourceFieldUpdateOperationsInput | $Enums.PatientRecordSource
+  fullName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  placeOfBirth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sex?: Prisma.EnumPatientSexFieldUpdateOperationsInput | $Enums.PatientSex
+  status?: Prisma.EnumPatientStatusFieldUpdateOperationsInput | $Enums.PatientStatus
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  provinceCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  regencyCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  districtCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  villageCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rtRw?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  motherPatientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  birthOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  ownerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVisitAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bloodType?: Prisma.NullableEnumBloodTypeFieldUpdateOperationsInput | $Enums.BloodType | null
+  rhesusFactor?: Prisma.NullableEnumRhesusFactorFieldUpdateOperationsInput | $Enums.RhesusFactor | null
+  maritalStatus?: Prisma.NullableEnumMaritalStatusFieldUpdateOperationsInput | $Enums.MaritalStatus | null
+  occupation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  religion?: Prisma.NullableEnumReligionFieldUpdateOperationsInput | $Enums.Religion | null
+  emergencyContactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContactPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  guardianRelation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nikKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  bpjsNumberCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bpjsNumberKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdCiphertext?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  satusehatPatientIdKeyVersion?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  satusehatPatientIdLast4?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  newborns?: Prisma.PatientProfileUncheckedUpdateManyWithoutMotherNestedInput
+  doctors?: Prisma.DoctorPatientUncheckedUpdateManyWithoutPatientNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
+  registrations?: Prisma.RegistrationUncheckedUpdateManyWithoutPatientNestedInput
+  prescriptions?: Prisma.PrescriptionUncheckedUpdateManyWithoutPatientNestedInput
+  allergies?: Prisma.PatientAllergyUncheckedUpdateManyWithoutPatientNestedInput
+  immunizations?: Prisma.ImmunizationUncheckedUpdateManyWithoutPatientNestedInput
+  pregnancyEpisodes?: Prisma.PregnancyEpisodeUncheckedUpdateManyWithoutPatientNestedInput
+  familyPlanningRecords?: Prisma.FamilyPlanningRecordUncheckedUpdateManyWithoutPatientNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutPatientNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutPatientNestedInput
+  labOrders?: Prisma.LabOrderUncheckedUpdateManyWithoutPatientNestedInput
+  bpjsEligibilityChecks?: Prisma.BpjsEligibilityCheckUncheckedUpdateManyWithoutPatientNestedInput
+  privacyNoticeRecords?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutPatientNestedInput
+  channelLinks?: Prisma.ChannelPatientLinkUncheckedUpdateManyWithoutPatientNestedInput
+  prospectiveRecords?: Prisma.ProspectivePatientUncheckedUpdateManyWithoutPatientNestedInput
+  admissions?: Prisma.AdmissionUncheckedUpdateManyWithoutPatientNestedInput
+  clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
+  deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -9606,6 +10448,8 @@ export type PatientProfileUpdateWithoutOwnerUserInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -9675,6 +10519,8 @@ export type PatientProfileUncheckedUpdateWithoutOwnerUserInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -9838,6 +10684,8 @@ export type PatientProfileUpdateWithoutMotherInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -9907,6 +10755,8 @@ export type PatientProfileUncheckedUpdateWithoutMotherInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10070,6 +10920,8 @@ export type PatientProfileUpdateWithoutProvinceInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10139,6 +10991,8 @@ export type PatientProfileUncheckedUpdateWithoutProvinceInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10302,6 +11156,8 @@ export type PatientProfileUpdateWithoutRegencyInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10371,6 +11227,8 @@ export type PatientProfileUncheckedUpdateWithoutRegencyInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10534,6 +11392,8 @@ export type PatientProfileUpdateWithoutDistrictInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10603,6 +11463,8 @@ export type PatientProfileUncheckedUpdateWithoutDistrictInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10766,6 +11628,8 @@ export type PatientProfileUpdateWithoutVillageInput = {
   clinicalDocuments?: Prisma.DocumentUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10835,6 +11699,8 @@ export type PatientProfileUncheckedUpdateWithoutVillageInput = {
   clinicalDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutPatientNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutPatientNestedInput
   deliveries?: Prisma.DocumentDeliveryUncheckedUpdateManyWithoutPatientNestedInput
+  visitReminderConsent?: Prisma.PatientVisitReminderConsentUncheckedUpdateOneWithoutPatientNestedInput
+  maternalVisitReminders?: Prisma.MaternalVisitReminderUncheckedUpdateManyWithoutPatientNestedInput
   managedDocuments?: Prisma.ManagedDocumentUncheckedUpdateManyWithoutPatientNestedInput
   newbornCareRecord?: Prisma.NewbornCareRecordUncheckedUpdateOneWithoutNewbornPatientNestedInput
 }
@@ -10912,6 +11778,7 @@ export type PatientProfileCountOutputType = {
   clinicalDocuments: number
   deliveryConsents: number
   deliveries: number
+  maternalVisitReminders: number
   managedDocuments: number
 }
 
@@ -10936,6 +11803,7 @@ export type PatientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Ex
   clinicalDocuments?: boolean | PatientProfileCountOutputTypeCountClinicalDocumentsArgs
   deliveryConsents?: boolean | PatientProfileCountOutputTypeCountDeliveryConsentsArgs
   deliveries?: boolean | PatientProfileCountOutputTypeCountDeliveriesArgs
+  maternalVisitReminders?: boolean | PatientProfileCountOutputTypeCountMaternalVisitRemindersArgs
   managedDocuments?: boolean | PatientProfileCountOutputTypeCountManagedDocumentsArgs
 }
 
@@ -11092,6 +11960,13 @@ export type PatientProfileCountOutputTypeCountDeliveriesArgs<ExtArgs extends run
 /**
  * PatientProfileCountOutputType without action
  */
+export type PatientProfileCountOutputTypeCountMaternalVisitRemindersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MaternalVisitReminderWhereInput
+}
+
+/**
+ * PatientProfileCountOutputType without action
+ */
 export type PatientProfileCountOutputTypeCountManagedDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ManagedDocumentWhereInput
 }
@@ -11169,6 +12044,8 @@ export type PatientProfileSelect<ExtArgs extends runtime.Types.Extensions.Intern
   clinicalDocuments?: boolean | Prisma.PatientProfile$clinicalDocumentsArgs<ExtArgs>
   deliveryConsents?: boolean | Prisma.PatientProfile$deliveryConsentsArgs<ExtArgs>
   deliveries?: boolean | Prisma.PatientProfile$deliveriesArgs<ExtArgs>
+  visitReminderConsent?: boolean | Prisma.PatientProfile$visitReminderConsentArgs<ExtArgs>
+  maternalVisitReminders?: boolean | Prisma.PatientProfile$maternalVisitRemindersArgs<ExtArgs>
   managedDocuments?: boolean | Prisma.PatientProfile$managedDocumentsArgs<ExtArgs>
   newbornCareRecord?: boolean | Prisma.PatientProfile$newbornCareRecordArgs<ExtArgs>
   _count?: boolean | Prisma.PatientProfileCountOutputTypeDefaultArgs<ExtArgs>
@@ -11358,6 +12235,8 @@ export type PatientProfileInclude<ExtArgs extends runtime.Types.Extensions.Inter
   clinicalDocuments?: boolean | Prisma.PatientProfile$clinicalDocumentsArgs<ExtArgs>
   deliveryConsents?: boolean | Prisma.PatientProfile$deliveryConsentsArgs<ExtArgs>
   deliveries?: boolean | Prisma.PatientProfile$deliveriesArgs<ExtArgs>
+  visitReminderConsent?: boolean | Prisma.PatientProfile$visitReminderConsentArgs<ExtArgs>
+  maternalVisitReminders?: boolean | Prisma.PatientProfile$maternalVisitRemindersArgs<ExtArgs>
   managedDocuments?: boolean | Prisma.PatientProfile$managedDocumentsArgs<ExtArgs>
   newbornCareRecord?: boolean | Prisma.PatientProfile$newbornCareRecordArgs<ExtArgs>
   _count?: boolean | Prisma.PatientProfileCountOutputTypeDefaultArgs<ExtArgs>
@@ -11408,6 +12287,8 @@ export type $PatientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inte
     clinicalDocuments: Prisma.$DocumentPayload<ExtArgs>[]
     deliveryConsents: Prisma.$PatientDeliveryConsentPayload<ExtArgs>[]
     deliveries: Prisma.$DocumentDeliveryPayload<ExtArgs>[]
+    visitReminderConsent: Prisma.$PatientVisitReminderConsentPayload<ExtArgs> | null
+    maternalVisitReminders: Prisma.$MaternalVisitReminderPayload<ExtArgs>[]
     managedDocuments: Prisma.$ManagedDocumentPayload<ExtArgs>[]
     newbornCareRecord: Prisma.$NewbornCareRecordPayload<ExtArgs> | null
   }
@@ -11927,6 +12808,8 @@ export interface Prisma__PatientProfileClient<T, Null = never, ExtArgs extends r
   clinicalDocuments<T extends Prisma.PatientProfile$clinicalDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$clinicalDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deliveryConsents<T extends Prisma.PatientProfile$deliveryConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$deliveryConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientDeliveryConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deliveries<T extends Prisma.PatientProfile$deliveriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$deliveriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentDeliveryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  visitReminderConsent<T extends Prisma.PatientProfile$visitReminderConsentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$visitReminderConsentArgs<ExtArgs>>): Prisma.Prisma__PatientVisitReminderConsentClient<runtime.Types.Result.GetResult<Prisma.$PatientVisitReminderConsentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  maternalVisitReminders<T extends Prisma.PatientProfile$maternalVisitRemindersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$maternalVisitRemindersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaternalVisitReminderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   managedDocuments<T extends Prisma.PatientProfile$managedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$managedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ManagedDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   newbornCareRecord<T extends Prisma.PatientProfile$newbornCareRecordArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PatientProfile$newbornCareRecordArgs<ExtArgs>>): Prisma.Prisma__NewbornCareRecordClient<runtime.Types.Result.GetResult<Prisma.$NewbornCareRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
@@ -12995,6 +13878,49 @@ export type PatientProfile$deliveriesArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.DocumentDeliveryScalarFieldEnum | Prisma.DocumentDeliveryScalarFieldEnum[]
+}
+
+/**
+ * PatientProfile.visitReminderConsent
+ */
+export type PatientProfile$visitReminderConsentArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientVisitReminderConsent
+   */
+  select?: Prisma.PatientVisitReminderConsentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientVisitReminderConsent
+   */
+  omit?: Prisma.PatientVisitReminderConsentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientVisitReminderConsentInclude<ExtArgs> | null
+  where?: Prisma.PatientVisitReminderConsentWhereInput
+}
+
+/**
+ * PatientProfile.maternalVisitReminders
+ */
+export type PatientProfile$maternalVisitRemindersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MaternalVisitReminder
+   */
+  select?: Prisma.MaternalVisitReminderSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MaternalVisitReminder
+   */
+  omit?: Prisma.MaternalVisitReminderOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MaternalVisitReminderInclude<ExtArgs> | null
+  where?: Prisma.MaternalVisitReminderWhereInput
+  orderBy?: Prisma.MaternalVisitReminderOrderByWithRelationInput | Prisma.MaternalVisitReminderOrderByWithRelationInput[]
+  cursor?: Prisma.MaternalVisitReminderWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MaternalVisitReminderScalarFieldEnum | Prisma.MaternalVisitReminderScalarFieldEnum[]
 }
 
 /**

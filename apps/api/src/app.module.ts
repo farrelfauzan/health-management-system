@@ -45,6 +45,8 @@ import { LaboratoryModule } from './modules/laboratory/laboratory.module';
 import { TaxesModule } from './modules/taxes/taxes.module';
 import { MaternalReportsModule } from './modules/maternal-reports/maternal-reports.module';
 import { BpjsNonCapitationModule } from './modules/bpjs-non-capitation/bpjs-non-capitation.module';
+import { MaternalVisitReminderModule } from './modules/maternal-visit-reminder/maternal-visit-reminder.module';
+import { VisitReminderConsentModule } from './modules/visit-reminder-consent/visit-reminder-consent.module';
 import { EmrModule } from './modules/emr/emr.module';
 import { HealthModule } from './modules/health/health.module';
 import { OrganizationStructureModule } from './modules/organization-structure/organization-structure.module';
@@ -127,6 +129,8 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     MaternalReportsModule,
     // P25-T16. Appended for the same reason.
     BpjsNonCapitationModule,
+    VisitReminderConsentModule,
+    MaternalVisitReminderModule,
   ],
 })
 export class AppModule {}

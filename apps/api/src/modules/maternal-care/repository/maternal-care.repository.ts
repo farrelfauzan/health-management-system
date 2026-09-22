@@ -1,4 +1,5 @@
 import {
+  AntenatalDueEpisodeRecord,
   AntenatalExaminationRow,
   AntenatalVisitCodeValue,
   MaternalLetterPatient,
@@ -12,10 +13,12 @@ import {
   TenTChecklistSources,
   UpdatePregnancyEpisodeRecordPayload,
   UpsertAntenatalExaminationPayload,
+  MaternalDueReach,
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { buildPatientReachFilter } from './build-patient-reach-filter';
 import { enqueueSatusehatEpisodeClose } from './enqueue-satusehat-episode-close';
 import { PregnancyEpisodeConflictError } from './pregnancy-episode-conflict.error';
 
@@ -59,6 +62,14 @@ const PREGNANCY_EPISODE_SELECT = {
   endedAt: true,
   endReason: true,
   createdAt: true,
+} as const;
+
+/** One antenatal visit as the numbering rule reads it. */
+const ANTENATAL_VISIT_ROW_SELECT = {
+  id: true,
+  encounterId: true,
+  visitCode: true,
+  encounter: { select: { startedAt: true, status: true, doctor: { select: { profession: true } } } },
 } as const;
 
 @Injectable()
@@ -190,21 +201,35 @@ export class MaternalCareRepository {
     const visits = await this.prisma.antenatalVisit.findMany({
       where: { pregnancyEpisodeId },
       orderBy: { encounter: { startedAt: 'asc' } },
-      select: {
-        id: true,
-        encounterId: true,
-        visitCode: true,
-        encounter: { select: { startedAt: true, status: true, doctor: { select: { profession: true } } } },
-      },
+      select: ANTENATAL_VISIT_ROW_SELECT,
     });
 
-    return visits.map((visit) => ({
-      id: visit.id,
-      encounterId: visit.encounterId,
-      frozenVisitCode: visit.visitCode,
-      startedAt: visit.encounter.startedAt,
-      encounterStatus: visit.encounter.status,
-      isAttendedByDoctor: visit.encounter.doctor.profession === 'DOCTOR',
+    return visits.map(toPregnancyEpisodeVisitRow);
+  }
+
+  /**
+   * Every active pregnancy within the reach, with her name and every visit
+   * (P25-T17). One query rather than an episode read per row: the worklist
+   * evaluates them all.
+   */
+  async listActiveEpisodesForDue(reach: MaternalDueReach): Promise<AntenatalDueEpisodeRecord[]> {
+    const episodes = await this.prisma.pregnancyEpisode.findMany({
+      where: { status: 'ACTIVE', deletedAt: null, patient: buildPatientReachFilter(reach) },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        ...PREGNANCY_EPISODE_SELECT,
+        patient: { select: { fullName: true, mrn: true } },
+        antenatalVisits: {
+          orderBy: { encounter: { startedAt: 'asc' } },
+          select: ANTENATAL_VISIT_ROW_SELECT,
+        },
+      },
+    });
+    return episodes.map(({ patient, antenatalVisits, ...episode }) => ({
+      episode: toPregnancyEpisodeRecord(episode),
+      patientName: patient.fullName,
+      medicalRecordNumber: patient.mrn,
+      visits: antenatalVisits.map(toPregnancyEpisodeVisitRow),
     }));
   }
 
@@ -485,5 +510,21 @@ function toAntenatalExaminationRow(row: {
     fetalHeadEngagement:
       row.fetalHeadEngagement as AntenatalExaminationRow['fetalHeadEngagement'],
     tetanusStatus: row.tetanusStatus as AntenatalExaminationRow['tetanusStatus'],
+  };
+}
+
+function toPregnancyEpisodeVisitRow(visit: {
+  id: string;
+  encounterId: string;
+  visitCode: AntenatalVisitCodeValue | null;
+  encounter: { startedAt: Date; status: string; doctor: { profession: string } };
+}): PregnancyEpisodeVisitRow {
+  return {
+    id: visit.id,
+    encounterId: visit.encounterId,
+    frozenVisitCode: visit.visitCode,
+    startedAt: visit.encounter.startedAt,
+    encounterStatus: visit.encounter.status,
+    isAttendedByDoctor: visit.encounter.doctor.profession === 'DOCTOR',
   };
 }

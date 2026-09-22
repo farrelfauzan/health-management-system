@@ -191,7 +191,9 @@ export const ModelName = {
   AntenatalExamination: 'AntenatalExamination',
   AntenatalReferralDismissal: 'AntenatalReferralDismissal',
   PostnatalVisit: 'PostnatalVisit',
-  PostnatalExamination: 'PostnatalExamination'
+  PostnatalExamination: 'PostnatalExamination',
+  PatientVisitReminderConsent: 'PatientVisitReminderConsent',
+  MaternalVisitReminder: 'MaternalVisitReminder'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -2674,6 +2676,40 @@ export const PostnatalExaminationScalarFieldEnum = {
 } as const
 
 export type PostnatalExaminationScalarFieldEnum = (typeof PostnatalExaminationScalarFieldEnum)[keyof typeof PostnatalExaminationScalarFieldEnum]
+
+
+export const PatientVisitReminderConsentScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  purpose: 'purpose',
+  isGranted: 'isGranted',
+  noticeVersionId: 'noticeVersionId',
+  grantedAt: 'grantedAt',
+  grantedById: 'grantedById',
+  revokedAt: 'revokedAt',
+  revokedReason: 'revokedReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PatientVisitReminderConsentScalarFieldEnum = (typeof PatientVisitReminderConsentScalarFieldEnum)[keyof typeof PatientVisitReminderConsentScalarFieldEnum]
+
+
+export const MaternalVisitReminderScalarFieldEnum = {
+  id: 'id',
+  patientId: 'patientId',
+  visitKey: 'visitKey',
+  source: 'source',
+  dueFrom: 'dueFrom',
+  status: 'status',
+  attemptedAt: 'attemptedAt',
+  sentAt: 'sentAt',
+  failureReason: 'failureReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MaternalVisitReminderScalarFieldEnum = (typeof MaternalVisitReminderScalarFieldEnum)[keyof typeof MaternalVisitReminderScalarFieldEnum]
 
 
 export const SortOrder = {

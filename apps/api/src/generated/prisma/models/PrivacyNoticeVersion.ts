@@ -217,6 +217,7 @@ export type PrivacyNoticeVersionWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"PrivacyNoticeVersion"> | Date | string
   records?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
   deliveryConsents?: Prisma.PatientDeliveryConsentListRelationFilter
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentListRelationFilter
 }
 
 export type PrivacyNoticeVersionOrderByWithRelationInput = {
@@ -231,6 +232,7 @@ export type PrivacyNoticeVersionOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   records?: Prisma.PatientPrivacyNoticeRecordOrderByRelationAggregateInput
   deliveryConsents?: Prisma.PatientDeliveryConsentOrderByRelationAggregateInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentOrderByRelationAggregateInput
 }
 
 export type PrivacyNoticeVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -248,6 +250,7 @@ export type PrivacyNoticeVersionWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"PrivacyNoticeVersion"> | Date | string
   records?: Prisma.PatientPrivacyNoticeRecordListRelationFilter
   deliveryConsents?: Prisma.PatientDeliveryConsentListRelationFilter
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentListRelationFilter
 }, "id" | "version" | "effectiveAt">
 
 export type PrivacyNoticeVersionOrderByWithAggregationInput = {
@@ -292,6 +295,7 @@ export type PrivacyNoticeVersionCreateInput = {
   createdAt?: Date | string
   records?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutVersionInput
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutNoticeVersionInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutNoticeVersionInput
 }
 
 export type PrivacyNoticeVersionUncheckedCreateInput = {
@@ -306,6 +310,7 @@ export type PrivacyNoticeVersionUncheckedCreateInput = {
   createdAt?: Date | string
   records?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutVersionInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutNoticeVersionInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutNoticeVersionInput
 }
 
 export type PrivacyNoticeVersionUpdateInput = {
@@ -320,6 +325,7 @@ export type PrivacyNoticeVersionUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutVersionNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutNoticeVersionNestedInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutNoticeVersionNestedInput
 }
 
 export type PrivacyNoticeVersionUncheckedUpdateInput = {
@@ -334,6 +340,7 @@ export type PrivacyNoticeVersionUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutVersionNestedInput
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutNoticeVersionNestedInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutNoticeVersionNestedInput
 }
 
 export type PrivacyNoticeVersionCreateManyInput = {
@@ -448,6 +455,22 @@ export type PrivacyNoticeVersionUpdateOneWithoutDeliveryConsentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PrivacyNoticeVersionUpdateToOneWithWhereWithoutDeliveryConsentsInput, Prisma.PrivacyNoticeVersionUpdateWithoutDeliveryConsentsInput>, Prisma.PrivacyNoticeVersionUncheckedUpdateWithoutDeliveryConsentsInput>
 }
 
+export type PrivacyNoticeVersionCreateNestedOneWithoutVisitReminderConsentsInput = {
+  create?: Prisma.XOR<Prisma.PrivacyNoticeVersionCreateWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUncheckedCreateWithoutVisitReminderConsentsInput>
+  connectOrCreate?: Prisma.PrivacyNoticeVersionCreateOrConnectWithoutVisitReminderConsentsInput
+  connect?: Prisma.PrivacyNoticeVersionWhereUniqueInput
+}
+
+export type PrivacyNoticeVersionUpdateOneWithoutVisitReminderConsentsNestedInput = {
+  create?: Prisma.XOR<Prisma.PrivacyNoticeVersionCreateWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUncheckedCreateWithoutVisitReminderConsentsInput>
+  connectOrCreate?: Prisma.PrivacyNoticeVersionCreateOrConnectWithoutVisitReminderConsentsInput
+  upsert?: Prisma.PrivacyNoticeVersionUpsertWithoutVisitReminderConsentsInput
+  disconnect?: Prisma.PrivacyNoticeVersionWhereInput | boolean
+  delete?: Prisma.PrivacyNoticeVersionWhereInput | boolean
+  connect?: Prisma.PrivacyNoticeVersionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PrivacyNoticeVersionUpdateToOneWithWhereWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUpdateWithoutVisitReminderConsentsInput>, Prisma.PrivacyNoticeVersionUncheckedUpdateWithoutVisitReminderConsentsInput>
+}
+
 export type PrivacyNoticeVersionCreateWithoutRecordsInput = {
   id?: string
   version: string
@@ -459,6 +482,7 @@ export type PrivacyNoticeVersionCreateWithoutRecordsInput = {
   counselApproved?: boolean
   createdAt?: Date | string
   deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutNoticeVersionInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutNoticeVersionInput
 }
 
 export type PrivacyNoticeVersionUncheckedCreateWithoutRecordsInput = {
@@ -472,6 +496,7 @@ export type PrivacyNoticeVersionUncheckedCreateWithoutRecordsInput = {
   counselApproved?: boolean
   createdAt?: Date | string
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutNoticeVersionInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutNoticeVersionInput
 }
 
 export type PrivacyNoticeVersionCreateOrConnectWithoutRecordsInput = {
@@ -501,6 +526,7 @@ export type PrivacyNoticeVersionUpdateWithoutRecordsInput = {
   counselApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutNoticeVersionNestedInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutNoticeVersionNestedInput
 }
 
 export type PrivacyNoticeVersionUncheckedUpdateWithoutRecordsInput = {
@@ -514,6 +540,7 @@ export type PrivacyNoticeVersionUncheckedUpdateWithoutRecordsInput = {
   counselApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutNoticeVersionNestedInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutNoticeVersionNestedInput
 }
 
 export type PrivacyNoticeVersionCreateWithoutDeliveryConsentsInput = {
@@ -527,6 +554,7 @@ export type PrivacyNoticeVersionCreateWithoutDeliveryConsentsInput = {
   counselApproved?: boolean
   createdAt?: Date | string
   records?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutVersionInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentCreateNestedManyWithoutNoticeVersionInput
 }
 
 export type PrivacyNoticeVersionUncheckedCreateWithoutDeliveryConsentsInput = {
@@ -540,6 +568,7 @@ export type PrivacyNoticeVersionUncheckedCreateWithoutDeliveryConsentsInput = {
   counselApproved?: boolean
   createdAt?: Date | string
   records?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutVersionInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedCreateNestedManyWithoutNoticeVersionInput
 }
 
 export type PrivacyNoticeVersionCreateOrConnectWithoutDeliveryConsentsInput = {
@@ -569,6 +598,7 @@ export type PrivacyNoticeVersionUpdateWithoutDeliveryConsentsInput = {
   counselApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutVersionNestedInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUpdateManyWithoutNoticeVersionNestedInput
 }
 
 export type PrivacyNoticeVersionUncheckedUpdateWithoutDeliveryConsentsInput = {
@@ -582,6 +612,79 @@ export type PrivacyNoticeVersionUncheckedUpdateWithoutDeliveryConsentsInput = {
   counselApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   records?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutVersionNestedInput
+  visitReminderConsents?: Prisma.PatientVisitReminderConsentUncheckedUpdateManyWithoutNoticeVersionNestedInput
+}
+
+export type PrivacyNoticeVersionCreateWithoutVisitReminderConsentsInput = {
+  id?: string
+  version: string
+  effectiveAt: Date | string
+  contentId: string
+  contentEn: string
+  contentHashId: string
+  contentHashEn: string
+  counselApproved?: boolean
+  createdAt?: Date | string
+  records?: Prisma.PatientPrivacyNoticeRecordCreateNestedManyWithoutVersionInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentCreateNestedManyWithoutNoticeVersionInput
+}
+
+export type PrivacyNoticeVersionUncheckedCreateWithoutVisitReminderConsentsInput = {
+  id?: string
+  version: string
+  effectiveAt: Date | string
+  contentId: string
+  contentEn: string
+  contentHashId: string
+  contentHashEn: string
+  counselApproved?: boolean
+  createdAt?: Date | string
+  records?: Prisma.PatientPrivacyNoticeRecordUncheckedCreateNestedManyWithoutVersionInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedCreateNestedManyWithoutNoticeVersionInput
+}
+
+export type PrivacyNoticeVersionCreateOrConnectWithoutVisitReminderConsentsInput = {
+  where: Prisma.PrivacyNoticeVersionWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrivacyNoticeVersionCreateWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUncheckedCreateWithoutVisitReminderConsentsInput>
+}
+
+export type PrivacyNoticeVersionUpsertWithoutVisitReminderConsentsInput = {
+  update: Prisma.XOR<Prisma.PrivacyNoticeVersionUpdateWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUncheckedUpdateWithoutVisitReminderConsentsInput>
+  create: Prisma.XOR<Prisma.PrivacyNoticeVersionCreateWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUncheckedCreateWithoutVisitReminderConsentsInput>
+  where?: Prisma.PrivacyNoticeVersionWhereInput
+}
+
+export type PrivacyNoticeVersionUpdateToOneWithWhereWithoutVisitReminderConsentsInput = {
+  where?: Prisma.PrivacyNoticeVersionWhereInput
+  data: Prisma.XOR<Prisma.PrivacyNoticeVersionUpdateWithoutVisitReminderConsentsInput, Prisma.PrivacyNoticeVersionUncheckedUpdateWithoutVisitReminderConsentsInput>
+}
+
+export type PrivacyNoticeVersionUpdateWithoutVisitReminderConsentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  effectiveAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contentId?: Prisma.StringFieldUpdateOperationsInput | string
+  contentEn?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHashId?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHashEn?: Prisma.StringFieldUpdateOperationsInput | string
+  counselApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  records?: Prisma.PatientPrivacyNoticeRecordUpdateManyWithoutVersionNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUpdateManyWithoutNoticeVersionNestedInput
+}
+
+export type PrivacyNoticeVersionUncheckedUpdateWithoutVisitReminderConsentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  version?: Prisma.StringFieldUpdateOperationsInput | string
+  effectiveAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contentId?: Prisma.StringFieldUpdateOperationsInput | string
+  contentEn?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHashId?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHashEn?: Prisma.StringFieldUpdateOperationsInput | string
+  counselApproved?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  records?: Prisma.PatientPrivacyNoticeRecordUncheckedUpdateManyWithoutVersionNestedInput
+  deliveryConsents?: Prisma.PatientDeliveryConsentUncheckedUpdateManyWithoutNoticeVersionNestedInput
 }
 
 
@@ -592,11 +695,13 @@ export type PrivacyNoticeVersionUncheckedUpdateWithoutDeliveryConsentsInput = {
 export type PrivacyNoticeVersionCountOutputType = {
   records: number
   deliveryConsents: number
+  visitReminderConsents: number
 }
 
 export type PrivacyNoticeVersionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   records?: boolean | PrivacyNoticeVersionCountOutputTypeCountRecordsArgs
   deliveryConsents?: boolean | PrivacyNoticeVersionCountOutputTypeCountDeliveryConsentsArgs
+  visitReminderConsents?: boolean | PrivacyNoticeVersionCountOutputTypeCountVisitReminderConsentsArgs
 }
 
 /**
@@ -623,6 +728,13 @@ export type PrivacyNoticeVersionCountOutputTypeCountDeliveryConsentsArgs<ExtArgs
   where?: Prisma.PatientDeliveryConsentWhereInput
 }
 
+/**
+ * PrivacyNoticeVersionCountOutputType without action
+ */
+export type PrivacyNoticeVersionCountOutputTypeCountVisitReminderConsentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PatientVisitReminderConsentWhereInput
+}
+
 
 export type PrivacyNoticeVersionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -636,6 +748,7 @@ export type PrivacyNoticeVersionSelect<ExtArgs extends runtime.Types.Extensions.
   createdAt?: boolean
   records?: boolean | Prisma.PrivacyNoticeVersion$recordsArgs<ExtArgs>
   deliveryConsents?: boolean | Prisma.PrivacyNoticeVersion$deliveryConsentsArgs<ExtArgs>
+  visitReminderConsents?: boolean | Prisma.PrivacyNoticeVersion$visitReminderConsentsArgs<ExtArgs>
   _count?: boolean | Prisma.PrivacyNoticeVersionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["privacyNoticeVersion"]>
 
@@ -679,6 +792,7 @@ export type PrivacyNoticeVersionOmit<ExtArgs extends runtime.Types.Extensions.In
 export type PrivacyNoticeVersionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   records?: boolean | Prisma.PrivacyNoticeVersion$recordsArgs<ExtArgs>
   deliveryConsents?: boolean | Prisma.PrivacyNoticeVersion$deliveryConsentsArgs<ExtArgs>
+  visitReminderConsents?: boolean | Prisma.PrivacyNoticeVersion$visitReminderConsentsArgs<ExtArgs>
   _count?: boolean | Prisma.PrivacyNoticeVersionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PrivacyNoticeVersionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -689,6 +803,7 @@ export type $PrivacyNoticeVersionPayload<ExtArgs extends runtime.Types.Extension
   objects: {
     records: Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>[]
     deliveryConsents: Prisma.$PatientDeliveryConsentPayload<ExtArgs>[]
+    visitReminderConsents: Prisma.$PatientVisitReminderConsentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1096,6 +1211,7 @@ export interface Prisma__PrivacyNoticeVersionClient<T, Null = never, ExtArgs ext
   readonly [Symbol.toStringTag]: "PrismaPromise"
   records<T extends Prisma.PrivacyNoticeVersion$recordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrivacyNoticeVersion$recordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientPrivacyNoticeRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deliveryConsents<T extends Prisma.PrivacyNoticeVersion$deliveryConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrivacyNoticeVersion$deliveryConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientDeliveryConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  visitReminderConsents<T extends Prisma.PrivacyNoticeVersion$visitReminderConsentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrivacyNoticeVersion$visitReminderConsentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PatientVisitReminderConsentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1572,6 +1688,30 @@ export type PrivacyNoticeVersion$deliveryConsentsArgs<ExtArgs extends runtime.Ty
   take?: number
   skip?: number
   distinct?: Prisma.PatientDeliveryConsentScalarFieldEnum | Prisma.PatientDeliveryConsentScalarFieldEnum[]
+}
+
+/**
+ * PrivacyNoticeVersion.visitReminderConsents
+ */
+export type PrivacyNoticeVersion$visitReminderConsentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PatientVisitReminderConsent
+   */
+  select?: Prisma.PatientVisitReminderConsentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PatientVisitReminderConsent
+   */
+  omit?: Prisma.PatientVisitReminderConsentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PatientVisitReminderConsentInclude<ExtArgs> | null
+  where?: Prisma.PatientVisitReminderConsentWhereInput
+  orderBy?: Prisma.PatientVisitReminderConsentOrderByWithRelationInput | Prisma.PatientVisitReminderConsentOrderByWithRelationInput[]
+  cursor?: Prisma.PatientVisitReminderConsentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PatientVisitReminderConsentScalarFieldEnum | Prisma.PatientVisitReminderConsentScalarFieldEnum[]
 }
 
 /**
