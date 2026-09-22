@@ -422,6 +422,14 @@ export const updateClinicProfileSchema = z
      * not become this clinic's letterhead.
      */
     logoStorageKey: z.string().trim().min(1).max(255).nullable().optional(),
+    /**
+     * The puskesmas the monthly KIA report goes to (P25-T15, D-040): its name
+     * and Kemenkes facility code, printed in the report header. Free text on
+     * both because the code format differs by district and the pilot's is
+     * still unknown (Q11).
+     */
+    reportingPuskesmasName: optionalClinicProfileTextSchema.nullable().optional(),
+    reportingPuskesmasCode: z.string().trim().max(32).nullable().optional(),
     /** The clinic's position for SATUSEHAT Locations (P24-T05). Saved as a pair. */
     latitude: clinicLatitudeSchema.nullable().optional(),
     longitude: clinicLongitudeSchema.nullable().optional(),

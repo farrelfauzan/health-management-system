@@ -17,6 +17,8 @@ describe('toClinicProfileView', () => {
     latitude: null,
     longitude: null,
     satusehatLocationId: null,
+    reportingPuskesmasName: null,
+    reportingPuskesmasCode: null,
     createdAt: new Date('2026-09-18T02:00:00.000Z'),
     updatedAt: new Date('2026-09-18T02:15:00.000Z'),
   };
@@ -36,6 +38,8 @@ describe('toClinicProfileView', () => {
       latitude: null,
       longitude: null,
       satusehatLocationId: null,
+      reportingPuskesmasName: null,
+      reportingPuskesmasCode: null,
       updatedAt: '2026-09-18T02:15:00.000Z',
     });
   });

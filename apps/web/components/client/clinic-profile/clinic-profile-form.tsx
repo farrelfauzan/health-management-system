@@ -44,6 +44,12 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
   const [email, setEmail] = useState(profile?.email ?? '');
   const [licenseNumber, setLicenseNumber] = useState(profile?.licenseNumber ?? '');
   const [taxId, setTaxId] = useState(profile?.taxId ?? '');
+  const [reportingPuskesmasName, setReportingPuskesmasName] = useState(
+    profile?.reportingPuskesmasName ?? '',
+  );
+  const [reportingPuskesmasCode, setReportingPuskesmasCode] = useState(
+    profile?.reportingPuskesmasCode ?? '',
+  );
   const [latitude, setLatitude] = useState(
     profile?.latitude === null || profile?.latitude === undefined ? '' : String(profile.latitude),
   );
@@ -127,6 +133,8 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
       email: toOptionalField(email),
       licenseNumber: toOptionalField(licenseNumber),
       taxId: toOptionalField(taxId),
+      reportingPuskesmasName: toOptionalField(reportingPuskesmasName),
+      reportingPuskesmasCode: toOptionalField(reportingPuskesmasCode),
       ...buildLogoField(),
       ...buildCoordinateFields(),
     };
@@ -212,6 +220,20 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
             onChange={setTaxId}
           />
           <ClinicProfileTextField
+            id="clinic-profile-reporting-puskesmas-name"
+            label={t('fields.reportingPuskesmasName')}
+            value={reportingPuskesmasName}
+            disabled={!canWrite}
+            onChange={setReportingPuskesmasName}
+          />
+          <ClinicProfileTextField
+            id="clinic-profile-reporting-puskesmas-code"
+            label={t('fields.reportingPuskesmasCode')}
+            value={reportingPuskesmasCode}
+            disabled={!canWrite}
+            onChange={setReportingPuskesmasCode}
+          />
+          <ClinicProfileTextField
             id="clinic-profile-latitude"
             label={t('fields.latitude')}
             value={latitude}
@@ -226,6 +248,7 @@ export function ClinicProfileForm({ profile, canWrite }: ClinicProfileFormProps)
             onChange={setLongitude}
           />
         </div>
+        <p className="text-xs text-slate-500">{t('reportingPuskesmasHint')}</p>
         <p className="text-xs text-slate-500">{t('coordinatesHint')}</p>
         <ClinicProfileLogoField
           storedLogoUrl={logo.kind === 'removed' ? null : (profile?.logoUrl ?? null)}

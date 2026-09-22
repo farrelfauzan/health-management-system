@@ -16,5 +16,7 @@ export type ClinicProfileControllerUpdateClinicProfileV1200Data = {
   taxId: string;
   hasLogo: boolean;
   logoUrl: string;
+  reportingPuskesmasName: string;
+  reportingPuskesmasCode: string;
   updatedAt: string;
 };

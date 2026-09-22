@@ -1003,7 +1003,9 @@
           "licenseNumber": "Operating licence number",
           "taxId": "Tax ID (NPWP)",
           "latitude": "Latitude",
-          "longitude": "Longitude"
+          "longitude": "Longitude",
+          "reportingPuskesmasName": "Reporting puskesmas",
+          "reportingPuskesmasCode": "Reporting puskesmas code"
         },
         "logo": {
           "label": "Logo",
@@ -1027,7 +1029,8 @@
           "saveFailed": "Unable to save the clinic profile. Please try again.",
           "coordinatesPair": "Enter both latitude and longitude as numbers, or leave both empty."
         },
-        "coordinatesHint": "Decimal degrees, used to register the clinic's locations on SATUSEHAT. In Indonesia latitude is between -11 and 6 and longitude between 95 and 141 — check they are not swapped."
+        "coordinatesHint": "Decimal degrees, used to register the clinic's locations on SATUSEHAT. In Indonesia latitude is between -11 and 6 and longitude between 95 and 141 — check they are not swapped.",
+        "reportingPuskesmasHint": "The puskesmas the monthly KIA report is addressed to (KIA Reports). The name and Kemenkes code are printed in the report header."
       },
       "offboarding": {
         "offboard": "Offboard",

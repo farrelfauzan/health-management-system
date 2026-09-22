@@ -51,6 +51,16 @@ export interface UpdateClinicProfileDto {
      */
   logoStorageKey?: string | null;
   /**
+     * @maxLength 255
+     * @nullable
+     */
+  reportingPuskesmasName?: string | null;
+  /**
+     * @maxLength 32
+     * @nullable
+     */
+  reportingPuskesmasCode?: string | null;
+  /**
      * @minimum -11
      * @maximum 6
      * @nullable

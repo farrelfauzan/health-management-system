@@ -399,6 +399,16 @@ export type ClinicLetterhead = {
   logoDataUri: string | null;
 };
 
+/**
+ * What a monthly KIA report prints in its header (P25-T15): the clinic and
+ * the puskesmas it reports to. Cheap on purpose — no logo, no signed URL.
+ */
+export type ClinicReportingIdentity = {
+  clinicName: string;
+  puskesmasName: string | null;
+  puskesmasCode: string | null;
+};
+
 export type ClinicProfileRecord = {
   id: string;
   name: string;
@@ -413,6 +423,9 @@ export type ClinicProfileRecord = {
   latitude: number | null;
   longitude: number | null;
   satusehatLocationId: string | null;
+  /** The puskesmas the monthly KIA report is addressed to (P25-T15). */
+  reportingPuskesmasName: string | null;
+  reportingPuskesmasCode: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -435,6 +448,8 @@ export type SaveClinicProfileData = {
   logoMimeType?: string | null;
   latitude?: number | null;
   longitude?: number | null;
+  reportingPuskesmasName?: string | null;
+  reportingPuskesmasCode?: string | null;
 };
 
 /**

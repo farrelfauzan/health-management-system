@@ -62,6 +62,8 @@ export class ClinicProfileRepository {
       latitude: row.latitude === null ? null : row.latitude.toNumber(),
       longitude: row.longitude === null ? null : row.longitude.toNumber(),
       satusehatLocationId: row.satusehatLocationId,
+      reportingPuskesmasName: row.reportingPuskesmasName,
+      reportingPuskesmasCode: row.reportingPuskesmasCode,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     };

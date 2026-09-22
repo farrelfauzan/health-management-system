@@ -444,6 +444,87 @@
       "cancel": "Batal",
       "early": "diambil dini",
       "earlyHint": "Sampel diambil sebelum 48 jam; laboratorium mungkin tidak dapat membacanya."
+    },
+    "reports": {
+      "title": "Laporan KIA",
+      "subtitle": "Register kohort ibu, bayi dan KB serta laporan bulanan KIA dan kelahiran-kematian untuk puskesmas.",
+      "tabs": {
+        "kohortIbu": "Kohort ibu",
+        "kohortBayi": "Kohort bayi",
+        "kohortKb": "Kohort KB",
+        "monthlyKia": "Laporan bulanan KIA",
+        "birthsDeaths": "Kelahiran & kematian"
+      },
+      "filters": {
+        "month": "Bulan",
+        "village": "Desa/Kelurahan",
+        "allVillages": "Semua desa",
+        "searchVillage": "Cari desa...",
+        "noVillages": "Tidak ada desa pada bulan ini."
+      },
+      "actions": {
+        "downloadCsv": "Unduh CSV",
+        "downloadPdf": "Unduh PDF",
+        "exportError": "Laporan gagal diunduh. Silakan coba lagi."
+      },
+      "provisionalNotice": "Tata letak sementara (D-040): susunan kolom belum dibandingkan dengan formulir puskesmas pilot dan dapat berubah.",
+      "header": {
+        "puskesmas": "Puskesmas pelapor",
+        "notSet": "belum diisi (Profil klinik)"
+      },
+      "empty": "Tidak ada data pada bulan ini.",
+      "loadError": "Laporan gagal dimuat. Silakan coba lagi.",
+      "register": {
+        "village": "Desa/Kelurahan",
+        "total": "{count} baris"
+      },
+      "indicators": {
+        "indicator": "Indikator",
+        "value": "Jumlah",
+        "definition": "Definisi",
+        "kiaBlock": "Indikator KIA",
+        "labBlock": "Pemeriksaan laboratorium antenatal (LB3-KIA)"
+      },
+      "birthsDeaths": {
+        "summary": {
+          "liveBirths": "Lahir hidup",
+          "stillbirths": "Lahir mati",
+          "maternalDeaths": "Kematian ibu",
+          "newbornDeaths": "Kematian bayi baru lahir",
+          "otherDeaths": "Kematian lainnya"
+        },
+        "births": "Kelahiran",
+        "deaths": "Kematian",
+        "noBirths": "Tidak ada kelahiran pada bulan ini.",
+        "noDeaths": "Tidak ada kematian tercatat pada bulan ini.",
+        "noVillage": "Tanpa desa",
+        "columns": {
+          "birthAt": "Waktu lahir",
+          "outcome": "Hidup/Mati",
+          "sex": "Jenis kelamin",
+          "weight": "Berat (g)",
+          "mother": "Nama ibu",
+          "village": "Desa/Kelurahan",
+          "attendant": "Penolong",
+          "diedAt": "Waktu meninggal",
+          "patientKind": "Kelompok",
+          "name": "Nama",
+          "age": "Usia"
+        },
+        "outcome": {
+          "LIVE_BIRTH": "Hidup",
+          "STILLBIRTH": "Lahir mati"
+        },
+        "sex": {
+          "MALE": "Laki-laki",
+          "FEMALE": "Perempuan"
+        },
+        "patientKind": {
+          "MOTHER": "Ibu",
+          "NEWBORN": "Bayi baru lahir",
+          "OTHER": "Lainnya"
+        }
+      }
     }
   }
 }
