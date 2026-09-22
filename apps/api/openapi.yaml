@@ -58697,7 +58697,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort ibu for a month
-      tags: &a87
+      tags: &a88
         - Maternal Reports
   /api/v1/maternal-reports/kohort-bayi:
     get:
@@ -58946,7 +58946,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort bayi for a month
-      tags: *a87
+      tags: *a88
   /api/v1/maternal-reports/kohort-kb:
     get:
       operationId: MaternalReportsController_getKohortKb_v1
@@ -59193,7 +59193,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort KB for a month
-      tags: *a87
+      tags: *a88
   /api/v1/maternal-reports/monthly-kia:
     get:
       operationId: MaternalReportsController_getMonthlyKia_v1
@@ -59338,7 +59338,7 @@ paths:
       security:
         - bearer: []
       summary: Monthly KIA report for a month
-      tags: *a87
+      tags: *a88
   /api/v1/maternal-reports/births-deaths:
     get:
       operationId: MaternalReportsController_getBirthsDeaths_v1
@@ -59534,7 +59534,7 @@ paths:
       security:
         - bearer: []
       summary: Births and deaths report for a month
-      tags: *a87
+      tags: *a88
 info:
   title: HMS API
   description: Health Management System API
