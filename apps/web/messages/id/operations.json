@@ -2421,6 +2421,32 @@
           "TAX_REPORT_PDF_UNAVAILABLE": "Layanan PDF sedang tidak tersedia. Coba lagi sebentar lagi."
         }
       }
+    },
+    "account": {
+      "title": "Akun saya",
+      "subtitle": "Data akun Anda dan NIK yang Anda gunakan sebagai petugas saat memverifikasi pasien di SATUSEHAT.",
+      "loadErrorTitle": "Akun tidak dapat dimuat",
+      "loadErrorDescription": "Terjadi kesalahan saat memuat akun Anda. Silakan coba lagi.",
+      "identity": {
+        "title": "Dikelola oleh klinik",
+        "description": "Nama dan alamat email untuk masuk diatur oleh administrator. Minta administrator untuk mengubahnya.",
+        "fullName": "Nama",
+        "email": "Email untuk masuk",
+        "unnamed": "Belum diberi nama"
+      },
+      "nik": {
+        "title": "NIK petugas",
+        "description": "SATUSEHAT memerlukan NIK petugas yang memverifikasi profil pasien (KYC). NIK disimpan terenkripsi dan hanya ditampilkan empat digit terakhirnya.",
+        "current": "NIK tersimpan: {masked}",
+        "none": "Belum ada NIK tersimpan di akun ini.",
+        "addLabel": "NIK (16 digit)",
+        "replaceLabel": "NIK baru (16 digit)",
+        "invalid": "NIK harus terdiri dari 16 digit angka.",
+        "save": "Simpan NIK",
+        "saving": "Menyimpan...",
+        "saved": "NIK Anda berhasil disimpan.",
+        "saveError": "NIK gagal disimpan. Silakan coba lagi."
+      }
     }
   },
   "channelArrivals": {

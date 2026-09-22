@@ -51,4 +51,9 @@ export type OwnAccountRecord = {
   id: string;
   email: string;
   fullName: string | null;
+  /**
+   * The last four digits of the operator's NIK (P24-T15, D-039), or null when
+   * none is on file. The only form the value ever leaves the API in.
+   */
+  nikLast4: string | null;
 };
