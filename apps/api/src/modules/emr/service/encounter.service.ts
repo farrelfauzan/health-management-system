@@ -89,9 +89,9 @@ export class EncounterService {
   async getEncounterById(id: string, currentUser: CurrentUser): Promise<EncounterDetail> {
     const access = await this.encounterAccessService.resolveReadAccessOrThrow(currentUser);
     const encounter = await this.findEncounterOrThrow(id);
-    await this.encounterAccessService.assertCanReadEncounter({
+    const view = await this.encounterAccessService.resolveEncounterViewOrThrow({
       encounter,
-      scope: access.scope,
+      access,
       currentUser,
     });
     const detail = await this.encounterRepository.findEncounterDetailById(id);
@@ -101,9 +101,9 @@ export class EncounterService {
     }
     // P22-T03/T05. Triage and billing read the summary (triage with the
     // vitals), and are never handed the lab work the two lookups below fetch.
-    if (access.view !== 'FULL') {
+    if (view !== 'FULL') {
       return this.encounterMapper.toNonClinicalEncounterDetail(detail, {
-        isIncludingVitalSigns: access.view === 'VITALS',
+        isIncludingVitalSigns: view === 'VITALS',
       });
     }
     // P18-T02. Asked of the module that owns orders rather than joined into the

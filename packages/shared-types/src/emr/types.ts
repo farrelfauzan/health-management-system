@@ -377,8 +377,15 @@ export type CreateImmunizationRecordPayload = {
  */
 export type EncounterReadView = 'FULL' | 'VITALS' | 'SUMMARY';
 
-/** How a caller may read encounters: the scope and how much of each one. */
+/**
+ * How a caller may read encounters: the scope and how much of each one.
+ * `hasOwnFullRead` marks a non-clinical `:any` reader who also holds
+ * `encounter.read:own`: every visit reads as `view`, and the ones the caller
+ * reads under OWN (their own patient record, a visit they attended) read in
+ * full.
+ */
 export type EncounterReadAccess = {
   scope: ActorScopeResolution;
   view: EncounterReadView;
+  hasOwnFullRead: boolean;
 };

@@ -206,6 +206,25 @@ describe('EncounterService', () => {
       );
     });
 
+    it('lists every visit for read:own plus read-summary:any, as SUPER_ADMIN holds them', async () => {
+      mockActor([
+        { action: 'read', resource: 'Encounter', scope: 'OWN' },
+        { action: 'read-summary', resource: 'Encounter', scope: 'ANY' },
+      ]);
+      (encounterRepositoryMock.listEncounters as jest.Mock).mockResolvedValue({
+        items: [],
+        page: 1,
+        limit: 10,
+        total: 0,
+      });
+
+      await service.listEncounters({ page: 1, limit: 10 } as ListEncountersQueryDto, adminUser);
+
+      expect(encounterRepositoryMock.listEncounters).toHaveBeenCalledWith(
+        expect.objectContaining({ ownerUserId: undefined }),
+      );
+    });
+
     it('rejects an actor holding neither scope', async () => {
       mockActor([]);
 
@@ -409,6 +428,47 @@ describe('EncounterService', () => {
       expect(actual.vitalSigns).toEqual([]);
       expect(actual).not.toHaveProperty('subjective');
       expect(actual.diagnoses).toEqual([]);
+    });
+
+    it('gives read:own plus read-summary:any the summary of a visit it did not attend', async () => {
+      mockActor([
+        { action: 'read', resource: 'Encounter', scope: 'OWN' },
+        { action: 'read-summary', resource: 'Encounter', scope: 'ANY' },
+      ]);
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+        encounterRecord,
+      );
+      (encounterRepositoryMock.findActiveDoctorByOwnerUserId as jest.Mock).mockResolvedValue(null);
+      (encounterRepositoryMock.findEncounterDetailById as jest.Mock).mockResolvedValue(
+        clinicalDetail,
+      );
+
+      const actual = await service.getEncounterById(encounterId, adminUser);
+
+      expect(actual.status).toBe('IN_PROGRESS');
+      expect(actual).not.toHaveProperty('subjective');
+      expect(actual.diagnoses).toEqual([]);
+    });
+
+    it('gives read:own plus record-vitals:any the full record of a visit it attended', async () => {
+      mockActor([
+        { action: 'read', resource: 'Encounter', scope: 'OWN' },
+        { action: 'record-vitals', resource: 'Encounter', scope: 'ANY' },
+      ]);
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+        encounterRecord,
+      );
+      (encounterRepositoryMock.findEncounterDetailById as jest.Mock).mockResolvedValue({
+        ...clinicalDetail,
+        diagnoses: [],
+        procedures: [],
+        immunizations: [],
+        prescriptions: [],
+      });
+
+      const actual = await service.getEncounterById(encounterId, doctorUser);
+
+      expect(actual.subjective).toBe('Demam tiga hari');
     });
 
     it('gives a reader who also holds encounter.read the full record', async () => {

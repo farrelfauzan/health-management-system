@@ -2,6 +2,7 @@ import {
   Actor,
   ActorScopeResolution,
   EncounterReadAccess,
+  EncounterReadView,
   EncounterWithRelationsRecord,
   canTransitionEncounterStatus,
   EncounterStatusValue,
@@ -70,21 +71,47 @@ export class EncounterAccessService {
    * `encounter.record-vitals:any` reads as triage — every visit, its summary
    * and vital signs — and `encounter.read-summary:any` reads as billing and
    * the front desk: every visit, its summary, nothing of the record (D-033).
+   *
+   * `encounter.read:own` does not narrow those `:any` grants. SUPER_ADMIN holds
+   * `read:own` and `read-summary:any` together, and letting the OWN grant win
+   * handed it the visits it attended — none — instead of every visit's summary.
    */
   async resolveReadAccessOrThrow(currentUser: CurrentUser): Promise<EncounterReadAccess> {
     const actor = await this.getActorOrThrow(currentUser);
     const readScope = this.resolveScope(actor, 'read');
-    if (readScope.hasAny || readScope.hasOwn) {
-      return { scope: readScope, view: 'FULL' };
+    if (readScope.hasAny) {
+      return { scope: readScope, view: 'FULL', hasOwnFullRead: false };
     }
     const everyVisit = { hasAny: true, hasOwn: false };
     if (this.resolveScope(actor, RECORD_VITALS_ACTION).hasAny) {
-      return { scope: everyVisit, view: 'VITALS' };
+      return { scope: everyVisit, view: 'VITALS', hasOwnFullRead: readScope.hasOwn };
     }
     if (this.resolveScope(actor, READ_SUMMARY_ACTION).hasAny) {
-      return { scope: everyVisit, view: 'SUMMARY' };
+      return { scope: everyVisit, view: 'SUMMARY', hasOwnFullRead: readScope.hasOwn };
+    }
+    if (readScope.hasOwn) {
+      return { scope: readScope, view: 'FULL', hasOwnFullRead: false };
     }
     throw new ForbiddenException('You are not allowed to read clinical encounters');
+  }
+
+  /**
+   * How much of this one encounter the caller reads. A summary reader who also
+   * holds `encounter.read:own` reads the record in full where the OWN rules
+   * below would let them read it, and the summary everywhere else.
+   */
+  async resolveEncounterViewOrThrow(params: {
+    encounter: EncounterWithRelationsRecord;
+    access: EncounterReadAccess;
+    currentUser: CurrentUser;
+  }): Promise<EncounterReadView> {
+    const { encounter, access, currentUser } = params;
+    await this.assertCanReadEncounter({ encounter, scope: access.scope, currentUser });
+    if (!access.hasOwnFullRead) {
+      return access.view;
+    }
+    const isOwnReader = await this.isOwnEncounterReader(encounter, currentUser);
+    return isOwnReader ? 'FULL' : access.view;
   }
 
   /**
@@ -128,18 +155,26 @@ export class EncounterAccessService {
       return;
     }
 
+    const isOwnReader = await this.isOwnEncounterReader(encounter, currentUser);
+
+    if (!isOwnReader) {
+      throw new ForbiddenException('You are not allowed to read this encounter');
+    }
+  }
+
+  /** Whether the caller reads this encounter under OWN scope. */
+  private async isOwnEncounterReader(
+    encounter: EncounterWithRelationsRecord,
+    currentUser: CurrentUser,
+  ): Promise<boolean> {
     if (
       encounter.patient.ownerUserId === currentUser.sub ||
       encounter.doctor.ownerUserId === currentUser.sub
     ) {
-      return;
+      return true;
     }
-
     const assignment = await this.findActiveAssignmentForCaller(encounter.patientId, currentUser);
-
-    if (!assignment) {
-      throw new ForbiddenException('You are not allowed to read this encounter');
-    }
+    return assignment !== null;
   }
 
   /**
