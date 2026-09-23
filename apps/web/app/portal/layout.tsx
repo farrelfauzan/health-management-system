@@ -11,6 +11,7 @@ import { resolveSessionIdlePolicy } from '#lib/shell/session-idle-policy';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
+import { resolveOpenableShells } from '#lib/shell/resolve-openable-shells';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 type PortalLayoutProps = {
@@ -36,7 +37,7 @@ export default async function PortalLayout({ children }: PortalLayoutProps) {
       */}
       <AiAssistantProvider displayName={profile.displayName} channel="PATIENT">
         <div className="flex min-h-svh flex-col bg-surface">
-          <PortalTopBar profile={profile} />
+          <PortalTopBar profile={profile} openableShells={resolveOpenableShells(claims)} />
           <main className="min-w-0 flex-1 px-4 py-8 sm:px-8">
             <div className="mx-auto w-full min-w-0 max-w-5xl">{children}</div>
           </main>

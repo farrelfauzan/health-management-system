@@ -1,7 +1,23 @@
+import type { z } from 'zod';
+
+import type { roleTemplateCodeSchema } from '#rbac/schemas';
+
 export type ActorPermissionScope = 'ANY' | 'OWN';
 
 /** The shell a `portal.*` key opens (IMP-3). */
 export type PortalShellValue = 'ADMIN' | 'DOCTOR' | 'PATIENT';
+
+/** A starting point for a custom role in the IAM screen (P22-T05). */
+export type RoleTemplateCodeValue = z.infer<typeof roleTemplateCodeSchema>;
+
+/**
+ * A named permission set an administrator can create a role from (P22-T05).
+ * Its label and plain-language description live with the web messages.
+ */
+export type RoleTemplate = {
+  code: RoleTemplateCodeValue;
+  permissionKeys: readonly string[];
+};
 
 export type ActorPermission = {
   action: string;

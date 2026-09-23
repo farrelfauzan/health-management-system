@@ -3,9 +3,15 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { hasAnyRole, hasPermission } from '#lib/auth/access-token-claims';
 import { OFFBOARDED_VAULT_PATHS } from '#lib/auth/offboarding-session';
+import {
+  PREFERRED_SHELL_COOKIE_NAME,
+  parsePreferredShell,
+} from '#lib/auth/preferred-shell-cookie';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { DOCTOR_PROFILE_COMPLETION } from '#lib/doctor-profile/doctor-profile-completion';
+import { resolveOpenableShells } from '#lib/shell/resolve-openable-shells';
+import { SHELL_HOME_PATH } from '#lib/shell/shell-home-path';
 
 /**
  * Shell access is decided by the `portal.*` permission claims (IMP-3), so a
@@ -84,6 +90,18 @@ export function proxy(request: NextRequest) {
     hasValidSession &&
     !hasAdminSession &&
     (hasPermission(claims, PATIENT_PORTAL_PERMISSION) || hasAnyRole(claims, PATIENT_ROLES));
+  // P22-T05. Someone holding several portal keys may open each of those
+  // shells: the precedence above only picks where they land, and the profile
+  // menu switches between them. SUPER_ADMIN stays on the admin shell (see
+  // resolveOpenableShells). The last shell switched to is where they land.
+  const openableShells = resolveOpenableShells(claims);
+  const canOpenDoctorShell = hasDoctorSession || openableShells.includes('DOCTOR');
+  const canOpenPatientShell = hasPatientSession || openableShells.includes('PATIENT');
+  const preferredShell = parsePreferredShell(
+    request.cookies.get(PREFERRED_SHELL_COOKIE_NAME)?.value,
+  );
+  const landingShell =
+    preferredShell !== null && openableShells.includes(preferredShell) ? preferredShell : null;
   const pathname = request.nextUrl.pathname;
   // P16-T41. Someone in their offboarding window has exactly one page: their
   // own vault, in whichever shell they belong to. Every other route under the
@@ -107,8 +125,14 @@ export function proxy(request: NextRequest) {
   // gets the admin shell and is never pinned here — and offboarding wins,
   // because somebody leaving has nothing to complete. The flag comes from the
   // session hint, so this costs no database read per navigation.
+  // A multi-shell user is pinned the same way while they are in the doctor
+  // shell (P22-T05); the admin shell stays open to them.
+  const isInDoctorShell = hasDoctorSession || pathname.startsWith(`${DOCTOR_PATH_PREFIX}/`);
   const isProfileCompletionPending =
-    hasDoctorSession && offboardedVaultPath === null && claims?.isProfileIncomplete === true;
+    canOpenDoctorShell &&
+    isInDoctorShell &&
+    offboardedVaultPath === null &&
+    claims?.isProfileIncomplete === true;
 
   function redirectToProfileCompletion(): NextResponse {
     const target = new URL(DOCTOR_PROFILE_COMPLETION.path, request.url);
@@ -132,6 +156,12 @@ export function proxy(request: NextRequest) {
     }
     if (hasTechnicianOnlySession) {
       return NextResponse.redirect(new URL(LABORATORY_HOME_PATH, request.url));
+    }
+    if (landingShell === 'DOCTOR' && claims?.isProfileIncomplete === true) {
+      return redirectToProfileCompletion();
+    }
+    if (landingShell !== null) {
+      return NextResponse.redirect(new URL(SHELL_HOME_PATH[landingShell], request.url));
     }
     if (hasAdminSession) {
       return NextResponse.redirect(new URL(ADMIN_HOME_PATH, request.url));
@@ -171,11 +201,11 @@ export function proxy(request: NextRequest) {
   }
 
   if (pathname.startsWith(PORTAL_PATH_PREFIX)) {
-    return hasPatientSession ? NextResponse.next() : redirectToHome();
+    return canOpenPatientShell ? NextResponse.next() : redirectToHome();
   }
 
   if (pathname.startsWith(DOCTOR_PATH_PREFIX)) {
-    return hasDoctorSession ? NextResponse.next() : redirectToHome();
+    return canOpenDoctorShell ? NextResponse.next() : redirectToHome();
   }
 
   if (pathname === PHARMACIST_HOME_PATH && hasPharmacistSession) {

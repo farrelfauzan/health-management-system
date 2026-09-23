@@ -65,6 +65,9 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // the Encounters menu to a triage role; dropped here, the role signs in to
   // an empty shell.
   'record-vitals',
+  // P22-T05. `encounter.read-summary:any` opens the Encounters menu and the
+  // visit page for billing; dropped here, a cashier cannot reach "Buat tagihan".
+  'read-summary',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

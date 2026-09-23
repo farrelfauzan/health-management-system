@@ -33,7 +33,7 @@ export class EncounterController {
   constructor(private readonly encounterService: EncounterService) {}
 
   @Get()
-  @Auth([{ action: 'read', subject: 'Encounter', alternativeActions: ['record-vitals'] }])
+  @Auth([{ action: 'read', subject: 'Encounter', alternativeActions: ['record-vitals', 'read-summary'] }])
   @Audited({
     resource: 'encounter',
     action: AuditAction.READ,
@@ -43,7 +43,7 @@ export class EncounterController {
   @ApiEndpoint({
     summary: 'List clinical encounters',
     responseDescription:
-      'A permission-scoped, filtered, paginated encounter list. `encounter.record-vitals:any` alone lists every visit, so triage can find the patient in front of them; rows carry counts, never clinical content.',
+      'A permission-scoped, filtered, paginated encounter list. `encounter.record-vitals:any` or `encounter.read-summary:any` alone lists every visit, so triage and billing can find the patient in front of them; rows carry counts, never clinical content.',
     responseExample: {
       data: [PHASE_THREE_EXAMPLES.encounter.listItem],
       meta: PHASE_THREE_EXAMPLES.paginationMeta,
@@ -63,12 +63,12 @@ export class EncounterController {
   }
 
   @Get(':id')
-  @Auth([{ action: 'read', subject: 'Encounter', alternativeActions: ['record-vitals'] }])
+  @Auth([{ action: 'read', subject: 'Encounter', alternativeActions: ['record-vitals', 'read-summary'] }])
   @Audited({ resource: 'encounter', action: AuditAction.READ })
   @ApiEndpoint({
     summary: 'Get a clinical encounter',
     responseDescription:
-      'The full record of one visit: SOAP note, vitals, coded diagnoses and procedures, and the prescriptions written during it. A caller holding `encounter.record-vitals:any` but no `encounter.read` (triage, P22-T03) gets the visit summary and its vital signs only: no SOAP fields or prognosis, and empty diagnosis, procedure, immunization, prescription and lab lists.',
+      'The full record of one visit: SOAP note, vitals, coded diagnoses and procedures, and the prescriptions written during it. A caller holding `encounter.record-vitals:any` but no `encounter.read` (triage, P22-T03) gets the visit summary and its vital signs only: no SOAP fields or prognosis, and empty diagnosis, procedure, immunization, prescription and lab lists. `encounter.read-summary:any` alone (billing, P22-T05) gets the same summary with no vital signs.',
     responseExample: { data: PHASE_THREE_EXAMPLES.encounter.detail },
     notFoundDescription: 'Encounter not found.',
   })

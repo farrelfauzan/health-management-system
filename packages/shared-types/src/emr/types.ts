@@ -369,12 +369,16 @@ export type CreateImmunizationRecordPayload = {
 };
 
 /**
- * How a caller may read encounters (P22-T03). `isVitalsOnly` is a triage
- * reader: someone holding `encounter.record-vitals:any` but no
- * `encounter.read`, who sees which visits exist and their vital signs, and
- * nothing of the clinical record beyond that (D-033).
+ * How much of an encounter a caller reads (P22-T03, P22-T05):
+ * - `FULL` — the record, for `encounter.read`;
+ * - `VITALS` — summary plus vital signs, for triage (`encounter.record-vitals:any`);
+ * - `SUMMARY` — who, when and what state, for billing and the front desk
+ *   (`encounter.read-summary:any`). None of the clinical record (D-033).
  */
+export type EncounterReadView = 'FULL' | 'VITALS' | 'SUMMARY';
+
+/** How a caller may read encounters: the scope and how much of each one. */
 export type EncounterReadAccess = {
   scope: ActorScopeResolution;
-  isVitalsOnly: boolean;
+  view: EncounterReadView;
 };

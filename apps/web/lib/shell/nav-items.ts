@@ -114,6 +114,7 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         ability: [
           { action: 'read', subject: 'Encounter' },
           { action: 'record-vitals', subject: 'Encounter' },
+          { action: 'read-summary', subject: 'Encounter' },
         ],
       },
       {

@@ -394,6 +394,23 @@ describe('EncounterService', () => {
       expect(labOrderServiceMock.findOpenOrdersForEncounter).not.toHaveBeenCalled();
     });
 
+    it('gives billing holding only read-summary the summary without vitals (P22-T05)', async () => {
+      mockActor([{ action: 'read-summary', resource: 'Encounter', scope: 'ANY' }]);
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+        encounterRecord,
+      );
+      (encounterRepositoryMock.findEncounterDetailById as jest.Mock).mockResolvedValue(
+        clinicalDetail,
+      );
+
+      const actual = await service.getEncounterById(encounterId, adminUser);
+
+      expect(actual.status).toBe('IN_PROGRESS');
+      expect(actual.vitalSigns).toEqual([]);
+      expect(actual).not.toHaveProperty('subjective');
+      expect(actual.diagnoses).toEqual([]);
+    });
+
     it('gives a reader who also holds encounter.read the full record', async () => {
       mockActor([
         { action: 'record-vitals', resource: 'Encounter', scope: 'ANY' },

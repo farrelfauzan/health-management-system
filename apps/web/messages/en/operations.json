@@ -1105,6 +1105,40 @@
           "mfa": "These permissions are high-risk, so every member must enrol an authenticator app when signing in: {keys}.",
           "clinicalTitle": "Opens clinical record content",
           "clinical": "These permissions open the patient's clinical record, which D-033 reserves for the clinicians who examine the patient: {keys}."
+        },
+        "templates": {
+          "label": "Start from",
+          "blank": "Blank",
+          "blankHint": "The role is created with no job permissions, only the basics (sign-out, notifications, own profile). Set its permissions afterwards.",
+          "items": {
+            "FRONT_NURSE": {
+              "name": "Front-desk nurse",
+              "description": "Takes the patient's vital signs before the doctor sees them, and bills the visit after the doctor closes it. Cannot open the doctor's notes."
+            },
+            "CASHIER": {
+              "name": "Cashier",
+              "description": "Finds finished visits, creates and sends invoices, and records payments. Cannot open the clinical record."
+            },
+            "RECEPTIONIST": {
+              "name": "Receptionist",
+              "description": "Registers and updates patients, manages appointments and the queue, and opens the visit for the doctor. Cannot open the clinical record."
+            }
+          }
+        },
+        "guide": {
+          "open": "Role guide",
+          "title": "Role guide",
+          "description": "How permissions behave, and ready-made roles.",
+          "rulesTitle": "Good to know",
+          "rules": {
+            "portal": "Every role needs one \"portal\" permission (Admin, Doctor or Patient). Without it, users are sent straight back to the sign-in page.",
+            "dependencies": "Permissions that another permission needs are ticked for you. For example, creating invoices also ticks reading invoices and seeing the visit list.",
+            "mfa": "Permissions labelled \"Requires MFA\" make every member of the role use an authenticator app when signing in.",
+            "clinical": "Permissions labelled \"Clinical record\" open the patient's clinical record. Under the clinic rule D-033 that is reserved for the clinicians who examine the patient.",
+            "shells": "Users holding more than one portal land on the Admin screen and can switch screens from the profile menu."
+          },
+          "templatesTitle": "Ready-made roles",
+          "midwife": "For midwives, use the built-in \"Midwife\" (MIDWIFE) role rather than a custom one: clinical rules recognise midwives by that role."
         }
       },
       "clinicProfile": {

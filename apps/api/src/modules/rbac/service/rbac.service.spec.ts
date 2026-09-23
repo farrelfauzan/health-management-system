@@ -92,6 +92,48 @@ describe('RbacService', () => {
     ]);
   });
 
+  it('creates a role from a template with its keys and their dependencies (P22-T05)', async () => {
+    const nurseKeys = [
+      'portal.admin-access:any',
+      'patient.read:any',
+      'registration.read:any',
+      'encounter.record-vitals:any',
+      'encounter.read-summary:any',
+      'invoice.read:any',
+      'invoice.write:any',
+    ];
+    const catalogue = nurseKeys.map((permissionKey, index) => ({
+      ...patientReadPermission,
+      id: `perm-${index}`,
+      permissionKey,
+    }));
+    (rbacRepositoryMock.findPermissionCatalog as jest.Mock).mockResolvedValue(catalogue);
+    (rbacRepositoryMock.findPermissionsByKeys as jest.Mock).mockImplementation(
+      async (keys: string[]) =>
+        catalogue.filter((permission) => keys.includes(permission.permissionKey)),
+    );
+    (rbacRepositoryMock.findAnyRoleByCode as jest.Mock).mockResolvedValue(null);
+    (rbacRepositoryMock.createRole as jest.Mock).mockResolvedValue(roleRecord);
+
+    await service.createRole(
+      { code: 'FRONT_NURSE', name: 'Perawat depan', templateCode: 'FRONT_NURSE' },
+      actorId,
+    );
+
+    expect(rbacRepositoryMock.createRole).toHaveBeenCalledWith({
+      code: 'FRONT_NURSE',
+      name: 'Perawat depan',
+    });
+    const [[actualCall]] = (rbacRepositoryMock.replaceRolePermissions as jest.Mock).mock.calls;
+    expect([...actualCall.permissionIds].sort()).toEqual(catalogue.map((row) => row.id).sort());
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: AuditAction.ROLE_CREATED,
+        metadata: expect.objectContaining({ templateCode: 'FRONT_NURSE' }),
+      }),
+    );
+  });
+
   describe('permission dependencies and effects (P22-T04)', () => {
     const patientWritePermission = {
       ...patientReadPermission,

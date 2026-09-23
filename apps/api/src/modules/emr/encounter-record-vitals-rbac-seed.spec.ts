@@ -54,4 +54,13 @@ describe('Encounter record-vitals RBAC seed', () => {
   it.each([...BASELINE_ROLE_PERMISSION_KEYS])('%s is a real catalogue permission', (key) => {
     expect(findPermissionRow(key)).toBeDefined();
   });
+
+  it('defines encounter.read-summary:any, grants it to ADMIN, and keeps it out of D-033 (P22-T05)', () => {
+    expect(findPermissionRow('encounter.read-summary:any')).toContain(
+      `'Encounter', 'read-summary', 'ANY'`,
+    );
+    expect(seedSql).toContain(`('ADMIN', 'encounter.read-summary:any')`);
+    expect(readClinicalContentKeys()).not.toContain('encounter.read-summary');
+  });
 });
+

@@ -1,3 +1,4 @@
+import type { PortalShellValue } from '@hms/shared-types';
 import { Icon } from '@hms/ui';
 import { getTranslations } from 'next-intl/server';
 
@@ -8,9 +9,11 @@ import type { ShellProfile } from '#lib/shell/shell-profile';
 
 type PortalTopBarProps = {
   profile: ShellProfile;
+  /** The shells this session may open, for the switcher (P22-T05). */
+  openableShells?: readonly PortalShellValue[];
 };
 
-export async function PortalTopBar({ profile }: PortalTopBarProps) {
+export async function PortalTopBar({ profile, openableShells }: PortalTopBarProps) {
   const t = await getTranslations('authShell.shell.portal');
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b bg-card px-8 shadow-sm">
@@ -29,7 +32,7 @@ export async function PortalTopBar({ profile }: PortalTopBarProps) {
       </nav>
       <div className="ml-auto flex items-center gap-2">
         <LanguageSwitcher />
-        <ProfileMenu profile={profile} />
+        <ProfileMenu profile={profile} openableShells={openableShells} currentShell="PATIENT" />
       </div>
     </header>
   );

@@ -33,10 +33,18 @@ export const unassignRoleSchema = z.object({
   roleCode: z.string().min(1),
 });
 
+/** The IAM templates a role can be created from (P22-T05, `ROLE_TEMPLATES`). */
+export const roleTemplateCodeSchema = z.enum(['FRONT_NURSE', 'CASHIER', 'RECEPTIONIST']);
+
 export const createRoleSchema = z.object({
   code: roleCodeSchema,
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(500).optional(),
+  /**
+   * Start from a template (P22-T05): its permissions are granted with the
+   * role, closed over their dependencies like any other save.
+   */
+  templateCode: roleTemplateCodeSchema.optional(),
 });
 
 export const updateRoleSchema = z

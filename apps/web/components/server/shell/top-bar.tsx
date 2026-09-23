@@ -1,3 +1,4 @@
+import type { PortalShellValue } from '@hms/shared-types';
 import { getTranslations } from 'next-intl/server';
 import { Separator, SidebarTrigger } from '@hms/ui';
 
@@ -16,6 +17,9 @@ type TopBarProps = {
   profileHref?: string;
   /** Forwarded to the profile menu's "Report a bug" item (P23-T11). */
   isBugReportingEnabled?: boolean;
+  /** Forwarded to the profile menu's shell switcher (P22-T05). */
+  openableShells?: readonly PortalShellValue[];
+  currentShell?: PortalShellValue;
 };
 
 export async function TopBar({
@@ -23,6 +27,8 @@ export async function TopBar({
   excludedNavHrefs = [],
   profileHref,
   isBugReportingEnabled = false,
+  openableShells,
+  currentShell,
 }: TopBarProps) {
   const t = await getTranslations('authShell.shell.topBar');
   return (
@@ -38,6 +44,8 @@ export async function TopBar({
           profile={profile}
           profileHref={profileHref}
           isBugReportingEnabled={isBugReportingEnabled}
+          openableShells={openableShells}
+          currentShell={currentShell}
         />
       </div>
     </header>

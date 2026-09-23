@@ -60,9 +60,10 @@ describe('permission dependency rules against the seed', () => {
   });
 
   it('pairs a write with the read of the same resource and scope', () => {
-    expect(resolvePermissionRequirements('invoice.write:any', catalogKeys)).toEqual([
+    expect(resolvePermissionRequirements('patient.update:any', catalogKeys)).toEqual([]);
+    expect(resolvePermissionRequirements('invoice.write:any', catalogKeys)).toContain(
       'invoice.read:any',
-    ]);
+    );
     expect(resolvePermissionRequirements('encounter.write:own', catalogKeys)).toEqual([
       'encounter.read:own',
     ]);
@@ -71,6 +72,13 @@ describe('permission dependency rules against the seed', () => {
   it('does not widen other verbs into a read nobody decided (D-033)', () => {
     expect(resolvePermissionRequirements('patient.create-newborn:any', catalogKeys)).toEqual([]);
     expect(resolvePermissionRequirements('admission.admit:any', catalogKeys)).toEqual([]);
+  });
+
+  it('lets billing see the visit it bills, and nothing of its record (P22-T05)', () => {
+    expect(resolvePermissionRequirements('invoice.write:any', catalogKeys)).toEqual([
+      'encounter.read-summary:any',
+      'invoice.read:any',
+    ]);
   });
 
   it('puts triage on the admin shell, where its only screen is', () => {

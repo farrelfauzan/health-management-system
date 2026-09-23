@@ -260,6 +260,13 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- `encounter.write`, which the route also accepts. It exists for roles
     -- built in the IAM screen, such as a front-desk nurse.
     ('encounter.record-vitals:any', 'Encounter', 'record-vitals', 'ANY', 'Record vital signs on any open clinical encounter, and see the visit list and its vital signs (triage)'),
+    -- P22-T05. Billing and the front desk: every visit's patient, clinician,
+    -- times and status, which is what finding a finished visit to bill takes.
+    -- Not clinical content under D-033 (the same class of data as the queue
+    -- a visit is opened from), so SUPER_ADMIN holds it through the union.
+    -- `invoice.write` depends on it, because the only "Buat tagihan" button is
+    -- on the visit page (EXPLICIT_PERMISSION_DEPENDENCIES).
+    ('encounter.read-summary:any', 'Encounter', 'read-summary', 'ANY', 'See every visit and its patient, clinician, times and status, with no clinical content (billing, front desk)'),
     ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
     ('icd9cm-code.read:any', 'Icd9cmCode', 'read', 'ANY', 'Search the ICD-9-CM procedure code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
@@ -603,6 +610,7 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'encounter.read:any'),
     ('ADMIN', 'encounter.write:any'),
     ('ADMIN', 'encounter.open:any'),
+    ('ADMIN', 'encounter.read-summary:any'),
     ('ADMIN', 'icd10-code.read:any'),
     ('ADMIN', 'icd9cm-code.read:any'),
     ('ADMIN', 'medication.read:any'),

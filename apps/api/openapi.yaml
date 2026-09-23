@@ -44173,9 +44173,9 @@ paths:
       responses:
         "200":
           description: A permission-scoped, filtered, paginated encounter list.
-            `encounter.record-vitals:any` alone lists every visit, so triage can
-            find the patient in front of them; rows carry counts, never clinical
-            content.
+            `encounter.record-vitals:any` or `encounter.read-summary:any` alone
+            lists every visit, so triage and billing can find the patient in
+            front of them; rows carry counts, never clinical content.
           content:
             application/json:
               schema:
@@ -44522,7 +44522,9 @@ paths:
             holding `encounter.record-vitals:any` but no `encounter.read`
             (triage, P22-T03) gets the visit summary and its vital signs only:
             no SOAP fields or prognosis, and empty diagnosis, procedure,
-            immunization, prescription and lab lists."
+            immunization, prescription and lab lists.
+            `encounter.read-summary:any` alone (billing, P22-T05) gets the same
+            summary with no vital signs."
           content:
             application/json:
               schema:
@@ -66985,6 +66987,12 @@ components:
         description:
           type: string
           maxLength: 500
+        templateCode:
+          type: string
+          enum:
+            - FRONT_NURSE
+            - CASHIER
+            - RECEPTIONIST
       required:
         - code
         - name

@@ -281,7 +281,12 @@
           "staff": "Staf"
         },
         "lockWorkstation": "Kunci komputer",
-        "myProfile": "Profil saya"
+        "myProfile": "Profil saya",
+        "switchShell": {
+          "ADMIN": "Pindah ke layar Admin",
+          "DOCTOR": "Pindah ke layar Dokter",
+          "PATIENT": "Pindah ke portal Pasien"
+        }
       },
       "portal": {
         "name": "Portal Pasien",

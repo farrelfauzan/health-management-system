@@ -1105,6 +1105,40 @@
           "mfa": "Izin berikut termasuk izin berisiko tinggi, sehingga setiap anggota harus mendaftarkan aplikasi autentikator saat masuk: {keys}.",
           "clinicalTitle": "Membuka isi rekam medis",
           "clinical": "Izin berikut membuka isi rekam medis pasien, yang menurut D-033 hanya untuk tenaga klinis yang memeriksa pasien: {keys}."
+        },
+        "templates": {
+          "label": "Mulai dari",
+          "blank": "Kosong",
+          "blankHint": "Peran dibuat tanpa izin kerja; hanya izin dasar (keluar, notifikasi, profil sendiri). Atur izinnya setelah dibuat.",
+          "items": {
+            "FRONT_NURSE": {
+              "name": "Perawat depan",
+              "description": "Mengukur tanda vital pasien sebelum diperiksa dokter, lalu membuat tagihan setelah kunjungan ditutup dokter. Tidak dapat membuka catatan dokter."
+            },
+            "CASHIER": {
+              "name": "Kasir",
+              "description": "Mencari kunjungan yang sudah selesai, membuat dan mengirim tagihan, serta mencatat pembayaran. Tidak dapat membuka rekam medis."
+            },
+            "RECEPTIONIST": {
+              "name": "Resepsionis",
+              "description": "Mendaftarkan dan memperbarui data pasien, mengatur janji temu dan antrean, serta membuka kunjungan untuk dokter. Tidak dapat membuka rekam medis."
+            }
+          }
+        },
+        "guide": {
+          "open": "Panduan peran",
+          "title": "Panduan peran",
+          "description": "Cara kerja izin dan contoh peran yang siap pakai.",
+          "rulesTitle": "Yang perlu diketahui",
+          "rules": {
+            "portal": "Setiap peran perlu satu izin \"portal\" (Admin, Dokter, atau Pasien). Tanpa itu, pengguna langsung kembali ke halaman masuk.",
+            "dependencies": "Izin yang dibutuhkan izin lain dicentang otomatis. Contoh: membuat tagihan ikut mencentang melihat tagihan dan melihat daftar kunjungan.",
+            "mfa": "Izin berlabel \"Wajib MFA\" membuat setiap anggota peran harus memakai aplikasi autentikator saat masuk.",
+            "clinical": "Izin berlabel \"Rekam medis\" membuka isi rekam medis pasien. Menurut aturan klinik (D-033), isi rekam medis hanya untuk tenaga klinis yang memeriksa pasien.",
+            "shells": "Pengguna yang memegang lebih dari satu portal masuk ke layar Admin, lalu bisa pindah layar lewat menu profil."
+          },
+          "templatesTitle": "Contoh peran",
+          "midwife": "Untuk bidan, pakai peran bawaan \"Bidan\" (MIDWIFE), bukan peran buatan sendiri. Aturan klinis mengenali bidan dari peran bawaan itu."
         }
       },
       "clinicProfile": {

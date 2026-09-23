@@ -263,6 +263,7 @@ export * from '#rbac/explicit-permission-dependencies';
 export * from '#rbac/resolve-permission-requirements';
 export * from '#rbac/expand-permission-dependencies';
 export * from '#rbac/describe-permission-effects';
+export * from '#rbac/role-templates';
 export * from '#ai-chatbot/schemas';
 export * from '#ai-chatbot/contracts';
 export * from '#ai-chatbot/types';

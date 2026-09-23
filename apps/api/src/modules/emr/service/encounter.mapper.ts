@@ -72,13 +72,16 @@ export class EncounterMapper {
   }
 
   /**
-   * The encounter as triage reads it (P22-T03, D-033): who, when, what state,
-   * and the vital signs. The SOAP note, prognosis, coded entries and
-   * prescriptions are never mapped at all rather than mapped and dropped, so
-   * nothing of the clinical record reaches a reader who holds only
-   * `encounter.record-vitals`.
+   * The encounter as triage or billing reads it (P22-T03, P22-T05, D-033):
+   * who, when, what state, and — for triage only — the vital signs. The SOAP
+   * note, prognosis, coded entries and prescriptions are never mapped at all
+   * rather than mapped and dropped, so nothing of the clinical record reaches
+   * a reader without `encounter.read`.
    */
-  toVitalsOnlyEncounterDetail(encounter: EncounterDetailRecord): EncounterDetail {
+  toNonClinicalEncounterDetail(
+    encounter: EncounterDetailRecord,
+    options: { isIncludingVitalSigns: boolean },
+  ): EncounterDetail {
     return {
       id: encounter.id,
       registrationId: encounter.registrationId,
@@ -92,7 +95,9 @@ export class EncounterMapper {
       updatedAt: encounter.updatedAt.toISOString(),
       patient: this.toRelatedPatient(encounter),
       doctor: this.toRelatedDoctor(encounter),
-      vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row)),
+      vitalSigns: options.isIncludingVitalSigns
+        ? encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row))
+        : [],
       diagnoses: [],
       procedures: [],
       immunizations: [],
