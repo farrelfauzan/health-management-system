@@ -1,3 +1,4 @@
-# DJP converter output is CRLF with no final newline; the golden file must stay byte-exact.
+# DJP samples and golden files must stay byte-exact: converter output is CRLF
+# with no final newline.
 *.xml -text
 *.xsd -text

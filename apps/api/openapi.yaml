@@ -51746,6 +51746,10 @@ paths:
                           type: string
                         fakturTransactionCode:
                           type: string
+                        coretaxItemCode:
+                          type: string
+                        coretaxUnitCode:
+                          type: string
                         isSystem:
                           type: boolean
                         isActive:
@@ -51808,6 +51812,8 @@ paths:
                         - name
                         - ppnTreatment
                         - fakturTransactionCode
+                        - coretaxItemCode
+                        - coretaxUnitCode
                         - isSystem
                         - isActive
                         - currentRate
@@ -51823,6 +51829,8 @@ paths:
                       name: Barang kena pajak (obat, alat kesehatan)
                       ppnTreatment: STANDARD
                       fakturTransactionCode: "04"
+                      coretaxItemCode: "000000"
+                      coretaxUnitCode: UM.0021
                       isSystem: true
                       isActive: true
                       currentRate:
@@ -51911,6 +51919,10 @@ paths:
                         type: string
                       fakturTransactionCode:
                         type: string
+                      coretaxItemCode:
+                        type: string
+                      coretaxUnitCode:
+                        type: string
                       isSystem:
                         type: boolean
                       isActive:
@@ -51973,6 +51985,8 @@ paths:
                       - name
                       - ppnTreatment
                       - fakturTransactionCode
+                      - coretaxItemCode
+                      - coretaxUnitCode
                       - isSystem
                       - isActive
                       - currentRate
@@ -51991,6 +52005,8 @@ paths:
                     name: Barang kena pajak (obat, alat kesehatan)
                     ppnTreatment: STANDARD
                     fakturTransactionCode: "04"
+                    coretaxItemCode: "000000"
+                    coretaxUnitCode: UM.0021
                     isSystem: true
                     isActive: true
                     currentRate:
@@ -52062,7 +52078,8 @@ paths:
                 summary: Valid request
                 value:
                   name: Barang kena pajak
-                  isActive: true
+                  coretaxItemCode: "000000"
+                  coretaxUnitCode: UM.0021
       responses:
         "200":
           description: Name, note, active flag, and on a clinic code the faktur code
@@ -52087,6 +52104,10 @@ paths:
                       ppnTreatment:
                         type: string
                       fakturTransactionCode:
+                        type: string
+                      coretaxItemCode:
+                        type: string
+                      coretaxUnitCode:
                         type: string
                       isSystem:
                         type: boolean
@@ -52150,6 +52171,8 @@ paths:
                       - name
                       - ppnTreatment
                       - fakturTransactionCode
+                      - coretaxItemCode
+                      - coretaxUnitCode
                       - isSystem
                       - isActive
                       - currentRate
@@ -52168,6 +52191,8 @@ paths:
                     name: Barang kena pajak (obat, alat kesehatan)
                     ppnTreatment: STANDARD
                     fakturTransactionCode: "04"
+                    coretaxItemCode: "000000"
+                    coretaxUnitCode: UM.0021
                     isSystem: true
                     isActive: true
                     currentRate:
@@ -52266,6 +52291,10 @@ paths:
                         type: string
                       fakturTransactionCode:
                         type: string
+                      coretaxItemCode:
+                        type: string
+                      coretaxUnitCode:
+                        type: string
                       isSystem:
                         type: boolean
                       isActive:
@@ -52328,6 +52357,8 @@ paths:
                       - name
                       - ppnTreatment
                       - fakturTransactionCode
+                      - coretaxItemCode
+                      - coretaxUnitCode
                       - isSystem
                       - isActive
                       - currentRate
@@ -52346,6 +52377,8 @@ paths:
                     name: Barang kena pajak (obat, alat kesehatan)
                     ppnTreatment: STANDARD
                     fakturTransactionCode: "04"
+                    coretaxItemCode: "000000"
+                    coretaxUnitCode: UM.0021
                     isSystem: true
                     isActive: true
                     currentRate:
@@ -52641,6 +52674,12 @@ paths:
                             - code
                             - name
                             - ppnTreatment
+                        coretaxItemCode:
+                          type: string
+                        coretaxUnitCode:
+                          type: string
+                        hasCoretaxOverride:
+                          type: boolean
                       required:
                         - kind
                         - id
@@ -52650,6 +52689,9 @@ paths:
                         - price
                         - source
                         - effectiveTaxCode
+                        - coretaxItemCode
+                        - coretaxUnitCode
+                        - hasCoretaxOverride
                   meta:
                     type: object
                     properties:
@@ -52683,6 +52725,9 @@ paths:
                         code: BARANG-PPN
                         name: Barang kena pajak (obat, alat kesehatan)
                         ppnTreatment: STANDARD
+                      coretaxItemCode: "000000"
+                      coretaxUnitCode: UM.0021
+                      hasCoretaxOverride: false
                   meta:
                     page: 1
                     limit: 20
@@ -52787,6 +52832,84 @@ paths:
       security:
         - bearer: []
       summary: Assign a tax code to many tariffs and medications
+      tags: *a76
+  /api/v1/tax/assignments/coretax-codes/bulk:
+    post:
+      operationId: TaxAssignmentController_bulkAssignCoretaxCodes_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkAssignCoretaxCodesDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  targets:
+                    - kind: MEDICATION
+                      id: 8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3
+                  coretaxItemCode: "000000"
+                  coretaxUnitCode: UM.0022
+      responses:
+        "200":
+          description: P27-T09. Overrides the tax code's Coretax item code (six digits)
+            and unit (`UM.0001`–`UM.0039`, DJP's list) on every target in one
+            transaction; `null` clears the override so the item follows its tax
+            code. 404 `TAX_ASSIGNMENT_TARGET_NOT_FOUND` names targets that no
+            longer exist. Issued invoices are never touched.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      updatedCount:
+                        type: integer
+                    required:
+                      - updatedCount
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    updatedCount: 1
+                  message: Coretax codes assigned
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Set the Coretax item code and unit on many tariffs and medications
       tags: *a76
   /api/v1/tax/price-breakdowns:
     get:
@@ -54041,6 +54164,177 @@ paths:
                 format: binary
       summary: Export a finalized PPh 21 report as a Coretax BP21 XML file
       tags: *a78
+  /api/v1/tax/reports/{id}/coretax/faktur-keluaran/validation:
+    get:
+      operationId: TaxReportCoretaxFakturController_validateFaktur_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: P27-T09. Every problem that would stop the faktur file — the clinic
+            NPWP (16 digits) and NITKU (22), and per invoice a Coretax item code
+            and unit on every line, a kode-08 facility, and the patient's name
+            and address — listed at once. `digunggungCount` invoices have a
+            patient without NIK and are left out. Reads no identifier back and
+            is not audited. 409 `TAX_REPORT_NOT_APPLICABLE` for another report
+            kind, `TAX_REPORT_NOT_FINALIZED` for a draft.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      reportId:
+                        type: string
+                      period:
+                        type: string
+                      template:
+                        type: object
+                        properties:
+                          format:
+                            type: string
+                          version:
+                            type: string
+                          title:
+                            type: string
+                          publishedOn:
+                            type: string
+                          sourceUrl:
+                            type: string
+                          catalogueUrl:
+                            type: string
+                          sha256:
+                            type: string
+                        required:
+                          - format
+                          - version
+                          - title
+                          - publishedOn
+                          - sourceUrl
+                          - catalogueUrl
+                          - sha256
+                      isExportable:
+                        type: boolean
+                      fakturCount:
+                        type: integer
+                      digunggungCount:
+                        type: integer
+                      issues:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                            field:
+                              type: string
+                            message:
+                              type: string
+                            subjectId:
+                              type: string
+                            subjectLabel:
+                              type: string
+                          required:
+                            - code
+                            - field
+                            - message
+                            - subjectId
+                            - subjectLabel
+                    required:
+                      - reportId
+                      - period
+                      - template
+                      - isExportable
+                      - fakturCount
+                      - digunggungCount
+                      - issues
+                required:
+                  - data
+                example:
+                  data:
+                    reportId: 5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a
+                    period: 2026-10
+                    template:
+                      format: FAKTUR_KELUARAN
+                      version: V1_6
+                      title: Converter Excel to XML Coretax v1.6 (Faktur PK template v.1.6.1, sample
+                        XML v.1.4)
+                      publishedOn: 2026-01-23
+                      sourceUrl: https://pajak.go.id/sites/default/files/2026-01/ConverterEfakturCoretax__v1.6.zip
+                      catalogueUrl: https://www.pajak.go.id/id/node/112031
+                      sha256: ef5957af98ed06d7aee3c0fed6a67b56fe6f515bf776788194b2acd9a005b791
+                    isExportable: false
+                    fakturCount: 0
+                    digunggungCount: 2
+                    issues:
+                      - code: ITEM_CODE_MISSING
+                        field: coretaxItemCode
+                        message: '"Amoxicillin 500 mg" has no Coretax item code'
+                        subjectId: 3c2b1a0f-9e8d-4c7b-a6f5-e4d3c2b1a0f9
+                        subjectLabel: INV-202610-0001
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Check a PPN keluaran report against the Coretax Faktur Keluaran template
+      tags: &a79
+        - Tax Reports
+  /api/v1/tax/reports/{id}/coretax/faktur-keluaran:
+    get:
+      description: "P27-T09. The `TaxInvoiceBulk` file DJP's converter v1.6 produces
+        (pajak.go.id node 112031): one `TaxInvoice` per invoice and faktur code
+        (04 goods at DPP nilai lain, 08 exempt services with their facility),
+        the patient as buyer by NIK. 422 `CORETAX_EXPORT_INVALID` with `details`
+        listing every problem; 409 `TAX_REPORT_NOT_FINALIZED` for a draft.
+        Audited as an export and as `PATIENT_IDENTIFIER_UNMASKED`, without the
+        values."
+      operationId: TaxReportCoretaxFakturController_exportFaktur_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: templateVersion
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - V1_6
+      responses:
+        "200":
+          description: The Faktur Keluaran bulk-import XML.
+          content:
+            application/xml:
+              schema:
+                type: string
+                format: binary
+      summary: Export a finalized PPN keluaran report as a Coretax Faktur Keluaran XML
+        file
+      tags: *a79
   /api/v1/satusehat/patients/{patientId}/link:
     post:
       operationId: SatusehatLinkController_linkPatient_v1
@@ -54110,7 +54404,7 @@ paths:
       security:
         - bearer: []
       summary: Link a patient to their SATUSEHAT IHS number
-      tags: &a79
+      tags: &a80
         - SATUSEHAT
   /api/v1/satusehat/doctors/{doctorId}/link:
     post:
@@ -54181,7 +54475,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to their SATUSEHAT IHS practitioner number
-      tags: *a79
+      tags: *a80
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs/preview:
     post:
       operationId: SatusehatLinkController_previewDoctorIhsLink_v1
@@ -54289,7 +54583,7 @@ paths:
       security:
         - bearer: []
       summary: Preview linking a doctor to a hand-typed SATUSEHAT IHS number
-      tags: *a79
+      tags: *a80
   /api/v1/satusehat/doctors/{doctorId}/link-by-ihs:
     post:
       operationId: SatusehatLinkController_linkDoctorByIhs_v1
@@ -54384,7 +54678,7 @@ paths:
       security:
         - bearer: []
       summary: Link a doctor to a hand-typed SATUSEHAT IHS number after confirmation
-      tags: *a79
+      tags: *a80
   /api/v1/satusehat/environment:
     get:
       operationId: SatusehatSubmissionController_getEnvironment_v1
@@ -54443,7 +54737,7 @@ paths:
       security:
         - bearer: []
       summary: Which SATUSEHAT environment this deployment reports to
-      tags: &a80
+      tags: &a81
         - SATUSEHAT
   /api/v1/satusehat/submissions:
     get:
@@ -54634,7 +54928,7 @@ paths:
       security:
         - bearer: []
       summary: List SATUSEHAT submission outbox entries
-      tags: *a80
+      tags: *a81
   /api/v1/satusehat/submissions/{id}:
     get:
       operationId: SatusehatSubmissionController_getSubmissionDetail_v1
@@ -54806,7 +55100,7 @@ paths:
       security:
         - bearer: []
       summary: One SATUSEHAT submission and what it sent
-      tags: *a80
+      tags: *a81
   /api/v1/satusehat/submissions/{id}/check:
     post:
       operationId: SatusehatSubmissionController_checkSubmission_v1
@@ -54910,7 +55204,7 @@ paths:
       security:
         - bearer: []
       summary: Check with SATUSEHAT whether it still holds what we sent
-      tags: *a80
+      tags: *a81
   /api/v1/satusehat/submissions/{id}/retry:
     post:
       operationId: SatusehatSubmissionController_retrySubmission_v1
@@ -55035,7 +55329,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed SATUSEHAT submission
-      tags: *a80
+      tags: *a81
   /api/v1/satusehat/encounters/{encounterId}/record-comparison:
     get:
       operationId: SatusehatRecordController_compareEncounterRecord_v1
@@ -55309,7 +55603,7 @@ paths:
       security:
         - bearer: []
       summary: The clinic's SATUSEHAT Location tree
-      tags: &a81
+      tags: &a82
         - SATUSEHAT
   /api/v1/satusehat/locations/register:
     post:
@@ -55424,7 +55718,7 @@ paths:
       security:
         - bearer: []
       summary: Register clinic rows as SATUSEHAT Locations, or push their changes
-      tags: *a81
+      tags: *a82
   /api/v1/satusehat/kyc/status:
     get:
       operationId: SatusehatKycController_getStatus_v1
@@ -55482,7 +55776,7 @@ paths:
       security:
         - bearer: []
       summary: Whether I can start a SATUSEHAT KYC verification
-      tags: &a82
+      tags: &a83
         - SATUSEHAT
   /api/v1/satusehat/kyc/sessions:
     post:
@@ -55560,7 +55854,7 @@ paths:
       security:
         - bearer: []
       summary: Start a SATUSEHAT KYC verification
-      tags: *a82
+      tags: *a83
   /api/v1/bpjs/config:
     get:
       operationId: BpjsPcareConfigController_getConfig_v1
@@ -55674,7 +55968,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS PCare bridging configuration
-      tags: &a83
+      tags: &a84
         - BPJS PCare
     put:
       operationId: BpjsPcareConfigController_upsertConfig_v1
@@ -55812,7 +56106,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS PCare bridging configuration
-      tags: *a83
+      tags: *a84
     delete:
       operationId: BpjsPcareConfigController_deleteConfig_v1
       parameters: []
@@ -55871,7 +56165,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS PCare bridging configuration
-      tags: *a83
+      tags: *a84
   /api/v1/bpjs/config/test-connection:
     post:
       operationId: BpjsPcareConfigController_testConnection_v1
@@ -55937,7 +56231,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS PCare credentials
-      tags: *a83
+      tags: *a84
   /api/v1/bpjs/reference/sync:
     post:
       operationId: BpjsReferenceController_syncCatalogs_v1
@@ -56025,7 +56319,7 @@ paths:
       security:
         - bearer: []
       summary: Sync the enumerable BPJS PCare reference catalogs
-      tags: &a84
+      tags: &a85
         - BPJS PCare
   /api/v1/bpjs/reference/status:
     get:
@@ -56092,7 +56386,7 @@ paths:
       security:
         - bearer: []
       summary: Read per-catalog BPJS reference sync status
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/reference/{catalog}:
     get:
       operationId: BpjsReferenceController_searchCatalog_v1
@@ -56186,7 +56480,7 @@ paths:
       security:
         - bearer: []
       summary: Search a synced BPJS reference catalog locally
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/reference/{catalog}/search:
     post:
       operationId: BpjsReferenceController_searchCatalogRemote_v1
@@ -56292,7 +56586,7 @@ paths:
       security:
         - bearer: []
       summary: Search a keyword-only BPJS catalog live and cache the results
-      tags: *a84
+      tags: *a85
   /api/v1/bpjs/mappings:
     get:
       operationId: BpjsMappingController_getOverview_v1
@@ -56380,7 +56674,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS mapping overview
-      tags: &a85
+      tags: &a86
         - BPJS PCare
   /api/v1/bpjs/mappings/doctors/{doctorId}:
     put:
@@ -56474,7 +56768,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a doctor’s BPJS kdDokter mapping
-      tags: *a85
+      tags: *a86
   /api/v1/bpjs/mappings/specialties/{specialtyId}:
     put:
       operationId: BpjsMappingController_setSpecialtyMapping_v1
@@ -56563,7 +56857,7 @@ paths:
       security:
         - bearer: []
       summary: Set or clear a specialty’s BPJS kdPoli mapping
-      tags: *a85
+      tags: *a86
   /api/v1/bpjs/mappings/medications/{medicationId}:
     put:
       operationId: BpjsMappingController_setMedicationMapping_v1
@@ -56657,7 +56951,7 @@ paths:
       security:
         - bearer: []
       summary: Link or unlink a medication’s DPHO code
-      tags: *a85
+      tags: *a86
   /api/v1/bpjs/eligibility/patients/{patientId}/check:
     post:
       operationId: BpjsEligibilityController_checkEligibility_v1
@@ -56957,7 +57251,7 @@ paths:
       security:
         - bearer: []
       summary: List BPJS PCare submission outbox entries
-      tags: &a86
+      tags: &a87
         - BPJS PCare
   /api/v1/bpjs/submissions/{id}/retry:
     post:
@@ -57066,7 +57360,7 @@ paths:
       security:
         - bearer: []
       summary: Retry a failed BPJS PCare submission
-      tags: *a86
+      tags: *a87
   /api/v1/bpjs/reports/monthly:
     get:
       operationId: BpjsReportController_getMonthlyReport_v1
@@ -57313,7 +57607,7 @@ paths:
       security:
         - bearer: []
       summary: Read the BPJS Antrean Online bridging configuration
-      tags: &a87
+      tags: &a88
         - BPJS Antrean
     put:
       operationId: BpjsAntreanConfigController_upsertConfig_v1
@@ -57454,7 +57748,7 @@ paths:
       security:
         - bearer: []
       summary: Create or replace the BPJS Antrean Online bridging configuration
-      tags: *a87
+      tags: *a88
     delete:
       operationId: BpjsAntreanConfigController_deleteConfig_v1
       parameters: []
@@ -57513,7 +57807,7 @@ paths:
       security:
         - bearer: []
       summary: Delete the BPJS Antrean Online bridging configuration
-      tags: *a87
+      tags: *a88
   /api/v1/bpjs/antrean/config/test-connection:
     post:
       operationId: BpjsAntreanConfigController_testConnection_v1
@@ -57579,7 +57873,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored BPJS Antrean credentials
-      tags: *a87
+      tags: *a88
   /api/v1/bpjs/antrean/inbound-readiness:
     get:
       operationId: BpjsAntreanConfigController_getInboundReadiness_v1
@@ -57649,7 +57943,7 @@ paths:
       security:
         - bearer: []
       summary: Report whether the inbound Antrean web services can serve BPJS
-      tags: *a87
+      tags: *a88
   /api/v1/bpjs/antrean/hfis-reconciliation:
     get:
       operationId: BpjsAntreanConfigController_getHfisReconciliation_v1
@@ -57751,7 +58045,7 @@ paths:
       security:
         - bearer: []
       summary: Compare HFIS against HMS and report the disagreements
-      tags: *a87
+      tags: *a88
   /api/v1/admin/features:
     get:
       operationId: FeatureAdminController_getEntitlements_v1
@@ -57830,7 +58124,7 @@ paths:
       security:
         - bearer: []
       summary: List every feature and whether this client has it
-      tags: &a88
+      tags: &a89
         - Feature Entitlements
   /api/v1/admin/features/{key}:
     put:
@@ -57947,7 +58241,7 @@ paths:
       security:
         - bearer: []
       summary: Switch a feature on or off for this client
-      tags: *a88
+      tags: *a89
   /api/v1/features/availability:
     get:
       operationId: FeatureAvailabilityController_getAvailability_v1
@@ -58070,7 +58364,7 @@ paths:
       security:
         - bearer: []
       summary: List active roles
-      tags: &a89
+      tags: &a90
         - RBAC
     post:
       operationId: RbacController_createRole_v1
@@ -58157,7 +58451,7 @@ paths:
       security:
         - bearer: []
       summary: Create a custom role
-      tags: *a89
+      tags: *a90
   /api/v1/rbac/permissions:
     get:
       operationId: RbacController_getPermissionCatalog_v1
@@ -58237,7 +58531,7 @@ paths:
       security:
         - bearer: []
       summary: List the permission catalog
-      tags: *a89
+      tags: *a90
   /api/v1/rbac/roles/{id}:
     get:
       operationId: RbacController_getRoleById_v1
@@ -58356,7 +58650,7 @@ paths:
       security:
         - bearer: []
       summary: Get a role with its permissions and member count
-      tags: *a89
+      tags: *a90
     patch:
       operationId: RbacController_updateRole_v1
       parameters:
@@ -58455,7 +58749,7 @@ paths:
       security:
         - bearer: []
       summary: Update a role name or description
-      tags: *a89
+      tags: *a90
     delete:
       operationId: RbacController_deleteRole_v1
       parameters:
@@ -58531,7 +58825,7 @@ paths:
       security:
         - bearer: []
       summary: Soft-delete a role
-      tags: *a89
+      tags: *a90
   /api/v1/rbac/roles/{id}/permissions:
     put:
       operationId: RbacController_setRolePermissions_v1
@@ -58677,7 +58971,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the permission set attached to a role
-      tags: *a89
+      tags: *a90
   /api/v1/rbac/assign-role:
     post:
       operationId: RbacController_assignRole_v1
@@ -58769,7 +59063,7 @@ paths:
       security:
         - bearer: []
       summary: Assign a role to a user
-      tags: *a89
+      tags: *a90
   /api/v1/rbac/unassign-role:
     post:
       operationId: RbacController_unassignRole_v1
@@ -58861,7 +59155,7 @@ paths:
       security:
         - bearer: []
       summary: Unassign a role from a user
-      tags: *a89
+      tags: *a90
   /api/v1/health:
     get:
       operationId: HealthController_getHealth_v1
@@ -59134,7 +59428,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort ibu for a month
-      tags: &a90
+      tags: &a91
         - Maternal Reports
   /api/v1/maternal-reports/kohort-bayi:
     get:
@@ -59383,7 +59677,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort bayi for a month
-      tags: *a90
+      tags: *a91
   /api/v1/maternal-reports/kohort-kb:
     get:
       operationId: MaternalReportsController_getKohortKb_v1
@@ -59630,7 +59924,7 @@ paths:
       security:
         - bearer: []
       summary: Register kohort KB for a month
-      tags: *a90
+      tags: *a91
   /api/v1/maternal-reports/monthly-kia:
     get:
       operationId: MaternalReportsController_getMonthlyKia_v1
@@ -59775,7 +60069,7 @@ paths:
       security:
         - bearer: []
       summary: Monthly KIA report for a month
-      tags: *a90
+      tags: *a91
   /api/v1/maternal-reports/births-deaths:
     get:
       operationId: MaternalReportsController_getBirthsDeaths_v1
@@ -59971,7 +60265,7 @@ paths:
       security:
         - bearer: []
       summary: Births and deaths report for a month
-      tags: *a90
+      tags: *a91
   /api/v1/bpjs/non-capitation/recap:
     get:
       operationId: BpjsNonCapitationRecapController_getRecap_v1
@@ -60235,7 +60529,7 @@ paths:
       security:
         - bearer: []
       summary: Monthly BPJS non-capitation claim recap
-      tags: &a91
+      tags: &a92
         - BPJS Non-Capitation
   /api/v1/bpjs/non-capitation/marks:
     post:
@@ -60331,7 +60625,7 @@ paths:
       security:
         - bearer: []
       summary: Mark recap lines as sent to the induk FKTP
-      tags: *a91
+      tags: *a92
   /api/v1/bpjs/non-capitation/settings:
     get:
       operationId: BpjsNonCapitationSettingsController_getSettings_v1
@@ -60403,7 +60697,7 @@ paths:
       security:
         - bearer: []
       summary: Read the induk FKTP settings
-      tags: &a92
+      tags: &a93
         - BPJS Non-Capitation
     put:
       operationId: BpjsNonCapitationSettingsController_updateSettings_v1
@@ -60498,7 +60792,7 @@ paths:
       security:
         - bearer: []
       summary: Save the induk FKTP settings
-      tags: *a92
+      tags: *a93
   /api/v1/bpjs/non-capitation/tariffs:
     get:
       operationId: BpjsNonCapitationSettingsController_listTariffs_v1
@@ -60569,7 +60863,7 @@ paths:
       security:
         - bearer: []
       summary: List the non-capitation tariffs
-      tags: *a92
+      tags: *a93
     post:
       operationId: BpjsNonCapitationSettingsController_createTariff_v1
       parameters: []
@@ -60661,7 +60955,7 @@ paths:
       security:
         - bearer: []
       summary: Add a non-capitation tariff from a date
-      tags: *a92
+      tags: *a93
   /api/v1/maternal-visits/due:
     get:
       operationId: MaternalVisitDueController_listDue_v1
@@ -66194,6 +66488,19 @@ components:
           type: string
           maxLength: 200
           nullable: true
+        coretaxItemCode:
+          type: string
+          pattern: ^\d{6}$
+          nullable: true
+        coretaxUnitCode:
+          type: string
+          nullable: true
+        coretaxAdditionalInfo:
+          type: string
+          nullable: true
+        coretaxFacilityStamp:
+          type: string
+          nullable: true
         initialRate:
           type: object
           properties:
@@ -66247,6 +66554,19 @@ components:
         invoiceNote:
           type: string
           maxLength: 200
+          nullable: true
+        coretaxItemCode:
+          type: string
+          pattern: ^\d{6}$
+          nullable: true
+        coretaxUnitCode:
+          type: string
+          nullable: true
+        coretaxAdditionalInfo:
+          type: string
+          nullable: true
+        coretaxFacilityStamp:
+          type: string
           nullable: true
         isActive:
           type: boolean
@@ -66336,6 +66656,38 @@ components:
       required:
         - targets
         - taxCodeId
+    BulkAssignCoretaxCodesDto:
+      type: object
+      properties:
+        targets:
+          type: array
+          minItems: 1
+          maxItems: 500
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+                enum:
+                  - SERVICE_TARIFF
+                  - MEDICATION
+              id:
+                type: string
+                format: uuid
+            required:
+              - kind
+              - id
+        coretaxItemCode:
+          type: string
+          pattern: ^\d{6}$
+          nullable: true
+        coretaxUnitCode:
+          type: string
+          nullable: true
+      required:
+        - targets
+        - coretaxItemCode
+        - coretaxUnitCode
     CreateTaxReportDto:
       type: object
       properties:

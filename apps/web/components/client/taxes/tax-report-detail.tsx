@@ -20,6 +20,7 @@ import Link from 'next/link';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { TaxReportCoretaxBp21Card } from '#components/client/taxes/tax-report-coretax-bp21-card';
+import { TaxReportCoretaxFakturCard } from '#components/client/taxes/tax-report-coretax-faktur-card';
 import { TaxReportDifferencesNotice } from '#components/client/taxes/tax-report-differences-notice';
 import { TaxReportLinesTable } from '#components/client/taxes/tax-report-lines-table';
 import { TaxReportPp55Summary } from '#components/client/taxes/tax-report-pp55-summary';
@@ -49,6 +50,8 @@ type TaxReportDetailProps = {
  * recomputed or finalized here; either can be exported as CSV or, since
  * P27-T12, downloaded as PDF. A finalized PPh 21 month also becomes the
  * Coretax BP21 import file (P27-T08).
+ * P27-T12, downloaded as PDF. A finalized PPN keluaran month also becomes
+ * the Coretax Faktur Keluaran import file (P27-T09).
  */
 export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
   const t = useTranslations('operations.taxes.reports');
@@ -173,6 +176,9 @@ export function TaxReportDetail({ reportId }: TaxReportDetailProps) {
           ) : null}
           {report.summary.kind === 'PPN_OUTPUT' ? (
             <TaxReportPpnSummary summary={report.summary} />
+          ) : null}
+          {report.kind === 'PPN_OUTPUT' && report.status === 'FINALIZED' ? (
+            <TaxReportCoretaxFakturCard reportId={report.id} period={report.period} />
           ) : null}
           {report.summary.kind === 'PPH21_NON_EMPLOYEE' ? (
             <TaxReportPph21Section

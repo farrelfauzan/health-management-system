@@ -893,6 +893,8 @@ export const MedicationScalarFieldEnum = {
   isMidwifePrescribable: 'isMidwifePrescribable',
   midwifeAuthorityKind: 'midwifeAuthorityKind',
   taxCodeId: 'taxCodeId',
+  coretaxItemCode: 'coretaxItemCode',
+  coretaxUnitCode: 'coretaxUnitCode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -1075,6 +1077,10 @@ export const TaxCodeScalarFieldEnum = {
   ppnTreatment: 'ppnTreatment',
   fakturTransactionCode: 'fakturTransactionCode',
   invoiceNote: 'invoiceNote',
+  coretaxItemCode: 'coretaxItemCode',
+  coretaxUnitCode: 'coretaxUnitCode',
+  coretaxAdditionalInfo: 'coretaxAdditionalInfo',
+  coretaxFacilityStamp: 'coretaxFacilityStamp',
   isSystem: 'isSystem',
   isActive: 'isActive',
   createdAt: 'createdAt',
@@ -1178,6 +1184,8 @@ export const ServiceTariffScalarFieldEnum = {
   price: 'price',
   isActive: 'isActive',
   taxCodeId: 'taxCodeId',
+  coretaxItemCode: 'coretaxItemCode',
+  coretaxUnitCode: 'coretaxUnitCode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'

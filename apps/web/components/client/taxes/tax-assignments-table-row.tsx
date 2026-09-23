@@ -55,6 +55,12 @@ export function TaxAssignmentsTableRow({
           <div className="space-y-1">
             <p className="font-mono text-xs font-semibold">{row.effectiveTaxCode.code}</p>
             <TaxTreatmentBadge treatment={row.effectiveTaxCode.ppnTreatment} />
+            <p className="font-mono text-[11px] text-slate-500">
+              {row.coretaxItemCode && row.coretaxUnitCode
+                ? t('coretax', { code: row.coretaxItemCode, unit: row.coretaxUnitCode })
+                : t('coretaxMissing')}
+              {row.hasCoretaxOverride ? ` (${t('coretaxOverride')})` : null}
+            </p>
           </div>
         ) : (
           <span className="text-xs font-medium text-amber-700">{t('noCode')}</span>

@@ -15,6 +15,7 @@ import { Auth } from '../../../common/authorization/auth.decorator';
 import { RequireFeature } from '../../../common/authorization/require-feature.decorator';
 import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { TAXES_EXAMPLES } from '../../../common/openapi/taxes-examples';
+import { BulkAssignCoretaxCodesDto } from '../dto/bulk-assign-coretax-codes.dto';
 import { BulkAssignTaxCodeDto } from '../dto/bulk-assign-tax-code.dto';
 import { ListTaxAssignmentsQueryDto } from '../dto/list-tax-assignments-query.dto';
 import { TaxAssignmentService } from '../service/tax-assignment.service';
@@ -64,6 +65,34 @@ export class TaxAssignmentController {
     return {
       data: await this.taxAssignmentService.bulkAssign(payload, currentUser),
       message: 'Tax code assigned',
+    };
+  }
+
+  @Post('coretax-codes/bulk')
+  // An update of existing rows, not a creation: 200, like the tax code bulk apply.
+  @HttpCode(200)
+  @Auth([{ action: 'write', subject: 'TaxCode' }])
+  @ApiEndpoint({
+    summary: 'Set the Coretax item code and unit on many tariffs and medications',
+    responseDescription:
+      "P27-T09. Overrides the tax code's Coretax item code (six digits) and unit (`UM.0001`–`UM.0039`, DJP's list) on every target in one transaction; `null` clears the override so the item follows its tax code. 404 `TAX_ASSIGNMENT_TARGET_NOT_FOUND` names targets that no longer exist. Issued invoices are never touched.",
+    responseExample: {
+      data: TAXES_EXAMPLES.assignments.bulkResult,
+      message: 'Coretax codes assigned',
+    },
+    requestType: BulkAssignCoretaxCodesDto,
+    requestExample: TAXES_EXAMPLES.assignments.coretaxBulkRequest,
+  })
+  async bulkAssignCoretaxCodes(
+    @Body() payload: BulkAssignCoretaxCodesDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    if (!currentUser?.sub) {
+      throw new UnauthorizedException('Missing authenticated user');
+    }
+    return {
+      data: await this.taxAssignmentService.bulkAssignCoretaxCodes(payload, currentUser),
+      message: 'Coretax codes assigned',
     };
   }
 }

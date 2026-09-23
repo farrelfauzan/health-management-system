@@ -15,6 +15,8 @@ import type {
   ClinicianTaxIdentifier,
   CoretaxExportIssue,
   CoretaxTemplateSource,
+  CoretaxFakturExportIssue,
+  CoretaxFakturTemplateSource,
   TaxReportDifference,
   TaxReportLine,
   TaxReportSummary,
@@ -64,6 +66,11 @@ export type TaxCodeView = {
   ppnTreatment: PpnTreatmentValue;
   fakturTransactionCode?: FakturTransactionCodeValue;
   invoiceNote?: string;
+  /** Coretax faktur fields (P27-T09): item code, `UM.xxxx` unit, and a kode-08 code's facility. */
+  coretaxItemCode?: string;
+  coretaxUnitCode?: string;
+  coretaxAdditionalInfo?: string;
+  coretaxFacilityStamp?: string;
   isSystem: boolean;
   isActive: boolean;
   currentRate?: TaxCodeRateView;
@@ -96,6 +103,11 @@ export type TaxAssignmentRowView = {
   price?: number;
   source: TaxCodeSourceValue;
   effectiveTaxCode?: TaxCodeSummaryView;
+  /** Coretax item code and unit in effect (P27-T09): the item's own, else its tax code's. */
+  coretaxItemCode?: string;
+  coretaxUnitCode?: string;
+  /** Whether those come from the item itself rather than its tax code. */
+  hasCoretaxOverride: boolean;
 };
 
 export type TaxAssignmentsListMeta = {
@@ -195,4 +207,19 @@ export type CoretaxExportValidationView = {
   lineCount: number;
   skippedCount: number;
   issues: CoretaxExportIssue[];
+};
+
+/**
+ * Whether a finalized PPN keluaran report can be exported as a Coretax
+ * Faktur Keluaran XML file yet (P27-T09), every problem listed per invoice.
+ * `digunggungCount` invoices have a patient without NIK and are left out.
+ */
+export type CoretaxFakturValidationView = {
+  reportId: string;
+  period: string;
+  template: CoretaxFakturTemplateSource;
+  isExportable: boolean;
+  fakturCount: number;
+  digunggungCount: number;
+  issues: CoretaxFakturExportIssue[];
 };

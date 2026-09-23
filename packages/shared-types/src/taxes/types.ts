@@ -5,6 +5,7 @@ import type {
   ClinicianPtkpStatusValue,
 } from '#doctor-management/schemas';
 import type { CoretaxBp21IssueCodeValue } from '#taxes/coretax-bp21';
+import type { CoretaxFakturIssueCodeValue } from '#taxes/coretax-faktur';
 import type {
   ClinicianTaxIdentityKindValue,
   ClinicianTaxIdentityStatusValue,
@@ -106,6 +107,11 @@ export type TaxCodeRecord = {
   ppnTreatment: PpnTreatmentValue;
   fakturTransactionCode: FakturTransactionCodeValue | null;
   invoiceNote: string | null;
+  /** Coretax faktur fields (P27-T09); `null` until the clinic sets them. */
+  coretaxItemCode: string | null;
+  coretaxUnitCode: string | null;
+  coretaxAdditionalInfo: string | null;
+  coretaxFacilityStamp: string | null;
   isSystem: boolean;
   isActive: boolean;
   rates: TaxCodeRateRecord[];
@@ -129,6 +135,10 @@ export type SaveTaxCodePayload = {
   ppnTreatment: PpnTreatmentValue;
   fakturTransactionCode: FakturTransactionCodeValue | null;
   invoiceNote: string | null;
+  coretaxItemCode: string | null;
+  coretaxUnitCode: string | null;
+  coretaxAdditionalInfo: string | null;
+  coretaxFacilityStamp: string | null;
   initialRate: CreateTaxCodeRateInput | null;
   createdById: string;
 };
@@ -137,6 +147,10 @@ export type UpdateTaxCodePayload = {
   name?: string;
   fakturTransactionCode?: FakturTransactionCodeValue | null;
   invoiceNote?: string | null;
+  coretaxItemCode?: string | null;
+  coretaxUnitCode?: string | null;
+  coretaxAdditionalInfo?: string | null;
+  coretaxFacilityStamp?: string | null;
   isActive?: boolean;
 };
 
@@ -163,6 +177,9 @@ export type TaxAssignmentTargetRecord = {
   category: string | null;
   price: number | null;
   taxCodeId: string | null;
+  /** The item's own Coretax codes (P27-T09); `null` follows the tax code. */
+  coretaxItemCode: string | null;
+  coretaxUnitCode: string | null;
 };
 
 export type ResolveEffectiveTaxCodeParams = {
@@ -185,6 +202,12 @@ export type ResolveTaxRateParams = {
 export type IsFakturCodeAllowedParams = {
   ppnTreatment: PpnTreatmentValue;
   fakturTransactionCode: FakturTransactionCodeValue | null;
+};
+
+export type BulkAssignCoretaxCodesPayload = {
+  targets: Array<{ kind: TaxAssignmentKindValue; id: string }>;
+  coretaxItemCode: string | null;
+  coretaxUnitCode: string | null;
 };
 
 export type BulkAssignTaxCodePayload = {
@@ -748,6 +771,22 @@ export type CoretaxTemplateSource = {
   sha256: string;
 };
 
+/** One code of a DJP reference list, with DJP's own label (P27-T09). */
+export type CoretaxReferenceOption = { code: string; label: string };
+
+/** The DJP Faktur Keluaran template a Coretax export follows, and where it was obtained (P27-T09). */
+export type CoretaxFakturTemplateSource = {
+  format: 'FAKTUR_KELUARAN';
+  version: string;
+  title: string;
+  /** The date DJP's catalogue gives for this version, `YYYY-MM-DD`. */
+  publishedOn: string;
+  sourceUrl: string;
+  /** pajak.go.id node 112031, the converter catalogue. */
+  catalogueUrl: string;
+  sha256: string;
+};
+
 /**
  * One `Bp21` element, in the order and units of the v4 schema (P27-T08).
  * Amounts are rupiah; `deemedPercent` and `ratePercent` are percentages, as
@@ -818,8 +857,121 @@ export type CoretaxExportIssue = {
   subjectLabel?: string;
 };
 
+/** One `GoodService` element, in the template's column order; amounts in rupiah. */
+export type CoretaxFakturGoodService = {
+  opt: string;
+  code: string;
+  name: string;
+  unit: string;
+  price: number;
+  qty: number;
+  totalDiscount: number;
+  taxBase: number;
+  otherTaxBase: number;
+  vatRate: number;
+  vat: number;
+  stlgRate: number;
+  stlg: number;
+};
+
+/** One `TaxInvoice`: one invoice's lines under one faktur code. Empty strings print as empty elements. */
+export type CoretaxFakturTaxInvoice = {
+  invoiceId: string;
+  /** `YYYY-MM-DD`, the issue date in the clinic's timezone. */
+  taxInvoiceDate: string;
+  taxInvoiceOpt: string;
+  trxCode: string;
+  addInfo: string;
+  customDoc: string;
+  customDocMonthYear: string;
+  refDesc: string;
+  facilityStamp: string;
+  sellerIdTku: string;
+  buyerTin: string;
+  buyerDocument: string;
+  buyerCountry: string;
+  buyerDocumentNumber: string;
+  buyerName: string;
+  buyerAddress: string;
+  buyerEmail: string;
+  buyerIdTku: string;
+  goodServices: CoretaxFakturGoodService[];
+};
+
+/** The whole `TaxInvoiceBulk` file: the seller's NPWP and one faktur per invoice and code. */
+export type CoretaxFakturDocument = {
+  sellerTin: string;
+  taxInvoices: CoretaxFakturTaxInvoice[];
+};
+
+/** An issued invoice line as the faktur export reads it, with its Coretax codes resolved. */
+export type CoretaxFakturSourceLine = {
+  itemType: InvoiceItemTypeValue;
+  description: string;
+  quantity: number;
+  fakturTransactionCode: string | null;
+  taxableAmount: number | null;
+  taxBase: number | null;
+  taxRatePercent: number | null;
+  taxAmount: number;
+  /** Tariff or medication override, else the tax code's; `null` when neither is set. */
+  coretaxItemCode: string | null;
+  coretaxUnitCode: string | null;
+  /** The line's tax code's kode-08 facility, `null` when not set. */
+  coretaxAdditionalInfo: string | null;
+  coretaxFacilityStamp: string | null;
+};
+
+/** An invoice on a finalized PPN draft, with the patient as the buyer. */
+export type CoretaxFakturSourceInvoice = {
+  invoiceId: string;
+  invoiceNumber: string;
+  issuedAt: Date;
+  buyerName: string;
+  buyerAddress: string;
+  /** The patient's NIK, decrypted; `null` when none is on file. */
+  buyerNik: string | null;
+  lines: CoretaxFakturSourceLine[];
+};
+
+export type BuildCoretaxFakturDocumentParams = {
+  invoices: readonly CoretaxFakturSourceInvoice[];
+  clinicNpwp: string | null;
+  clinicNitku: string | null;
+  timeZone: string;
+};
+
+/** One reason a faktur file cannot be produced yet; `subjectId` is the invoice's, if any. */
+export type CoretaxFakturExportIssue = {
+  code: CoretaxFakturIssueCodeValue;
+  field: string;
+  message: string;
+  subjectId?: string;
+  subjectLabel?: string;
+};
+
 /** A Coretax XML file ready to stream. */
 export type CoretaxXmlExport = { fileName: string; xml: string };
 
 /** Writes a BP21 document as one template version's XML, byte for byte as DJP's converter does. */
 export type CoretaxBp21XmlSerializer = (document: CoretaxBp21Document) => string;
+/** A file ready to serialize, or the problems that stop it; never both. */
+export type BuiltCoretaxFakturDocument = {
+  document: CoretaxFakturDocument | null;
+  issues: CoretaxFakturExportIssue[];
+  /** Invoices whose patient has no NIK on file: left out, reported digunggung. */
+  digunggungInvoiceIds: string[];
+};
+
+/** One invoice's lines under one faktur code: one future `TaxInvoice`. */
+export type CoretaxFakturGroup = {
+  invoice: CoretaxFakturSourceInvoice;
+  code: string;
+  lines: CoretaxFakturSourceLine[];
+};
+
+/** A Coretax faktur XML file ready to stream. */
+export type CoretaxFakturXmlExport = { fileName: string; xml: string };
+
+/** Writes a faktur document as one template version's XML, in DJP's published layout. */
+export type CoretaxFakturXmlSerializer = (document: CoretaxFakturDocument) => string;

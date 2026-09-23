@@ -53,6 +53,10 @@ export class TaxCodeRepository {
           ppnTreatment: payload.ppnTreatment,
           fakturTransactionCode: payload.fakturTransactionCode,
           invoiceNote: payload.invoiceNote,
+          coretaxItemCode: payload.coretaxItemCode,
+          coretaxUnitCode: payload.coretaxUnitCode,
+          coretaxAdditionalInfo: payload.coretaxAdditionalInfo,
+          coretaxFacilityStamp: payload.coretaxFacilityStamp,
           ...(initialRate
             ? {
                 rates: {
@@ -165,6 +169,10 @@ export class TaxCodeRepository {
       ppnTreatment: row.ppnTreatment,
       fakturTransactionCode: row.fakturTransactionCode as TaxCodeRecord['fakturTransactionCode'],
       invoiceNote: row.invoiceNote,
+      coretaxItemCode: row.coretaxItemCode,
+      coretaxUnitCode: row.coretaxUnitCode,
+      coretaxAdditionalInfo: row.coretaxAdditionalInfo,
+      coretaxFacilityStamp: row.coretaxFacilityStamp,
       isSystem: row.isSystem,
       isActive: row.isActive,
       rates: row.rates.map((rate) => this.toRateRecord(rate)),

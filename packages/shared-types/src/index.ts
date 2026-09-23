@@ -214,6 +214,8 @@ export * from '#taxes/resolve-clinician-tax-identity';
 export * from '#taxes/summarize-pph21-withholding';
 export * from '#taxes/coretax-bp21';
 export * from '#taxes/build-coretax-bp21-document';
+export * from '#taxes/coretax-faktur';
+export * from '#taxes/build-coretax-faktur-document';
 export * from '#clinician-fee/schemas';
 export * from '#clinician-fee/contracts';
 export * from '#clinician-fee/types';

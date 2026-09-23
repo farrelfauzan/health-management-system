@@ -1,4 +1,5 @@
 import {
+  BulkAssignCoretaxCodesPayload,
   BulkAssignTaxCodePayload,
   FindTaxCodeOverridesParams,
   TaxAssignmentKindValue,
@@ -24,7 +25,16 @@ export class TaxAssignmentRepository {
     const [tariffs, medications] = await Promise.all([
       this.prisma.serviceTariff.findMany({
         where: { deletedAt: null, isActive: true },
-        select: { id: true, code: true, name: true, category: true, price: true, taxCodeId: true },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          category: true,
+          price: true,
+          taxCodeId: true,
+          coretaxItemCode: true,
+          coretaxUnitCode: true,
+        },
         orderBy: { name: 'asc' },
       }),
       this.prisma.medication.findMany({
@@ -36,6 +46,8 @@ export class TaxAssignmentRepository {
           category: true,
           unitPrice: true,
           taxCodeId: true,
+          coretaxItemCode: true,
+          coretaxUnitCode: true,
         },
         orderBy: { name: 'asc' },
       }),
@@ -49,6 +61,8 @@ export class TaxAssignmentRepository {
         category: row.category,
         price: Number(row.price),
         taxCodeId: row.taxCodeId,
+        coretaxItemCode: row.coretaxItemCode,
+        coretaxUnitCode: row.coretaxUnitCode,
       })),
       ...medications.map((row) => ({
         kind: 'MEDICATION' as const,
@@ -58,6 +72,8 @@ export class TaxAssignmentRepository {
         category: row.category,
         price: row.unitPrice === null ? null : Number(row.unitPrice),
         taxCodeId: row.taxCodeId,
+        coretaxItemCode: row.coretaxItemCode,
+        coretaxUnitCode: row.coretaxUnitCode,
       })),
     ];
   }
@@ -73,7 +89,16 @@ export class TaxAssignmentRepository {
     if (kind === 'SERVICE_TARIFF') {
       const rows = await this.prisma.serviceTariff.findMany({
         where: { id: { in: ids }, deletedAt: null },
-        select: { id: true, code: true, name: true, category: true, price: true, taxCodeId: true },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          category: true,
+          price: true,
+          taxCodeId: true,
+          coretaxItemCode: true,
+          coretaxUnitCode: true,
+        },
       });
       return rows.map((row) => ({ kind, ...row, price: Number(row.price) }));
     }
@@ -86,6 +111,8 @@ export class TaxAssignmentRepository {
         category: true,
         unitPrice: true,
         taxCodeId: true,
+        coretaxItemCode: true,
+        coretaxUnitCode: true,
       },
     });
     return rows.map(({ unitPrice, ...row }) => ({
@@ -142,6 +169,30 @@ export class TaxAssignmentRepository {
       this.prisma.medication.updateMany({
         where: { id: { in: idsOf('MEDICATION') }, deletedAt: null },
         data: { taxCodeId: payload.taxCodeId },
+      }),
+    ]);
+    return tariffResult.count + medicationResult.count;
+  }
+
+  /**
+   * The Coretax item code and unit overrides (P27-T09), in one transaction
+   * across both tables. Like `assignTaxCode`, it writes only its own columns.
+   */
+  async assignCoretaxCodes(payload: BulkAssignCoretaxCodesPayload): Promise<number> {
+    const idsOf = (kind: TaxAssignmentKindValue): string[] =>
+      payload.targets.filter((target) => target.kind === kind).map((target) => target.id);
+    const data = {
+      coretaxItemCode: payload.coretaxItemCode,
+      coretaxUnitCode: payload.coretaxUnitCode,
+    };
+    const [tariffResult, medicationResult] = await this.prisma.$transaction([
+      this.prisma.serviceTariff.updateMany({
+        where: { id: { in: idsOf('SERVICE_TARIFF') }, deletedAt: null },
+        data,
+      }),
+      this.prisma.medication.updateMany({
+        where: { id: { in: idsOf('MEDICATION') }, deletedAt: null },
+        data,
       }),
     ]);
     return tariffResult.count + medicationResult.count;

@@ -21,9 +21,11 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  BulkAssignCoretaxCodesDto,
   BulkAssignTaxCodeDto,
   CreateTaxCodeDto,
   CreateTaxCodeRateDto,
+  TaxAssignmentControllerBulkAssignCoretaxCodesV1200,
   TaxAssignmentControllerBulkAssignV1200,
   TaxAssignmentControllerListAssignmentsV1200,
   TaxAssignmentControllerListAssignmentsV1Params,
@@ -809,6 +811,100 @@ export function useTaxAssignmentControllerBulkAssignV1<TData = Awaited<ReturnTyp
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getTaxAssignmentControllerBulkAssignV1QueryOptions(bulkAssignTaxCodeDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Set the Coretax item code and unit on many tariffs and medications
+ */
+export const taxAssignmentControllerBulkAssignCoretaxCodesV1 = (
+    bulkAssignCoretaxCodesDto: BulkAssignCoretaxCodesDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<TaxAssignmentControllerBulkAssignCoretaxCodesV1200>(
+      {url: `/api/v1/tax/assignments/coretax-codes/bulk`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: bulkAssignCoretaxCodesDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getTaxAssignmentControllerBulkAssignCoretaxCodesV1QueryKey = (bulkAssignCoretaxCodesDto?: BulkAssignCoretaxCodesDto,) => {
+    return [
+    'POST', `/api/v1/tax/assignments/coretax-codes/bulk`, bulkAssignCoretaxCodesDto
+    ] as const;
+    }
+
+
+export const getTaxAssignmentControllerBulkAssignCoretaxCodesV1QueryOptions = <TData = Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError = unknown>(bulkAssignCoretaxCodesDto: BulkAssignCoretaxCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTaxAssignmentControllerBulkAssignCoretaxCodesV1QueryKey(bulkAssignCoretaxCodesDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>> = ({ signal }) => taxAssignmentControllerBulkAssignCoretaxCodesV1(bulkAssignCoretaxCodesDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TaxAssignmentControllerBulkAssignCoretaxCodesV1QueryResult = NonNullable<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>>
+export type TaxAssignmentControllerBulkAssignCoretaxCodesV1QueryError = unknown
+
+
+export function useTaxAssignmentControllerBulkAssignCoretaxCodesV1<TData = Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError = unknown>(
+ bulkAssignCoretaxCodesDto: BulkAssignCoretaxCodesDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxAssignmentControllerBulkAssignCoretaxCodesV1<TData = Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError = unknown>(
+ bulkAssignCoretaxCodesDto: BulkAssignCoretaxCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>,
+          TError,
+          Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTaxAssignmentControllerBulkAssignCoretaxCodesV1<TData = Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError = unknown>(
+ bulkAssignCoretaxCodesDto: BulkAssignCoretaxCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Set the Coretax item code and unit on many tariffs and medications
+ */
+
+export function useTaxAssignmentControllerBulkAssignCoretaxCodesV1<TData = Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError = unknown>(
+ bulkAssignCoretaxCodesDto: BulkAssignCoretaxCodesDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof taxAssignmentControllerBulkAssignCoretaxCodesV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTaxAssignmentControllerBulkAssignCoretaxCodesV1QueryOptions(bulkAssignCoretaxCodesDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

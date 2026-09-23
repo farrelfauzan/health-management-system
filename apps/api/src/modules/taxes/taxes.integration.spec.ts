@@ -17,6 +17,7 @@ import { TaxCodeRepository } from '../tax-core/repository/tax-code.repository';
 import { TaxSettingsRepository } from '../tax-core/repository/tax-settings.repository';
 import { ClinicianFeeStatementService } from '../clinician-fee/service/clinician-fee-statement.service';
 import { ClinicianTaxIdentityRepository } from './repository/clinician-tax-identity.repository';
+import { CoretaxFakturSourceRepository } from './repository/coretax-faktur-source.repository';
 import { Pph21TaxBracketRepository } from './repository/pph21-tax-bracket.repository';
 import { TaxReportRepository } from './repository/tax-report.repository';
 import { TaxReportDocumentRepository } from './repository/tax-report-document.repository';
@@ -66,7 +67,9 @@ describe('Tax settings integration', () => {
     listActiveAssignmentTargets: jest.fn(),
     findExistingTargetIds: jest.fn(),
     assignTaxCode: jest.fn(),
+    assignCoretaxCodes: jest.fn(),
   };
+  const coretaxFakturSourceRepositoryMock = { findInvoices: jest.fn() };
   const taxReportRepositoryMock = {
     findPaymentsPaidBetween: jest.fn(),
     sumPaymentsPaidBetween: jest.fn(),
@@ -143,6 +146,8 @@ describe('Tax settings integration', () => {
       .useValue(pph21TaxBracketRepositoryMock)
       .overrideProvider(ClinicianTaxIdentityRepository)
       .useValue(clinicianTaxIdentityRepositoryMock)
+      .overrideProvider(CoretaxFakturSourceRepository)
+      .useValue(coretaxFakturSourceRepositoryMock)
       .overrideProvider(ClinicianFeeStatementService)
       .useValue(clinicianFeeStatementServiceMock)
       .overrideProvider(PdfRendererService)
@@ -288,6 +293,10 @@ describe('Tax settings integration', () => {
       ppnTreatment: 'STANDARD',
       fakturTransactionCode: '04',
       invoiceNote: null,
+      coretaxItemCode: null,
+      coretaxUnitCode: null,
+      coretaxAdditionalInfo: null,
+      coretaxFacilityStamp: null,
       isSystem: true,
       isActive: true,
       rates: [
@@ -398,6 +407,68 @@ describe('Tax settings integration', () => {
 
       expect(response.status).toBe(200);
       expect(response.body.data).toEqual({ updatedCount: 1 });
+    });
+
+    it('refuses a Coretax facility on a code that is not kode 08 at the pipe (P27-T09)', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .post(TAX_CODES_PATH)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          code: 'OBAT-LAIN',
+          name: 'Obat lain',
+          ppnTreatment: 'STANDARD',
+          fakturTransactionCode: '04',
+          coretaxFacilityStamp: 'TD.01110',
+          initialRate: {
+            ratePercent: 12,
+            dppNumerator: 11,
+            dppDenominator: 12,
+            effectiveFrom: '2025-01-01',
+          },
+        });
+
+      expect(response.status).toBe(400);
+      expect(taxCodeRepositoryMock.createTaxCode).not.toHaveBeenCalled();
+    });
+
+    it("sets Coretax item code and unit overrides in bulk and refuses a unit outside DJP's list (P27-T09)", async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', TAX_CODE_PERMISSIONS);
+      const targetId = '8c6f5e4d-3a2b-4f1e-8d9c-b8a7f6e5d4c3';
+      taxAssignmentRepositoryMock.findExistingTargetIds.mockResolvedValue([targetId]);
+      taxAssignmentRepositoryMock.assignCoretaxCodes.mockResolvedValue(1);
+
+      const [applied, refused] = await Promise.all([
+        request(app.getHttpServer())
+          .post(`${TAX_ASSIGNMENTS_PATH}/coretax-codes/bulk`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            targets: [{ kind: 'MEDICATION', id: targetId }],
+            coretaxItemCode: '000000',
+            coretaxUnitCode: 'UM.0022',
+          }),
+        request(app.getHttpServer())
+          .post(`${TAX_ASSIGNMENTS_PATH}/coretax-codes/bulk`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            targets: [{ kind: 'MEDICATION', id: targetId }],
+            coretaxItemCode: '000000',
+            coretaxUnitCode: 'UM.0999',
+          }),
+      ]);
+
+      expect(applied.status).toBe(200);
+      expect(applied.body.data).toEqual({ updatedCount: 1 });
+      expect(taxAssignmentRepositoryMock.assignCoretaxCodes).toHaveBeenCalledTimes(1);
+      expect(taxAssignmentRepositoryMock.assignCoretaxCodes).toHaveBeenCalledWith({
+        targets: [{ kind: 'MEDICATION', id: targetId }],
+        coretaxItemCode: '000000',
+        coretaxUnitCode: 'UM.0022',
+      });
+      expect(refused.status).toBe(400);
     });
 
     it('breaks a medicine price into before-PPN and PPN for a PKP clinic (P27-T04)', async () => {
@@ -803,6 +874,155 @@ describe('Tax settings integration', () => {
         expect(file.status).toBe(403);
         expect(clinicianTaxIdentityRepositoryMock.findCoretaxBp21Sources).not.toHaveBeenCalled();
       });
+    });
+  });
+
+  describe('Coretax Faktur Keluaran export (P27-T09)', () => {
+    const REPORTS_PATH = '/api/v1/v1/tax/reports';
+    const REPORT_ID = '5d4c3b2a-1f0e-4d9c-8b7a-6f5e4d3c2b1a';
+    const PATIENT_NIK = '3171000000000001';
+    const REPORT_PERMISSIONS = [{ action: 'read', resource: 'TaxReport', scope: 'ANY' as const }];
+    const medicineLine = {
+      itemType: 'MEDICATION',
+      description: 'Amoxicillin 500 mg',
+      quantity: 10,
+      fakturTransactionCode: '04',
+      taxableAmount: 50000,
+      taxBase: 45833,
+      taxRatePercent: 12,
+      taxAmount: 5500,
+      coretaxItemCode: '000000',
+      coretaxUnitCode: 'UM.0021',
+      coretaxAdditionalInfo: null,
+      coretaxFacilityStamp: null,
+    };
+
+    function mockStoredPpnReport(status: 'DRAFT' | 'FINALIZED'): void {
+      taxReportRepositoryMock.findReportById.mockResolvedValue({
+        id: REPORT_ID,
+        period: '2026-10',
+        kind: 'PPN_OUTPUT',
+        status,
+        summary: {
+          kind: 'PPN_OUTPUT',
+          totals: { taxableAmount: 50000, taxBase: 45833, taxAmount: 5500 },
+        },
+        lines: [
+          { invoiceId: 'invoice-1', invoiceNumber: 'INV-202610-0001', fakturTransactionCode: '04' },
+        ],
+        generatedAt: new Date('2026-11-02T00:00:00.000Z'),
+        generatedById: 'actor-user',
+        finalizedAt: status === 'FINALIZED' ? new Date('2026-11-02T00:00:00.000Z') : null,
+        finalizedById: status === 'FINALIZED' ? 'actor-user' : null,
+      });
+    }
+
+    function mockInvoice(line: Record<string, unknown>): void {
+      coretaxFakturSourceRepositoryMock.findInvoices.mockResolvedValue([
+        {
+          invoiceId: 'invoice-1',
+          invoiceNumber: 'INV-202610-0001',
+          issuedAt: new Date('2026-10-05T03:00:00.000Z'),
+          buyerName: 'Budi Santoso',
+          buyerAddress: 'Jl. Merdeka No. 1, Jakarta',
+          buyerNik: PATIENT_NIK,
+          lines: [line],
+        },
+      ]);
+    }
+
+    beforeEach(() => {
+      taxSettingsRepositoryMock.findTaxSettings.mockResolvedValue({
+        taxpayerType: 'PT',
+        incomeTaxRegime: 'GENERAL',
+        pp55StartYear: null,
+        isPkp: true,
+        pkpSince: '2025-01-01',
+        nitku: '0012345678901000000000',
+        updatedById: null,
+        updatedAt: null,
+      });
+      mockStoredPpnReport('FINALIZED');
+      mockInvoice(medicineLine);
+    });
+
+    it('lists a line without its Coretax item code before download, without auditing', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      mockInvoice({ ...medicineLine, coretaxItemCode: null });
+
+      const response = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/faktur-keluaran/validation`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toMatchObject({
+        isExportable: false,
+        template: { format: 'FAKTUR_KELUARAN', version: 'V1_6', publishedOn: '2026-01-23' },
+        issues: [{ code: 'ITEM_CODE_MISSING', subjectLabel: 'INV-202610-0001' }],
+      });
+      expect(auditServiceMock.record).not.toHaveBeenCalled();
+    });
+
+    it('refuses the download with 422 CORETAX_EXPORT_INVALID while a line lacks its item code', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      mockInvoice({ ...medicineLine, coretaxItemCode: null });
+
+      const response = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/faktur-keluaran`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(422);
+      expect(response.body.error.code).toBe('CORETAX_EXPORT_INVALID');
+      expect(auditServiceMock.record).not.toHaveBeenCalled();
+    });
+
+    it('downloads the v1.6 XML and audits the export and the NIK unmask without the NIK', async () => {
+      const token = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+
+      const response = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/faktur-keluaran`)
+        .set('Authorization', `Bearer ${token}`)
+        .buffer(true)
+        .parse((res, callback) => {
+          let body = '';
+          res.on('data', (chunk: Buffer) => (body += chunk.toString()));
+          res.on('end', () => callback(null, body));
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.headers['content-type']).toContain('application/xml');
+      expect(response.headers['content-disposition']).toContain(
+        'coretax-faktur-keluaran-2026-10-v1_6.xml',
+      );
+      expect(response.body).toContain('<TIN>0012345678901000</TIN>');
+      expect(response.body).toContain('<TrxCode>04</TrxCode>');
+      expect(response.body).toContain(`<BuyerDocumentNumber>${PATIENT_NIK}</BuyerDocumentNumber>`);
+      const actions = auditServiceMock.record.mock.calls.map(([input]) => input.action);
+      expect(actions).toEqual(['EXPORT', 'PATIENT_IDENTIFIER_UNMASKED']);
+      expect(JSON.stringify(auditServiceMock.record.mock.calls)).not.toContain(PATIENT_NIK);
+    });
+
+    it('answers 409 TAX_REPORT_NOT_FINALIZED for a draft and 403 without tax-report.read', async () => {
+      const adminToken = await buildToken('admin-user', 'admin@hms.local');
+      mockActorWithPermissions('ADMIN', REPORT_PERMISSIONS);
+      mockStoredPpnReport('DRAFT');
+      const draft = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/faktur-keluaran`)
+        .set('Authorization', `Bearer ${adminToken}`);
+      const doctorToken = await buildToken('doctor-user', 'doctor@hms.local');
+      mockActorWithPermissions('DOCTOR', [
+        { action: 'read', resource: 'ClinicianFee', scope: 'OWN' as const },
+      ]);
+      const forbidden = await request(app.getHttpServer())
+        .get(`${REPORTS_PATH}/${REPORT_ID}/coretax/faktur-keluaran/validation`)
+        .set('Authorization', `Bearer ${doctorToken}`);
+
+      expect(draft.status).toBe(409);
+      expect(draft.body.error.code).toBe('TAX_REPORT_NOT_FINALIZED');
+      expect(forbidden.status).toBe(403);
     });
   });
 

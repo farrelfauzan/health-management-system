@@ -13,6 +13,10 @@ const JASA_MEDIS: TaxCodeRecord = {
   ppnTreatment: 'EXEMPT_MEDICAL',
   fakturTransactionCode: '08',
   invoiceNote: null,
+  coretaxItemCode: null,
+  coretaxUnitCode: null,
+  coretaxAdditionalInfo: null,
+  coretaxFacilityStamp: null,
   isSystem: true,
   isActive: true,
   rates: [],
@@ -34,6 +38,8 @@ function buildTarget(overrides: Partial<TaxAssignmentTargetRecord>): TaxAssignme
     category: 'CONSULTATION',
     price: 50000,
     taxCodeId: null,
+    coretaxItemCode: null,
+    coretaxUnitCode: null,
     ...overrides,
   };
 }
@@ -43,6 +49,7 @@ describe('TaxAssignmentService', () => {
     listActiveAssignmentTargets: jest.fn(),
     findExistingTargetIds: jest.fn(),
     assignTaxCode: jest.fn(),
+    assignCoretaxCodes: jest.fn(),
   };
   const taxCodeServiceMock = { getTaxCodeCatalog: jest.fn(), getActiveTaxCode: jest.fn() };
   const auditServiceMock = { record: jest.fn() };
@@ -123,5 +130,50 @@ describe('TaxAssignmentService', () => {
       service.bulkAssign({ targets: [{ kind: 'MEDICATION', id: 'gone' }], taxCodeId: null }, actor),
     ).rejects.toMatchObject({ response: { code: 'TAX_ASSIGNMENT_TARGET_NOT_FOUND' } });
     expect(taxAssignmentRepositoryMock.assignTaxCode).not.toHaveBeenCalled();
+  });
+
+  it("shows the item's own Coretax codes over its tax code's, and flags the override (P27-T09)", async () => {
+    const catalogWithCodes: TaxCodeCatalog = {
+      ...catalog,
+      codesById: new Map([
+        [JASA_MEDIS.id, { ...JASA_MEDIS, coretaxItemCode: '000000', coretaxUnitCode: 'UM.0030' }],
+      ]),
+    };
+    taxCodeServiceMock.getTaxCodeCatalog.mockResolvedValue(catalogWithCodes);
+    taxAssignmentRepositoryMock.listActiveAssignmentTargets.mockResolvedValue([
+      buildTarget({}),
+      buildTarget({ id: 'tariff-2', coretaxUnitCode: 'UM.0027' }),
+    ]);
+
+    const actual = await service.listAssignments({ page: 1, limit: 20 });
+
+    expect(
+      actual.items.map((row) => [row.coretaxItemCode, row.coretaxUnitCode, row.hasCoretaxOverride]),
+    ).toEqual([
+      ['000000', 'UM.0030', false],
+      ['000000', 'UM.0027', true],
+    ]);
+  });
+
+  it('sets Coretax codes on existing targets and audits once (P27-T09)', async () => {
+    taxAssignmentRepositoryMock.findExistingTargetIds.mockResolvedValue(['med-1']);
+    taxAssignmentRepositoryMock.assignCoretaxCodes.mockResolvedValue(1);
+
+    const actual = await service.bulkAssignCoretaxCodes(
+      {
+        targets: [{ kind: 'MEDICATION', id: 'med-1' }],
+        coretaxItemCode: '000000',
+        coretaxUnitCode: 'UM.0022',
+      },
+      actor,
+    );
+
+    expect(actual).toEqual({ updatedCount: 1 });
+    expect(auditServiceMock.record).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: 'TAX_ASSIGNMENT_CHANGED',
+        metadata: expect.objectContaining({ coretaxItemCode: '000000', updatedCount: 1 }),
+      }),
+    );
   });
 });

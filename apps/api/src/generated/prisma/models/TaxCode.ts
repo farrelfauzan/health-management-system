@@ -34,6 +34,10 @@ export type TaxCodeMinAggregateOutputType = {
   ppnTreatment: $Enums.PpnTreatment | null
   fakturTransactionCode: string | null
   invoiceNote: string | null
+  coretaxItemCode: string | null
+  coretaxUnitCode: string | null
+  coretaxAdditionalInfo: string | null
+  coretaxFacilityStamp: string | null
   isSystem: boolean | null
   isActive: boolean | null
   createdAt: Date | null
@@ -47,6 +51,10 @@ export type TaxCodeMaxAggregateOutputType = {
   ppnTreatment: $Enums.PpnTreatment | null
   fakturTransactionCode: string | null
   invoiceNote: string | null
+  coretaxItemCode: string | null
+  coretaxUnitCode: string | null
+  coretaxAdditionalInfo: string | null
+  coretaxFacilityStamp: string | null
   isSystem: boolean | null
   isActive: boolean | null
   createdAt: Date | null
@@ -60,6 +68,10 @@ export type TaxCodeCountAggregateOutputType = {
   ppnTreatment: number
   fakturTransactionCode: number
   invoiceNote: number
+  coretaxItemCode: number
+  coretaxUnitCode: number
+  coretaxAdditionalInfo: number
+  coretaxFacilityStamp: number
   isSystem: number
   isActive: number
   createdAt: number
@@ -75,6 +87,10 @@ export type TaxCodeMinAggregateInputType = {
   ppnTreatment?: true
   fakturTransactionCode?: true
   invoiceNote?: true
+  coretaxItemCode?: true
+  coretaxUnitCode?: true
+  coretaxAdditionalInfo?: true
+  coretaxFacilityStamp?: true
   isSystem?: true
   isActive?: true
   createdAt?: true
@@ -88,6 +104,10 @@ export type TaxCodeMaxAggregateInputType = {
   ppnTreatment?: true
   fakturTransactionCode?: true
   invoiceNote?: true
+  coretaxItemCode?: true
+  coretaxUnitCode?: true
+  coretaxAdditionalInfo?: true
+  coretaxFacilityStamp?: true
   isSystem?: true
   isActive?: true
   createdAt?: true
@@ -101,6 +121,10 @@ export type TaxCodeCountAggregateInputType = {
   ppnTreatment?: true
   fakturTransactionCode?: true
   invoiceNote?: true
+  coretaxItemCode?: true
+  coretaxUnitCode?: true
+  coretaxAdditionalInfo?: true
+  coretaxFacilityStamp?: true
   isSystem?: true
   isActive?: true
   createdAt?: true
@@ -187,6 +211,10 @@ export type TaxCodeGroupByOutputType = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode: string | null
   invoiceNote: string | null
+  coretaxItemCode: string | null
+  coretaxUnitCode: string | null
+  coretaxAdditionalInfo: string | null
+  coretaxFacilityStamp: string | null
   isSystem: boolean
   isActive: boolean
   createdAt: Date
@@ -221,6 +249,10 @@ export type TaxCodeWhereInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFilter<"TaxCode"> | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.StringNullableFilter<"TaxCode"> | string | null
   invoiceNote?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxItemCode?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxAdditionalInfo?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxFacilityStamp?: Prisma.StringNullableFilter<"TaxCode"> | string | null
   isSystem?: Prisma.BoolFilter<"TaxCode"> | boolean
   isActive?: Prisma.BoolFilter<"TaxCode"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaxCode"> | Date | string
@@ -238,6 +270,10 @@ export type TaxCodeOrderByWithRelationInput = {
   ppnTreatment?: Prisma.SortOrder
   fakturTransactionCode?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxAdditionalInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxFacilityStamp?: Prisma.SortOrderInput | Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -258,6 +294,10 @@ export type TaxCodeWhereUniqueInput = Prisma.AtLeast<{
   ppnTreatment?: Prisma.EnumPpnTreatmentFilter<"TaxCode"> | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.StringNullableFilter<"TaxCode"> | string | null
   invoiceNote?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxItemCode?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxAdditionalInfo?: Prisma.StringNullableFilter<"TaxCode"> | string | null
+  coretaxFacilityStamp?: Prisma.StringNullableFilter<"TaxCode"> | string | null
   isSystem?: Prisma.BoolFilter<"TaxCode"> | boolean
   isActive?: Prisma.BoolFilter<"TaxCode"> | boolean
   createdAt?: Prisma.DateTimeFilter<"TaxCode"> | Date | string
@@ -275,6 +315,10 @@ export type TaxCodeOrderByWithAggregationInput = {
   ppnTreatment?: Prisma.SortOrder
   fakturTransactionCode?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceNote?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxAdditionalInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  coretaxFacilityStamp?: Prisma.SortOrderInput | Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -294,6 +338,10 @@ export type TaxCodeScalarWhereWithAggregatesInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentWithAggregatesFilter<"TaxCode"> | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.StringNullableWithAggregatesFilter<"TaxCode"> | string | null
   invoiceNote?: Prisma.StringNullableWithAggregatesFilter<"TaxCode"> | string | null
+  coretaxItemCode?: Prisma.StringNullableWithAggregatesFilter<"TaxCode"> | string | null
+  coretaxUnitCode?: Prisma.StringNullableWithAggregatesFilter<"TaxCode"> | string | null
+  coretaxAdditionalInfo?: Prisma.StringNullableWithAggregatesFilter<"TaxCode"> | string | null
+  coretaxFacilityStamp?: Prisma.StringNullableWithAggregatesFilter<"TaxCode"> | string | null
   isSystem?: Prisma.BoolWithAggregatesFilter<"TaxCode"> | boolean
   isActive?: Prisma.BoolWithAggregatesFilter<"TaxCode"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"TaxCode"> | Date | string
@@ -307,6 +355,10 @@ export type TaxCodeCreateInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -324,6 +376,10 @@ export type TaxCodeUncheckedCreateInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -341,6 +397,10 @@ export type TaxCodeUpdateInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -358,6 +418,10 @@ export type TaxCodeUncheckedUpdateInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -375,6 +439,10 @@ export type TaxCodeCreateManyInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -388,6 +456,10 @@ export type TaxCodeUpdateManyMutationInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -401,6 +473,10 @@ export type TaxCodeUncheckedUpdateManyInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -419,6 +495,10 @@ export type TaxCodeCountOrderByAggregateInput = {
   ppnTreatment?: Prisma.SortOrder
   fakturTransactionCode?: Prisma.SortOrder
   invoiceNote?: Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrder
+  coretaxAdditionalInfo?: Prisma.SortOrder
+  coretaxFacilityStamp?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -432,6 +512,10 @@ export type TaxCodeMaxOrderByAggregateInput = {
   ppnTreatment?: Prisma.SortOrder
   fakturTransactionCode?: Prisma.SortOrder
   invoiceNote?: Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrder
+  coretaxAdditionalInfo?: Prisma.SortOrder
+  coretaxFacilityStamp?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -445,6 +529,10 @@ export type TaxCodeMinOrderByAggregateInput = {
   ppnTreatment?: Prisma.SortOrder
   fakturTransactionCode?: Prisma.SortOrder
   invoiceNote?: Prisma.SortOrder
+  coretaxItemCode?: Prisma.SortOrder
+  coretaxUnitCode?: Prisma.SortOrder
+  coretaxAdditionalInfo?: Prisma.SortOrder
+  coretaxFacilityStamp?: Prisma.SortOrder
   isSystem?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -527,6 +615,10 @@ export type TaxCodeCreateWithoutMedicationsInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -543,6 +635,10 @@ export type TaxCodeUncheckedCreateWithoutMedicationsInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -575,6 +671,10 @@ export type TaxCodeUpdateWithoutMedicationsInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -591,6 +691,10 @@ export type TaxCodeUncheckedUpdateWithoutMedicationsInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -607,6 +711,10 @@ export type TaxCodeCreateWithoutRatesInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -623,6 +731,10 @@ export type TaxCodeUncheckedCreateWithoutRatesInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -655,6 +767,10 @@ export type TaxCodeUpdateWithoutRatesInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -671,6 +787,10 @@ export type TaxCodeUncheckedUpdateWithoutRatesInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -687,6 +807,10 @@ export type TaxCodeCreateWithoutCategoryDefaultsInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -703,6 +827,10 @@ export type TaxCodeUncheckedCreateWithoutCategoryDefaultsInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -735,6 +863,10 @@ export type TaxCodeUpdateWithoutCategoryDefaultsInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -751,6 +883,10 @@ export type TaxCodeUncheckedUpdateWithoutCategoryDefaultsInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -767,6 +903,10 @@ export type TaxCodeCreateWithoutServiceTariffsInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -783,6 +923,10 @@ export type TaxCodeUncheckedCreateWithoutServiceTariffsInput = {
   ppnTreatment: $Enums.PpnTreatment
   fakturTransactionCode?: string | null
   invoiceNote?: string | null
+  coretaxItemCode?: string | null
+  coretaxUnitCode?: string | null
+  coretaxAdditionalInfo?: string | null
+  coretaxFacilityStamp?: string | null
   isSystem?: boolean
   isActive?: boolean
   createdAt?: Date | string
@@ -815,6 +959,10 @@ export type TaxCodeUpdateWithoutServiceTariffsInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -831,6 +979,10 @@ export type TaxCodeUncheckedUpdateWithoutServiceTariffsInput = {
   ppnTreatment?: Prisma.EnumPpnTreatmentFieldUpdateOperationsInput | $Enums.PpnTreatment
   fakturTransactionCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invoiceNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxItemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxUnitCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxAdditionalInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coretaxFacilityStamp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -905,6 +1057,10 @@ export type TaxCodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   ppnTreatment?: boolean
   fakturTransactionCode?: boolean
   invoiceNote?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
+  coretaxAdditionalInfo?: boolean
+  coretaxFacilityStamp?: boolean
   isSystem?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -923,6 +1079,10 @@ export type TaxCodeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   ppnTreatment?: boolean
   fakturTransactionCode?: boolean
   invoiceNote?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
+  coretaxAdditionalInfo?: boolean
+  coretaxFacilityStamp?: boolean
   isSystem?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -936,6 +1096,10 @@ export type TaxCodeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   ppnTreatment?: boolean
   fakturTransactionCode?: boolean
   invoiceNote?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
+  coretaxAdditionalInfo?: boolean
+  coretaxFacilityStamp?: boolean
   isSystem?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -949,13 +1113,17 @@ export type TaxCodeSelectScalar = {
   ppnTreatment?: boolean
   fakturTransactionCode?: boolean
   invoiceNote?: boolean
+  coretaxItemCode?: boolean
+  coretaxUnitCode?: boolean
+  coretaxAdditionalInfo?: boolean
+  coretaxFacilityStamp?: boolean
   isSystem?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type TaxCodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "ppnTreatment" | "fakturTransactionCode" | "invoiceNote" | "isSystem" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["taxCode"]>
+export type TaxCodeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "ppnTreatment" | "fakturTransactionCode" | "invoiceNote" | "coretaxItemCode" | "coretaxUnitCode" | "coretaxAdditionalInfo" | "coretaxFacilityStamp" | "isSystem" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["taxCode"]>
 export type TaxCodeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rates?: boolean | Prisma.TaxCode$ratesArgs<ExtArgs>
   categoryDefaults?: boolean | Prisma.TaxCode$categoryDefaultsArgs<ExtArgs>
@@ -985,6 +1153,17 @@ export type $TaxCodePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
      */
     fakturTransactionCode: string | null
     invoiceNote: string | null
+    /**
+     * Coretax faktur line fields (P27-T09), from DJP's Faktur Keluaran
+     * template v1.6: the six-digit goods/services code and the `UM.xxxx`
+     * unit of measure every line carries, overridable per tariff and
+     * medication. A kode-08 code also names the exemption facility — the
+     * `TD.005xx` keterangan tambahan and the `TD.011xx` cap fasilitas.
+     */
+    coretaxItemCode: string | null
+    coretaxUnitCode: string | null
+    coretaxAdditionalInfo: string | null
+    coretaxFacilityStamp: string | null
     isSystem: boolean
     isActive: boolean
     createdAt: Date
@@ -1422,6 +1601,10 @@ export interface TaxCodeFieldRefs {
   readonly ppnTreatment: Prisma.FieldRef<"TaxCode", 'PpnTreatment'>
   readonly fakturTransactionCode: Prisma.FieldRef<"TaxCode", 'String'>
   readonly invoiceNote: Prisma.FieldRef<"TaxCode", 'String'>
+  readonly coretaxItemCode: Prisma.FieldRef<"TaxCode", 'String'>
+  readonly coretaxUnitCode: Prisma.FieldRef<"TaxCode", 'String'>
+  readonly coretaxAdditionalInfo: Prisma.FieldRef<"TaxCode", 'String'>
+  readonly coretaxFacilityStamp: Prisma.FieldRef<"TaxCode", 'String'>
   readonly isSystem: Prisma.FieldRef<"TaxCode", 'Boolean'>
   readonly isActive: Prisma.FieldRef<"TaxCode", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"TaxCode", 'DateTime'>

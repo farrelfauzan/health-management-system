@@ -100,6 +100,10 @@ export class TaxCodeService {
         ppnTreatment: input.ppnTreatment,
         fakturTransactionCode: input.fakturTransactionCode,
         invoiceNote: input.invoiceNote ?? null,
+        coretaxItemCode: input.coretaxItemCode ?? null,
+        coretaxUnitCode: input.coretaxUnitCode ?? null,
+        coretaxAdditionalInfo: input.coretaxAdditionalInfo ?? null,
+        coretaxFacilityStamp: input.coretaxFacilityStamp ?? null,
         initialRate: input.initialRate ?? null,
         createdById: actor.sub,
       });
@@ -121,6 +125,7 @@ export class TaxCodeService {
   ): Promise<TaxCodeView> {
     const existing = await this.findTaxCodeOrThrow(id);
     this.assertFakturCodeChangeAllowed(existing, input);
+    this.assertCoretaxFacilityAllowed(existing, input);
     const usage = await this.findUsage(id);
     if (input.isActive === false && existing.isActive) {
       this.assertNotInUse(existing, usage);
@@ -209,6 +214,27 @@ export class TaxCodeService {
     }
   }
 
+  /**
+   * The exemption facility is a kode-08 faktur field (P27-T09), refused on a
+   * code that is not 08 after this update. Treatments are fixed, so an exempt
+   * code never moves away from 08 and never strands a facility.
+   */
+  private assertCoretaxFacilityAllowed(existing: TaxCodeRecord, input: UpdateTaxCodeInput): void {
+    const nextFakturCode =
+      input.fakturTransactionCode === undefined
+        ? existing.fakturTransactionCode
+        : input.fakturTransactionCode;
+    const setsFacility = Boolean(input.coretaxAdditionalInfo || input.coretaxFacilityStamp);
+    if (!setsFacility || nextFakturCode === '08') {
+      return;
+    }
+    throw new BadRequestException({
+      code: TAX_CODE_FAKTUR_MISMATCH_ERROR_CODE,
+      message: 'Only a kode-08 (exempt) tax code carries a keterangan tambahan and cap fasilitas',
+      errors: { coretaxFacilityStamp: 'Only for faktur code 08' },
+    });
+  }
+
   private assertNotInUse(existing: TaxCodeRecord, usage: TaxCodeUsageRecord | undefined): void {
     if (!usage || (usage.defaultTargets.length === 0 && usage.overrideCount === 0)) {
       return;
@@ -276,6 +302,10 @@ export class TaxCodeService {
       ppnTreatment: code.ppnTreatment,
       fakturTransactionCode: code.fakturTransactionCode ?? undefined,
       invoiceNote: code.invoiceNote ?? undefined,
+      coretaxItemCode: code.coretaxItemCode ?? undefined,
+      coretaxUnitCode: code.coretaxUnitCode ?? undefined,
+      coretaxAdditionalInfo: code.coretaxAdditionalInfo ?? undefined,
+      coretaxFacilityStamp: code.coretaxFacilityStamp ?? undefined,
       isSystem: code.isSystem,
       isActive: code.isActive,
       currentRate: currentRate ? this.toRateView(currentRate) : undefined,

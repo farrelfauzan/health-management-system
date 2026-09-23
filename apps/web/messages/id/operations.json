@@ -2367,7 +2367,16 @@
           "initialRate": "Tarif pertama",
           "isActive": "Aktif",
           "save": "Simpan",
-          "invalid": "Periksa kode (2–40 huruf, angka, atau tanda hubung), nama, dan tarifnya."
+          "invalid": "Periksa kode (2–40 huruf, angka, atau tanda hubung), nama, dan tarifnya.",
+          "coretaxTitle": "Faktur Coretax",
+          "coretaxDescription": "Isian setiap baris faktur dengan kode ini di file Coretax. Tarif dan obat dapat menimpa kode barang/jasa dan satuannya.",
+          "coretaxItemCode": "Kode barang/jasa Coretax",
+          "coretaxItemCodeHelp": "Enam digit dari daftar kode barang/jasa Coretax.",
+          "coretaxUnitCode": "Satuan ukur",
+          "coretaxAdditionalInfo": "Keterangan tambahan (kode 08)",
+          "coretaxFacilityStamp": "Cap fasilitas (kode 08)",
+          "coretaxNone": "Belum diisi",
+          "coretaxInvalid": "Kode barang/jasa Coretax harus enam digit."
         },
         "errors": {
           "TAX_CODE_SYSTEM_LOCKED": "Ini kode sistem: hanya nama, catatan, dan status aktifnya yang bisa diubah.",
@@ -2435,6 +2444,17 @@
           "price": "Harga",
           "taxCode": "Kode pajak",
           "source": "Sumber"
+        },
+        "coretax": "Coretax: {code} · {unit}",
+        "coretaxMissing": "Kode Coretax belum diisi",
+        "coretaxOverride": "sendiri",
+        "setCoretaxCodes": "Atur kode Coretax",
+        "coretaxDialog": {
+          "title": "Kode Coretax untuk {count} item",
+          "description": "Menimpa kode barang/jasa dan satuan dari kode pajaknya pada faktur Coretax. Kosongkan keduanya agar kembali mengikuti kode pajak.",
+          "save": "Simpan",
+          "applied": "Kode Coretax diatur pada {count} item.",
+          "invalid": "Isi kode barang/jasa enam digit dan pilih satuan, atau kosongkan keduanya."
         }
       },
       "reports": {
@@ -2585,6 +2605,30 @@
             "PTKP_STATUS_MISSING": "Status PTKP belum dicatat. Isi di profil tenaga klinis.",
             "GROSS_NOT_POSITIVE": "Jasa bulan ini negatif (hanya pembatalan) sehingga tidak dapat dibuat bukti potong.",
             "AMOUNT_PRECISION": "Ada nominal dengan lebih dari dua angka desimal."
+          }
+        },
+        "coretaxFaktur": {
+          "title": "File Faktur Keluaran Coretax",
+          "description": "XML impor massal yang dihasilkan konverter resmi DJP ({template}, {publishedOn}): satu faktur per invoice dan kode transaksi, pasien dicantumkan dengan NIK. Klinik mengimpornya ke Coretax dan melapor di sana; produk ini tidak pernah melapor.",
+          "source": "Sumber template",
+          "checking": "Memeriksa laporan terhadap template…",
+          "loadError": "Laporan tidak dapat diperiksa terhadap template Coretax.",
+          "ready": "{count} faktur siap.",
+          "digunggung": "{count} invoice dengan pasien tanpa NIK tidak disertakan (digunggung).",
+          "blocked": "Perbaiki hal berikut sebelum mengunduh:",
+          "clinic": "Klinik",
+          "download": "Unduh XML Coretax",
+          "downloaded": "File Faktur Keluaran Coretax diunduh.",
+          "downloadError": "File Coretax tidak dapat diunduh.",
+          "audit": "File memuat NIK setiap pasien. Unduhan dicatat di log audit.",
+          "issues": {
+            "CLINIC_NPWP_INVALID": "NPWP klinik harus 16 digit. Perbarui di Pengaturan › Profil klinik.",
+            "CLINIC_NITKU_INVALID": "NITKU klinik harus 22 digit diawali NPWP. Perbarui di Pengaturan › Pajak.",
+            "ITEM_CODE_MISSING": "Ada baris tanpa kode barang/jasa Coretax. Isi di kode pajak atau di tarif/obatnya.",
+            "UNIT_CODE_MISSING": "Ada baris tanpa satuan Coretax. Isi di kode pajak atau di tarif/obatnya.",
+            "FACILITY_MISSING": "Kode pajak kode 08 belum memiliki keterangan tambahan atau cap fasilitas. Isi keduanya di kode pajak.",
+            "BUYER_NAME_MISSING": "Nama pasien belum tercatat.",
+            "BUYER_ADDRESS_MISSING": "Alamat pasien belum tercatat."
           }
         }
       }

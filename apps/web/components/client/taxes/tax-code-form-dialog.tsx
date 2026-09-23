@@ -33,6 +33,7 @@ import { useTranslations } from 'next-intl';
 
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
+import { TaxCoretaxFields } from '#components/client/taxes/tax-coretax-fields';
 import { TaxRateFields } from '#components/client/taxes/tax-rate-fields';
 import {
   taxCodeControllerCreateTaxCodeV1,
@@ -54,11 +55,14 @@ type TaxCodeFormDialogProps = {
 };
 
 const NO_FAKTUR_CODE = 'NONE';
+const CORETAX_ITEM_CODE_PATTERN = /^\d{6}$/;
 
 /**
  * Creates a clinic tax code or edits one (P27-T03). The treatment is chosen
  * once: moving a code between exempt and taxed would re-tax every item using
- * it, so that is a new code. A system code keeps its faktur code too.
+ * it, so that is a new code. A system code keeps its faktur code too. Any
+ * faktur code carries the Coretax item code and unit, and a kode-08 code its
+ * exemption facility (P27-T09).
  */
 export function TaxCodeFormDialog({ taxCode, onClose }: TaxCodeFormDialogProps) {
   const t = useTranslations('operations.taxes.codes');
@@ -91,6 +95,11 @@ export function TaxCodeFormDialog({ taxCode, onClose }: TaxCodeFormDialogProps) 
   }
 
   async function saveTaxCode(): Promise<boolean> {
+    const itemCode = values.coretax.coretaxItemCode;
+    if (itemCode !== '' && !CORETAX_ITEM_CODE_PATTERN.test(itemCode)) {
+      setFormError(t('form.coretaxInvalid'));
+      return false;
+    }
     if (taxCode) {
       const response = await updateMutation.mutateAsync(toUpdateTaxCodeInput(values, taxCode));
       parseApiSuccess<TaxCodeView>(response, t('saveError'));
@@ -228,6 +237,21 @@ export function TaxCodeFormDialog({ taxCode, onClose }: TaxCodeFormDialogProps) 
                 values={values.initialRate}
                 disabled={isSaving}
                 onChange={(change) => update({ initialRate: { ...values.initialRate, ...change } })}
+              />
+            </fieldset>
+          ) : null}
+          {values.fakturTransactionCode !== '' ? (
+            <fieldset className="space-y-2 rounded-lg border border-slate-200 p-3">
+              <legend className="px-1 text-xs font-semibold text-slate-700">
+                {t('form.coretaxTitle')}
+              </legend>
+              <p className="text-xs text-slate-500">{t('form.coretaxDescription')}</p>
+              <TaxCoretaxFields
+                idPrefix="tax-code-coretax"
+                values={values.coretax}
+                isExempt={values.fakturTransactionCode === '08'}
+                disabled={isSaving}
+                onChange={(change) => update({ coretax: { ...values.coretax, ...change } })}
               />
             </fieldset>
           ) : null}
