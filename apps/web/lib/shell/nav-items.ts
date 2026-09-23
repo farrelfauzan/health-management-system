@@ -109,7 +109,12 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         label: 'Encounters',
         labelKey: 'encounters',
         icon: 'clinical_notes',
-        ability: { action: 'read', subject: 'Encounter' },
+        // P22-T03. Triage finds the visit to measure here without holding
+        // `encounter.read`; the API lists visits for either key.
+        ability: [
+          { action: 'read', subject: 'Encounter' },
+          { action: 'record-vitals', subject: 'Encounter' },
+        ],
       },
       {
         // P25-T10. The SHK sample worklist, mirroring the clinician page.

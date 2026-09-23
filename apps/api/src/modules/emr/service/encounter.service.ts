@@ -63,7 +63,7 @@ export class EncounterService {
     query: ListEncountersQueryDto,
     currentUser: CurrentUser,
   ): Promise<{ items: EncounterListItem[]; meta: EncountersListMeta }> {
-    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'read');
+    const { scope } = await this.encounterAccessService.resolveReadAccessOrThrow(currentUser);
     const result = await this.encounterRepository.listEncounters({
       page: query.page,
       limit: query.limit,
@@ -87,13 +87,22 @@ export class EncounterService {
   }
 
   async getEncounterById(id: string, currentUser: CurrentUser): Promise<EncounterDetail> {
-    const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'read');
+    const access = await this.encounterAccessService.resolveReadAccessOrThrow(currentUser);
     const encounter = await this.findEncounterOrThrow(id);
-    await this.encounterAccessService.assertCanReadEncounter({ encounter, scope, currentUser });
+    await this.encounterAccessService.assertCanReadEncounter({
+      encounter,
+      scope: access.scope,
+      currentUser,
+    });
     const detail = await this.encounterRepository.findEncounterDetailById(id);
 
     if (!detail) {
       throw new NotFoundException('Encounter not found');
+    }
+    // P22-T03. Triage reads the summary and the vitals, and is never handed
+    // the lab work the two lookups below would fetch.
+    if (access.isVitalsOnly) {
+      return this.encounterMapper.toVitalsOnlyEncounterDetail(detail);
     }
     // P18-T02. Asked of the module that owns orders rather than joined into the
     // detail include: the laboratory is an optional feature, and a clinic

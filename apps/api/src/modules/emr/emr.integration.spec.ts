@@ -534,6 +534,82 @@ describe('EMR integration', () => {
     expect(response.body.data.bodyMassIndex).toBe(25);
   });
 
+  describe('triage holding only encounter.record-vitals:any (P22-T03)', () => {
+    const triagePermissions = [
+      { action: 'record-vitals', resource: 'Encounter', scope: 'ANY' as const },
+    ];
+
+    it('lists visits through the real guard', async () => {
+      const token = await buildToken('triage-user', 'triage@hms.local');
+      mockActorWithPermissions(triagePermissions);
+      encounterRepositoryMock.listEncounters.mockResolvedValue({
+        items: [encounterRecord],
+        page: 1,
+        limit: 10,
+        total: 1,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/encounters')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+    });
+
+    it('records vitals through the real guard', async () => {
+      const token = await buildToken('triage-user', 'triage@hms.local');
+      mockActorWithPermissions(triagePermissions);
+      encounterRepositoryMock.createVitalSigns.mockResolvedValue({
+        id: 'vitals-2',
+        encounterId,
+        heightCm: null,
+        weightKg: null,
+        systolicBloodPressure: 120,
+        diastolicBloodPressure: 80,
+        pulseRate: null,
+        respiratoryRate: null,
+        temperatureCelsius: null,
+        oxygenSaturation: null,
+        notes: null,
+        recordedAt: timestamp,
+        recordedById: 'triage-user',
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/encounters/${encounterId}/vital-signs`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ systolicBloodPressure: 120, diastolicBloodPressure: 80 });
+
+      expect(response.status).toBe(201);
+    });
+
+    it('is refused the SOAP note', async () => {
+      const token = await buildToken('triage-user', 'triage@hms.local');
+      mockActorWithPermissions(triagePermissions);
+
+      const response = await request(app.getHttpServer())
+        .patch(`/api/v1/v1/encounters/${encounterId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ subjective: 'Demam' });
+
+      expect(response.status).toBe(403);
+      expect(encounterRepositoryMock.updateEncounter).not.toHaveBeenCalled();
+    });
+
+    it('is refused closing the visit', async () => {
+      const token = await buildToken('triage-user', 'triage@hms.local');
+      mockActorWithPermissions(triagePermissions);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/encounters/${encounterId}/close`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(403);
+    });
+  });
+
   it('rejects a blood pressure whose systolic does not exceed its diastolic', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'write', resource: 'Encounter', scope: 'ANY' }]);

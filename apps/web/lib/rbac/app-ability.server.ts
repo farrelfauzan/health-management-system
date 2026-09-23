@@ -61,6 +61,10 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // `encounter.open:any` is what shows "Buka encounter" on the admin queue;
   // without this entry the button silently never renders.
   'open',
+  // P22-T03. `encounter.record-vitals:any` is what shows the vitals form and
+  // the Encounters menu to a triage role; dropped here, the role signs in to
+  // an empty shell.
+  'record-vitals',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',

@@ -7,6 +7,8 @@ import {
   EncounterDetail,
   EncounterDetailRecord,
   EncounterListItem,
+  EncounterRelatedDoctor,
+  EncounterRelatedPatient,
   EncounterResponse,
   EncounterWithRelationsRecord,
   ImmunizationRecord,
@@ -50,18 +52,8 @@ export class EncounterMapper {
   toEncounterDetail(encounter: EncounterDetailRecord): EncounterDetail {
     return {
       ...this.toEncounterResponse(encounter),
-      patient: {
-        id: encounter.patient.id,
-        mrn: encounter.patient.mrn,
-        fullName: encounter.patient.fullName,
-      },
-      doctor: {
-        id: encounter.doctor.id,
-        licenseNumber: encounter.doctor.licenseNumber,
-        fullName: encounter.doctor.fullName,
-        satusehatReportable: encounter.doctor.nikLast4 !== null,
-        profession: encounter.doctor.profession,
-      },
+      patient: this.toRelatedPatient(encounter),
+      doctor: this.toRelatedDoctor(encounter),
       vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row)),
       diagnoses: encounter.diagnoses.map((row) => this.toDiagnosisResponse(row)),
       procedures: encounter.procedures.map((row) => this.toProcedureResponse(row)),
@@ -74,6 +66,37 @@ export class EncounterMapper {
       })),
       // P18-T02. Filled by the service from the module that owns lab orders;
       // the mapper has no lab record to map and must not invent one.
+      labOrders: [],
+      labResults: [],
+    };
+  }
+
+  /**
+   * The encounter as triage reads it (P22-T03, D-033): who, when, what state,
+   * and the vital signs. The SOAP note, prognosis, coded entries and
+   * prescriptions are never mapped at all rather than mapped and dropped, so
+   * nothing of the clinical record reaches a reader who holds only
+   * `encounter.record-vitals`.
+   */
+  toVitalsOnlyEncounterDetail(encounter: EncounterDetailRecord): EncounterDetail {
+    return {
+      id: encounter.id,
+      registrationId: encounter.registrationId,
+      patientId: encounter.patientId,
+      doctorId: encounter.doctorId,
+      status: encounter.status,
+      startedAt: encounter.startedAt.toISOString(),
+      endedAt: encounter.endedAt?.toISOString(),
+      createdById: encounter.createdById ?? undefined,
+      createdAt: encounter.createdAt.toISOString(),
+      updatedAt: encounter.updatedAt.toISOString(),
+      patient: this.toRelatedPatient(encounter),
+      doctor: this.toRelatedDoctor(encounter),
+      vitalSigns: encounter.vitalSigns.map((row) => this.toVitalSignsResponse(row)),
+      diagnoses: [],
+      procedures: [],
+      immunizations: [],
+      prescriptions: [],
       labOrders: [],
       labResults: [],
     };
@@ -184,6 +207,24 @@ export class EncounterMapper {
       recordedById: procedure.recordedById ?? undefined,
       createdAt: procedure.createdAt.toISOString(),
       updatedAt: procedure.updatedAt.toISOString(),
+    };
+  }
+
+  private toRelatedPatient(encounter: EncounterDetailRecord): EncounterRelatedPatient {
+    return {
+      id: encounter.patient.id,
+      mrn: encounter.patient.mrn,
+      fullName: encounter.patient.fullName,
+    };
+  }
+
+  private toRelatedDoctor(encounter: EncounterDetailRecord): EncounterRelatedDoctor {
+    return {
+      id: encounter.doctor.id,
+      licenseNumber: encounter.doctor.licenseNumber,
+      fullName: encounter.doctor.fullName,
+      satusehatReportable: encounter.doctor.nikLast4 !== null,
+      profession: encounter.doctor.profession,
     };
   }
 

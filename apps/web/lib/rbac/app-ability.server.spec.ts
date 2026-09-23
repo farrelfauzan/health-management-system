@@ -577,6 +577,23 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('open', 'Encounter')).toBe(true);
   });
 
+  it('maps the record-vitals key apart from encounter read and write (P22-T03)', () => {
+    // Allowlist trap: without `record-vitals` in SUPPORTED_ACTIONS a triage
+    // role's only encounter key resolves to nothing, and its user signs in to
+    // a shell with no Encounters menu and no vitals form.
+    const triage = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['encounter.record-vitals:any'] }),
+    );
+    const writer = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['encounter.write:any'] }),
+    );
+
+    expect(triage.can('record-vitals', 'Encounter')).toBe(true);
+    expect(triage.can('read', 'Encounter')).toBe(false);
+    expect(triage.can('write', 'Encounter')).toBe(false);
+    expect(writer.can('record-vitals', 'Encounter')).toBe(false);
+  });
+
   it('maps the Notion connector grant to its own subject', () => {
     // P23-T05. The allowlist trap again, and this one is invisible without a
     // test: a session hint carrying `notion-connector.manage:any` resolves to

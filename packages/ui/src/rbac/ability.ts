@@ -58,7 +58,11 @@ export type AppAction =
   // Opening a visit off the queue. Split from `write` because D-033 keeps
   // `encounter.write:any` from SUPER_ADMIN, and starting a consultation on a
   // doctor's behalf is front-desk work rather than writing the record.
-  | 'open';
+  | 'open'
+  // P22-T03. Triage: taking vital signs on a visit one will never sign. Split
+  // from `write` so a front-desk nurse measures without holding the SOAP note,
+  // diagnoses and prescriptions that `write` opens.
+  | 'record-vitals';
 export type AppSubject =
   | 'User'
   | 'Role'

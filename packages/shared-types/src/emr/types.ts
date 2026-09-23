@@ -13,6 +13,7 @@ import type {
   ImmunizationSiteValue,
 } from '#emr/schemas';
 import type { PrescriptionStatusValue } from '#pharmacy-flow/schemas';
+import type { ActorScopeResolution } from '#rbac/types';
 import type { RegistrationStatusValue } from '#registration-flow/schemas';
 
 /**
@@ -365,4 +366,15 @@ export type CreateImmunizationRecordPayload = {
   notes?: string;
   isHistorical: boolean;
   reason: ImmunizationReasonValue;
+};
+
+/**
+ * How a caller may read encounters (P22-T03). `isVitalsOnly` is a triage
+ * reader: someone holding `encounter.record-vitals:any` but no
+ * `encounter.read`, who sees which visits exist and their vital signs, and
+ * nothing of the clinical record beyond that (D-033).
+ */
+export type EncounterReadAccess = {
+  scope: ActorScopeResolution;
+  isVitalsOnly: boolean;
 };

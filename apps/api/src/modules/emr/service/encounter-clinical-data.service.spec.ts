@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -195,6 +196,51 @@ describe('EncounterClinicalDataService', () => {
         expect.objectContaining({ encounterId, recordedById: currentUser.sub }),
       );
       expect(actual.bodyMassIndex).toBe(25);
+    });
+
+    it('lets triage holding only record-vitals measure on any open visit (P22-T03)', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'record-vitals', resource: 'Encounter', scope: 'ANY' }]),
+      );
+      (encounterRepositoryMock.createVitalSigns as jest.Mock).mockResolvedValue({
+        id: 'vitals-1',
+        encounterId,
+        heightCm: null,
+        weightKg: null,
+        systolicBloodPressure: null,
+        diastolicBloodPressure: null,
+        pulseRate: 80,
+        respiratoryRate: null,
+        temperatureCelsius: null,
+        oxygenSaturation: null,
+        notes: null,
+        recordedAt: timestamp,
+        recordedById: currentUser.sub,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+      });
+
+      await service.recordVitalSigns(
+        encounterId,
+        { pulseRate: 80 } as RecordVitalSignsDto,
+        currentUser,
+      );
+
+      expect(encounterRepositoryMock.createVitalSigns).toHaveBeenCalled();
+    });
+
+    it('does not let record-vitals write anything else on the visit', async () => {
+      (authRepositoryMock.findUserById as jest.Mock).mockResolvedValue(
+        buildActor([{ action: 'record-vitals', resource: 'Encounter', scope: 'ANY' }]),
+      );
+
+      await expect(
+        service.addDiagnosis(
+          encounterId,
+          { code: 'J06.9', display: 'ISPA' } as AddDiagnosisDto,
+          currentUser,
+        ),
+      ).rejects.toBeInstanceOf(ForbiddenException);
     });
 
     it('refuses to add vitals to a closed record', async () => {
