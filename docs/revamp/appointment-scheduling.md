@@ -178,7 +178,7 @@ Zod schemas live in `packages/shared-types/src/appointment-management/schemas.ts
 1. **Migration 1 (additive):** new enums/values, `appointment_sessions` table, new `Appointment` columns (`type`, `session_id`, `queue_number`), `doctor_schedules.max_patients`. Backfill: existing appointments → `type = SPECIAL_REQUEST` with current status kept (they were staff-created exact-time bookings, which is what that type means).
 2. **Phase A (API):** session projection + get-or-create booking, discriminated create, approve/reject endpoints, transition-map update in shared-types, unit + integration tests (concurrency test on capacity/queue assignment).
 3. **Phase B (Web):** new booking dialog, sessions listing, approvals view, queue view; contract re-sync.
-4. **Phase C (cleanup):** remove the old exact-time create path from the UI; `PATCH /appointments/:id` reschedule for SESSION type moves a booking to another session (re-queue) instead of editing a timestamp.
+4. **Phase C (cleanup):** remove the old exact-time create path from the UI. *Superseded for session moves by P28 (D-045, 2026-09-23):* the clinic moves a whole **session occurrence** within its Monday–Sunday week (`POST /appointment-sessions/:id/reschedule`) and the bookings follow; patients do not move their own session bookings (a patient who cannot come simply does not come). The original occurrence stays as a `MOVED` tombstone at its original start, so the weekly projection cannot offer it again, and bookings keyed on `(scheduleId, sessionDate)` resolve to the replacement.
 5. **Post-MVP:** WhatsApp chatbot subscribes to approval events (Phase 13, per D-007).
 
 ## 8. Resolved Decisions (product answers, 2026-07-23)
