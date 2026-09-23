@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { RoleDetail, RoleListItem, SetRolePermissionsInput } from '@hms/shared-types';
 import {
@@ -18,6 +18,7 @@ import {
 import { useTranslations } from 'next-intl';
 
 import { RolePermissionsMatrix } from '#components/client/administration/role-permissions-matrix';
+import { RolePermissionsWarnings } from '#components/client/administration/role-permissions-warnings';
 import { rbacControllerSetRolePermissionsV1 } from '#lib/api/generated/rbac/rbac';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
@@ -25,9 +26,10 @@ import { invalidateRoleQueries } from '#lib/rbac/invalidate-role-queries';
 import {
   buildPermissionMatrix,
   filterPermissionMatrix,
-  toggleGroupKeys,
-  togglePermissionKey,
+  getGroupKeys,
 } from '#lib/rbac/permission-matrix';
+import { resolveLockedPermissionKeys } from '#lib/rbac/resolve-locked-permission-keys';
+import { togglePermissionSelection } from '#lib/rbac/toggle-permission-selection';
 import { usePermissionCatalog } from '#lib/rbac/use-permission-catalog';
 import { useRoleDetail } from '#lib/rbac/use-role-detail';
 
@@ -59,11 +61,33 @@ export function RolePermissionsDialog({ role, open, onOpenChange }: RolePermissi
     }
   }, [selectedKeys, attachedKeys]);
 
+  const catalogKeys = useMemo(
+    () =>
+      new Set(
+        catalogQuery.groups.flatMap((group) =>
+          group.permissions.map((permission) => permission.permissionKey),
+        ),
+      ),
+    [catalogQuery.groups],
+  );
+  const lockedKeys = useMemo(
+    () => resolveLockedPermissionKeys(selectedKeys ?? new Set<string>(), catalogKeys),
+    [selectedKeys, catalogKeys],
+  );
   const isLoading = catalogQuery.isPending || detailQuery.isPending || selectedKeys === null;
   const matrixGroups = filterPermissionMatrix(
     buildPermissionMatrix(catalogQuery.groups),
     searchQuery,
   );
+
+  // P22-T04. Ticking adds what the key needs; a key another ticked key needs
+  // stays ticked. The API applies the same closure on save.
+  function handleToggle(keys: readonly string[]): void {
+    if (selectedKeys === null) {
+      return;
+    }
+    setSelectedKeys(togglePermissionSelection({ selected: selectedKeys, keys, catalogKeys }));
+  }
 
   async function handleSave(): Promise<void> {
     if (selectedKeys === null) {
@@ -116,13 +140,17 @@ export function RolePermissionsDialog({ role, open, onOpenChange }: RolePermissi
               <Skeleton className="h-24 w-full" />
             </div>
           ) : (
-            <RolePermissionsMatrix
-              groups={matrixGroups}
-              isFiltered={searchQuery.trim().length > 0}
-              selectedKeys={selectedKeys}
-              onToggleKey={(key) => setSelectedKeys(togglePermissionKey(selectedKeys, key))}
-              onToggleGroup={(group) => setSelectedKeys(toggleGroupKeys(selectedKeys, group))}
-            />
+            <div className="space-y-4">
+              <RolePermissionsWarnings selectedKeys={selectedKeys} />
+              <RolePermissionsMatrix
+                groups={matrixGroups}
+                isFiltered={searchQuery.trim().length > 0}
+                selectedKeys={selectedKeys}
+                lockedKeys={lockedKeys}
+                onToggleKey={(key) => handleToggle([key])}
+                onToggleGroup={(group) => handleToggle(getGroupKeys(group))}
+              />
+            </div>
           )}
         </div>
 

@@ -1,4 +1,4 @@
-import { findPrivilegedPermissions } from './privileged-permission.predicate';
+import { findPrivilegedPermissions } from '@hms/shared-types';
 
 describe('findPrivilegedPermissions (SJ-8)', () => {
   it('treats an account with only clinical permissions as unprivileged', () => {

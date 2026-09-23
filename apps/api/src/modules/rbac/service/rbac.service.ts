@@ -1,6 +1,8 @@
 import {
   BASELINE_ROLE_PERMISSION_KEYS,
   CreateRoleInput,
+  describePermissionEffects,
+  expandPermissionDependencies,
   PermissionCatalogEntry,
   PermissionCatalogGroup,
   PermissionRecord,
@@ -9,6 +11,7 @@ import {
   RoleListItem,
   RoleRecord,
   RoleSummary,
+  resolvePermissionRequirements,
   RoleWithPermissionsRecord,
   SetRolePermissionsInput,
   UpdateRoleInput,
@@ -44,10 +47,11 @@ export class RbacService {
    */
   async getPermissionCatalog(): Promise<PermissionCatalogGroup[]> {
     const permissions = await this.rbacRepository.findPermissionCatalog();
+    const catalogKeys = this.toCatalogKeys(permissions);
     const groups = new Map<string, PermissionCatalogEntry[]>();
     for (const permission of permissions) {
       const entries = groups.get(permission.resource) ?? [];
-      entries.push(this.toPermissionEntry(permission));
+      entries.push(this.toPermissionEntry(permission, catalogKeys));
       groups.set(permission.resource, entries);
     }
     return Array.from(groups, ([resource, entries]) => ({ resource, permissions: entries }));
@@ -58,10 +62,13 @@ export class RbacService {
     if (!role) {
       throw new NotFoundException('Role not found');
     }
+    const catalogKeys = this.toCatalogKeys(await this.rbacRepository.findPermissionCatalog());
     return {
       ...this.toRoleSummary(role),
       memberCount: role.memberCount,
-      permissions: role.permissions.map((permission) => this.toPermissionEntry(permission)),
+      permissions: role.permissions.map((permission) =>
+        this.toPermissionEntry(permission, catalogKeys),
+      ),
       createdAt: role.createdAt.toISOString(),
       updatedAt: role.updatedAt.toISOString(),
     };
@@ -147,8 +154,11 @@ export class RbacService {
     }
     // P22-T03. The baseline rides along with whatever was ticked, so unticking
     // "sign out" in the IAM screen cannot leave a role's users unable to.
+    // P22-T04. What a ticked key needs rides along too, so leaving a
+    // dependency unticked cannot save a permission nobody can use.
+    const dependencyPermissions = await this.findDependencyPermissions(requestedKeys);
     const grantedPermissions = this.mergePermissions(
-      permissions,
+      this.mergePermissions(permissions, dependencyPermissions),
       await this.findBaselinePermissions(),
     );
     const grantedKeys = grantedPermissions.map((permission) => permission.permissionKey);
@@ -166,6 +176,10 @@ export class RbacService {
         roleCode: current.code,
         added: grantedKeys.filter((key) => !previousKeys.includes(key)).sort(),
         removed: previousKeys.filter((key) => !grantedKeys.includes(key)).sort(),
+        addedAsDependencies: dependencyPermissions
+          .map((permission) => permission.permissionKey)
+          .filter((key) => !previousKeys.includes(key))
+          .sort(),
       },
     });
     return this.getRoleById(roleId);
@@ -221,6 +235,23 @@ export class RbacService {
     return this.rbacRepository.findPermissionsByKeys([...BASELINE_ROLE_PERMISSION_KEYS]);
   }
 
+  /** The catalogue rows the requested keys need but did not name (P22-T04). */
+  private async findDependencyPermissions(requestedKeys: string[]): Promise<PermissionRecord[]> {
+    const catalogKeys = this.toCatalogKeys(await this.rbacRepository.findPermissionCatalog());
+    const requested = new Set(requestedKeys);
+    const dependencyKeys = [...expandPermissionDependencies(requestedKeys, catalogKeys)].filter(
+      (key) => !requested.has(key),
+    );
+    if (dependencyKeys.length === 0) {
+      return [];
+    }
+    return this.rbacRepository.findPermissionsByKeys(dependencyKeys);
+  }
+
+  private toCatalogKeys(permissions: PermissionRecord[]): Set<string> {
+    return new Set(permissions.map((permission) => permission.permissionKey));
+  }
+
   private mergePermissions(
     requested: PermissionRecord[],
     baseline: PermissionRecord[],
@@ -245,7 +276,10 @@ export class RbacService {
     };
   }
 
-  private toPermissionEntry(permission: PermissionRecord): PermissionCatalogEntry {
+  private toPermissionEntry(
+    permission: PermissionRecord,
+    catalogKeys: ReadonlySet<string>,
+  ): PermissionCatalogEntry {
     return {
       id: permission.id,
       permissionKey: permission.permissionKey,
@@ -253,6 +287,8 @@ export class RbacService {
       action: permission.action,
       scope: permission.scope,
       description: permission.description ?? undefined,
+      requires: resolvePermissionRequirements(permission.permissionKey, catalogKeys),
+      effects: describePermissionEffects(permission.permissionKey),
     };
   }
 }

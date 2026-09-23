@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { CLINICIAN_ROLE_CODES } from '@hms/shared-types';
+import { CLINICAL_CONTENT_PERMISSION_KEYS, CLINICIAN_ROLE_CODES } from '@hms/shared-types';
 
 /**
  * D-033 with teeth (P22-T02).
@@ -35,27 +35,7 @@ describe('D-033 clinical access seed guard', () => {
    * `chat.session.read:any`, which is who, when and which channel, not what
    * was said.
    */
-  const CLINICAL_CONTENT_KEYS: readonly string[] = [
-    'encounter.read:any',
-    'encounter.write:any',
-    // P22-T03. Vital signs are in D-033's list; triage is a task opening that
-    // custom roles are given in the IAM screen, never a seeded one.
-    'encounter.record-vitals:any',
-    'prescription.read:any',
-    'prescription.write:any',
-    'dispense.write:any',
-    'lab-order.read:any',
-    'lab-order.write:any',
-    'lab-specimen.write:any',
-    'lab-result.write:any',
-    'lab-result.verify:any',
-    'patient-document.read:any',
-    'patient-document.write:any',
-    'patient-document.delete:any',
-    'chat.message.read:any',
-    // P25-T15. The kohort registers and KIA reports are the record in table form.
-    'maternal-report.read:any',
-  ];
+  const CLINICAL_CONTENT_KEYS: readonly string[] = CLINICAL_CONTENT_PERMISSION_KEYS;
 
   /**
    * The two openings D-033 defines, and nothing else.
@@ -163,6 +143,18 @@ describe('D-033 clinical access seed guard', () => {
     const allowlisted = Object.values(TASK_ACCESS_ALLOWLIST).flat();
 
     expect(allowlisted.every((key) => CLINICAL_CONTENT_KEYS.includes(key))).toBe(true);
+  });
+
+  it('stops the SUPER_ADMIN union at exactly the shared clinical-content list (P22-T04)', () => {
+    // The IAM screen labels keys from `CLINICAL_CONTENT_PERMISSION_KEYS`; the
+    // seed excludes them from SUPER_ADMIN by its own CTE. They must be one list.
+    const start = seedSql.indexOf('clinical_content_keys(permission_key) AS (');
+    const end = seedSql.indexOf('combined_role_permissions AS (', start);
+    const seededKeys = [...seedSql.slice(start, end).matchAll(/\('([a-z0-9.:-]+)'\)/g)].map(
+      (match) => match[1],
+    );
+
+    expect([...seededKeys].sort()).toEqual([...CLINICAL_CONTENT_PERMISSION_KEYS].sort());
   });
 
   it('holds every clinical content key as a real permission in the catalogue', () => {

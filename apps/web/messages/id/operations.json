@@ -1085,7 +1085,27 @@
         "confirmDelete": "Hapus peran",
         "deleting": "Menghapus…",
         "deleteSuccess": "{count, plural, =0 {Peran dihapus} other {Peran dihapus; # penetapan dicabut}}",
-        "deleteError": "Gagal menghapus peran"
+        "deleteError": "Gagal menghapus peran",
+        "requiredBy": "Dibutuhkan oleh {keys}, jadi tetap dicentang.",
+        "effects": {
+          "portal": "Membuka layar {shell}",
+          "mfa": "Wajib MFA",
+          "clinical": "Rekam medis",
+          "shells": {
+            "ADMIN": "Admin",
+            "DOCTOR": "Dokter",
+            "PATIENT": "Pasien"
+          }
+        },
+        "warnings": {
+          "noPortalTitle": "Belum ada akses layar",
+          "noPortal": "Pengguna dengan peran ini akan langsung kembali ke halaman masuk. Centang salah satu izin \"portal\" (Admin, Dokter, atau Pasien) agar mereka bisa membuka aplikasi.",
+          "multiplePortals": "Peran ini membuka lebih dari satu layar ({shells}). Pengguna akan masuk ke layar Admin.",
+          "mfaTitle": "Anggota wajib memakai MFA",
+          "mfa": "Izin berikut termasuk izin berisiko tinggi, sehingga setiap anggota harus mendaftarkan aplikasi autentikator saat masuk: {keys}.",
+          "clinicalTitle": "Membuka isi rekam medis",
+          "clinical": "Izin berikut membuka isi rekam medis pasien, yang menurut D-033 hanya untuk tenaga klinis yang memeriksa pasien: {keys}."
+        }
       },
       "clinicProfile": {
         "tab": "Profil klinik",

@@ -42,6 +42,8 @@ const CUSTOM_ROLE = {
   memberCount: 2,
 };
 
+const NO_EFFECTS = { requiresMfa: false, portal: null, isClinicalContent: false };
+
 const CATALOG_GROUPS = [
   {
     resource: 'Patient',
@@ -53,6 +55,18 @@ const CATALOG_GROUPS = [
         action: 'read',
         scope: 'ANY',
         description: 'Read all patients',
+        requires: [],
+        effects: NO_EFFECTS,
+      },
+      {
+        id: 'p3',
+        permissionKey: 'patient.write:any',
+        resource: 'Patient',
+        action: 'write',
+        scope: 'ANY',
+        description: 'Edit all patients',
+        requires: ['patient.read:any'],
+        effects: NO_EFFECTS,
       },
       {
         id: 'p2',
@@ -61,6 +75,8 @@ const CATALOG_GROUPS = [
         action: 'read',
         scope: 'OWN',
         description: 'Read own record',
+        requires: [],
+        effects: NO_EFFECTS,
       },
     ],
   },
@@ -127,5 +143,34 @@ describe('RolePermissionsDialog', () => {
         permissionKeys: ['patient.read:own'],
       });
     });
+  });
+
+  it('ticks what a key needs and locks it while the key stays ticked (P22-T04)', async () => {
+    const user = userEvent.setup();
+    detailRequestMock.mockResolvedValueOnce({
+      status: 200,
+      headers: {},
+      data: {
+        data: {
+          ...CUSTOM_ROLE,
+          description: null,
+          permissions: [],
+          createdAt: '2026-01-01T00:00:00.000Z',
+          updatedAt: '2026-01-01T00:00:00.000Z',
+        },
+      },
+    } as never);
+    renderDialog();
+
+    await user.click(await screen.findByLabelText('patient.write:any'));
+
+    expect(screen.getByLabelText('patient.read:any')).toBeChecked();
+    expect(screen.getByLabelText('patient.read:any')).toBeDisabled();
+  });
+
+  it('warns that a role with no portal key cannot open any screen (P22-T04)', async () => {
+    renderDialog();
+
+    expect(await screen.findByText('No screen access yet')).toBeInTheDocument();
   });
 });

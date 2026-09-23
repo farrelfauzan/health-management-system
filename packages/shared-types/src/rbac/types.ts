@@ -1,5 +1,8 @@
 export type ActorPermissionScope = 'ANY' | 'OWN';
 
+/** The shell a `portal.*` key opens (IMP-3). */
+export type PortalShellValue = 'ADMIN' | 'DOCTOR' | 'PATIENT';
+
 export type ActorPermission = {
   action: string;
   resource: string;
