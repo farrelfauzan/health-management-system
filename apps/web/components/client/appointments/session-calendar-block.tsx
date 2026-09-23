@@ -20,6 +20,7 @@ function formatPatientTotal(session: DoctorSessionCalendarItem): string {
 export function SessionCalendarBlock({ session, onSelect }: SessionCalendarBlockProps) {
   const t = useTranslations('operations.appointments');
   const isCancelled = session.status === 'CANCELLED';
+  const isMoved = session.status === 'MOVED';
   return (
     <button
       type="button"
@@ -28,10 +29,14 @@ export function SessionCalendarBlock({ session, onSelect }: SessionCalendarBlock
         'flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-md border-l-4 px-2 py-1 text-left text-xs transition-colors',
         isCancelled
           ? 'border-danger bg-danger-tint/60 text-danger hover:bg-danger-tint'
-          : 'border-primary bg-info-tint text-primary hover:bg-info-tint/70',
+          : isMoved
+            ? 'border-slate-300 bg-slate-100 text-slate-500 hover:bg-slate-200'
+            : 'border-primary bg-info-tint text-primary hover:bg-info-tint/70',
       )}
     >
-      <span className="truncate font-semibold">{session.doctor.fullName}</span>
+      <span className={cn('truncate font-semibold', isMoved && 'line-through')}>
+        {session.doctor.fullName}
+      </span>
       <span className="truncate text-[11px] opacity-80">
         {session.startTime}–{session.endTime}
       </span>
@@ -39,6 +44,11 @@ export function SessionCalendarBlock({ session, onSelect }: SessionCalendarBlock
         {formatPatientTotal(session)}
         {isCancelled ? ` · ${t('cancel')}` : ''}
       </span>
+      {session.movedTo ? (
+        <span className="truncate text-[11px] font-medium">
+          {t('sessionChange.movedTo', session.movedTo)}
+        </span>
+      ) : null}
     </button>
   );
 }

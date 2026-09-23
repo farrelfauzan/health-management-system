@@ -10,6 +10,7 @@ type MonthViewSessionChipProps = {
 
 export function MonthViewSessionChip({ session, onSelect }: MonthViewSessionChipProps) {
   const isCancelled = session.status === 'CANCELLED';
+  const isMoved = session.status === 'MOVED';
   return (
     <button
       type="button"
@@ -18,7 +19,9 @@ export function MonthViewSessionChip({ session, onSelect }: MonthViewSessionChip
         'flex w-full cursor-pointer items-center gap-1 truncate rounded border-l-2 px-1 py-0.5 text-left text-[10px] transition-colors',
         isCancelled
           ? 'border-danger bg-danger-tint/60 text-danger hover:bg-danger-tint'
-          : 'border-primary bg-info-tint text-primary hover:bg-info-tint/70',
+          : isMoved
+            ? 'border-slate-300 bg-slate-100 text-slate-500 line-through hover:bg-slate-200'
+            : 'border-primary bg-info-tint text-primary hover:bg-info-tint/70',
       )}
     >
       <span className="truncate font-medium">{session.doctor.fullName}</span>

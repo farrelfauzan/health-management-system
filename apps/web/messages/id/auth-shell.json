@@ -162,6 +162,14 @@
           "title": "Janji temu ditolak",
           "body": "Permintaan janji temu Anda dengan {doctorName} ditolak."
         },
+        "appointmentRescheduled": {
+          "title": "Jadwal dokter dipindah",
+          "body": "Jadwal {doctorName} dipindah ke {sessionDate}, {startTime}–{endTime}. Alasan: {reason}"
+        },
+        "appointmentSessionCancelled": {
+          "title": "Jadwal dokter dibatalkan",
+          "body": "Jadwal {doctorName} pada {sessionDate}, {startTime}–{endTime} dibatalkan. Alasan: {reason}"
+        },
         "vaultDocumentExpiring": {
           "title": "Dokumen Anda akan berakhir",
           "body": "“{documentTitle}” di Dokumen Saya berakhir pada {expiresAt}."

@@ -29,6 +29,9 @@ import type {
   AppointmentManagementControllerListAppointmentsV1Params,
   AppointmentManagementControllerRejectAppointmentV1200,
   AppointmentManagementControllerUpdateAppointmentV1200,
+  AppointmentSessionChangeControllerCancelSessionV1200,
+  AppointmentSessionChangeControllerMaterializeSessionV1200,
+  AppointmentSessionChangeControllerRescheduleSessionV1200,
   AppointmentSessionControllerGetSessionQueueV1200,
   AppointmentSessionControllerListDoctorSessionsV1200,
   AppointmentSessionControllerListDoctorSessionsV1Params,
@@ -37,8 +40,11 @@ import type {
   AppointmentSessionControllerUpdateSessionV1200,
   ApproveAppointmentDto,
   CancelAppointmentDto,
+  CancelAppointmentSessionDto,
   CreateAppointmentDto,
+  MaterializeAppointmentSessionDto,
   RejectAppointmentDto,
+  RescheduleAppointmentSessionDto,
   UpdateAppointmentDto,
   UpdateAppointmentSessionDto
 } from '../model';
@@ -735,6 +741,302 @@ export function useAppointmentManagementControllerCancelAppointmentV1<TData = Aw
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAppointmentManagementControllerCancelAppointmentV1QueryOptions(id,cancelAppointmentDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Materialise one occurrence of a weekly practice window
+ */
+export const appointmentSessionChangeControllerMaterializeSessionV1 = (
+    materializeAppointmentSessionDto: MaterializeAppointmentSessionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionChangeControllerMaterializeSessionV1200>(
+      {url: `/api/v1/appointment-sessions/materialize`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: materializeAppointmentSessionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionChangeControllerMaterializeSessionV1QueryKey = (materializeAppointmentSessionDto?: MaterializeAppointmentSessionDto,) => {
+    return [
+    'POST', `/api/v1/appointment-sessions/materialize`, materializeAppointmentSessionDto
+    ] as const;
+    }
+
+
+export const getAppointmentSessionChangeControllerMaterializeSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError = unknown>(materializeAppointmentSessionDto: MaterializeAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionChangeControllerMaterializeSessionV1QueryKey(materializeAppointmentSessionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>> = ({ signal }) => appointmentSessionChangeControllerMaterializeSessionV1(materializeAppointmentSessionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionChangeControllerMaterializeSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>>
+export type AppointmentSessionChangeControllerMaterializeSessionV1QueryError = unknown
+
+
+export function useAppointmentSessionChangeControllerMaterializeSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError = unknown>(
+ materializeAppointmentSessionDto: MaterializeAppointmentSessionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionChangeControllerMaterializeSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError = unknown>(
+ materializeAppointmentSessionDto: MaterializeAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionChangeControllerMaterializeSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError = unknown>(
+ materializeAppointmentSessionDto: MaterializeAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Materialise one occurrence of a weekly practice window
+ */
+
+export function useAppointmentSessionChangeControllerMaterializeSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError = unknown>(
+ materializeAppointmentSessionDto: MaterializeAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerMaterializeSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionChangeControllerMaterializeSessionV1QueryOptions(materializeAppointmentSessionDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Cancel a practice session with a reason
+ */
+export const appointmentSessionChangeControllerCancelSessionV1 = (
+    id: string,
+    cancelAppointmentSessionDto: CancelAppointmentSessionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionChangeControllerCancelSessionV1200>(
+      {url: `/api/v1/appointment-sessions/${id}/cancel`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: cancelAppointmentSessionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionChangeControllerCancelSessionV1QueryKey = (id: string,
+    cancelAppointmentSessionDto?: CancelAppointmentSessionDto,) => {
+    return [
+    'POST', `/api/v1/appointment-sessions/${id}/cancel`, cancelAppointmentSessionDto
+    ] as const;
+    }
+
+
+export const getAppointmentSessionChangeControllerCancelSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError = unknown>(id: string,
+    cancelAppointmentSessionDto: CancelAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionChangeControllerCancelSessionV1QueryKey(id,cancelAppointmentSessionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>> = ({ signal }) => appointmentSessionChangeControllerCancelSessionV1(id,cancelAppointmentSessionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionChangeControllerCancelSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>>
+export type AppointmentSessionChangeControllerCancelSessionV1QueryError = unknown
+
+
+export function useAppointmentSessionChangeControllerCancelSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError = unknown>(
+ id: string,
+    cancelAppointmentSessionDto: CancelAppointmentSessionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionChangeControllerCancelSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError = unknown>(
+ id: string,
+    cancelAppointmentSessionDto: CancelAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionChangeControllerCancelSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError = unknown>(
+ id: string,
+    cancelAppointmentSessionDto: CancelAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Cancel a practice session with a reason
+ */
+
+export function useAppointmentSessionChangeControllerCancelSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError = unknown>(
+ id: string,
+    cancelAppointmentSessionDto: CancelAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerCancelSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionChangeControllerCancelSessionV1QueryOptions(id,cancelAppointmentSessionDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Move a practice session to another window in the same week
+ */
+export const appointmentSessionChangeControllerRescheduleSessionV1 = (
+    id: string,
+    rescheduleAppointmentSessionDto: RescheduleAppointmentSessionDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AppointmentSessionChangeControllerRescheduleSessionV1200>(
+      {url: `/api/v1/appointment-sessions/${id}/reschedule`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: rescheduleAppointmentSessionDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getAppointmentSessionChangeControllerRescheduleSessionV1QueryKey = (id: string,
+    rescheduleAppointmentSessionDto?: RescheduleAppointmentSessionDto,) => {
+    return [
+    'POST', `/api/v1/appointment-sessions/${id}/reschedule`, rescheduleAppointmentSessionDto
+    ] as const;
+    }
+
+
+export const getAppointmentSessionChangeControllerRescheduleSessionV1QueryOptions = <TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError = unknown>(id: string,
+    rescheduleAppointmentSessionDto: RescheduleAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAppointmentSessionChangeControllerRescheduleSessionV1QueryKey(id,rescheduleAppointmentSessionDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>> = ({ signal }) => appointmentSessionChangeControllerRescheduleSessionV1(id,rescheduleAppointmentSessionDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AppointmentSessionChangeControllerRescheduleSessionV1QueryResult = NonNullable<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>>
+export type AppointmentSessionChangeControllerRescheduleSessionV1QueryError = unknown
+
+
+export function useAppointmentSessionChangeControllerRescheduleSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError = unknown>(
+ id: string,
+    rescheduleAppointmentSessionDto: RescheduleAppointmentSessionDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionChangeControllerRescheduleSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError = unknown>(
+ id: string,
+    rescheduleAppointmentSessionDto: RescheduleAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>,
+          TError,
+          Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAppointmentSessionChangeControllerRescheduleSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError = unknown>(
+ id: string,
+    rescheduleAppointmentSessionDto: RescheduleAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Move a practice session to another window in the same week
+ */
+
+export function useAppointmentSessionChangeControllerRescheduleSessionV1<TData = Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError = unknown>(
+ id: string,
+    rescheduleAppointmentSessionDto: RescheduleAppointmentSessionDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof appointmentSessionChangeControllerRescheduleSessionV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAppointmentSessionChangeControllerRescheduleSessionV1QueryOptions(id,rescheduleAppointmentSessionDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

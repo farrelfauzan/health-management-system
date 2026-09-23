@@ -12,6 +12,9 @@ import { withDisplayNameFallbacks } from '#lib/notifications/with-display-name-f
 const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   APPOINTMENT_APPROVED: 'event_available',
   APPOINTMENT_REJECTED: 'event_busy',
+  // P28. The clinic moved or cancelled a practice session the patient was in.
+  APPOINTMENT_RESCHEDULED: 'event_repeat',
+  APPOINTMENT_SESSION_CANCELLED: 'event_busy',
   CONVERSATION_HANDOFF: 'support_agent',
   VAULT_DOCUMENT_EXPIRING: 'schedule',
   VAULT_DOCUMENT_EXPIRED: 'event_busy',
