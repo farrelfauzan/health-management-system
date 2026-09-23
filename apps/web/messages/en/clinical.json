@@ -1454,7 +1454,7 @@
         "referral": "Refer to a doctor or a puskesmas"
       },
       "administrativeSubtitle": "The visit's administrative summary: who, when, and what state it is in.",
-      "administrativeNotice": "The clinical content of this visit — SOAP notes, diagnoses, procedures, prescriptions and laboratory results — is reached only by the clinicians who examine the patient (D-033)."
+      "administrativeNotice": "The clinical content of this visit — SOAP notes, diagnoses, procedures, prescriptions and laboratory results — can only be opened by the doctor or midwife who examines the patient, under clinic rules."
     }
   }
 }

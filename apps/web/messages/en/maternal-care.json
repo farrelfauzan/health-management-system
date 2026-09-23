@@ -467,7 +467,7 @@
         "downloadPdf": "Download PDF",
         "exportError": "The report could not be downloaded. Please try again."
       },
-      "provisionalNotice": "Provisional layout (D-040): the column order has not been compared with the pilot puskesmas form yet and may change.",
+      "provisionalNotice": "Provisional layout: the column order has not been compared with the pilot puskesmas form yet and may change.",
       "header": {
         "puskesmas": "Reporting puskesmas",
         "notSet": "not set (Clinic profile)"

@@ -1454,7 +1454,7 @@
         "referral": "Rujuk ke dokter atau puskesmas"
       },
       "administrativeSubtitle": "Ringkasan administratif kunjungan: siapa, kapan, dan statusnya.",
-      "administrativeNotice": "Isi rekam medis kunjungan ini — catatan SOAP, diagnosis, tindakan, resep, dan hasil laboratorium — hanya dapat dibuka oleh klinisi yang memeriksa pasien (D-033)."
+      "administrativeNotice": "Isi rekam medis kunjungan ini — catatan SOAP, diagnosis, tindakan, resep, dan hasil laboratorium — hanya dapat dibuka oleh dokter atau bidan yang memeriksa pasien, sesuai aturan klinik."
     }
   }
 }

@@ -795,7 +795,7 @@
         "subtitle": "Apa yang dikirim untuk kunjungan ini. Hanya keberadaan data — tanpa diagnosis, obat, atau nilai pemeriksaan.",
         "loading": "Memuat rincian…",
         "loadFailed": "Rincian pengiriman tidak dapat dimuat.",
-        "noList": "Pengiriman ini terjadi sebelum daftar sumber daya dicatat, sehingga rinciannya tidak tersedia. Jalankan backfill (P21-T05) untuk melengkapinya.",
+        "noList": "Pengiriman ini terjadi sebelum daftar sumber daya dicatat, sehingga rinciannya tidak tersedia. Hubungi tim teknis untuk melengkapinya.",
         "backfilled": "Daftar ini direkonstruksi dari SATUSEHAT, sehingga item yang dilewati tidak dapat diketahui.",
         "sentHeading": "Sumber daya terkirim",
         "sentCount": "{count} terkirim",
@@ -1104,7 +1104,7 @@
           "mfaTitle": "Anggota wajib memakai MFA",
           "mfa": "Izin berikut termasuk izin berisiko tinggi, sehingga setiap anggota harus mendaftarkan aplikasi autentikator saat masuk: {keys}.",
           "clinicalTitle": "Membuka isi rekam medis",
-          "clinical": "Izin berikut membuka isi rekam medis pasien, yang menurut D-033 hanya untuk tenaga klinis yang memeriksa pasien: {keys}."
+          "clinical": "Izin berikut membuka isi rekam medis pasien. Sesuai aturan klinik, rekam medis hanya untuk dokter atau bidan yang memeriksa pasien: {keys}."
         },
         "templates": {
           "label": "Mulai dari",
@@ -1134,7 +1134,7 @@
             "portal": "Setiap peran perlu satu izin \"portal\" (Admin, Dokter, atau Pasien). Tanpa itu, pengguna langsung kembali ke halaman masuk.",
             "dependencies": "Izin yang dibutuhkan izin lain dicentang otomatis. Contoh: membuat tagihan ikut mencentang melihat tagihan dan melihat daftar kunjungan.",
             "mfa": "Izin berlabel \"Wajib MFA\" membuat setiap anggota peran harus memakai aplikasi autentikator saat masuk.",
-            "clinical": "Izin berlabel \"Rekam medis\" membuka isi rekam medis pasien. Menurut aturan klinik (D-033), isi rekam medis hanya untuk tenaga klinis yang memeriksa pasien.",
+            "clinical": "Izin berlabel \"Rekam medis\" membuka isi rekam medis pasien. Sesuai aturan klinik, rekam medis hanya untuk dokter atau bidan yang memeriksa pasien.",
             "shells": "Pengguna yang memegang lebih dari satu portal masuk ke layar Admin, lalu bisa pindah layar lewat menu profil."
           },
           "templatesTitle": "Contoh peran",

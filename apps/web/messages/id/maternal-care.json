@@ -467,7 +467,7 @@
         "downloadPdf": "Unduh PDF",
         "exportError": "Laporan gagal diunduh. Silakan coba lagi."
       },
-      "provisionalNotice": "Tata letak sementara (D-040): susunan kolom belum dibandingkan dengan formulir puskesmas pilot dan dapat berubah.",
+      "provisionalNotice": "Tata letak sementara: susunan kolom belum dibandingkan dengan formulir puskesmas pilot dan dapat berubah.",
       "header": {
         "puskesmas": "Puskesmas pelapor",
         "notSet": "belum diisi (Profil klinik)"
