@@ -4,6 +4,7 @@ import type {
   AppointmentStatusValue,
   AppointmentSubjectKindValue,
   AppointmentTypeValue,
+  SessionMoveBlockedReasonValue,
 } from '#appointment-management/schemas';
 
 export type AppointmentResponse = {
@@ -99,6 +100,13 @@ export type DoctorSessionListItem = {
   bookedCount: number;
   remaining: number | null;
   /**
+   * Why the clinic moved or cancelled this occurrence (P28), as the patients
+   * were told. Absent on an ordinary session.
+   */
+  statusReason?: string;
+  /** The replacement, present only on a `MOVED` occurrence (P28-T04). */
+  movedTo?: SessionMovedToSummary;
+  /**
    * Lapsed STR/SIP for this doctor (`P16-T20`), empty when none — and
    * **absent entirely** on patient-facing responses, which is why it is
    * optional rather than an always-present empty array. A patient browsing
@@ -112,6 +120,17 @@ export type DoctorSessionListItem = {
    * of scope.
    */
   expiredLicenses?: ExpiredDoctorLicence[];
+};
+
+/**
+ * Where a `MOVED` occurrence went (P28-T04), so the calendar can say
+ * "moved to Wed 13:00" on the struck-through original.
+ */
+export type SessionMovedToSummary = {
+  sessionId: string;
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
 };
 
 export type DoctorSessionCalendarItem = DoctorSessionListItem & {
@@ -136,4 +155,32 @@ export type AppointmentSessionResponse = {
   maxPatients: number | null;
   status: AppointmentSessionStatusValue;
   bookedCount: number;
+  /** Why the clinic moved or cancelled the session (P28); null otherwise. */
+  statusReason: string | null;
+  /** The replacement of a `MOVED` session (P28-T04); null otherwise. */
+  movedToSessionId: string | null;
+};
+
+/** A booking that stayed in the original session when it moved (P28-T04). */
+export type SessionMoveBlockedBooking = {
+  appointmentId: string;
+  subject: AppointmentSubject;
+  reason: SessionMoveBlockedReasonValue;
+};
+
+/**
+ * What a move did (P28-T04). `blocked` is the front desk's worklist: those
+ * bookings are still open, in the original session, and nobody was told.
+ */
+export type AppointmentSessionRescheduleResult = {
+  source: AppointmentSessionResponse;
+  target: AppointmentSessionResponse;
+  movedCount: number;
+  blocked: SessionMoveBlockedBooking[];
+};
+
+/** What a cancellation did (P28-T02). */
+export type AppointmentSessionCancelResult = {
+  session: AppointmentSessionResponse;
+  cancelledCount: number;
 };

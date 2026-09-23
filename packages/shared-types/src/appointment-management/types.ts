@@ -2,6 +2,7 @@ import type {
   AppointmentSessionStatusValue,
   AppointmentStatusValue,
   AppointmentTypeValue,
+  SessionMoveBlockedReasonValue,
 } from '#appointment-management/schemas';
 import type { ChannelKindValue } from '#customer-service/schemas';
 
@@ -177,9 +178,10 @@ export type ListDoctorPracticeWindowsParams = {
  * One doctor's practice hours on a clinic day, and where they came from.
  *
  * `SESSION` rows are what the doctor is actually running; `SCHEDULE` rows are
- * the standing weekly pattern, used only when no session exists for the date
- * at all. The distinction matters at the desk: a doctor who cancelled today's
- * session must not be revived by their Tuesday template.
+ * the standing weekly pattern, used for a window only when no session row
+ * exists at that window's start time (P28-T03). The distinction matters at the
+ * desk: a doctor who cancelled or moved today's session must not be revived by
+ * their Tuesday template, while their other Tuesday window still stands.
  */
 export type DoctorPracticeWindowRecord = {
   doctorId: string;
@@ -193,7 +195,7 @@ export type DoctorPracticeWindowRecord = {
 export type UpdateAppointmentSessionRecordPayload = {
   id: string;
   maxPatients?: number | null;
-  status?: AppointmentSessionStatusValue;
+  status?: 'OPEN' | 'CLOSED';
 };
 
 export type AppointmentRecord = {
@@ -279,4 +281,124 @@ export type AppointmentWithRelationsRecord = AppointmentRecord & {
   patient: AppointmentPatientProjection | null;
   prospectivePatient: AppointmentProspectivePatientProjection | null;
   doctor: AppointmentDoctorProjection;
+};
+
+/**
+ * A materialised session as the listings read it, with where a `MOVED`
+ * occurrence went (P28-T04).
+ */
+export type MaterializedSessionRecord = {
+  id: string;
+  doctorId: string;
+  scheduleId: string | null;
+  sessionDate: Date;
+  startTime: string;
+  endTime: string;
+  maxPatients: number | null;
+  status: AppointmentSessionStatusValue;
+  statusReason: string | null;
+  movedToSessionId: string | null;
+  movedTo: { id: string; sessionDate: Date; startTime: string; endTime: string } | null;
+  _count: { appointments: number };
+};
+
+/**
+ * The window a booking for `(scheduleId, sessionDate)` actually lands in
+ * (P28-T03): the weekly window, or the replacement a move created for that
+ * occurrence.
+ */
+export type ResolvedSessionOccurrence = {
+  scheduleId: string;
+  startTime: string;
+  endTime: string;
+  maxPatients: number | null;
+  sessionStart: Date;
+};
+
+/** One open booking in a session about to move, as the partition reads it. */
+export type SessionMoveCandidateBooking = {
+  appointmentId: string;
+  bpjsBookingCode: string | null;
+  hasLiveRegistration: boolean;
+};
+
+export type SessionMovePartition = {
+  movableIds: string[];
+  blocked: Array<{ appointmentId: string; reason: SessionMoveBlockedReasonValue }>;
+};
+
+/** A booking a move or cancellation touched, and who to tell about it. */
+export type SessionChangeAffectedBooking = {
+  appointmentId: string;
+  recipientUserId: string | null;
+};
+
+export type CancelAppointmentSessionRecordPayload = {
+  sessionId: string;
+  reason: string;
+  actorUserId: string;
+};
+
+/** Who the booking is for, as `resolveAppointmentSubject` reads it. */
+export type SessionChangeSubjectRecord = {
+  patient: { id: string; mrn: string; fullName: string } | null;
+  prospectivePatient: { id: string; fullName: string } | null;
+};
+
+export type CancelAppointmentSessionRecordResult =
+  | { outcome: 'NOT_CANCELLABLE' }
+  | {
+      outcome: 'CANCELLED';
+      doctorName: string;
+      cancelled: SessionChangeAffectedBooking[];
+    };
+
+export type MoveAppointmentSessionRecordPayload = {
+  sourceSessionId: string;
+  targetSessionDate: string;
+  startTime: string;
+  endTime: string;
+  /** `undefined` keeps the source's capacity. */
+  maxPatients: number | null | undefined;
+  scheduledAt: Date;
+  isSameDay: boolean;
+  reason: string;
+  actorUserId: string;
+};
+
+/**
+ * Why a move could not happen, decided under the source row's lock so two
+ * admins cannot both pass the checks. `CAPACITY_SHORTFALL` carries both
+ * numbers because the admin's next step is to raise the capacity.
+ */
+export type MoveAppointmentSessionRecordResult =
+  | { outcome: 'SOURCE_NOT_MOVABLE' }
+  | { outcome: 'TARGET_START_TAKEN' }
+  | { outcome: 'CAPACITY_SHORTFALL'; movableCount: number; maxPatients: number }
+  | {
+      outcome: 'MOVED';
+      targetSessionId: string;
+      doctorName: string;
+      moved: SessionChangeAffectedBooking[];
+      blocked: Array<SessionMovePartition['blocked'][number] & SessionChangeSubjectRecord>;
+    };
+
+/** The doctor's other windows on a target date, for the overlap check. */
+export type MaterializeAppointmentSessionRecordPayload = {
+  doctorId: string;
+  scheduleId: string;
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
+  maxPatients: number | null;
+};
+
+export type SessionTargetDayWindows = {
+  sessions: Array<{
+    id: string;
+    startTime: string;
+    endTime: string;
+    status: AppointmentSessionStatusValue;
+  }>;
+  schedules: Array<{ startTime: string; endTime: string }>;
 };
