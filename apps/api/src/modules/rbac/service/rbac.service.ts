@@ -1,4 +1,5 @@
 import {
+  BASELINE_ROLE_PERMISSION_KEYS,
   CreateRoleInput,
   PermissionCatalogEntry,
   PermissionCatalogGroup,
@@ -76,12 +77,21 @@ export class RbacService {
       );
     }
     const role = await this.rbacRepository.createRole(input);
+    const baselinePermissions = await this.findBaselinePermissions();
+    await this.rbacRepository.replaceRolePermissions({
+      roleId: role.id,
+      permissionIds: baselinePermissions.map((permission) => permission.id),
+    });
     await this.auditService.record({
       action: AuditAction.ROLE_CREATED,
       resource: 'role',
       actorUserId,
       resourceId: role.id,
-      metadata: { roleCode: role.code, name: role.name },
+      metadata: {
+        roleCode: role.code,
+        name: role.name,
+        baselinePermissionKeys: baselinePermissions.map((permission) => permission.permissionKey),
+      },
     });
     return this.toRoleSummary(role);
   }
@@ -135,9 +145,16 @@ export class RbacService {
         errors: { unknownKeys },
       });
     }
+    // P22-T03. The baseline rides along with whatever was ticked, so unticking
+    // "sign out" in the IAM screen cannot leave a role's users unable to.
+    const grantedPermissions = this.mergePermissions(
+      permissions,
+      await this.findBaselinePermissions(),
+    );
+    const grantedKeys = grantedPermissions.map((permission) => permission.permissionKey);
     await this.rbacRepository.replaceRolePermissions({
       roleId,
-      permissionIds: permissions.map((permission) => permission.id),
+      permissionIds: grantedPermissions.map((permission) => permission.id),
     });
     const previousKeys = current.permissions.map((permission) => permission.permissionKey);
     await this.auditService.record({
@@ -147,8 +164,8 @@ export class RbacService {
       resourceId: roleId,
       metadata: {
         roleCode: current.code,
-        added: requestedKeys.filter((key) => !previousKeys.includes(key)).sort(),
-        removed: previousKeys.filter((key) => !requestedKeys.includes(key)).sort(),
+        added: grantedKeys.filter((key) => !previousKeys.includes(key)).sort(),
+        removed: previousKeys.filter((key) => !grantedKeys.includes(key)).sort(),
       },
     });
     return this.getRoleById(roleId);
@@ -193,6 +210,24 @@ export class RbacService {
       throw new ForbiddenException('System roles cannot be modified');
     }
     return role;
+  }
+
+  /**
+   * The baseline keys the catalogue actually holds. A catalogue missing one —
+   * an unseeded database — grants the rest rather than refusing a request
+   * whose caller never named it.
+   */
+  private async findBaselinePermissions(): Promise<PermissionRecord[]> {
+    return this.rbacRepository.findPermissionsByKeys([...BASELINE_ROLE_PERMISSION_KEYS]);
+  }
+
+  private mergePermissions(
+    requested: PermissionRecord[],
+    baseline: PermissionRecord[],
+  ): PermissionRecord[] {
+    const byKey = new Map(requested.map((permission) => [permission.permissionKey, permission]));
+    baseline.forEach((permission) => byKey.set(permission.permissionKey, permission));
+    return [...byKey.values()];
   }
 
   private findUnknownKeys(requestedKeys: string[], found: PermissionRecord[]): string[] {

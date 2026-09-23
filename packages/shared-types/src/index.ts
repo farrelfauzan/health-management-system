@@ -254,6 +254,7 @@ export * from '#rbac/contracts';
 export * from '#rbac/types';
 export * from '#rbac/clinician-role-codes';
 export * from '#rbac/is-clinician-role-code';
+export * from '#rbac/baseline-role-permission-keys';
 export * from '#ai-chatbot/schemas';
 export * from '#ai-chatbot/contracts';
 export * from '#ai-chatbot/types';

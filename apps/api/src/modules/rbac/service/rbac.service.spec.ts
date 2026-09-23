@@ -114,6 +114,7 @@ describe('RbacService', () => {
   it('creates a custom role when the code is free', async () => {
     (rbacRepositoryMock.findAnyRoleByCode as jest.Mock).mockResolvedValue(null);
     (rbacRepositoryMock.createRole as jest.Mock).mockResolvedValue(roleRecord);
+    (rbacRepositoryMock.findPermissionsByKeys as jest.Mock).mockResolvedValue([]);
     const inputRole = { code: 'FRONT_DESK_LEAD', name: 'Front Desk Lead' };
     const actualRole = await service.createRole(inputRole, actorId);
     expect(rbacRepositoryMock.createRole).toHaveBeenCalledWith(inputRole);
@@ -253,6 +254,62 @@ describe('RbacService', () => {
       ),
     ).rejects.toBeInstanceOf(BadRequestException);
     expect(rbacRepositoryMock.replaceRolePermissions).not.toHaveBeenCalled();
+  });
+
+  describe('baseline permissions (P22-T03)', () => {
+    const logoutPermission = {
+      ...patientReadPermission,
+      id: 'perm-logout',
+      permissionKey: 'auth.logout:own',
+      resource: 'Auth',
+      action: 'logout',
+      scope: 'OWN' as const,
+    };
+
+    function arrangeCatalogue(): void {
+      const catalogue = [patientReadPermission, logoutPermission];
+      (rbacRepositoryMock.findPermissionsByKeys as jest.Mock).mockImplementation(
+        async (keys: string[]) =>
+          catalogue.filter((permission) => keys.includes(permission.permissionKey)),
+      );
+    }
+
+    it('attaches the baseline keys the catalogue holds to a new role', async () => {
+      arrangeCatalogue();
+      (rbacRepositoryMock.findAnyRoleByCode as jest.Mock).mockResolvedValue(null);
+      (rbacRepositoryMock.createRole as jest.Mock).mockResolvedValue(roleRecord);
+
+      await service.createRole({ code: 'FRONT_NURSE', name: 'Front Nurse' }, actorId);
+
+      expect(rbacRepositoryMock.replaceRolePermissions).toHaveBeenCalledWith({
+        roleId,
+        permissionIds: ['perm-logout'],
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: AuditAction.ROLE_CREATED,
+          metadata: expect.objectContaining({ baselinePermissionKeys: ['auth.logout:own'] }),
+        }),
+      );
+    });
+
+    it('keeps the baseline when the requested set leaves it out', async () => {
+      arrangeCatalogue();
+      (rbacRepositoryMock.findRoleById as jest.Mock).mockResolvedValue(roleWithPermissions);
+
+      await service.setRolePermissions(roleId, { permissionKeys: ['patient.read:any'] }, actorId);
+
+      expect(rbacRepositoryMock.replaceRolePermissions).toHaveBeenCalledWith({
+        roleId,
+        permissionIds: ['perm-1', 'perm-logout'],
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: AuditAction.ROLE_PERMISSIONS_CHANGED,
+          metadata: expect.objectContaining({ added: ['auth.logout:own'], removed: [] }),
+        }),
+      );
+    });
   });
 
   it('assigns a role and records an audit event', async () => {

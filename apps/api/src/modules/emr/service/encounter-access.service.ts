@@ -1,6 +1,7 @@
 import {
   Actor,
   ActorScopeResolution,
+  EncounterReadAccess,
   EncounterWithRelationsRecord,
   canTransitionEncounterStatus,
   EncounterStatusValue,
@@ -18,6 +19,7 @@ import { AuthRepository } from '../../auth/repository/auth.repository';
 import { EncounterRepository } from '../repository/encounter.repository';
 
 const ENCOUNTER_SUBJECT = 'Encounter';
+const RECORD_VITALS_ACTION = 'record-vitals';
 
 /**
  * The permission and lifecycle gate shared by every encounter route.
@@ -58,6 +60,45 @@ export class EncounterAccessService {
       throw new ForbiddenException(`You are not allowed to ${action} clinical encounters`);
     }
 
+    return scope;
+  }
+
+  /**
+   * Who may read encounters, and how much of them (P22-T03). An `encounter.read`
+   * grant reads the record as it always has. Failing that,
+   * `encounter.record-vitals:any` reads as triage: every visit, but only its
+   * summary and vital signs — the nurse has to find the patient in front of
+   * them and see what was already measured, and nothing more (D-033).
+   */
+  async resolveReadAccessOrThrow(currentUser: CurrentUser): Promise<EncounterReadAccess> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const readScope = this.resolveScope(actor, 'read');
+    if (readScope.hasAny || readScope.hasOwn) {
+      return { scope: readScope, isVitalsOnly: false };
+    }
+    if (this.resolveScope(actor, RECORD_VITALS_ACTION).hasAny) {
+      return { scope: { hasAny: true, hasOwn: false }, isVitalsOnly: true };
+    }
+    throw new ForbiddenException('You are not allowed to read clinical encounters');
+  }
+
+  /**
+   * The scope for recording vital signs (P22-T03): whoever may write the
+   * encounter — the attending clinician under OWN — widened by
+   * `encounter.record-vitals`, which lets triage measure a patient on a visit
+   * they will never sign.
+   */
+  async resolveVitalsScopeOrThrow(currentUser: CurrentUser): Promise<ActorScopeResolution> {
+    const actor = await this.getActorOrThrow(currentUser);
+    const writeScope = this.resolveScope(actor, 'write');
+    const vitalsScope = this.resolveScope(actor, RECORD_VITALS_ACTION);
+    const scope = {
+      hasAny: writeScope.hasAny || vitalsScope.hasAny,
+      hasOwn: writeScope.hasOwn || vitalsScope.hasOwn,
+    };
+    if (!scope.hasAny && !scope.hasOwn) {
+      throw new ForbiddenException('You are not allowed to record vital signs');
+    }
     return scope;
   }
 

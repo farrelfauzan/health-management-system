@@ -42,7 +42,7 @@ export class EncounterClinicalDataController {
 
   @Post('vital-signs')
   @HttpCode(201)
-  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @Auth([{ action: 'record-vitals', subject: 'Encounter', alternativeActions: ['write'] }])
   @Audited({
     resource: 'encounter-vital-signs',
     action: AuditAction.CREATE,
@@ -51,7 +51,7 @@ export class EncounterClinicalDataController {
   @ApiEndpoint({
     summary: 'Record a vital-signs measurement',
     responseDescription:
-      'A new measurement set was appended. Existing sets are never overwritten, so a recheck keeps the reading that prompted it. BMI is derived, not stored.',
+      'A new measurement set was appended. Existing sets are never overwritten, so a recheck keeps the reading that prompted it. BMI is derived, not stored. Open to the attending clinician (`encounter.write`) and to triage (`encounter.record-vitals:any`, P22-T03), which may measure on any open visit but writes nothing else on it.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.encounter.vitalSigns,
       message: 'Vital signs recorded',

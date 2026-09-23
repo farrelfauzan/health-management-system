@@ -38,6 +38,9 @@ describe('D-033 clinical access seed guard', () => {
   const CLINICAL_CONTENT_KEYS: readonly string[] = [
     'encounter.read:any',
     'encounter.write:any',
+    // P22-T03. Vital signs are in D-033's list; triage is a task opening that
+    // custom roles are given in the IAM screen, never a seeded one.
+    'encounter.record-vitals:any',
     'prescription.read:any',
     'prescription.write:any',
     'dispense.write:any',

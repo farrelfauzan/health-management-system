@@ -213,6 +213,22 @@ describe('EncounterService', () => {
         service.listEncounters({ page: 1, limit: 10 } as ListEncountersQueryDto, adminUser),
       ).rejects.toBeInstanceOf(ForbiddenException);
     });
+
+    it('lists every visit for triage holding only record-vitals (P22-T03)', async () => {
+      mockActor([{ action: 'record-vitals', resource: 'Encounter', scope: 'ANY' }]);
+      (encounterRepositoryMock.listEncounters as jest.Mock).mockResolvedValue({
+        items: [],
+        page: 1,
+        limit: 10,
+        total: 0,
+      });
+
+      await service.listEncounters({ page: 1, limit: 10 } as ListEncountersQueryDto, adminUser);
+
+      expect(encounterRepositoryMock.listEncounters).toHaveBeenCalledWith(
+        expect.objectContaining({ ownerUserId: undefined }),
+      );
+    });
   });
 
   describe('getEncounterById', () => {
@@ -303,6 +319,100 @@ describe('EncounterService', () => {
       const actual = await service.getEncounterById(encounterId, adminUser);
 
       expect(actual.vitalSigns[0]?.bodyMassIndex).toBe(25);
+    });
+  });
+
+  describe('getEncounterById — triage reader (P22-T03)', () => {
+    const clinicalDetail = {
+      ...encounterRecord,
+      subjective: 'Demam tiga hari',
+      assessment: 'Suspek ISPA',
+      prognosis: 'BONAM',
+      vitalSigns: [
+        {
+          id: 'vitals-1',
+          encounterId,
+          heightCm: 160,
+          weightKg: 64,
+          systolicBloodPressure: 118,
+          diastolicBloodPressure: 76,
+          pulseRate: 80,
+          respiratoryRate: null,
+          temperatureCelsius: null,
+          oxygenSaturation: null,
+          notes: null,
+          recordedAt: timestamp,
+          recordedById: adminUser.sub,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+        },
+      ],
+      diagnoses: [{ id: 'diagnosis-1' }],
+      procedures: [{ id: 'procedure-1' }],
+      immunizations: [{ id: 'immunization-1' }],
+      prescriptions: [{ id: 'rx-1', status: 'ISSUED', issuedAt: null, _count: { items: 1 } }],
+    };
+
+    function arrangeTriageReader(): void {
+      mockActor([{ action: 'record-vitals', resource: 'Encounter', scope: 'ANY' }]);
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+        encounterRecord,
+      );
+      (encounterRepositoryMock.findEncounterDetailById as jest.Mock).mockResolvedValue(
+        clinicalDetail,
+      );
+    }
+
+    it('returns the summary and the vital signs', async () => {
+      arrangeTriageReader();
+
+      const actual = await service.getEncounterById(encounterId, adminUser);
+
+      expect(actual.patient.fullName).toBe('Aisha Rahman');
+      expect(actual.vitalSigns).toHaveLength(1);
+    });
+
+    it('leaves out the SOAP note and every coded entry', async () => {
+      arrangeTriageReader();
+
+      const actual = await service.getEncounterById(encounterId, adminUser);
+
+      expect(actual).not.toHaveProperty('subjective');
+      expect(actual).not.toHaveProperty('assessment');
+      expect(actual).not.toHaveProperty('prognosis');
+      expect(actual.diagnoses).toEqual([]);
+      expect(actual.procedures).toEqual([]);
+      expect(actual.immunizations).toEqual([]);
+      expect(actual.prescriptions).toEqual([]);
+    });
+
+    it('never asks the laboratory for the visit', async () => {
+      arrangeTriageReader();
+
+      await service.getEncounterById(encounterId, adminUser);
+
+      expect(labOrderServiceMock.findOpenOrdersForEncounter).not.toHaveBeenCalled();
+    });
+
+    it('gives a reader who also holds encounter.read the full record', async () => {
+      mockActor([
+        { action: 'record-vitals', resource: 'Encounter', scope: 'ANY' },
+        { action: 'read', resource: 'Encounter', scope: 'ANY' },
+      ]);
+      (encounterRepositoryMock.findEncounterWithRelationsById as jest.Mock).mockResolvedValue(
+        encounterRecord,
+      );
+      (encounterRepositoryMock.findEncounterDetailById as jest.Mock).mockResolvedValue({
+        ...clinicalDetail,
+        diagnoses: [],
+        procedures: [],
+        immunizations: [],
+        prescriptions: [],
+      });
+
+      const actual = await service.getEncounterById(encounterId, adminUser);
+
+      expect(actual.subjective).toBe('Demam tiga hari');
     });
   });
 

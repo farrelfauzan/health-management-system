@@ -252,6 +252,14 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- themselves, granted wherever `encounter.write:own` is.
     ('encounter.open:any', 'Encounter', 'open', 'ANY', 'Open a clinical encounter on behalf of any doctor'),
     ('encounter.open:own', 'Encounter', 'open', 'OWN', 'Open a clinical encounter one attends'),
+    -- P22-T03. Triage: measure a patient on any open visit before the doctor
+    -- sees them, and read the visit list and its vital signs to do it —
+    -- nothing else of the record, in either direction. Clinical content under
+    -- D-033 (vital signs are in its list), so SUPER_ADMIN's union stops at it;
+    -- no seeded role needs it, because every one that measures already holds
+    -- `encounter.write`, which the route also accepts. It exists for roles
+    -- built in the IAM screen, such as a front-desk nurse.
+    ('encounter.record-vitals:any', 'Encounter', 'record-vitals', 'ANY', 'Record vital signs on any open clinical encounter, and see the visit list and its vital signs (triage)'),
     ('icd10-code.read:any', 'Icd10Code', 'read', 'ANY', 'Search the ICD-10 diagnosis code catalog'),
     ('icd9cm-code.read:any', 'Icd9cmCode', 'read', 'ANY', 'Search the ICD-9-CM procedure code catalog'),
     ('medication.read:any', 'Medication', 'read', 'ANY', 'Read medications'),
@@ -1139,6 +1147,7 @@ clinical_content_keys(permission_key) AS (
   VALUES
     ('encounter.read:any'),
     ('encounter.write:any'),
+    ('encounter.record-vitals:any'),
     ('prescription.read:any'),
     ('prescription.write:any'),
     ('dispense.write:any'),
@@ -1205,6 +1214,36 @@ JOIN "permissions" open_p
   AND open_p."scope" = write_p."scope"
 WHERE write_p."resource" = 'Encounter'
   AND write_p."action" = 'write'
+ON CONFLICT ("role_id", "permission_id") DO NOTHING;
+
+-- P22-T03. Every staff role carries the keys that being signed in needs
+-- (`BASELINE_ROLE_PERMISSION_KEYS` in @hms/shared-types, which the API also
+-- attaches on create and keeps on every update). Roles built in the IAM screen
+-- before that started empty; give them the set so a re-seed repairs them.
+-- Custom roles only: the seeded ones are listed explicitly above, and the
+-- machine accounts must not gain a sign-out or a notification inbox.
+INSERT INTO "role_permissions" (
+  "id",
+  "role_id",
+  "permission_id",
+  "created_at"
+)
+SELECT
+  md5('role_permission:' || r."code" || ':' || p."permission_key")::uuid,
+  r."id",
+  p."id",
+  NOW()
+FROM "roles" r
+JOIN "permissions" p ON p."permission_key" IN (
+  'auth.logout:own',
+  'user.update:own',
+  'notification.read:own',
+  'notification.manage:own',
+  'feature.read-availability:own',
+  'bug-report.create:own'
+)
+WHERE r."is_system" = false
+  AND r."deleted_at" IS NULL
 ON CONFLICT ("role_id", "permission_id") DO NOTHING;
 
 DELETE FROM "role_permissions" rp

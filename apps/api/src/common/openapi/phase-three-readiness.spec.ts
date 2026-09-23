@@ -90,7 +90,7 @@ const expectedOperations: readonly ExpectedOperation[] = [
   operation(EncounterController, 'updateEncounterSoap', 'patch', '/api/v1/encounters/{id}', 'write', 'Encounter', true),
   operation(EncounterController, 'closeEncounter', 'post', '/api/v1/encounters/{id}/close', 'write', 'Encounter'),
   operation(EncounterController, 'cancelEncounter', 'post', '/api/v1/encounters/{id}/cancel', 'write', 'Encounter'),
-  operation(EncounterClinicalDataController, 'recordVitalSigns', 'post', '/api/v1/encounters/{encounterId}/vital-signs', 'write', 'Encounter', true),
+  operation(EncounterClinicalDataController, 'recordVitalSigns', 'post', '/api/v1/encounters/{encounterId}/vital-signs', 'record-vitals', 'Encounter', true),
   operation(EncounterClinicalDataController, 'addDiagnosis', 'post', '/api/v1/encounters/{encounterId}/diagnoses', 'write', 'Encounter', true),
   operation(EncounterClinicalDataController, 'removeDiagnosis', 'delete', '/api/v1/encounters/{encounterId}/diagnoses/{diagnosisId}', 'write', 'Encounter'),
   operation(EncounterClinicalDataController, 'addProcedure', 'post', '/api/v1/encounters/{encounterId}/procedures', 'write', 'Encounter', true),
@@ -153,7 +153,9 @@ describe('Phase 3 backend readiness', () => {
         PERMISSION_CHECKER_KEY,
         controllerMethod as object,
       ) as PermissionRule[] | undefined;
-      expect(actualRules).toContainEqual(expectedOperation.permission);
+      // P22-T03. A rule may also name alternative actions; the primary one is
+      // what this contract pins.
+      expect(actualRules).toContainEqual(expect.objectContaining(expectedOperation.permission));
     });
   });
 

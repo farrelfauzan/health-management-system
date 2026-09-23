@@ -254,4 +254,58 @@ describe('PermissionsGuard', () => {
       true,
     );
   });
+  describe('alternative actions (P22-T03)', () => {
+    const vitalsRule = {
+      action: 'record-vitals',
+      subject: 'Encounter',
+      alternativeActions: ['write'],
+    };
+
+    function arrangeCaller(grantedAction: string): void {
+      (reflector.getAllAndOverride as jest.Mock).mockImplementation((key: string) => {
+        if (key === PUBLIC_ROUTE_KEY) return false;
+        if (key === PERMISSION_CHECKER_KEY) return [vitalsRule];
+        return undefined;
+      });
+      (authRepository.findUserById as jest.Mock).mockResolvedValue({
+        roles: [
+          {
+            role: {
+              code: 'CUSTOM',
+              permissions: [
+                { permission: { action: grantedAction, resource: 'Encounter', scope: 'ANY' } },
+              ],
+            },
+          },
+        ],
+      });
+      (abilityFactory.createForPermissions as jest.Mock).mockReturnValue(
+        createMongoAbility([{ action: grantedAction, subject: 'Encounter' }]),
+      );
+    }
+
+    it('admits a caller holding only the primary action', async () => {
+      arrangeCaller('record-vitals');
+
+      await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).resolves.toBe(
+        true,
+      );
+    });
+
+    it('admits a caller holding only an alternative action', async () => {
+      arrangeCaller('write');
+
+      await expect(guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' }))).resolves.toBe(
+        true,
+      );
+    });
+
+    it('refuses a caller holding neither', async () => {
+      arrangeCaller('read');
+
+      await expect(
+        guard.canActivate(createContext({ sub: 'u1', email: 'a@a.com' })),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+  });
 });

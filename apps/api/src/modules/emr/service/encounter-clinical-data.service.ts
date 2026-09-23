@@ -1,4 +1,5 @@
 import {
+  ActorScopeResolution,
   BpjsReferralResponse,
   DiagnosisResponse,
   EncounterWithRelationsRecord,
@@ -62,7 +63,11 @@ export class EncounterClinicalDataService {
     payload: RecordVitalSignsDto,
     currentUser: CurrentUser,
   ): Promise<VitalSignsResponse> {
-    await this.assertWritableEncounter(encounterId, currentUser);
+    // P22-T03. Triage measures on a visit it will never sign, so this route
+    // takes `encounter.record-vitals` as well as the attending clinician's
+    // write scope — and nothing else here does.
+    const scope = await this.encounterAccessService.resolveVitalsScopeOrThrow(currentUser);
+    await this.assertEncounterAcceptsWrite({ encounterId, scope, currentUser });
     const created = await this.encounterRepository.createVitalSigns({
       encounterId,
       heightCm: payload.heightCm,
@@ -347,7 +352,16 @@ export class EncounterClinicalDataService {
     currentUser: CurrentUser,
   ): Promise<EncounterWithRelationsRecord> {
     const scope = await this.encounterAccessService.resolveScopeOrThrow(currentUser, 'write');
-    const encounter = await this.encounterRepository.findEncounterWithRelationsById(id);
+    return this.assertEncounterAcceptsWrite({ encounterId: id, scope, currentUser });
+  }
+
+  private async assertEncounterAcceptsWrite(params: {
+    encounterId: string;
+    scope: ActorScopeResolution;
+    currentUser: CurrentUser;
+  }): Promise<EncounterWithRelationsRecord> {
+    const { encounterId, scope, currentUser } = params;
+    const encounter = await this.encounterRepository.findEncounterWithRelationsById(encounterId);
 
     if (!encounter) {
       throw new NotFoundException('Encounter not found');

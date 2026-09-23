@@ -11,7 +11,7 @@ import { Reflector } from '@nestjs/core';
 
 import { AuthRepository } from '../../modules/auth/repository/auth.repository';
 import { CurrentUser } from '../auth/current-user.type';
-import { AbilityFactory } from './ability.factory';
+import { AbilityFactory, AppAbility } from './ability.factory';
 import { PERMISSION_CHECKER_KEY } from './check-permissions.decorator';
 import { PermissionRule } from './permission-rule.type';
 import { PUBLIC_ROUTE_KEY } from './public-route.decorator';
@@ -94,7 +94,7 @@ export class PermissionsGuard implements CanActivate {
       for (const rule of requiredRules) {
         ForbiddenError.from(ability)
           .setMessage('You are not allowed to perform this action')
-          .throwUnlessCan(rule.action, rule.subject);
+          .throwUnlessCan(this.resolveGrantedAction(ability, rule), rule.subject);
       }
       return true;
     } catch (error: unknown) {
@@ -103,5 +103,19 @@ export class PermissionsGuard implements CanActivate {
       }
       throw new InternalServerErrorException('Authorization guard failed unexpectedly');
     }
+  }
+
+  /**
+   * The first of a rule's actions the caller holds, or the primary one when
+   * they hold none — so a refusal still names the action the route is for.
+   */
+  private resolveGrantedAction(ability: AppAbility, rule: PermissionRule): string {
+    const alternativeActions = rule.alternativeActions ?? [];
+    const grantedAlternative = alternativeActions.find((action) =>
+      ability.can(action, rule.subject),
+    );
+    return ability.can(rule.action, rule.subject)
+      ? rule.action
+      : (grantedAlternative ?? rule.action);
   }
 }
