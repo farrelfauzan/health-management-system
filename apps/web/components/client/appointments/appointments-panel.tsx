@@ -12,8 +12,10 @@ import { AppointmentsSidePanel } from '#components/client/appointments/appointme
 import { AppointmentsTable } from '#components/client/appointments/appointments-table';
 import { CalendarToolbar } from '#components/client/appointments/calendar-toolbar';
 import { CancelAppointmentDialog } from '#components/client/appointments/cancel-appointment-dialog';
+import { CancelSessionDialog } from '#components/client/appointments/cancel-session-dialog';
 import { DayView } from '#components/client/appointments/day-view';
 import { MonthView } from '#components/client/appointments/month-view';
+import { MoveSessionDialog } from '#components/client/appointments/move-session-dialog';
 import { RescheduleAppointmentDialog } from '#components/client/appointments/reschedule-appointment-dialog';
 import { ScheduleAppointmentDialog } from '#components/client/appointments/schedule-appointment-dialog';
 import { SessionDetailsDialog } from '#components/client/appointments/session-details-dialog';
@@ -103,6 +105,10 @@ export function AppointmentsPanel({
   );
   const [viewingQueueSessionId, setViewingQueueSessionId] = useState<string | null>(null);
   const [viewingSession, setViewingSession] = useState<DoctorSessionCalendarItem | null>(null);
+  const [movingSession, setMovingSession] = useState<DoctorSessionCalendarItem | null>(null);
+  const [cancellingSession, setCancellingSession] = useState<DoctorSessionCalendarItem | null>(
+    null,
+  );
   const visibleAppointments = filterAppointmentsByDoctors(
     appointmentsQuery.appointments,
     selectedDoctorIds,
@@ -321,6 +327,40 @@ export function AppointmentsPanel({
           }}
           session={viewingSession}
           onSelectAppointment={(appointmentId) => void handleSelectQueueEntry(appointmentId)}
+          onMoveSession={(session) => {
+            setViewingSession(null);
+            setMovingSession(session);
+          }}
+          onCancelSession={(session) => {
+            setViewingSession(null);
+            setCancellingSession(session);
+          }}
+        />
+      ) : null}
+
+      {movingSession ? (
+        <MoveSessionDialog
+          key={`move|${movingSession.doctorId}|${movingSession.sessionDate}|${movingSession.startTime}`}
+          open={Boolean(movingSession)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setMovingSession(null);
+            }
+          }}
+          session={movingSession}
+        />
+      ) : null}
+
+      {cancellingSession ? (
+        <CancelSessionDialog
+          key={`cancel|${cancellingSession.doctorId}|${cancellingSession.sessionDate}|${cancellingSession.startTime}`}
+          open={Boolean(cancellingSession)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setCancellingSession(null);
+            }
+          }}
+          session={cancellingSession}
         />
       ) : null}
 

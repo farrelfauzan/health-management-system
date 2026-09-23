@@ -777,6 +777,20 @@ enum AppointmentSessionStatus {
   OPEN
   CLOSED
   CANCELLED
+  /// This occurrence was moved to another time in the same week (P28-T04).
+  /// The row stays at its original start time as a tombstone, so the weekly
+  /// projection does not offer the slot again, and `movedToSessionId` names
+  /// the replacement. Closed to intake, like `CLOSED`.
+  MOVED
+}
+
+/// What an admin did to one practice-session occurrence (P28). Both kinds end
+/// the occurrence at its original time; they differ in where its bookings go.
+enum AppointmentSessionChangeKind {
+  MOVED
+  CANCELLED
+
+  @@map("appointment_session_change_kind")
 }
 
 enum RegistrationStatus {
@@ -1189,6 +1203,7 @@ model User {
   unassignedDoctorPatients   DoctorPatient[]              @relation("DoctorPatientUnassignedBy")
   doctorPatientActivities    DoctorPatientActivity[]      @relation("DoctorPatientActivityActor")
   createdAppointments        Appointment[]                @relation("AppointmentCreatedBy")
+  appointmentSessionChanges  AppointmentSessionChange[]   @relation("AppointmentSessionChangeActor")
   createdRegistrations       Registration[]               @relation("RegistrationCreatedBy")
   createdEncounters          Encounter[]                  @relation("EncounterCreatedBy")
   recordedVitalSigns         VitalSigns[]                 @relation("VitalSignsRecordedBy")
@@ -2283,24 +2298,62 @@ model DoctorSchedule {
 }
 
 model AppointmentSession {
-  id          String                   @id @default(uuid()) @db.Uuid
-  doctorId    String                   @map("doctor_id") @db.Uuid
-  scheduleId  String?                  @map("schedule_id") @db.Uuid
-  sessionDate DateTime                 @map("session_date") @db.Date
-  startTime   String                   @map("start_time")
-  endTime     String                   @map("end_time")
-  maxPatients Int?                     @map("max_patients")
-  status      AppointmentSessionStatus @default(OPEN)
-  createdAt   DateTime                 @default(now()) @map("created_at")
-  updatedAt   DateTime                 @updatedAt @map("updated_at")
+  id               String                   @id @default(uuid()) @db.Uuid
+  doctorId         String                   @map("doctor_id") @db.Uuid
+  scheduleId       String?                  @map("schedule_id") @db.Uuid
+  sessionDate      DateTime                 @map("session_date") @db.Date
+  startTime        String                   @map("start_time")
+  endTime          String                   @map("end_time")
+  maxPatients      Int?                     @map("max_patients")
+  status           AppointmentSessionStatus @default(OPEN)
+  /// The replacement this occurrence was moved to (P28-T04); set only on a
+  /// `MOVED` row.
+  movedToSessionId String?                  @map("moved_to_session_id") @db.Uuid
+  /// Why the clinic moved or cancelled this occurrence, as it was told to the
+  /// patients. Null while the session is ordinary.
+  statusReason     String?                  @map("status_reason")
+  createdAt        DateTime                 @default(now()) @map("created_at")
+  updatedAt        DateTime                 @updatedAt @map("updated_at")
 
-  doctor       DoctorProfile   @relation(fields: [doctorId], references: [id], onDelete: Restrict)
-  schedule     DoctorSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
-  appointments Appointment[]
+  doctor         DoctorProfile              @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  schedule       DoctorSchedule?            @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  movedTo        AppointmentSession?        @relation("AppointmentSessionMove", fields: [movedToSessionId], references: [id], onDelete: SetNull)
+  movedFrom      AppointmentSession[]       @relation("AppointmentSessionMove")
+  appointments   Appointment[]
+  changes        AppointmentSessionChange[] @relation("AppointmentSessionChangeSource")
+  changesArrived AppointmentSessionChange[] @relation("AppointmentSessionChangeTarget")
 
   @@unique([doctorId, sessionDate, startTime])
   @@index([doctorId, sessionDate])
+  @@index([movedToSessionId])
   @@map("appointment_sessions")
+}
+
+/// One admin action on a practice-session occurrence (P28): a move to another
+/// time in the same week, or a cancellation. Append-only. The audit log says
+/// who touched patient data; this row says why that week was different and
+/// how many bookings followed, stayed behind or were cancelled.
+model AppointmentSessionChange {
+  id              String                       @id @default(uuid()) @db.Uuid
+  sessionId       String                       @map("session_id") @db.Uuid
+  kind            AppointmentSessionChangeKind
+  reason          String
+  /// The replacement session for a `MOVED` change; null for a cancellation.
+  targetSessionId String?                      @map("target_session_id") @db.Uuid
+  movedCount      Int                          @default(0) @map("moved_count")
+  blockedCount    Int                          @default(0) @map("blocked_count")
+  cancelledCount  Int                          @default(0) @map("cancelled_count")
+  actorUserId     String                       @map("actor_user_id") @db.Uuid
+  occurredAt      DateTime                     @default(now()) @map("occurred_at")
+
+  session       AppointmentSession  @relation("AppointmentSessionChangeSource", fields: [sessionId], references: [id], onDelete: Restrict)
+  targetSession AppointmentSession? @relation("AppointmentSessionChangeTarget", fields: [targetSessionId], references: [id], onDelete: Restrict)
+  actor         User                @relation("AppointmentSessionChangeActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([sessionId, occurredAt])
+  @@index([targetSessionId])
+  @@index([actorUserId])
+  @@map("appointment_session_changes")
 }
 
 model DoctorPatient {
@@ -5650,6 +5703,11 @@ enum NotificationType {
   /// An SHK sample came back RECALL or INVALID_SAMPLE (P25-T10). Addressed to
   /// the delivery's attendant and every holder of `encounter.write:own`.
   SHK_RECALL
+  /// A practice session was moved or cancelled by the clinic (P28-T02/T04).
+  /// Addressed to each patient with an account whose booking was in it; the
+  /// body carries the doctor, the new window (or none) and the clinic's reason.
+  APPOINTMENT_RESCHEDULED
+  APPOINTMENT_SESSION_CANCELLED
 
   @@map("notification_type")
 }

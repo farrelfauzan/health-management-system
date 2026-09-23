@@ -18,6 +18,7 @@ import { PrismaService } from '../../../common/prisma/prisma.service';
 import { AppointmentStatus, Prisma } from '../../../generated/prisma/client';
 import { buildAppointmentScopeWhere } from './build-appointment-scope-where';
 import { buildSessionScopeWhere } from './build-session-scope-where';
+import { SESSION_WITH_COUNT_SELECT } from './session-with-count-select';
 
 const OPEN_APPOINTMENT_STATUSES: AppointmentStatus[] = ['SCHEDULED', 'CONFIRMED'];
 const CAPACITY_APPOINTMENT_STATUSES: AppointmentStatus[] = ['SCHEDULED', 'CONFIRMED', 'COMPLETED'];
@@ -209,6 +210,32 @@ export class AppointmentManagementRepository {
         isAvailable: true,
         maxPatients: true,
       },
+    });
+  }
+
+  /**
+   * The live replacement a move created for one occurrence of a weekly window
+   * (P28-T03), if any. A replacement keeps its origin `scheduleId` but not
+   * its origin times, and may sit on another weekday, so a booking keyed on
+   * `(scheduleId, sessionDate)` has to be pointed at it rather than rebuilt
+   * from the weekly window. Only rows a move produced qualify (`movedFrom`),
+   * so an ordinary materialised session never takes this path.
+   */
+  async findRelocatedSession(params: { scheduleId: string; sessionDate: string }) {
+    return this.prisma.appointmentSession.findFirst({
+      where: {
+        scheduleId: params.scheduleId,
+        sessionDate: new Date(`${params.sessionDate}T00:00:00.000Z`),
+        status: { in: ['OPEN', 'CLOSED'] },
+        movedFrom: { some: {} },
+      },
+      select: {
+        id: true,
+        startTime: true,
+        endTime: true,
+        maxPatients: true,
+      },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -476,10 +503,10 @@ export class AppointmentManagementRepository {
    * The sessions and standing schedules that decide whether a doctor is
    * practising on one clinic-local day (P19-T16).
    *
-   * Both are read in one round trip and reconciled by the caller: a doctor
-   * with any session row for the date — cancelled included — is described by
-   * those rows and never by the weekly template, because a cancelled session
-   * is an explicit "not today" that a Tuesday schedule must not overrule.
+   * Both are read in one round trip and reconciled by the caller: a session
+   * row — cancelled or moved included — describes its own start time and the
+   * weekly template never overrules it, because a cancelled or moved session
+   * is an explicit "not at this time" (P28-T03).
    */
   async listDoctorPracticeWindows(params: ListDoctorPracticeWindowsParams, dayOfWeek: number) {
     const doctorIds = [...params.doctorIds];
@@ -524,28 +551,7 @@ export class AppointmentManagementRepository {
           lte: new Date(`${params.toDate}T00:00:00.000Z`),
         },
       },
-      select: {
-        id: true,
-        doctorId: true,
-        scheduleId: true,
-        sessionDate: true,
-        startTime: true,
-        endTime: true,
-        maxPatients: true,
-        status: true,
-        _count: {
-          select: {
-            appointments: {
-              where: {
-                status: {
-                  in: CAPACITY_APPOINTMENT_STATUSES,
-                },
-                deletedAt: null,
-              },
-            },
-          },
-        },
-      },
+      select: SESSION_WITH_COUNT_SELECT,
       orderBy: [{ sessionDate: 'asc' }, { startTime: 'asc' }],
     });
   }
@@ -562,29 +568,10 @@ export class AppointmentManagementRepository {
         AND: [buildSessionScopeWhere(actor)],
       },
       select: {
-        id: true,
-        doctorId: true,
-        scheduleId: true,
-        sessionDate: true,
-        startTime: true,
-        endTime: true,
-        maxPatients: true,
-        status: true,
+        ...SESSION_WITH_COUNT_SELECT,
         doctor: {
           select: {
             ownerUserId: true,
-          },
-        },
-        _count: {
-          select: {
-            appointments: {
-              where: {
-                status: {
-                  in: CAPACITY_APPOINTMENT_STATUSES,
-                },
-                deletedAt: null,
-              },
-            },
           },
         },
       },
@@ -633,34 +620,19 @@ export class AppointmentManagementRepository {
     });
   }
 
+  /**
+   * Capacity and OPEN/CLOSED only. Cancelling has its own route that records
+   * a reason and tells the patients (P28-T02).
+   */
   async updateSession(payload: UpdateAppointmentSessionRecordPayload) {
-    return this.prisma.executeTransaction(async (tx) => {
-      const updated = await tx.appointmentSession.update({
-        where: {
-          id: payload.id,
-        },
-        data: {
-          ...(payload.maxPatients !== undefined ? { maxPatients: payload.maxPatients } : {}),
-          ...(payload.status !== undefined ? { status: payload.status } : {}),
-        },
-      });
-
-      if (payload.status === 'CANCELLED') {
-        await tx.appointment.updateMany({
-          where: {
-            sessionId: payload.id,
-            status: {
-              in: OPEN_APPOINTMENT_STATUSES,
-            },
-            deletedAt: null,
-          },
-          data: {
-            status: 'CANCELLED',
-          },
-        });
-      }
-
-      return updated;
+    return this.prisma.appointmentSession.update({
+      where: {
+        id: payload.id,
+      },
+      data: {
+        ...(payload.maxPatients !== undefined ? { maxPatients: payload.maxPatients } : {}),
+        ...(payload.status !== undefined ? { status: payload.status } : {}),
+      },
     });
   }
 

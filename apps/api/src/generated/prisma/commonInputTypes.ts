@@ -701,6 +701,23 @@ export type EnumAppointmentSessionStatusWithAggregatesFilter<$PrismaModel = neve
   _max?: Prisma.NestedEnumAppointmentSessionStatusFilter<$PrismaModel>
 }
 
+export type EnumAppointmentSessionChangeKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.AppointmentSessionChangeKind | Prisma.EnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel> | $Enums.AppointmentSessionChangeKind
+}
+
+export type EnumAppointmentSessionChangeKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AppointmentSessionChangeKind | Prisma.EnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAppointmentSessionChangeKindWithAggregatesFilter<$PrismaModel> | $Enums.AppointmentSessionChangeKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel>
+}
+
 export type EnumDoctorPatientActivityActionFilter<$PrismaModel = never> = {
   equals?: $Enums.DoctorPatientActivityAction | Prisma.EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
   in?: $Enums.DoctorPatientActivityAction[] | Prisma.ListEnumDoctorPatientActivityActionFieldRefInput<$PrismaModel>
@@ -3570,6 +3587,23 @@ export type NestedEnumAppointmentSessionStatusWithAggregatesFilter<$PrismaModel 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumAppointmentSessionStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumAppointmentSessionStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.AppointmentSessionChangeKind | Prisma.EnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel> | $Enums.AppointmentSessionChangeKind
+}
+
+export type NestedEnumAppointmentSessionChangeKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.AppointmentSessionChangeKind | Prisma.EnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  in?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  notIn?: $Enums.AppointmentSessionChangeKind[] | Prisma.ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumAppointmentSessionChangeKindWithAggregatesFilter<$PrismaModel> | $Enums.AppointmentSessionChangeKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumAppointmentSessionChangeKindFilter<$PrismaModel>
 }
 
 export type NestedEnumDoctorPatientActivityActionFilter<$PrismaModel = never> = {

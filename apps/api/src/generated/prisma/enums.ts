@@ -499,10 +499,19 @@ export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentT
 export const AppointmentSessionStatus = {
   OPEN: 'OPEN',
   CLOSED: 'CLOSED',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  MOVED: 'MOVED'
 } as const
 
 export type AppointmentSessionStatus = (typeof AppointmentSessionStatus)[keyof typeof AppointmentSessionStatus]
+
+
+export const AppointmentSessionChangeKind = {
+  MOVED: 'MOVED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type AppointmentSessionChangeKind = (typeof AppointmentSessionChangeKind)[keyof typeof AppointmentSessionChangeKind]
 
 
 export const RegistrationStatus = {
@@ -1152,7 +1161,9 @@ export const NotificationType = {
   TAX_OBLIGATION_DUE: 'TAX_OBLIGATION_DUE',
   TAX_TURNOVER_THRESHOLD: 'TAX_TURNOVER_THRESHOLD',
   TAX_PP55_LAST_YEAR: 'TAX_PP55_LAST_YEAR',
-  SHK_RECALL: 'SHK_RECALL'
+  SHK_RECALL: 'SHK_RECALL',
+  APPOINTMENT_RESCHEDULED: 'APPOINTMENT_RESCHEDULED',
+  APPOINTMENT_SESSION_CANCELLED: 'APPOINTMENT_SESSION_CANCELLED'
 } as const
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

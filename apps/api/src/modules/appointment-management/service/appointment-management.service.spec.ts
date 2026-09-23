@@ -51,6 +51,7 @@ describe('AppointmentManagementService', () => {
     findActiveDoctorById: jest.fn(),
     findScopedActiveDoctorById: jest.fn(),
     findScheduleWindowById: jest.fn(),
+    findRelocatedSession: jest.fn().mockResolvedValue(null),
     findConflictingAppointment: jest.fn(),
     createAppointment: jest.fn(),
     bookSessionSlot: jest.fn(),
@@ -156,6 +157,7 @@ describe('AppointmentManagementService', () => {
     findActiveDoctorById: jest.Mock;
     findScopedActiveDoctorById: jest.Mock;
     findScheduleWindowById: jest.Mock;
+    findRelocatedSession: jest.Mock;
     findConflictingAppointment: jest.Mock;
     createAppointment: jest.Mock;
     bookSessionSlot: jest.Mock;

@@ -13,7 +13,9 @@ import {
   DoctorSessionCalendarItem,
   DoctorSessionListItem,
   ExpiredDoctorLicence,
+  MaterializedSessionRecord,
   NotificationTypeValue,
+  ResolvedSessionOccurrence,
   SESSION_BOOKING_CUTOFF_MINUTES,
   SPECIAL_REQUEST_MIN_LEAD_DAYS,
   SessionQueueEntry,
@@ -333,9 +335,15 @@ export class AppointmentManagementService {
         { doctorIds, sessionDate: params.sessionDate },
         getDayOfWeekForDate(params.sessionDate),
       );
-    const doctorsWithSessions = new Set(sessions.map((session) => session.doctorId));
+    // A session row speaks for its own start time only (P28-T03). A cancelled
+    // or moved row is an explicit "not at this time" the weekly pattern must
+    // not overrule, but it says nothing about the doctor's other windows that
+    // day — and a replacement a move put on this date must not hide them.
+    const occupiedKeys = new Set(
+      sessions.map((session) => `${session.doctorId}|${session.startTime}`),
+    );
     const sessionWindows = sessions
-      .filter((session) => session.status !== 'CANCELLED')
+      .filter((session) => session.status !== 'CANCELLED' && session.status !== 'MOVED')
       .map((session) => ({
         doctorId: session.doctorId,
         date: params.sessionDate,
@@ -343,11 +351,8 @@ export class AppointmentManagementService {
         endTime: session.endTime,
         source: 'SESSION' as const,
       }));
-    // A doctor whose day is already described by session rows is described by
-    // them entirely — a cancelled session means "not today", and the standing
-    // weekly pattern must not put the doctor back in the building.
     const scheduleWindows = schedules
-      .filter((schedule) => !doctorsWithSessions.has(schedule.doctorId))
+      .filter((schedule) => !occupiedKeys.has(`${schedule.doctorId}|${schedule.startTime}`))
       .map((schedule) => ({
         doctorId: schedule.doctorId,
         date: params.sessionDate,
@@ -517,17 +522,7 @@ export class AppointmentManagementService {
       isAvailable: boolean;
       maxPatients: number | null;
     }>;
-    materializedSessions: Array<{
-      id: string;
-      doctorId: string;
-      scheduleId: string | null;
-      sessionDate: Date;
-      startTime: string;
-      endTime: string;
-      maxPatients: number | null;
-      status: DoctorSessionListItem['status'];
-      _count: { appointments: number };
-    }>;
+    materializedSessions: MaterializedSessionRecord[];
     from: string;
     to: string;
   }): DoctorSessionListItem[] {
@@ -642,8 +637,8 @@ export class AppointmentManagementService {
       throw new NotFoundException('Session not found');
     }
 
-    if (session.status === 'CANCELLED') {
-      throw new ConflictException('A cancelled session can not be updated');
+    if (session.status === 'CANCELLED' || session.status === 'MOVED') {
+      throw new ConflictException('A cancelled or moved session can not be updated');
     }
 
     const updated = await this.appointmentManagementRepository.updateSession({
@@ -662,6 +657,8 @@ export class AppointmentManagementService {
       maxPatients: updated.maxPatients,
       status: updated.status,
       bookedCount: session._count.appointments,
+      statusReason: updated.statusReason,
+      movedToSessionId: updated.movedToSessionId,
     };
   }
 
@@ -774,11 +771,12 @@ export class AppointmentManagementService {
     if (!this.resolveScope(actor, 'Appointment', 'create').hasAny) {
       throw new ForbiddenException('You are not allowed to create appointments');
     }
-    const window = await this.resolveBookableWindow(input);
+    const window = await this.resolveSessionOccurrence(input);
+    this.assertBeforeBookingCutoff(window.sessionStart);
     const result = await this.appointmentManagementRepository.bookSessionSlot({
       patientId: input.patientId,
       doctorId: input.doctorId,
-      scheduleId: window.id,
+      scheduleId: window.scheduleId,
       sessionDate: input.sessionDate,
       startTime: window.startTime,
       endTime: window.endTime,
@@ -826,36 +824,23 @@ export class AppointmentManagementService {
     if (!this.resolveScope(actor, 'Appointment', 'create').hasAny) {
       throw new ForbiddenException('You are not allowed to create appointments');
     }
-    const window = await this.appointmentManagementRepository.findScheduleWindowById(
-      input.scheduleId,
-    );
-    if (!window || window.doctorId !== input.doctorId || !window.isAvailable) {
-      throw new BadRequestException('Schedule window not found for this doctor');
-    }
-    if (getDayOfWeekForDate(input.sessionDate) !== window.dayOfWeek) {
-      throw new BadRequestException('sessionDate does not fall on the schedule day');
-    }
-    const sessionStart = buildZonedDateTime({
-      date: input.sessionDate,
-      time: window.startTime,
-      timeZone: this.clinicTimeZone,
-    });
+    const window = await this.resolveSessionOccurrence(input);
     // Returned rather than thrown: a customer who spent three turns choosing a
     // session and then crossed the cutoff needs to be told that, and an
     // exception here would surface as the generic unavailable template.
-    if (Date.now() >= sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000) {
+    if (this.isPastBookingCutoff(window.sessionStart)) {
       return { outcome: 'CUTOFF_PASSED' };
     }
     const result = await this.appointmentManagementRepository.bookSessionSlot({
       patientId: input.patientId,
       prospectivePatientId: input.prospectivePatientId,
       doctorId: input.doctorId,
-      scheduleId: window.id,
+      scheduleId: window.scheduleId,
       sessionDate: input.sessionDate,
       startTime: window.startTime,
       endTime: window.endTime,
       maxPatients: window.maxPatients,
-      scheduledAt: sessionStart,
+      scheduledAt: window.sessionStart,
       notes: input.note,
       createdById: currentUser.sub,
       bookingSource: input.channel,
@@ -941,79 +926,88 @@ export class AppointmentManagementService {
     return this.toAppointmentListItem(appointment);
   }
 
-  private async resolveBookableWindow(input: BookBpjsAntreanSessionInput): Promise<{
-    id: string;
-    startTime: string;
-    endTime: string;
-    maxPatients: number | null;
-    sessionStart: Date;
-  }> {
+  /**
+   * The window a booking for `(scheduleId, sessionDate)` lands in (P28-T03).
+   *
+   * Every booking path — portal and desk, chat channel, BPJS Antrean — names
+   * an occurrence by its weekly window and a date. Normally the times come
+   * from that window and the date must fall on its weekday. When the clinic
+   * has moved the occurrence (P28-T04) the replacement keeps the origin
+   * `scheduleId` but has its own times and possibly another weekday, so it is
+   * looked up first and believed. The original slot is left to its `MOVED`
+   * tombstone, which `bookSessionSlot` already refuses as not open.
+   */
+  private async resolveSessionOccurrence(input: {
+    doctorId: string;
+    scheduleId: string;
+    sessionDate: string;
+  }): Promise<ResolvedSessionOccurrence> {
     const window = await this.appointmentManagementRepository.findScheduleWindowById(
       input.scheduleId,
     );
     if (!window || window.doctorId !== input.doctorId || !window.isAvailable) {
       throw new BadRequestException('Schedule window not found for this doctor');
     }
+    const relocated = await this.appointmentManagementRepository.findRelocatedSession({
+      scheduleId: window.id,
+      sessionDate: input.sessionDate,
+    });
+    if (relocated) {
+      return {
+        scheduleId: window.id,
+        startTime: relocated.startTime,
+        endTime: relocated.endTime,
+        maxPatients: relocated.maxPatients,
+        sessionStart: this.buildSessionStart(input.sessionDate, relocated.startTime),
+      };
+    }
     if (getDayOfWeekForDate(input.sessionDate) !== window.dayOfWeek) {
       throw new BadRequestException('sessionDate does not fall on the schedule day');
     }
-    const sessionStart = buildZonedDateTime({
-      date: input.sessionDate,
-      time: window.startTime,
+    return {
+      scheduleId: window.id,
+      startTime: window.startTime,
+      endTime: window.endTime,
+      maxPatients: window.maxPatients,
+      sessionStart: this.buildSessionStart(input.sessionDate, window.startTime),
+    };
+  }
+
+  private buildSessionStart(sessionDate: string, startTime: string): Date {
+    return buildZonedDateTime({
+      date: sessionDate,
+      time: startTime,
       timeZone: this.clinicTimeZone,
     });
-    if (Date.now() >= sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000) {
+  }
+
+  private isPastBookingCutoff(sessionStart: Date): boolean {
+    return Date.now() >= sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000;
+  }
+
+  private assertBeforeBookingCutoff(sessionStart: Date): void {
+    if (this.isPastBookingCutoff(sessionStart)) {
       throw new BadRequestException(
         `Booking closes ${SESSION_BOOKING_CUTOFF_MINUTES} minutes before the session starts`,
       );
     }
-    return {
-      id: window.id,
-      startTime: window.startTime,
-      endTime: window.endTime,
-      maxPatients: window.maxPatients,
-      sessionStart,
-    };
   }
 
   private async createSessionBooking(
     payload: CreateSessionAppointmentInput,
     currentUser: CurrentUser,
   ): Promise<AppointmentListItem> {
-    const window = await this.appointmentManagementRepository.findScheduleWindowById(
-      payload.scheduleId,
-    );
-
-    if (!window || window.doctorId !== payload.doctorId || !window.isAvailable) {
-      throw new BadRequestException('Schedule window not found for this doctor');
-    }
-
-    if (getDayOfWeekForDate(payload.sessionDate) !== window.dayOfWeek) {
-      throw new BadRequestException('sessionDate does not fall on the schedule day');
-    }
-
-    const sessionStart = buildZonedDateTime({
-      date: payload.sessionDate,
-      time: window.startTime,
-      timeZone: this.clinicTimeZone,
-    });
-    const bookingClosesAtMs = sessionStart.getTime() - SESSION_BOOKING_CUTOFF_MINUTES * 60_000;
-
-    if (Date.now() >= bookingClosesAtMs) {
-      throw new BadRequestException(
-        `Booking closes ${SESSION_BOOKING_CUTOFF_MINUTES} minutes before the session starts`,
-      );
-    }
-
+    const window = await this.resolveSessionOccurrence(payload);
+    this.assertBeforeBookingCutoff(window.sessionStart);
     const result = await this.appointmentManagementRepository.bookSessionSlot({
       patientId: payload.patientId,
       doctorId: payload.doctorId,
-      scheduleId: window.id,
+      scheduleId: window.scheduleId,
       sessionDate: payload.sessionDate,
       startTime: window.startTime,
       endTime: window.endTime,
       maxPatients: window.maxPatients,
-      scheduledAt: sessionStart,
+      scheduledAt: window.sessionStart,
       reason: payload.reason,
       notes: payload.notes,
       createdById: currentUser.sub,
@@ -1210,21 +1204,22 @@ export class AppointmentManagementService {
   }
 
   private toSessionListItem(
-    session: {
-      id: string;
-      doctorId: string;
-      scheduleId: string | null;
-      sessionDate: Date;
-      startTime: string;
-      endTime: string;
-      maxPatients: number | null;
-      status: DoctorSessionListItem['status'];
-      _count: { appointments: number };
-    },
+    session: MaterializedSessionRecord,
     scheduleId: string,
   ): DoctorSessionListItem {
     const bookedCount = session._count.appointments;
     return {
+      ...(session.statusReason ? { statusReason: session.statusReason } : {}),
+      ...(!session.movedTo
+        ? {}
+        : {
+            movedTo: {
+              sessionId: session.movedTo.id,
+              sessionDate: this.toDateString(session.movedTo.sessionDate),
+              startTime: session.movedTo.startTime,
+              endTime: session.movedTo.endTime,
+            },
+          }),
       id: session.id,
       scheduleId,
       doctorId: session.doctorId,

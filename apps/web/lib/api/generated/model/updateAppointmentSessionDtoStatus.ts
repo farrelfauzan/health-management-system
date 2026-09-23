@@ -12,5 +12,4 @@ export type UpdateAppointmentSessionDtoStatus = typeof UpdateAppointmentSessionD
 export const UpdateAppointmentSessionDtoStatus = {
   OPEN: 'OPEN',
   CLOSED: 'CLOSED',
-  CANCELLED: 'CANCELLED',
 } as const;

@@ -5,9 +5,12 @@ import { DoctorManagementModule } from '../doctor-management/doctor-management.m
 import { DoctorPatientModule } from '../doctor-patient/doctor-patient.module';
 import { NotificationModule } from '../notification/notification.module';
 import { AppointmentManagementController } from './controller/appointment-management.controller';
+import { AppointmentSessionChangeController } from './controller/appointment-session-change.controller';
 import { AppointmentSessionController } from './controller/appointment-session.controller';
 import { AppointmentManagementRepository } from './repository/appointment-management.repository';
+import { AppointmentSessionChangeRepository } from './repository/appointment-session-change.repository';
 import { AppointmentManagementService } from './service/appointment-management.service';
+import { AppointmentSessionChangeService } from './service/appointment-session-change.service';
 
 /**
  * `DoctorManagementModule` arrives with `P16-T20`: the scheduling warning
@@ -18,8 +21,17 @@ import { AppointmentManagementService } from './service/appointment-management.s
  */
 @Module({
   imports: [AuthModule, DoctorManagementModule, DoctorPatientModule, NotificationModule],
-  controllers: [AppointmentManagementController, AppointmentSessionController],
-  providers: [AppointmentManagementRepository, AppointmentManagementService],
+  controllers: [
+    AppointmentManagementController,
+    AppointmentSessionChangeController,
+    AppointmentSessionController,
+  ],
+  providers: [
+    AppointmentManagementRepository,
+    AppointmentManagementService,
+    AppointmentSessionChangeRepository,
+    AppointmentSessionChangeService,
+  ],
   exports: [AppointmentManagementService],
 })
 export class AppointmentManagementModule {}

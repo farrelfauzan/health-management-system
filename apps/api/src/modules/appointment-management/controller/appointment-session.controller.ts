@@ -114,7 +114,7 @@ export class AppointmentSessionController {
   @ApiEndpoint({
     summary: 'Update a session',
     responseDescription:
-      'The session capacity or status was updated; cancelling a session cancels its open bookings.',
+      'The session capacity or status (OPEN or CLOSED) was updated. Cancelling goes through `POST /appointment-sessions/:id/cancel`, which records a reason and tells the patients.',
     responseExample: {
       data: PHASE_THREE_EXAMPLES.appointment.session,
       message: 'Session updated',

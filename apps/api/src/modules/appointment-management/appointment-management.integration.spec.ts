@@ -34,6 +34,7 @@ describe('AppointmentManagement integration', () => {
     findActiveDoctorById: jest.fn(),
     findScopedActiveDoctorById: jest.fn(),
     findScheduleWindowById: jest.fn(),
+    findRelocatedSession: jest.fn().mockResolvedValue(null),
     findConflictingAppointment: jest.fn(),
     createAppointment: jest.fn(),
     bookSessionSlot: jest.fn(),

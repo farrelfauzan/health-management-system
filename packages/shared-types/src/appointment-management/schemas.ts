@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { scheduleTimeSchema } from '#doctor-management/schemas';
+
 export const APPOINTMENT_STATUSES = [
   'REQUESTED',
   'SCHEDULED',
@@ -39,7 +41,12 @@ export const SESSION_BOOKING_CUTOFF_MINUTES = 60;
 
 export const SPECIAL_REQUEST_MIN_LEAD_DAYS = 3;
 
-export const APPOINTMENT_SESSION_STATUSES = ['OPEN', 'CLOSED', 'CANCELLED'] as const;
+/**
+ * `MOVED` (P28-T04) marks an occurrence the clinic moved to another time in the
+ * same week. The row stays at its original start as a tombstone so the weekly
+ * projection cannot offer the slot again; like `CLOSED` it takes no bookings.
+ */
+export const APPOINTMENT_SESSION_STATUSES = ['OPEN', 'CLOSED', 'CANCELLED', 'MOVED'] as const;
 
 export const appointmentSessionStatusSchema = z.enum(APPOINTMENT_SESSION_STATUSES);
 
@@ -152,11 +159,7 @@ function getTimeZoneOffsetMs(instant: Date, timeZone: string): number {
  * Interprets a calendar date + HH:mm wall-clock pair in the given IANA timeZone
  * and returns the corresponding UTC instant.
  */
-export function buildZonedDateTime(params: {
-  date: string;
-  time: string;
-  timeZone: string;
-}): Date {
+export function buildZonedDateTime(params: { date: string; time: string; timeZone: string }): Date {
   const { date, time, timeZone } = params;
   const naiveUtc = new Date(`${date}T${time}:00.000Z`);
   const firstOffset = getTimeZoneOffsetMs(naiveUtc, timeZone);
@@ -230,13 +233,146 @@ export const listDoctorSessionsQuerySchema = z
     message: 'from must be earlier than or equal to to',
   });
 
+/**
+ * The statuses an admin may set directly. Cancelling goes through
+ * `POST /appointment-sessions/:id/cancel`, which demands a reason and tells the
+ * patients (P28-T02), and `MOVED` is only ever written by a reschedule.
+ */
+export const directAppointmentSessionStatusSchema = z.enum(['OPEN', 'CLOSED']);
+
 export const updateAppointmentSessionSchema = z
   .object({
     maxPatients: z.number().int().min(1).nullable().optional(),
-    status: appointmentSessionStatusSchema.optional(),
+    status: directAppointmentSessionStatusSchema.optional(),
   })
   .refine((payload) => payload.maxPatients !== undefined || payload.status !== undefined, {
     message: 'At least one field must be provided',
+  });
+
+const MONDAY_OFFSET_DAYS = 6;
+const DAYS_IN_WEEK = 7;
+const DAY_IN_MS = 86_400_000;
+
+/**
+ * The Monday and Sunday of the week a clinic-local calendar date falls in.
+ * A session may only be moved inside this week (P28-T04, PO 2026-09-23).
+ * Works on calendar dates, so no timezone is involved: the date is already
+ * the clinic's.
+ */
+export function getCalendarWeekBounds(date: string): { monday: string; sunday: string } {
+  const dayMs = new Date(`${date}T00:00:00.000Z`).getTime();
+  const daysSinceMonday = (getDayOfWeekForDate(date) + MONDAY_OFFSET_DAYS) % DAYS_IN_WEEK;
+  const mondayMs = dayMs - daysSinceMonday * DAY_IN_MS;
+  return {
+    monday: new Date(mondayMs).toISOString().slice(0, 10),
+    sunday: new Date(mondayMs + (DAYS_IN_WEEK - 1) * DAY_IN_MS).toISOString().slice(0, 10),
+  };
+}
+
+/** Whether two calendar dates fall in the same Monday–Sunday week. */
+export function isSameCalendarWeek(first: string, second: string): boolean {
+  return getCalendarWeekBounds(first).monday === getCalendarWeekBounds(second).monday;
+}
+
+const SESSION_CHANGE_REASON_MIN_LENGTH = 3;
+const SESSION_CHANGE_REASON_MAX_LENGTH = 500;
+
+/** What the patients are told; required on every move and cancellation. */
+export const sessionChangeReasonSchema = z
+  .string()
+  .trim()
+  .min(SESSION_CHANGE_REASON_MIN_LENGTH)
+  .max(SESSION_CHANGE_REASON_MAX_LENGTH);
+
+/**
+ * Materialises one occurrence of a weekly practice window (P28-T02), so an
+ * admin can cancel or move a session nobody has booked yet. Same key a
+ * booking uses.
+ */
+export const materializeAppointmentSessionSchema = z.object({
+  scheduleId: z.string().uuid(),
+  sessionDate: calendarDateSchema,
+});
+
+/**
+ * Why a booking stayed behind when its session moved to another day (P28-T04):
+ * the patient already has a live registration for the original day, or the
+ * booking is BPJS's own row and Antrean has no move, only cancel and re-take.
+ * A same-day move leaves nobody behind.
+ */
+export const SESSION_MOVE_BLOCKED_REASONS = ['REGISTERED', 'BPJS_BOOKING'] as const;
+export const sessionMoveBlockedReasonSchema = z.enum(SESSION_MOVE_BLOCKED_REASONS);
+export type SessionMoveBlockedReasonValue = z.infer<typeof sessionMoveBlockedReasonSchema>;
+
+/**
+ * Splits a moving session's open bookings into those that follow it and those
+ * that stay behind (P28-T04, PO 2026-09-23).
+ *
+ * Within the same day everybody follows, including patients already checked
+ * in: the doctor is late, the people waiting keep their place, and the date
+ * BPJS was told is unchanged. To another day, a live registration (the
+ * patient is registered for the original day) and a BPJS booking (Antrean
+ * has no move, only cancel and re-take) stay, for the front desk to handle.
+ */
+export function partitionSessionMoveBookings(params: {
+  bookings: ReadonlyArray<{
+    appointmentId: string;
+    bpjsBookingCode: string | null;
+    hasLiveRegistration: boolean;
+  }>;
+  isSameDay: boolean;
+}): {
+  movableIds: string[];
+  blocked: Array<{ appointmentId: string; reason: SessionMoveBlockedReasonValue }>;
+} {
+  if (params.isSameDay) {
+    return { movableIds: params.bookings.map((booking) => booking.appointmentId), blocked: [] };
+  }
+  const movableIds: string[] = [];
+  const blocked: Array<{ appointmentId: string; reason: SessionMoveBlockedReasonValue }> = [];
+  for (const booking of params.bookings) {
+    if (booking.hasLiveRegistration) {
+      blocked.push({ appointmentId: booking.appointmentId, reason: 'REGISTERED' });
+    } else if (booking.bpjsBookingCode !== null) {
+      blocked.push({ appointmentId: booking.appointmentId, reason: 'BPJS_BOOKING' });
+    } else {
+      movableIds.push(booking.appointmentId);
+    }
+  }
+  return { movableIds, blocked };
+}
+
+/**
+ * Whether two same-day `HH:mm` windows overlap. Touching ends (10:00–12:00
+ * and 12:00–14:00) do not.
+ */
+export function doSessionWindowsOverlap(
+  first: { startTime: string; endTime: string },
+  second: { startTime: string; endTime: string },
+): boolean {
+  return first.startTime < second.endTime && second.startTime < first.endTime;
+}
+
+export const cancelAppointmentSessionSchema = z.object({
+  reason: sessionChangeReasonSchema,
+});
+
+/**
+ * Moves one occurrence to another window in the same Monday–Sunday week
+ * (P28-T04). The same-week rule needs the source's date, so the service
+ * checks it; the schema checks only what the body alone can decide.
+ */
+export const rescheduleAppointmentSessionSchema = z
+  .object({
+    sessionDate: calendarDateSchema,
+    startTime: scheduleTimeSchema,
+    endTime: scheduleTimeSchema,
+    maxPatients: z.number().int().min(1).nullable().optional(),
+    reason: sessionChangeReasonSchema,
+  })
+  .refine((payload) => payload.startTime < payload.endTime, {
+    message: 'startTime must be earlier than endTime',
+    path: ['endTime'],
   });
 
 export const listAppointmentsQuerySchema = z
@@ -288,6 +424,11 @@ export type ApproveAppointmentInput = z.infer<typeof approveAppointmentSchema>;
 export type RejectAppointmentInput = z.infer<typeof rejectAppointmentSchema>;
 export type ListDoctorSessionsQueryInput = z.infer<typeof listDoctorSessionsQuerySchema>;
 export type UpdateAppointmentSessionInput = z.infer<typeof updateAppointmentSessionSchema>;
+export type MaterializeAppointmentSessionInput = z.infer<
+  typeof materializeAppointmentSessionSchema
+>;
+export type CancelAppointmentSessionInput = z.infer<typeof cancelAppointmentSessionSchema>;
+export type RescheduleAppointmentSessionInput = z.infer<typeof rescheduleAppointmentSessionSchema>;
 export type ListAppointmentsQueryInput = z.infer<typeof listAppointmentsQuerySchema>;
 export type UpdateAppointmentInput = z.infer<typeof updateAppointmentSchema>;
 export type CancelAppointmentInput = z.infer<typeof cancelAppointmentSchema>;

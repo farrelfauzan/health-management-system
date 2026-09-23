@@ -329,6 +329,14 @@ export type DoctorSchedule = Prisma.DoctorScheduleModel
  */
 export type AppointmentSession = Prisma.AppointmentSessionModel
 /**
+ * Model AppointmentSessionChange
+ * One admin action on a practice-session occurrence (P28): a move to another
+ * time in the same week, or a cancellation. Append-only. The audit log says
+ * who touched patient data; this row says why that week was different and
+ * how many bookings followed, stayed behind or were cancelled.
+ */
+export type AppointmentSessionChange = Prisma.AppointmentSessionChangeModel
+/**
  * Model DoctorPatient
  * 
  */

@@ -77,6 +77,7 @@ export const ModelName = {
   DoctorAuthorityExpiryNotice: 'DoctorAuthorityExpiryNotice',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
+  AppointmentSessionChange: 'AppointmentSessionChange',
   DoctorPatient: 'DoctorPatient',
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
@@ -666,11 +667,29 @@ export const AppointmentSessionScalarFieldEnum = {
   endTime: 'endTime',
   maxPatients: 'maxPatients',
   status: 'status',
+  movedToSessionId: 'movedToSessionId',
+  statusReason: 'statusReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type AppointmentSessionScalarFieldEnum = (typeof AppointmentSessionScalarFieldEnum)[keyof typeof AppointmentSessionScalarFieldEnum]
+
+
+export const AppointmentSessionChangeScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  kind: 'kind',
+  reason: 'reason',
+  targetSessionId: 'targetSessionId',
+  movedCount: 'movedCount',
+  blockedCount: 'blockedCount',
+  cancelledCount: 'cancelledCount',
+  actorUserId: 'actorUserId',
+  occurredAt: 'occurredAt'
+} as const
+
+export type AppointmentSessionChangeScalarFieldEnum = (typeof AppointmentSessionChangeScalarFieldEnum)[keyof typeof AppointmentSessionChangeScalarFieldEnum]
 
 
 export const DoctorPatientScalarFieldEnum = {

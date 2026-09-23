@@ -5,7 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useTranslations } from 'next-intl';
 
 import { ExpiredLicenceWarning } from '#components/client/appointments/expired-licence-warning';
+import { SessionChangeActions } from '#components/client/appointments/session-change-actions';
 import { SessionQueueTable } from '#components/client/appointments/session-queue-table';
+import { SessionStatusNote } from '#components/client/appointments/session-status-note';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { useSessionQueue } from '#lib/appointments/use-session-queue';
 
@@ -14,6 +16,8 @@ type SessionDetailsDialogProps = {
   onOpenChange: (open: boolean) => void;
   session: DoctorSessionCalendarItem;
   onSelectAppointment?: (appointmentId: string) => void;
+  onMoveSession?: (session: DoctorSessionCalendarItem) => void;
+  onCancelSession?: (session: DoctorSessionCalendarItem) => void;
 };
 
 function formatCapacitySummary(session: DoctorSessionCalendarItem): string {
@@ -28,6 +32,8 @@ export function SessionDetailsDialog({
   onOpenChange,
   session,
   onSelectAppointment,
+  onMoveSession,
+  onCancelSession,
 }: SessionDetailsDialogProps) {
   const t = useTranslations('operations.appointments');
   const queueQuery = useSessionQueue(session.id ?? '');
@@ -46,6 +52,7 @@ export function SessionDetailsDialog({
         </DialogHeader>
         <div className="space-y-4">
           <ExpiredLicenceWarning expiredLicenses={session.expiredLicenses} />
+          <SessionStatusNote session={session} />
           <div className="flex items-center justify-between rounded-lg border border-slate-200 px-3 py-2">
             <span className="text-sm text-slate-900">{formatCapacitySummary(session)}</span>
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium capitalize text-slate-600">
@@ -73,6 +80,13 @@ export function SessionDetailsDialog({
             number have not arrived yet.
             {onSelectAppointment ? ' Click a patient to open their appointment.' : ''}
           </p>
+          {onMoveSession && onCancelSession ? (
+            <SessionChangeActions
+              session={session}
+              onMove={() => onMoveSession(session)}
+              onCancel={() => onCancelSession(session)}
+            />
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>

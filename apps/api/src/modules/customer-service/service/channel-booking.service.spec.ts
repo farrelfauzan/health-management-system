@@ -417,6 +417,18 @@ describe('ChannelBookingService', () => {
     expect(mockAppointmentService.listSessionsCalendar).not.toHaveBeenCalled();
   });
 
+  it('books the replacement when the session moved later the same day', async () => {
+    mockAppointmentService.listSessionsCalendar.mockResolvedValue([
+      buildSession({ status: 'MOVED', bookedCount: 0 }),
+      buildSession({ startTime: '13:00', endTime: '15:00' }),
+    ]);
+
+    const outcome = await bookingService.bookFromChannel(buildBookingParams());
+
+    expect(outcome.result).not.toEqual({ outcome: 'REJECTED', reason: 'SESSION_CLOSED' });
+    expect(mockAppointmentService.bookSessionForChannel).toHaveBeenCalled();
+  });
+
   it('refuses a full session before touching the patient registry', async () => {
     mockAppointmentService.listSessionsCalendar.mockResolvedValue([
       buildSession({ remaining: 0, bookedCount: 10 }),

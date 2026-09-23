@@ -162,6 +162,14 @@
           "title": "Appointment declined",
           "body": "Your appointment request with {doctorName} was declined."
         },
+        "appointmentRescheduled": {
+          "title": "Doctor's session moved",
+          "body": "{doctorName}'s session moved to {sessionDate}, {startTime}–{endTime}. Reason: {reason}"
+        },
+        "appointmentSessionCancelled": {
+          "title": "Doctor's session cancelled",
+          "body": "{doctorName}'s session on {sessionDate}, {startTime}–{endTime} was cancelled. Reason: {reason}"
+        },
         "vaultDocumentExpiring": {
           "title": "Your document is expiring",
           "body": "“{documentTitle}” in your own documents expires on {expiresAt}."
