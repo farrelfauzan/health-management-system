@@ -518,7 +518,14 @@ export class ChannelBookingService {
         { from: reference.sessionDate, to: reference.sessionDate },
         actor,
       );
-      return sessions.find((session) => session.scheduleId === reference.scheduleId) ?? null;
+      // A same-day move (P28-T04) leaves two entries with this `scheduleId`
+      // on the date: the `MOVED` original and its replacement. The customer's
+      // token names the occurrence, so the replacement is the one they mean.
+      return (
+        sessions.find(
+          (session) => session.scheduleId === reference.scheduleId && session.status !== 'MOVED',
+        ) ?? null
+      );
     } catch (caughtError) {
       this.logger.warn(
         buildSafeErrorLog('cs_session_lookup_failed', {
