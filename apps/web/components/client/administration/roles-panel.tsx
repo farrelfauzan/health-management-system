@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 
 import { RoleDeleteDialog } from '#components/client/administration/role-delete-dialog';
 import { RoleFormDialog } from '#components/client/administration/role-form-dialog';
+import { RoleGuideDialog } from '#components/client/administration/role-guide-dialog';
 import { RolePermissionsDialog } from '#components/client/administration/role-permissions-dialog';
 import { RolesTable } from '#components/client/administration/roles-table';
 import { PageHeader } from '#components/shared/page-header';
@@ -22,6 +23,7 @@ export function RolesPanel() {
   const [editingRole, setEditingRole] = useState<RoleListItem | null>(null);
   const [permissionsRole, setPermissionsRole] = useState<RoleListItem | null>(null);
   const [deletingRole, setDeletingRole] = useState<RoleListItem | null>(null);
+  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
 
   function handleOpenCreateDialog(): void {
     setEditingRole(null);
@@ -44,16 +46,22 @@ export function RolesPanel() {
           { label: t('title') },
         ]}
         actions={
-          <Can action="create" subject="Role">
-            <Button
-              type="button"
-              className="bg-primary-container hover:bg-primary"
-              onClick={handleOpenCreateDialog}
-            >
-              <Icon name="add_moderator" size={18} />
-              {t('addRole')}
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" onClick={() => setIsGuideOpen(true)}>
+              <Icon name="menu_book" size={18} />
+              {t('guide.open')}
             </Button>
-          </Can>
+            <Can action="create" subject="Role">
+              <Button
+                type="button"
+                className="bg-primary-container hover:bg-primary"
+                onClick={handleOpenCreateDialog}
+              >
+                <Icon name="add_moderator" size={18} />
+                {t('addRole')}
+              </Button>
+            </Can>
+          </div>
         }
       />
 
@@ -96,6 +104,8 @@ export function RolesPanel() {
           }}
         />
       ) : null}
+
+      {isGuideOpen ? <RoleGuideDialog open={isGuideOpen} onOpenChange={setIsGuideOpen} /> : null}
 
       {deletingRole ? (
         <RoleDeleteDialog

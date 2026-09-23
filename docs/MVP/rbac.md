@@ -42,6 +42,17 @@ A role composed in the IAM screen must work from the keys an administrator ticks
 
 A new permission key that only works alongside another one gets an entry in `EXPLICIT_PERMISSION_DEPENDENCIES`, not a sentence in a ticket.
 
+**Templates and the role guide (P22-T05).** `ROLE_TEMPLATES` holds the three custom roles clinics build: FRONT_NURSE, CASHIER and RECEPTIONIST. `POST /rbac/roles` accepts `templateCode` and grants the template's keys, closed over their dependencies, with the role. `role-templates.spec.ts` holds each template to five conditions against the seed:
+- every key is real;
+- the set is already closed under its dependencies;
+- it opens exactly one shell;
+- it asks no member for MFA;
+- it reaches no clinical content beyond triage vital signs.
+
+Midwives use the seeded `MIDWIFE` role, never a template. The IAM "Role guide" dialog is generated from the templates and the live catalogue.
+
+**Shells (P22-T05).** A session may open every shell it holds a portal key for. `resolveOpenableShells` decides this; SUPER_ADMIN is pinned to the admin shell, because its union holds every portal key. By default the user lands on the admin shell, then on the shell they last picked in the profile menu's switcher (the `hms_preferred_shell` cookie, honoured only for a shell the session can open).
+
 ## 3. Permission Grammar
 
 Use normalized permission keys:

@@ -62,7 +62,10 @@ export type AppAction =
   // P22-T03. Triage: taking vital signs on a visit one will never sign. Split
   // from `write` so a front-desk nurse measures without holding the SOAP note,
   // diagnoses and prescriptions that `write` opens.
-  | 'record-vitals';
+  | 'record-vitals'
+  // P22-T05. Billing and the front desk see a visit's summary — patient,
+  // clinician, times, status — without the record `read` opens.
+  | 'read-summary';
 export type AppSubject =
   | 'User'
   | 'Role'

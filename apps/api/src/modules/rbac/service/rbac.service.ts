@@ -12,6 +12,7 @@ import {
   RoleRecord,
   RoleSummary,
   resolvePermissionRequirements,
+  ROLE_TEMPLATES,
   RoleWithPermissionsRecord,
   SetRolePermissionsInput,
   UpdateRoleInput,
@@ -83,11 +84,21 @@ export class RbacService {
           : 'Role code already exists',
       );
     }
-    const role = await this.rbacRepository.createRole(input);
+    const { templateCode, ...roleInput } = input;
+    const role = await this.rbacRepository.createRole(roleInput);
+    // P22-T05. A template's keys are granted with the role, closed over their
+    // dependencies exactly as a later save would close them.
+    const templateKeys = this.findTemplateKeys(templateCode);
+    const templatePermissions =
+      templateKeys.length > 0 ? await this.rbacRepository.findPermissionsByKeys(templateKeys) : [];
     const baselinePermissions = await this.findBaselinePermissions();
+    const grantedPermissions = this.mergePermissions(
+      this.mergePermissions(templatePermissions, await this.findDependencyPermissions(templateKeys)),
+      baselinePermissions,
+    );
     await this.rbacRepository.replaceRolePermissions({
       roleId: role.id,
-      permissionIds: baselinePermissions.map((permission) => permission.id),
+      permissionIds: grantedPermissions.map((permission) => permission.id),
     });
     await this.auditService.record({
       action: AuditAction.ROLE_CREATED,
@@ -98,6 +109,7 @@ export class RbacService {
         roleCode: role.code,
         name: role.name,
         baselinePermissionKeys: baselinePermissions.map((permission) => permission.permissionKey),
+        templateCode: templateCode ?? null,
       },
     });
     return this.toRoleSummary(role);
@@ -233,6 +245,11 @@ export class RbacService {
    */
   private async findBaselinePermissions(): Promise<PermissionRecord[]> {
     return this.rbacRepository.findPermissionsByKeys([...BASELINE_ROLE_PERMISSION_KEYS]);
+  }
+
+  private findTemplateKeys(templateCode: CreateRoleInput['templateCode']): string[] {
+    const template = ROLE_TEMPLATES.find((candidate) => candidate.code === templateCode);
+    return template ? [...template.permissionKeys] : [];
   }
 
   /** The catalogue rows the requested keys need but did not name (P22-T04). */

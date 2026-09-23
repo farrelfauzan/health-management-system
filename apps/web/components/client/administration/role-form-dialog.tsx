@@ -8,6 +8,7 @@ import {
   type CreateRoleInput,
   type RoleListItem,
   type RoleSummary,
+  type RoleTemplateCodeValue,
   type UpdateRoleInput,
 } from '@hms/shared-types';
 import {
@@ -24,6 +25,7 @@ import {
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
+import { RoleTemplateSelect } from '#components/client/administration/role-template-select';
 import { FieldError } from '#components/client/shared/field-error';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
@@ -44,7 +46,9 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
   const t = useTranslations('operations.administration.roles');
   const isEditMode = Boolean(role);
   const queryClient = useQueryClient();
+  const tTemplates = useTranslations('operations.administration.roles.templates');
   const [formError, setFormError] = useState<string | null>(null);
+  const [templateCode, setTemplateCode] = useState<RoleTemplateCodeValue | null>(null);
   const createMutation = useMutation({
     mutationFn: (input: CreateRoleInput) => rbacControllerCreateRoleV1(input),
   });
@@ -76,6 +80,7 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
             code: value.code,
             name: value.name,
             ...(description.length > 0 ? { description } : {}),
+            ...(templateCode ? { templateCode } : {}),
           });
           parseApiSuccess<RoleSummary>(response, t('saveError'));
         }
@@ -108,6 +113,24 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
           }}
         >
           {formError ? <InlineNotice tone="error">{formError}</InlineNotice> : null}
+
+          {isEditMode ? null : (
+            <RoleTemplateSelect
+              id="role-template"
+              value={templateCode}
+              onChange={(next) => {
+                setTemplateCode(next);
+                // Prefill what is still empty, so picking a template is enough
+                // to create a sensibly named role.
+                if (next && form.getFieldValue('name').trim() === '') {
+                  form.setFieldValue('name', tTemplates(`items.${next}.name`));
+                }
+                if (next && form.getFieldValue('code').trim() === '') {
+                  form.setFieldValue('code', next);
+                }
+              }}
+            />
+          )}
 
           {isEditMode ? null : (
             <form.Field name="code" validators={{ onSubmit: createRoleSchema.shape.code }}>

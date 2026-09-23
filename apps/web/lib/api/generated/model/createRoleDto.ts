@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateRoleDtoTemplateCode } from './createRoleDtoTemplateCode';
 
 export interface CreateRoleDto {
   /**
@@ -20,4 +21,5 @@ export interface CreateRoleDto {
   name: string;
   /** @maxLength 500 */
   description?: string;
+  templateCode?: CreateRoleDtoTemplateCode;
 }

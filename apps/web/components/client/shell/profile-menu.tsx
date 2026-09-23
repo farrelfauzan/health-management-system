@@ -1,5 +1,6 @@
 'use client';
 
+import type { PortalShellValue } from '@hms/shared-types';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -18,6 +19,7 @@ import {
 import { AvatarInitials } from '#components/shared/avatar-initials';
 import { ReportABugItem } from '#components/client/bug-report/report-a-bug-item';
 import { LockWorkstationItem } from '#components/client/shell/lock-workstation-item';
+import { ShellSwitchMenuItems } from '#components/client/shell/shell-switch-menu-items';
 import { endSession } from '#lib/auth/end-session';
 import type { ShellProfile } from '#lib/shell/shell-profile';
 
@@ -37,12 +39,21 @@ type ProfileMenuProps = {
    * simply absent — patients are not reporters.
    */
   isBugReportingEnabled?: boolean;
+  /**
+   * The shells this session may open and the one it is in (P22-T05). Both
+   * resolved by the server layout from the same claims `proxy.ts` gates on;
+   * with fewer than two openable shells the switcher is absent.
+   */
+  openableShells?: readonly PortalShellValue[];
+  currentShell?: PortalShellValue;
 };
 
 export function ProfileMenu({
   profile,
   profileHref,
   isBugReportingEnabled = false,
+  openableShells = [],
+  currentShell,
 }: ProfileMenuProps) {
   const t = useTranslations('authShell.shell.profile');
   const queryClient = useQueryClient();
@@ -79,6 +90,9 @@ export function ProfileMenu({
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {currentShell ? (
+          <ShellSwitchMenuItems openableShells={openableShells} currentShell={currentShell} />
+        ) : null}
         {profileHref ? (
           <DropdownMenuItem asChild>
             <Link href={profileHref}>

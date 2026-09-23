@@ -99,10 +99,12 @@ export class EncounterService {
     if (!detail) {
       throw new NotFoundException('Encounter not found');
     }
-    // P22-T03. Triage reads the summary and the vitals, and is never handed
-    // the lab work the two lookups below would fetch.
-    if (access.isVitalsOnly) {
-      return this.encounterMapper.toVitalsOnlyEncounterDetail(detail);
+    // P22-T03/T05. Triage and billing read the summary (triage with the
+    // vitals), and are never handed the lab work the two lookups below fetch.
+    if (access.view !== 'FULL') {
+      return this.encounterMapper.toNonClinicalEncounterDetail(detail, {
+        isIncludingVitalSigns: access.view === 'VITALS',
+      });
     }
     // P18-T02. Asked of the module that owns orders rather than joined into the
     // detail include: the laboratory is an optional feature, and a clinic

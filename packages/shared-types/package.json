@@ -194,6 +194,7 @@
     "#rbac/resolve-permission-requirements": "./src/rbac/resolve-permission-requirements.ts",
     "#rbac/expand-permission-dependencies": "./src/rbac/expand-permission-dependencies.ts",
     "#rbac/describe-permission-effects": "./src/rbac/describe-permission-effects.ts",
+    "#rbac/role-templates": "./src/rbac/role-templates.ts",
     "#ai-chatbot/schemas": "./src/ai-chatbot/schemas.ts",
     "#ai-chatbot/contracts": "./src/ai-chatbot/contracts.ts",
     "#ai-chatbot/types": "./src/ai-chatbot/types.ts",

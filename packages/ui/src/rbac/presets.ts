@@ -53,6 +53,7 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'read', subject: 'Encounter' },
   { action: 'write', subject: 'Encounter' },
   { action: 'open', subject: 'Encounter' },
+  { action: 'read-summary', subject: 'Encounter' },
   { action: 'read', subject: 'Icd10Code' },
   { action: 'read', subject: 'Icd9cmCode' },
   { action: 'read', subject: 'Medication' },

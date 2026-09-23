@@ -11,4 +11,9 @@
 export const EXPLICIT_PERMISSION_DEPENDENCIES: Readonly<Record<string, readonly string[]>> = {
   // P22-T03. The vitals card is on the admin encounter page and nowhere else.
   'encounter.record-vitals:any': ['portal.admin-access:any'],
+  // P22-T05. The billing view of a visit is on the admin encounter page too.
+  'encounter.read-summary:any': ['portal.admin-access:any'],
+  // P22-T05. "Buat tagihan" sits on the visit page, so billing a visit takes
+  // seeing it — the summary, never the record (D-033's billing opening).
+  'invoice.write:any': ['encounter.read-summary:any'],
 };

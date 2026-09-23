@@ -22,6 +22,7 @@ import { filterNavSections } from '#lib/shell/filter-nav-sections';
 import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 import { resolveDisabledNavHrefs } from '#lib/shell/resolve-disabled-nav-hrefs';
 import { resolveSidebarDefaultOpen } from '#lib/shell/resolve-sidebar-default-open';
+import { resolveOpenableShells } from '#lib/shell/resolve-openable-shells';
 import { resolveShellProfile } from '#lib/shell/shell-profile';
 
 const SIDEBAR_STYLE: CSSProperties = { '--sidebar-width': '15rem' } as CSSProperties;
@@ -95,6 +96,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           */}
           <SidebarInset className="min-w-0">
             <TopBar
+              openableShells={resolveOpenableShells(claims)}
+              currentShell="ADMIN"
               profile={profile}
               // P24-T15: the operator's own account — name, address and the
               // NIK the front desk presents to SATUSEHAT's KYC (D-039).

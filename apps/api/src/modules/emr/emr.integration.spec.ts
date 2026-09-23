@@ -534,6 +534,38 @@ describe('EMR integration', () => {
     expect(response.body.data.bodyMassIndex).toBe(25);
   });
 
+  describe('billing holding only encounter.read-summary:any (P22-T05)', () => {
+    it('lists visits through the real guard', async () => {
+      const token = await buildToken('billing-user', 'billing@hms.local');
+      mockActorWithPermissions([{ action: 'read-summary', resource: 'Encounter', scope: 'ANY' }]);
+      encounterRepositoryMock.listEncounters.mockResolvedValue({
+        items: [encounterRecord],
+        page: 1,
+        limit: 10,
+        total: 1,
+      });
+
+      const response = await request(app.getHttpServer())
+        .get('/api/v1/v1/encounters')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(response.status).toBe(200);
+    });
+
+    it('is refused recording vitals', async () => {
+      const token = await buildToken('billing-user', 'billing@hms.local');
+      mockActorWithPermissions([{ action: 'read-summary', resource: 'Encounter', scope: 'ANY' }]);
+
+      const response = await request(app.getHttpServer())
+        .post(`/api/v1/v1/encounters/${encounterId}/vital-signs`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ systolicBloodPressure: 120, diastolicBloodPressure: 80 });
+
+      expect(response.status).toBe(403);
+      expect(encounterRepositoryMock.createVitalSigns).not.toHaveBeenCalled();
+    });
+  });
+
   describe('triage holding only encounter.record-vitals:any (P22-T03)', () => {
     const triagePermissions = [
       { action: 'record-vitals', resource: 'Encounter', scope: 'ANY' as const },

@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { proxy } from './proxy';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
+import { PREFERRED_SHELL_COOKIE_NAME } from '#lib/auth/preferred-shell-cookie';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 
 const BASE_URL = 'http://localhost:3000';
@@ -530,6 +531,65 @@ describe('proxy', () => {
           buildRequest('/doctor/complete-profile', doctorToken, offboardedIncompleteHint),
         ).headers.get('location'),
       ).toBe(`${BASE_URL}/doctor/vault`);
+    });
+  });
+
+  describe('shell switching (P22-T05)', () => {
+    function buildRequestWithPreference(path: string, token: string, shell: string): NextRequest {
+      return new NextRequest(`${BASE_URL}${path}`, {
+        headers: {
+          cookie: `${ACCESS_TOKEN_COOKIE_NAME}=${token}; ${PREFERRED_SHELL_COOKIE_NAME}=${shell}`,
+        },
+      });
+    }
+
+    const adminAndDoctorToken = (): string =>
+      buildToken({
+        exp: futureUnix(),
+        roles: ['FRONT_NURSE'],
+        permissions: ['portal.admin-access:any', 'portal.doctor-access:any'],
+      });
+
+    it('lets a holder of the admin and doctor portal keys open the doctor shell', () => {
+      const response = proxy(buildRequest('/doctor/encounters', adminAndDoctorToken()));
+
+      expect(response.headers.get('location')).toBeNull();
+    });
+
+    it('still lands that holder on the admin shell by default', () => {
+      const response = proxy(buildRequest('/login', adminAndDoctorToken()));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
+    });
+
+    it('lands them on the shell they last switched to', () => {
+      const response = proxy(buildRequestWithPreference('/login', adminAndDoctorToken(), 'DOCTOR'));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
+    });
+
+    it('ignores a preference for a shell the session cannot open', () => {
+      const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
+
+      const response = proxy(buildRequestWithPreference('/login', adminToken, 'DOCTOR'));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
+    });
+
+    it('keeps SUPER_ADMIN on the admin shell although its union holds every portal key', () => {
+      const superAdminToken = buildToken({
+        exp: futureUnix(),
+        roles: ['SUPER_ADMIN'],
+        permissions: [
+          'portal.admin-access:any',
+          'portal.doctor-access:any',
+          'portal.patient-access:own',
+        ],
+      });
+
+      const response = proxy(buildRequest('/doctor/dashboard', superAdminToken));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
     });
   });
 });

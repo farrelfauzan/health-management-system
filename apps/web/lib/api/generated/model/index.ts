@@ -537,6 +537,7 @@ export * from './createRegistrationDtoPrivacyNoticeOutcome';
 export * from './createRegistrationDtoPrivacyNoticeProvenance';
 export * from './createRegistrationDtoPrivacyNoticeSubjectType';
 export * from './createRoleDto';
+export * from './createRoleDtoTemplateCode';
 export * from './createRoomClassDto';
 export * from './createRoomClassDtoSatusehatServiceClass';
 export * from './createRoomDto';

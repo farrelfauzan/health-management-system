@@ -281,7 +281,12 @@
           "staff": "Staff"
         },
         "lockWorkstation": "Lock workstation",
-        "myProfile": "My profile"
+        "myProfile": "My profile",
+        "switchShell": {
+          "ADMIN": "Switch to the Admin screen",
+          "DOCTOR": "Switch to the Doctor screen",
+          "PATIENT": "Switch to the Patient portal"
+        }
       },
       "portal": {
         "name": "Patient Portal",
