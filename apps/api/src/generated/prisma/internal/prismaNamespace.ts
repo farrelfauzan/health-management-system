@@ -410,6 +410,7 @@ export const ModelName = {
   DoctorAuthorityExpiryNotice: 'DoctorAuthorityExpiryNotice',
   DoctorSchedule: 'DoctorSchedule',
   AppointmentSession: 'AppointmentSession',
+  AppointmentSessionChange: 'AppointmentSessionChange',
   DoctorPatient: 'DoctorPatient',
   DoctorPatientActivity: 'DoctorPatientActivity',
   Appointment: 'Appointment',
@@ -542,7 +543,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "bpjsNonCapitationSettings" | "bpjsNonCapitationTariff" | "bpjsNonCapitationClaimMark" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination" | "patientVisitReminderConsent" | "maternalVisitReminder"
+    modelProps: "doctorMandate" | "user" | "loginAttempt" | "refreshToken" | "userInvitation" | "mfaCredential" | "mfaRecoveryCode" | "mrnCounter" | "featureEntitlement" | "patientProfile" | "privacyNoticeVersion" | "patientPrivacyNoticeRecord" | "patientDeliveryConsent" | "documentDelivery" | "documentDeliveryLink" | "patientAllergy" | "doctorCredentialOption" | "specialty" | "doctorProfile" | "doctorEducation" | "doctorLicense" | "doctorLicenseExpiryNotice" | "doctorAuthority" | "doctorAuthorityExpiryNotice" | "doctorSchedule" | "appointmentSession" | "appointmentSessionChange" | "doctorPatient" | "doctorPatientActivity" | "appointment" | "queueCounter" | "poliQueueCounter" | "registration" | "encounter" | "vitalSigns" | "icd10Code" | "diagnosis" | "icd9cmCode" | "procedure" | "medication" | "midwifeFormularyItem" | "prescription" | "prescriptionMedication" | "prescriptionItemComponent" | "dispenseRecord" | "dispenseItem" | "medicationStockReceipt" | "dispenseItemStockAllocation" | "clinicProfile" | "taxSettings" | "taxCode" | "taxCodeRate" | "taxCategoryDefault" | "pph21TaxBracket" | "taxReminderNotice" | "taxReportDraft" | "taxReportDocument" | "serviceTariff" | "invoiceCounter" | "invoice" | "invoiceItem" | "payment" | "clinicianFeeRule" | "clinicianFeeEntry" | "documentTemplate" | "documentTemplateVersion" | "invoiceDocument" | "role" | "permission" | "rolePermission" | "userRole" | "satusehatSubmission" | "satusehatSubmissionResource" | "auditLog" | "bpjsPcareConfig" | "bpjsAntreanConfig" | "bpjsReferenceItem" | "bpjsEligibilityCheck" | "bpjsSubmission" | "bpjsReferral" | "bpjsNonCapitationSettings" | "bpjsNonCapitationTariff" | "bpjsNonCapitationClaimMark" | "aiProviderConfig" | "chatSession" | "chatMessage" | "document" | "vaultDocumentExpiryNotice" | "vaultDocumentShare" | "userOffboardingNotice" | "documentChunk" | "channelInboundReceipt" | "conversation" | "conversationMessage" | "channelPatientLink" | "prospectivePatient" | "channelOtpChallenge" | "roomClass" | "ward" | "room" | "bed" | "admission" | "bedAssignment" | "notification" | "organizationUnit" | "documentType" | "documentTypeApprover" | "managedDocument" | "documentApprovalRequest" | "documentApprovalApprover" | "documentApprovalDecision" | "labTest" | "labReferenceRange" | "labPanel" | "labPanelMember" | "labOrderCounter" | "labOrder" | "labOrderItem" | "labSpecimenCounter" | "labSpecimen" | "labResult" | "laboratorySettings" | "labReport" | "immunization" | "province" | "regency" | "district" | "village" | "bugReport" | "bugReportCounter" | "pregnancyEpisode" | "pregnancyExternalDoctorVisit" | "antenatalVisit" | "deliveryRecord" | "newbornCareRecord" | "familyPlanningRecord" | "familyPlanningService" | "shkScreening" | "antenatalExamination" | "antenatalReferralDismissal" | "postnatalVisit" | "postnatalExamination" | "patientVisitReminderConsent" | "maternalVisitReminder"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2467,6 +2468,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.AppointmentSessionCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.AppointmentSessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    AppointmentSessionChange: {
+      payload: Prisma.$AppointmentSessionChangePayload<ExtArgs>
+      fields: Prisma.AppointmentSessionChangeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AppointmentSessionChangeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AppointmentSessionChangeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>
+        }
+        findFirst: {
+          args: Prisma.AppointmentSessionChangeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AppointmentSessionChangeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>
+        }
+        findMany: {
+          args: Prisma.AppointmentSessionChangeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>[]
+        }
+        create: {
+          args: Prisma.AppointmentSessionChangeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>
+        }
+        createMany: {
+          args: Prisma.AppointmentSessionChangeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AppointmentSessionChangeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>[]
+        }
+        delete: {
+          args: Prisma.AppointmentSessionChangeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>
+        }
+        update: {
+          args: Prisma.AppointmentSessionChangeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>
+        }
+        deleteMany: {
+          args: Prisma.AppointmentSessionChangeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AppointmentSessionChangeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AppointmentSessionChangeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>[]
+        }
+        upsert: {
+          args: Prisma.AppointmentSessionChangeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppointmentSessionChangePayload>
+        }
+        aggregate: {
+          args: Prisma.AppointmentSessionChangeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAppointmentSessionChange>
+        }
+        groupBy: {
+          args: Prisma.AppointmentSessionChangeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppointmentSessionChangeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AppointmentSessionChangeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppointmentSessionChangeCountAggregateOutputType> | number
         }
       }
     }
@@ -11621,11 +11696,29 @@ export const AppointmentSessionScalarFieldEnum = {
   endTime: 'endTime',
   maxPatients: 'maxPatients',
   status: 'status',
+  movedToSessionId: 'movedToSessionId',
+  statusReason: 'statusReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type AppointmentSessionScalarFieldEnum = (typeof AppointmentSessionScalarFieldEnum)[keyof typeof AppointmentSessionScalarFieldEnum]
+
+
+export const AppointmentSessionChangeScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  kind: 'kind',
+  reason: 'reason',
+  targetSessionId: 'targetSessionId',
+  movedCount: 'movedCount',
+  blockedCount: 'blockedCount',
+  cancelledCount: 'cancelledCount',
+  actorUserId: 'actorUserId',
+  occurredAt: 'occurredAt'
+} as const
+
+export type AppointmentSessionChangeScalarFieldEnum = (typeof AppointmentSessionChangeScalarFieldEnum)[keyof typeof AppointmentSessionChangeScalarFieldEnum]
 
 
 export const DoctorPatientScalarFieldEnum = {
@@ -14108,6 +14201,20 @@ export type ListEnumAppointmentSessionStatusFieldRefInput<$PrismaModel> = FieldR
 
 
 /**
+ * Reference to a field of type 'AppointmentSessionChangeKind'
+ */
+export type EnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentSessionChangeKind'>
+    
+
+
+/**
+ * Reference to a field of type 'AppointmentSessionChangeKind[]'
+ */
+export type ListEnumAppointmentSessionChangeKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AppointmentSessionChangeKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'DoctorPatientActivityAction'
  */
 export type EnumDoctorPatientActivityActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoctorPatientActivityAction'>
@@ -15838,6 +15945,7 @@ export type GlobalOmitConfig = {
   doctorAuthorityExpiryNotice?: Prisma.DoctorAuthorityExpiryNoticeOmit
   doctorSchedule?: Prisma.DoctorScheduleOmit
   appointmentSession?: Prisma.AppointmentSessionOmit
+  appointmentSessionChange?: Prisma.AppointmentSessionChangeOmit
   doctorPatient?: Prisma.DoctorPatientOmit
   doctorPatientActivity?: Prisma.DoctorPatientActivityOmit
   appointment?: Prisma.AppointmentOmit

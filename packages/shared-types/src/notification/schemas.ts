@@ -126,6 +126,13 @@ export const NOTIFICATION_TYPES = [
    * desk, because a recall is clinical content (D-033).
    */
   'SHK_RECALL',
+  /**
+   * The clinic moved or cancelled a practice session the patient was booked
+   * into (P28-T02/T04). Addressed to that patient only; the body carries the
+   * doctor, the new window when there is one, and the clinic's reason.
+   */
+  'APPOINTMENT_RESCHEDULED',
+  'APPOINTMENT_SESSION_CANCELLED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;
