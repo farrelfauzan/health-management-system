@@ -58499,12 +58499,30 @@ paths:
                                 type: string
                               description:
                                 type: string
+                              requires:
+                                type: array
+                                items: {}
+                              effects:
+                                type: object
+                                properties:
+                                  requiresMfa:
+                                    type: boolean
+                                  portal:
+                                    nullable: true
+                                  isClinicalContent:
+                                    type: boolean
+                                required:
+                                  - requiresMfa
+                                  - portal
+                                  - isClinicalContent
                             required:
                               - id
                               - permissionKey
                               - resource
                               - action
                               - scope
+                              - requires
+                              - effects
                       required:
                         - resource
                         - permissions
@@ -58512,14 +58530,31 @@ paths:
                   - data
                 example:
                   data:
-                    - resource: Patient
+                    - resource: Invoice
                       permissions:
-                        - id: dddddddd-dddd-4ddd-8ddd-dddddddddddd
-                          permissionKey: patient.read:any
-                          resource: Patient
+                        - id: dddddddd-dddd-4ddd-8ddd-ddddddddddde
+                          permissionKey: invoice.read:any
+                          resource: Invoice
                           action: read
                           scope: ANY
-                          description: Read all patients
+                          description: Read all invoices
+                          requires: []
+                          effects:
+                            requiresMfa: false
+                            portal: null
+                            isClinicalContent: false
+                        - id: dddddddd-dddd-4ddd-8ddd-dddddddddddf
+                          permissionKey: invoice.write:any
+                          resource: Invoice
+                          action: write
+                          scope: ANY
+                          description: Create and edit invoices
+                          requires:
+                            - invoice.read:any
+                          effects:
+                            requiresMfa: false
+                            portal: null
+                            isClinicalContent: false
         "401":
           description: Authentication is required.
           content:
@@ -58592,12 +58627,30 @@ paths:
                               type: string
                             description:
                               type: string
+                            requires:
+                              type: array
+                              items: {}
+                            effects:
+                              type: object
+                              properties:
+                                requiresMfa:
+                                  type: boolean
+                                portal:
+                                  nullable: true
+                                isClinicalContent:
+                                  type: boolean
+                              required:
+                                - requiresMfa
+                                - portal
+                                - isClinicalContent
                           required:
                             - id
                             - permissionKey
                             - resource
                             - action
                             - scope
+                            - requires
+                            - effects
                       createdAt:
                         type: string
                       updatedAt:
@@ -58628,6 +58681,11 @@ paths:
                         action: read
                         scope: ANY
                         description: Read all patients
+                        requires: []
+                        effects:
+                          requiresMfa: false
+                          portal: null
+                          isClinicalContent: false
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
         "401":
@@ -58900,12 +58958,30 @@ paths:
                               type: string
                             description:
                               type: string
+                            requires:
+                              type: array
+                              items: {}
+                            effects:
+                              type: object
+                              properties:
+                                requiresMfa:
+                                  type: boolean
+                                portal:
+                                  nullable: true
+                                isClinicalContent:
+                                  type: boolean
+                              required:
+                                - requiresMfa
+                                - portal
+                                - isClinicalContent
                           required:
                             - id
                             - permissionKey
                             - resource
                             - action
                             - scope
+                            - requires
+                            - effects
                       createdAt:
                         type: string
                       updatedAt:
@@ -58939,6 +59015,11 @@ paths:
                         action: read
                         scope: ANY
                         description: Read all patients
+                        requires: []
+                        effects:
+                          requiresMfa: false
+                          portal: null
+                          isClinicalContent: false
                     createdAt: 2026-07-20T08:00:00.000Z
                     updatedAt: 2026-07-20T08:00:00.000Z
                   message: Role permissions updated

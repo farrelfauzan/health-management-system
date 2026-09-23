@@ -1085,7 +1085,27 @@
         "confirmDelete": "Delete role",
         "deleting": "Deleting…",
         "deleteSuccess": "{count, plural, =0 {Role deleted} one {Role deleted; # assignment revoked} other {Role deleted; # assignments revoked}}",
-        "deleteError": "Failed to delete the role"
+        "deleteError": "Failed to delete the role",
+        "requiredBy": "Needed by {keys}, so it stays ticked.",
+        "effects": {
+          "portal": "Opens the {shell} screen",
+          "mfa": "Requires MFA",
+          "clinical": "Clinical record",
+          "shells": {
+            "ADMIN": "Admin",
+            "DOCTOR": "Doctor",
+            "PATIENT": "Patient"
+          }
+        },
+        "warnings": {
+          "noPortalTitle": "No screen access yet",
+          "noPortal": "Users with this role will be sent straight back to the sign-in page. Tick one of the \"portal\" permissions (Admin, Doctor or Patient) so they can open the app.",
+          "multiplePortals": "This role opens more than one screen ({shells}). Users will land on the Admin screen.",
+          "mfaTitle": "Members must use MFA",
+          "mfa": "These permissions are high-risk, so every member must enrol an authenticator app when signing in: {keys}.",
+          "clinicalTitle": "Opens clinical record content",
+          "clinical": "These permissions open the patient's clinical record, which D-033 reserves for the clinicians who examine the patient: {keys}."
+        }
       },
       "clinicProfile": {
         "tab": "Clinic profile",

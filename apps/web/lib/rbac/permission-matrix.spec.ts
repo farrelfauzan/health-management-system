@@ -7,9 +7,9 @@ import {
   countSelectedInGroup,
   filterPermissionMatrix,
   isGroupFullySelected,
-  toggleGroupKeys,
-  togglePermissionKey,
 } from '#lib/rbac/permission-matrix';
+
+const NO_EFFECTS = { requiresMfa: false, portal: null, isClinicalContent: false };
 
 function buildCatalogGroup(): PermissionCatalogGroup {
   return {
@@ -22,6 +22,8 @@ function buildCatalogGroup(): PermissionCatalogGroup {
         action: 'read',
         scope: 'ANY',
         description: 'Read all patients',
+        requires: [],
+        effects: NO_EFFECTS,
       },
       {
         id: 'p2',
@@ -30,6 +32,8 @@ function buildCatalogGroup(): PermissionCatalogGroup {
         action: 'read',
         scope: 'OWN',
         description: 'Read own patient record',
+        requires: [],
+        effects: NO_EFFECTS,
       },
       {
         id: 'p3',
@@ -38,6 +42,8 @@ function buildCatalogGroup(): PermissionCatalogGroup {
         action: 'merge',
         scope: 'ANY',
         description: 'Merge duplicate patients',
+        requires: [],
+        effects: NO_EFFECTS,
       },
     ],
   };
@@ -54,8 +60,15 @@ describe('buildPermissionMatrix', () => {
         description: 'Read all patients',
         anyKey: 'patient.read:any',
         ownKey: 'patient.read:own',
+        anyEffects: NO_EFFECTS,
+        ownEffects: NO_EFFECTS,
       },
-      { action: 'merge', description: 'Merge duplicate patients', anyKey: 'patient.merge:any' },
+      {
+        action: 'merge',
+        description: 'Merge duplicate patients',
+        anyKey: 'patient.merge:any',
+        anyEffects: NO_EFFECTS,
+      },
     ]);
   });
 
@@ -64,19 +77,6 @@ describe('buildPermissionMatrix', () => {
     const mergeRow = actualMatrix[0]?.rows.find((row) => row.action === 'merge');
 
     expect(mergeRow?.ownKey).toBeUndefined();
-  });
-});
-
-describe('togglePermissionKey', () => {
-  it('adds a missing key and removes a present one without mutating the input', () => {
-    const inputSelection = new Set(['patient.read:any']);
-
-    const withMerge = togglePermissionKey(inputSelection, 'patient.merge:any');
-    const withoutRead = togglePermissionKey(withMerge, 'patient.read:any');
-
-    expect(Array.from(withMerge).sort()).toEqual(['patient.merge:any', 'patient.read:any']);
-    expect(Array.from(withoutRead)).toEqual(['patient.merge:any']);
-    expect(Array.from(inputSelection)).toEqual(['patient.read:any']);
   });
 });
 
@@ -141,6 +141,8 @@ describe('filterPermissionMatrix', () => {
             action: 'read',
             scope: 'ANY',
             description: 'Read every laboratory order',
+            requires: [],
+            effects: NO_EFFECTS,
           },
         ],
       },
@@ -170,34 +172,5 @@ describe('isGroupFullySelected', () => {
     const selected = new Set(['patient.read:any', 'patient.read:own', 'patient.merge:any']);
 
     expect(matrixGroup && isGroupFullySelected(matrixGroup, selected)).toBe(true);
-  });
-});
-
-describe('toggleGroupKeys', () => {
-  it('selects every key in the group when not fully selected, without mutating the input', () => {
-    const matrixGroup = buildPermissionMatrix([buildCatalogGroup()])[0];
-    const inputSelection = new Set(['patient.read:any']);
-
-    const actualSelection = matrixGroup && toggleGroupKeys(inputSelection, matrixGroup);
-
-    expect(actualSelection && Array.from(actualSelection).sort()).toEqual([
-      'patient.merge:any',
-      'patient.read:any',
-      'patient.read:own',
-    ]);
-    expect(Array.from(inputSelection)).toEqual(['patient.read:any']);
-  });
-
-  it('clears every key in the group when fully selected', () => {
-    const matrixGroup = buildPermissionMatrix([buildCatalogGroup()])[0];
-    const inputSelection = new Set([
-      'patient.read:any',
-      'patient.read:own',
-      'patient.merge:any',
-    ]);
-
-    const actualSelection = matrixGroup && toggleGroupKeys(inputSelection, matrixGroup);
-
-    expect(actualSelection && Array.from(actualSelection)).toEqual([]);
   });
 });

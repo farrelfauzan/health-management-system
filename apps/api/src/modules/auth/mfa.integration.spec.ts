@@ -209,7 +209,7 @@ describe('TOTP multi-factor authentication against Postgres', () => {
     // fixtures exist to prove exactly that — `…manage:any` matches the
     // privileged pattern and `…read:any` matches nothing, regardless of what
     // the roles carrying them are called. The real seeded keys are covered by
-    // `privileged-permission.predicate.spec.ts`.
+    // `find-privileged-permissions.spec.ts`.
     adminRoleId = await createRoleWithPermission('privileged', {
       permissionKey: `${TEST_MARKER}.manage:any`,
       resource: `${TEST_MARKER}Integration`,

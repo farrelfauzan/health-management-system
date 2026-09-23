@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { RbacControllerGetRoleByIdV1200DataPermissionsItemEffects } from './rbacControllerGetRoleByIdV1200DataPermissionsItemEffects';
 
 export type RbacControllerGetRoleByIdV1200DataPermissionsItem = {
   id: string;
@@ -13,4 +14,6 @@ export type RbacControllerGetRoleByIdV1200DataPermissionsItem = {
   action: string;
   scope: string;
   description?: string;
+  requires: unknown[];
+  effects: RbacControllerGetRoleByIdV1200DataPermissionsItemEffects;
 };

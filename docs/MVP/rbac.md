@@ -29,6 +29,19 @@ Default roles for MVP:
 
 - `SUPER_ADMIN`, `ADMIN`, `DOCTOR`, `PHARMACIST`, `PATIENT`
 
+### 2.1 Custom roles are self-contained (P22-T03, P22-T04)
+
+A role composed in the IAM screen must work from the keys an administrator ticks, with no unstated prerequisites. Three mechanisms make that true, and each reads its rules from `@hms/shared-types`, so the API, the seed guards and the IAM screen share one list:
+
+- **Baseline keys** (`BASELINE_ROLE_PERMISSION_KEYS`) are what signing in needs: sign-out, one's own name, notifications, feature availability and bug reports. They are attached on role create and kept on every permission update.
+- **Dependencies** (`resolvePermissionRequirements`, closed over by `expandPermissionDependencies`) are what a key needs to be usable. A `write` needs the `read` of the same resource and scope when the catalogue has one, and `EXPLICIT_PERMISSION_DEPENDENCIES` covers the rest. For example, `encounter.record-vitals:any` needs the admin portal, because its only screen is there. `PUT /rbac/roles/:id/permissions` saves the closure, and the IAM matrix ticks it as the administrator clicks. A key another ticked key needs is shown locked, with the reason. `permission-dependencies.spec.ts` checks that every seeded role already satisfies every rule, so saving a seeded shape through IAM adds nothing.
+- **Effects** (`describePermissionEffects`) are what a key does beyond its own screen. The catalogue reports three of them, and the IAM screen labels each key and warns about the whole selection:
+  - MFA enrolment (`PRIVILEGED_PERMISSION_PATTERNS`, SJ-8);
+  - the shell a `portal.*` key opens (a role with none is sent back to the sign-in page, and with several the admin shell wins);
+  - D-033 clinical content (`CLINICAL_CONTENT_PERMISSION_KEYS`, which the seed's SUPER_ADMIN exclusion must equal).
+
+A new permission key that only works alongside another one gets an entry in `EXPLICIT_PERMISSION_DEPENDENCIES`, not a sentence in a ticket.
+
 ## 3. Permission Grammar
 
 Use normalized permission keys:

@@ -60,6 +60,7 @@ describe('RbacService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (rbacRepositoryMock.findPermissionCatalog as jest.Mock).mockResolvedValue([]);
   });
 
   it('returns active roles with member counts and null descriptions dropped', async () => {
@@ -91,6 +92,64 @@ describe('RbacService', () => {
     ]);
   });
 
+  describe('permission dependencies and effects (P22-T04)', () => {
+    const patientWritePermission = {
+      ...patientReadPermission,
+      id: 'perm-write',
+      permissionKey: 'patient.write:any',
+      action: 'write',
+    };
+    const roleAssignPermission = {
+      ...patientReadPermission,
+      id: 'perm-assign',
+      permissionKey: 'role.assign:any',
+      resource: 'Role',
+      action: 'assign',
+    };
+
+    function arrangeCatalogue(): void {
+      const catalogue = [patientReadPermission, patientWritePermission, roleAssignPermission];
+      (rbacRepositoryMock.findPermissionCatalog as jest.Mock).mockResolvedValue(catalogue);
+      (rbacRepositoryMock.findPermissionsByKeys as jest.Mock).mockImplementation(
+        async (keys: string[]) =>
+          catalogue.filter((permission) => keys.includes(permission.permissionKey)),
+      );
+    }
+
+    it('lists what each catalogue key needs and what it does', async () => {
+      arrangeCatalogue();
+
+      const actualGroups = await service.getPermissionCatalog();
+      const entries = actualGroups.flatMap((group) => group.permissions);
+      const write = entries.find((entry) => entry.permissionKey === 'patient.write:any');
+      const assign = entries.find((entry) => entry.permissionKey === 'role.assign:any');
+
+      expect(write?.requires).toEqual(['patient.read:any']);
+      expect(assign?.effects.requiresMfa).toBe(true);
+    });
+
+    it('saves the read a ticked write needs even when it was left unticked', async () => {
+      arrangeCatalogue();
+      (rbacRepositoryMock.findRoleById as jest.Mock).mockResolvedValue({
+        ...roleWithPermissions,
+        permissions: [],
+      });
+
+      await service.setRolePermissions(roleId, { permissionKeys: ['patient.write:any'] }, actorId);
+
+      expect(rbacRepositoryMock.replaceRolePermissions).toHaveBeenCalledWith({
+        roleId,
+        permissionIds: ['perm-write', 'perm-1'],
+      });
+      expect(auditServiceMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: AuditAction.ROLE_PERMISSIONS_CHANGED,
+          metadata: expect.objectContaining({ addedAsDependencies: ['patient.read:any'] }),
+        }),
+      );
+    });
+  });
+
   it('returns a role detail with ISO timestamps and member count', async () => {
     (rbacRepositoryMock.findRoleById as jest.Mock).mockResolvedValue(roleWithPermissions);
     const actualRole = await service.getRoleById(roleId);
@@ -100,7 +159,13 @@ describe('RbacService', () => {
       name: 'Front Desk Lead',
       isSystem: false,
       memberCount: 2,
-      permissions: [patientReadPermission],
+      permissions: [
+        {
+          ...patientReadPermission,
+          requires: [],
+          effects: { requiresMfa: false, portal: null, isClinicalContent: false },
+        },
+      ],
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: '2026-01-01T00:00:00.000Z',
     });
@@ -236,6 +301,7 @@ describe('RbacService', () => {
           roleCode: 'FRONT_DESK_LEAD',
           added: ['appointment.read:any'],
           removed: ['patient.read:any'],
+          addedAsDependencies: [],
         },
       }),
     );

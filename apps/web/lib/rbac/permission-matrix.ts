@@ -1,4 +1,4 @@
-import type { PermissionCatalogGroup } from '@hms/shared-types';
+import type { PermissionCatalogGroup, PermissionEffects } from '@hms/shared-types';
 
 export type PermissionMatrixRow = {
   action: string;
@@ -7,6 +7,9 @@ export type PermissionMatrixRow = {
   anyKey?: string;
   /** Catalog key for the OWN scope, when the catalog defines one. */
   ownKey?: string;
+  /** Side effects of each scope's key, labelled next to the row (P22-T04). */
+  anyEffects?: PermissionEffects;
+  ownEffects?: PermissionEffects;
 };
 
 export type PermissionMatrixGroup = {
@@ -27,8 +30,10 @@ export function buildPermissionMatrix(groups: PermissionCatalogGroup[]): Permiss
       const row = rowsByAction.get(permission.action) ?? { action: permission.action };
       if (permission.scope === 'ANY') {
         row.anyKey = permission.permissionKey;
+        row.anyEffects = permission.effects;
       } else {
         row.ownKey = permission.permissionKey;
+        row.ownEffects = permission.effects;
       }
       row.description = row.description ?? permission.description;
       rowsByAction.set(permission.action, row);
@@ -78,16 +83,6 @@ export function filterPermissionMatrix(
     .filter((group) => group.rows.length > 0);
 }
 
-export function togglePermissionKey(selected: ReadonlySet<string>, key: string): Set<string> {
-  const next = new Set(selected);
-  if (next.has(key)) {
-    next.delete(key);
-  } else {
-    next.add(key);
-  }
-  return next;
-}
-
 export function countSelectedInGroup(
   group: PermissionMatrixGroup,
   selected: ReadonlySet<string>,
@@ -109,18 +104,4 @@ export function isGroupFullySelected(
 ): boolean {
   const keys = getGroupKeys(group);
   return keys.length > 0 && keys.every((key) => selected.has(key));
-}
-
-export function toggleGroupKeys(
-  selected: ReadonlySet<string>,
-  group: PermissionMatrixGroup,
-): Set<string> {
-  const keys = getGroupKeys(group);
-  const next = new Set(selected);
-  if (isGroupFullySelected(group, selected)) {
-    keys.forEach((key) => next.delete(key));
-  } else {
-    keys.forEach((key) => next.add(key));
-  }
-  return next;
 }

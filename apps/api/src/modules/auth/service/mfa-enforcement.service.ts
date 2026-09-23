@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import { MfaRequirement } from '@hms/shared-types';
+import { findPrivilegedPermissions, MfaRequirement } from '@hms/shared-types';
 
 import { MfaCryptoService } from '../../../common/crypto/mfa-crypto.service';
-import { findPrivilegedPermissions } from './privileged-permission.predicate';
 
 /**
  * Decides whether an account must hold a second factor, and whether it is

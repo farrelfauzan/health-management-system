@@ -14,6 +14,7 @@ import {
 type RolePermissionsMatrixGroupProps = {
   group: PermissionMatrixGroup;
   selectedKeys: ReadonlySet<string>;
+  lockedKeys: ReadonlyMap<string, string[]>;
   onToggleKey: (key: string) => void;
   onToggleGroup: (group: PermissionMatrixGroup) => void;
 };
@@ -21,6 +22,7 @@ type RolePermissionsMatrixGroupProps = {
 export function RolePermissionsMatrixGroup({
   group,
   selectedKeys,
+  lockedKeys,
   onToggleKey,
   onToggleGroup,
 }: RolePermissionsMatrixGroupProps) {
@@ -55,6 +57,7 @@ export function RolePermissionsMatrixGroup({
             key={row.action}
             row={row}
             selectedKeys={selectedKeys}
+            lockedKeys={lockedKeys}
             onToggleKey={onToggleKey}
           />
         ))}

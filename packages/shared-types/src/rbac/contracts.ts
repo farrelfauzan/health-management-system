@@ -1,4 +1,4 @@
-import type { ActorPermissionScope } from '#rbac/types';
+import type { ActorPermissionScope, PortalShellValue } from '#rbac/types';
 
 /** One row of the code-owned permission catalog (`GET /rbac/permissions`). */
 export type PermissionCatalogEntry = {
@@ -9,6 +9,27 @@ export type PermissionCatalogEntry = {
   scope: ActorPermissionScope;
   /** Absent when the catalog row carries no description. */
   description?: string;
+  /**
+   * Keys this one needs to be usable, which saving a role adds for it
+   * (P22-T04). Direct requirements only; the API closes over them.
+   */
+  requires: string[];
+  /** What holding this key does beyond its own screen (P22-T04). */
+  effects: PermissionEffects;
+};
+
+/**
+ * Side effects of one permission key, shown next to its checkbox in the IAM
+ * screen (P22-T04) so an administrator sees them before saving, not after a
+ * user reports being locked out.
+ */
+export type PermissionEffects = {
+  /** Holders must enrol a second factor (SJ-8). */
+  requiresMfa: boolean;
+  /** The shell this key opens, or null for an ordinary key (IMP-3). */
+  portal: PortalShellValue | null;
+  /** Reaches the patient's clinical record under D-033. */
+  isClinicalContent: boolean;
 };
 
 /** Catalog rows grouped by resource, so a permission matrix renders one row per resource. */
