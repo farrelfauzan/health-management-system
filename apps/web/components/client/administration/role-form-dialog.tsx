@@ -35,6 +35,7 @@ import {
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateRoleQueries } from '#lib/rbac/invalidate-role-queries';
+import { resolveRoleTemplatePrefill } from '#lib/rbac/resolve-role-template-prefill';
 
 type RoleFormDialogProps = {
   open: boolean;
@@ -92,6 +93,32 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
     },
   });
 
+  function buildTemplatePrefill(code: RoleTemplateCodeValue | null) {
+    return code === null
+      ? { code: '', name: '', description: '' }
+      : {
+          code,
+          name: tTemplates(`items.${code}.name`),
+          description: tTemplates(`items.${code}.description`),
+        };
+  }
+
+  function handleTemplateChange(next: RoleTemplateCodeValue | null): void {
+    const values = resolveRoleTemplatePrefill({
+      current: {
+        code: form.getFieldValue('code'),
+        name: form.getFieldValue('name'),
+        description: form.getFieldValue('description'),
+      },
+      previousPrefill: buildTemplatePrefill(templateCode),
+      nextPrefill: buildTemplatePrefill(next),
+    });
+    form.setFieldValue('code', values.code);
+    form.setFieldValue('name', values.name);
+    form.setFieldValue('description', values.description);
+    setTemplateCode(next);
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
@@ -118,17 +145,7 @@ export function RoleFormDialog({ open, onOpenChange, role }: RoleFormDialogProps
             <RoleTemplateSelect
               id="role-template"
               value={templateCode}
-              onChange={(next) => {
-                setTemplateCode(next);
-                // Prefill what is still empty, so picking a template is enough
-                // to create a sensibly named role.
-                if (next && form.getFieldValue('name').trim() === '') {
-                  form.setFieldValue('name', tTemplates(`items.${next}.name`));
-                }
-                if (next && form.getFieldValue('code').trim() === '') {
-                  form.setFieldValue('code', next);
-                }
-              }}
+              onChange={handleTemplateChange}
             />
           )}
 
