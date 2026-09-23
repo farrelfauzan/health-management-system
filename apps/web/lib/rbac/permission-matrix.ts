@@ -38,23 +38,42 @@ export function buildPermissionMatrix(groups: PermissionCatalogGroup[]): Permiss
 }
 
 /**
- * Narrows the matrix to the rows whose title — the action shown on the row —
- * matches the query. Descriptions, permission keys, and resource names are
- * deliberately not searched, so a hit is always visible in the row it filters
- * to. Blocks left with no matching row drop out.
+ * Folds text for search: lowercase with every non-alphanumeric dropped, so
+ * "lab order", "LabOrder", and "lab-order.read" compare equal.
+ */
+function normalizeSearchText(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function isRowMatchingQuery(
+  resource: string,
+  row: PermissionMatrixRow,
+  normalizedQuery: string,
+): boolean {
+  const searchableTexts = [resource, row.action, row.description, row.anyKey, row.ownKey];
+  return searchableTexts.some(
+    (text) => text !== undefined && normalizeSearchText(text).includes(normalizedQuery),
+  );
+}
+
+/**
+ * Narrows the matrix to the rows matching the query on the resource name, the
+ * action, the description, or a permission key (e.g. `patient.read:own`), so
+ * both "patient" and "read" find something. Case, spaces, and punctuation are
+ * ignored. Blocks left with no matching row drop out.
  */
 export function filterPermissionMatrix(
   groups: PermissionMatrixGroup[],
   query: string,
 ): PermissionMatrixGroup[] {
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = normalizeSearchText(query);
   if (normalizedQuery.length === 0) {
     return groups;
   }
   return groups
     .map((group) => ({
       resource: group.resource,
-      rows: group.rows.filter((row) => row.action.toLowerCase().includes(normalizedQuery)),
+      rows: group.rows.filter((row) => isRowMatchingQuery(group.resource, row, normalizedQuery)),
     }))
     .filter((group) => group.rows.length > 0);
 }
