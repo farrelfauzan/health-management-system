@@ -256,7 +256,6 @@
       "selectTitle": "Pilih resep",
       "selectDescription": "Pilih resep dari antrean untuk meninjau detail dan menyerahkan obat.",
       "prescribedBy": "Diresepkan oleh {doctor} · {date}",
-      "allergies": "Alergi:",
       "printLabel": "Cetak Label",
       "dispenseNow": "Serahkan Sekarang",
       "dispensing": "Menyerahkan...",
