@@ -86,7 +86,55 @@ function buildDispenseConflictError(): AxiosError {
   );
 }
 
-function renderPanel(params: { rules: AppRule[]; onDispensed?: (message: string) => void }): void {
+const COMPOUND_PRESCRIPTION: PrescriptionResponse = {
+  ...PRESCRIPTION,
+  items: [
+    ...PRESCRIPTION.items,
+    {
+      id: 'dddd1111-2222-4333-8444-555566667777',
+      compoundName: 'Puyer batuk anak',
+      preparation: 'PUYER',
+      dosageUnit: 'bungkus',
+      dosage: '1 bungkus',
+      frequency: '3x daily',
+      quantity: 10,
+      isCompound: true,
+      components: [
+        {
+          id: 'eeee1111-2222-4333-8444-555566667777',
+          medicationId: 'ffff1111-2222-4333-8444-555566667777',
+          medicationCode: 'PCT-500',
+          medicationName: 'Paracetamol 500mg',
+          quantity: 5,
+          unit: 'tablet',
+        },
+      ],
+    },
+  ],
+};
+
+function buildDispenseSuccessResponse(): never {
+  return {
+    status: 201,
+    headers: {},
+    data: {
+      data: {
+        id: 'dispense-1',
+        prescriptionId: PRESCRIPTION.id,
+        prescriptionStatus: 'DISPENSED',
+        pharmacistId: 'pharmacist-1',
+        pharmacistName: 'Rani Putri',
+      },
+      message: 'Dispense recorded',
+    },
+  } as never;
+}
+
+function renderPanel(params: {
+  rules: AppRule[];
+  onDispensed?: (message: string) => void;
+  prescription?: PrescriptionResponse;
+}): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   render(
@@ -94,7 +142,7 @@ function renderPanel(params: { rules: AppRule[]; onDispensed?: (message: string)
       <QueryClientProvider client={queryClient}>
         <AbilityProvider ability={buildAppAbility(params.rules)}>
           <PrescriptionDetailsPanel
-            prescription={PRESCRIPTION}
+            prescription={params.prescription ?? PRESCRIPTION}
             onDispensed={params.onDispensed ?? vi.fn()}
           />
         </AbilityProvider>
@@ -179,5 +227,31 @@ describe('PrescriptionDetailsPanel', () => {
     ).toBeInTheDocument();
     expect(onDispensed).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: /Dispense Now/ })).toBeEnabled();
+  });
+
+  it('names a compound line by its prescription line instead of a medication', async () => {
+    const user = userEvent.setup();
+    dispenseRequestMock.mockResolvedValue(buildDispenseSuccessResponse());
+    renderPanel({ rules: PHARMACIST_RULES, prescription: COMPOUND_PRESCRIPTION });
+
+    await checkAllVerificationSteps(user);
+    await user.click(screen.getByRole('button', { name: /Dispense Now/ }));
+
+    await waitFor(() => {
+      expect(dispenseRequestMock).toHaveBeenCalledWith({
+        prescriptionId: PRESCRIPTION.id,
+        items: [
+          { medicationId: PRESCRIPTION.items[0]?.medicationId, quantity: 21 },
+          { prescriptionItemId: 'dddd1111-2222-4333-8444-555566667777', quantity: 10 },
+        ],
+      });
+    });
+  });
+
+  it('shows no invented allergy or drug-interaction warning', () => {
+    renderPanel({ rules: PHARMACIST_RULES });
+
+    expect(screen.queryByText(/Penicillin/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Warfarin/)).not.toBeInTheDocument();
   });
 });

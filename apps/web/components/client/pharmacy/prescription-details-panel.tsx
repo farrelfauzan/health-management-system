@@ -20,7 +20,6 @@ import { parseApiSuccess } from '#lib/api/response';
 import { resolveApiErrorMessage } from '#lib/api/resolve-api-error-message';
 import { formatRxNumber } from '#lib/pharmacy/format-rx-number';
 import { invalidatePharmacyQueries } from '#lib/pharmacy/invalidate-pharmacy-queries';
-import { MOCK_CLINICAL_FLAGS } from '#lib/pharmacy/mock-clinical-flags';
 import { VERIFICATION_STEPS } from '#lib/pharmacy/verification-steps';
 
 type PrescriptionDetailsPanelProps = {
@@ -57,10 +56,13 @@ export function PrescriptionDetailsPanel({
     setActionError(null);
     const parsed = createDispenseSchema.safeParse({
       prescriptionId: prescription.id,
-      items: prescription.items.map((item) => ({
-        medicationId: item.medicationId,
-        quantity: item.quantity,
-      })),
+      // A compound has no catalog product: it is named by its prescription
+      // line, and the API hands over its ingredients (P10-T18).
+      items: prescription.items.map((item) =>
+        item.isCompound
+          ? { prescriptionItemId: item.id, quantity: item.quantity }
+          : { medicationId: item.medicationId, quantity: item.quantity },
+      ),
     });
     if (!parsed.success) {
       setActionError(parsed.error.issues[0]?.message ?? t('dispenseError'));
@@ -124,23 +126,7 @@ export function PrescriptionDetailsPanel({
                   : '-',
               })}
             </p>
-            <p className="text-sm text-slate-500">
-              {t('allergies')}{' '}
-              <span className="font-semibold text-danger">
-                {MOCK_CLINICAL_FLAGS.allergies.join(', ')}
-              </span>
-            </p>
           </div>
-        </div>
-
-        <div className="rounded-lg border border-danger/10 bg-danger-tint p-4">
-          <p className="flex items-center gap-2 font-heading text-sm font-semibold text-danger">
-            <Icon name="warning" size={18} />
-            {MOCK_CLINICAL_FLAGS.interactionAlert.title}
-          </p>
-          <p className="mt-1.5 text-xs text-slate-700">
-            {MOCK_CLINICAL_FLAGS.interactionAlert.message}
-          </p>
         </div>
 
         <div className="space-y-3">

@@ -256,7 +256,6 @@
       "selectTitle": "Select a prescription",
       "selectDescription": "Choose a prescription from the queue to review its details and dispense it.",
       "prescribedBy": "Prescribed by {doctor} · {date}",
-      "allergies": "Allergies:",
       "printLabel": "Print Label",
       "dispenseNow": "Dispense Now",
       "dispensing": "Dispensing...",
