@@ -6,6 +6,7 @@ import {
   formatPatientAddress,
   InvoiceDeliverySubjectRecord,
   InvoiceDocumentRecord,
+  InvoiceDocumentSlot,
   InvoiceItemRecord,
   InvoiceRecord,
   InvoiceRenderContextRecord,
@@ -17,6 +18,7 @@ import {
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Invoice, InvoiceDocument, InvoiceItem, Prisma } from '../../../generated/prisma/client';
+import { resolveInvoiceDocumentSlot } from '../service/resolve-invoice-document-slot';
 
 type UserDisplayRow = {
   email: string;
@@ -149,10 +151,14 @@ export class InvoiceDocumentRepository {
 
   async findLatestDocument(
     invoiceId: string,
-    hasVoidWatermark: boolean,
+    slot: InvoiceDocumentSlot,
   ): Promise<InvoiceDocumentRecord | null> {
     const row = await this.prismaService.invoiceDocument.findFirst({
-      where: { invoiceId, hasVoidWatermark },
+      where: {
+        invoiceId,
+        hasVoidWatermark: slot.hasVoidWatermark,
+        isPaidReceipt: slot.isPaidReceipt,
+      },
       orderBy: { createdAt: 'desc' },
     });
     return row === null ? null : this.toDocumentRecord(row);
@@ -161,10 +167,15 @@ export class InvoiceDocumentRepository {
   async findDocumentForSlot(
     invoiceId: string,
     templateVersionId: string | null,
-    hasVoidWatermark: boolean,
+    slot: InvoiceDocumentSlot,
   ): Promise<InvoiceDocumentRecord | null> {
     const row = await this.prismaService.invoiceDocument.findFirst({
-      where: { invoiceId, templateVersionId, hasVoidWatermark },
+      where: {
+        invoiceId,
+        templateVersionId,
+        hasVoidWatermark: slot.hasVoidWatermark,
+        isPaidReceipt: slot.isPaidReceipt,
+      },
     });
     return row === null ? null : this.toDocumentRecord(row);
   }
@@ -177,6 +188,7 @@ export class InvoiceDocumentRepository {
         invoiceId: payload.invoiceId,
         templateVersionId: payload.templateVersionId,
         hasVoidWatermark: payload.hasVoidWatermark,
+        isPaidReceipt: payload.isPaidReceipt,
         wasBoundRetroactively: payload.wasBoundRetroactively,
         renderedData: payload.renderedData as unknown as Prisma.InputJsonValue,
         renderWarnings: payload.renderWarnings as unknown as Prisma.InputJsonValue,
@@ -215,11 +227,11 @@ export class InvoiceDocumentRepository {
   }
 
   /**
-   * What a send needs to know (`P16-T25`): the bill, its latest live
-   * snapshot — the un-watermarked slot, because a VOID invoice is never
-   * deliverable and its watermarked render is never sent — and the patient
-   * fields the delivery gate and the password resolver read. Nothing else:
-   * the itemisation stays inside the PDF (FR-E4-15).
+   * What a send needs to know (`P16-T25`): the bill, the latest snapshot of
+   * the slot its current state lives in — the paid receipt for a PAID
+   * invoice, never the ISSUED snapshot that has no payment on it — and the
+   * patient fields the delivery gate and the password resolver read. Nothing
+   * else: the itemisation stays inside the PDF (FR-E4-15).
    */
   async findDeliverySubject(
     invoiceId: string,
@@ -246,12 +258,17 @@ export class InvoiceDocumentRepository {
         },
         documents: {
           // The worker asks for the snapshot the request pinned; the request
-          // itself asks for the latest live one.
-          where:
-            invoiceDocumentId === null ? { hasVoidWatermark: false } : { id: invoiceDocumentId },
+          // itself asks for the latest one of the current slot, picked below
+          // because the slot depends on the invoice status this read returns.
+          where: invoiceDocumentId === null ? {} : { id: invoiceDocumentId },
           orderBy: { createdAt: 'desc' },
-          take: 1,
-          select: { id: true, status: true, storageKey: true },
+          select: {
+            id: true,
+            status: true,
+            storageKey: true,
+            hasVoidWatermark: true,
+            isPaidReceipt: true,
+          },
         },
       },
     });
@@ -267,7 +284,7 @@ export class InvoiceDocumentRepository {
         totalAmount: row.totalAmount.toNumber(),
         issuedAt: row.issuedAt,
       },
-      document: row.documents[0] ?? null,
+      document: this.pickDeliveryDocument(row.status, row.documents, invoiceDocumentId),
       patient: row.patient,
     };
   }
@@ -275,6 +292,28 @@ export class InvoiceDocumentRepository {
   async findDocumentById(id: string): Promise<InvoiceDocumentRecord | null> {
     const row = await this.prismaService.invoiceDocument.findUnique({ where: { id } });
     return row === null ? null : this.toDocumentRecord(row);
+  }
+
+  private pickDeliveryDocument(
+    invoiceStatus: InvoiceRecord['status'],
+    documents: ReadonlyArray<
+      Pick<InvoiceDocument, 'id' | 'status' | 'storageKey' | 'hasVoidWatermark' | 'isPaidReceipt'>
+    >,
+    invoiceDocumentId: string | null,
+  ): InvoiceDeliverySubjectRecord['document'] {
+    const slot = resolveInvoiceDocumentSlot(invoiceStatus);
+    const picked =
+      invoiceDocumentId === null
+        ? documents.find(
+            (document) =>
+              document.hasVoidWatermark === slot.hasVoidWatermark &&
+              document.isPaidReceipt === slot.isPaidReceipt,
+          )
+        : documents[0];
+    if (picked === undefined) {
+      return null;
+    }
+    return { id: picked.id, status: picked.status, storageKey: picked.storageKey };
   }
 
   private toDisplayName(user: UserDisplayRow): string | null {
@@ -290,6 +329,7 @@ export class InvoiceDocumentRepository {
       invoiceId: row.invoiceId,
       templateVersionId: row.templateVersionId,
       hasVoidWatermark: row.hasVoidWatermark,
+      isPaidReceipt: row.isPaidReceipt,
       wasBoundRetroactively: row.wasBoundRetroactively,
       renderedData: row.renderedData as unknown as ResolvedInvoiceVariables,
       status: row.status,

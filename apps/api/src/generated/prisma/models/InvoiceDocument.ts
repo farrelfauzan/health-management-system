@@ -24,8 +24,12 @@ import type * as Prisma from "../internal/prismaNamespace"
  * `templateVersionId` is null when no published template existed and the
  * built-in fallback layout produced the document. `hasVoidWatermark`
  * separates the pre-void document (retained — it may already be in a
- * patient's hands) from the watermarked one rendered after a void; two
- * hand-written partial unique indexes make each of the four combinations a
+ * patient's hands) from the watermarked one rendered after a void.
+ * `isPaidReceipt` does the same for payment: the ISSUED snapshot stays
+ * byte-identical (FR-E1-09) and the paid receipt — status PAID, payment
+ * method, reference and cashier — is its own row, cut when the payment is
+ * recorded. A row is at most one of the two (CHECK). Two hand-written
+ * partial unique indexes make each (invoice, template version, slot) a
  * singleton, so two cashiers racing the first render insert one row and the
  * loser reads the winner's.
  */
@@ -54,6 +58,7 @@ export type InvoiceDocumentMinAggregateOutputType = {
   invoiceId: string | null
   templateVersionId: string | null
   hasVoidWatermark: boolean | null
+  isPaidReceipt: boolean | null
   wasBoundRetroactively: boolean | null
   status: $Enums.InvoiceDocumentStatus | null
   storageKey: string | null
@@ -71,6 +76,7 @@ export type InvoiceDocumentMaxAggregateOutputType = {
   invoiceId: string | null
   templateVersionId: string | null
   hasVoidWatermark: boolean | null
+  isPaidReceipt: boolean | null
   wasBoundRetroactively: boolean | null
   status: $Enums.InvoiceDocumentStatus | null
   storageKey: string | null
@@ -88,6 +94,7 @@ export type InvoiceDocumentCountAggregateOutputType = {
   invoiceId: number
   templateVersionId: number
   hasVoidWatermark: number
+  isPaidReceipt: number
   wasBoundRetroactively: number
   renderedData: number
   status: number
@@ -119,6 +126,7 @@ export type InvoiceDocumentMinAggregateInputType = {
   invoiceId?: true
   templateVersionId?: true
   hasVoidWatermark?: true
+  isPaidReceipt?: true
   wasBoundRetroactively?: true
   status?: true
   storageKey?: true
@@ -136,6 +144,7 @@ export type InvoiceDocumentMaxAggregateInputType = {
   invoiceId?: true
   templateVersionId?: true
   hasVoidWatermark?: true
+  isPaidReceipt?: true
   wasBoundRetroactively?: true
   status?: true
   storageKey?: true
@@ -153,6 +162,7 @@ export type InvoiceDocumentCountAggregateInputType = {
   invoiceId?: true
   templateVersionId?: true
   hasVoidWatermark?: true
+  isPaidReceipt?: true
   wasBoundRetroactively?: true
   renderedData?: true
   status?: true
@@ -259,6 +269,7 @@ export type InvoiceDocumentGroupByOutputType = {
   invoiceId: string
   templateVersionId: string | null
   hasVoidWatermark: boolean
+  isPaidReceipt: boolean
   wasBoundRetroactively: boolean
   renderedData: runtime.JsonValue
   status: $Enums.InvoiceDocumentStatus
@@ -301,6 +312,7 @@ export type InvoiceDocumentWhereInput = {
   invoiceId?: Prisma.UuidFilter<"InvoiceDocument"> | string
   templateVersionId?: Prisma.UuidNullableFilter<"InvoiceDocument"> | string | null
   hasVoidWatermark?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
+  isPaidReceipt?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
   wasBoundRetroactively?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
   renderedData?: Prisma.JsonFilter<"InvoiceDocument">
   status?: Prisma.EnumInvoiceDocumentStatusFilter<"InvoiceDocument"> | $Enums.InvoiceDocumentStatus
@@ -323,6 +335,7 @@ export type InvoiceDocumentOrderByWithRelationInput = {
   invoiceId?: Prisma.SortOrder
   templateVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   hasVoidWatermark?: Prisma.SortOrder
+  isPaidReceipt?: Prisma.SortOrder
   wasBoundRetroactively?: Prisma.SortOrder
   renderedData?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -348,6 +361,7 @@ export type InvoiceDocumentWhereUniqueInput = Prisma.AtLeast<{
   invoiceId?: Prisma.UuidFilter<"InvoiceDocument"> | string
   templateVersionId?: Prisma.UuidNullableFilter<"InvoiceDocument"> | string | null
   hasVoidWatermark?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
+  isPaidReceipt?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
   wasBoundRetroactively?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
   renderedData?: Prisma.JsonFilter<"InvoiceDocument">
   status?: Prisma.EnumInvoiceDocumentStatusFilter<"InvoiceDocument"> | $Enums.InvoiceDocumentStatus
@@ -370,6 +384,7 @@ export type InvoiceDocumentOrderByWithAggregationInput = {
   invoiceId?: Prisma.SortOrder
   templateVersionId?: Prisma.SortOrderInput | Prisma.SortOrder
   hasVoidWatermark?: Prisma.SortOrder
+  isPaidReceipt?: Prisma.SortOrder
   wasBoundRetroactively?: Prisma.SortOrder
   renderedData?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -397,6 +412,7 @@ export type InvoiceDocumentScalarWhereWithAggregatesInput = {
   invoiceId?: Prisma.UuidWithAggregatesFilter<"InvoiceDocument"> | string
   templateVersionId?: Prisma.UuidNullableWithAggregatesFilter<"InvoiceDocument"> | string | null
   hasVoidWatermark?: Prisma.BoolWithAggregatesFilter<"InvoiceDocument"> | boolean
+  isPaidReceipt?: Prisma.BoolWithAggregatesFilter<"InvoiceDocument"> | boolean
   wasBoundRetroactively?: Prisma.BoolWithAggregatesFilter<"InvoiceDocument"> | boolean
   renderedData?: Prisma.JsonWithAggregatesFilter<"InvoiceDocument">
   status?: Prisma.EnumInvoiceDocumentStatusWithAggregatesFilter<"InvoiceDocument"> | $Enums.InvoiceDocumentStatus
@@ -414,6 +430,7 @@ export type InvoiceDocumentScalarWhereWithAggregatesInput = {
 export type InvoiceDocumentCreateInput = {
   id?: string
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -436,6 +453,7 @@ export type InvoiceDocumentUncheckedCreateInput = {
   invoiceId: string
   templateVersionId?: string | null
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -454,6 +472,7 @@ export type InvoiceDocumentUncheckedCreateInput = {
 export type InvoiceDocumentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -476,6 +495,7 @@ export type InvoiceDocumentUncheckedUpdateInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   templateVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -496,6 +516,7 @@ export type InvoiceDocumentCreateManyInput = {
   invoiceId: string
   templateVersionId?: string | null
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -513,6 +534,7 @@ export type InvoiceDocumentCreateManyInput = {
 export type InvoiceDocumentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -532,6 +554,7 @@ export type InvoiceDocumentUncheckedUpdateManyInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   templateVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -566,6 +589,7 @@ export type InvoiceDocumentCountOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   templateVersionId?: Prisma.SortOrder
   hasVoidWatermark?: Prisma.SortOrder
+  isPaidReceipt?: Prisma.SortOrder
   wasBoundRetroactively?: Prisma.SortOrder
   renderedData?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -590,6 +614,7 @@ export type InvoiceDocumentMaxOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   templateVersionId?: Prisma.SortOrder
   hasVoidWatermark?: Prisma.SortOrder
+  isPaidReceipt?: Prisma.SortOrder
   wasBoundRetroactively?: Prisma.SortOrder
   status?: Prisma.SortOrder
   storageKey?: Prisma.SortOrder
@@ -607,6 +632,7 @@ export type InvoiceDocumentMinOrderByAggregateInput = {
   invoiceId?: Prisma.SortOrder
   templateVersionId?: Prisma.SortOrder
   hasVoidWatermark?: Prisma.SortOrder
+  isPaidReceipt?: Prisma.SortOrder
   wasBoundRetroactively?: Prisma.SortOrder
   status?: Prisma.SortOrder
   storageKey?: Prisma.SortOrder
@@ -731,6 +757,7 @@ export type EnumInvoiceDocumentStatusFieldUpdateOperationsInput = {
 export type InvoiceDocumentCreateWithoutDeliveriesInput = {
   id?: string
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -752,6 +779,7 @@ export type InvoiceDocumentUncheckedCreateWithoutDeliveriesInput = {
   invoiceId: string
   templateVersionId?: string | null
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -785,6 +813,7 @@ export type InvoiceDocumentUpdateToOneWithWhereWithoutDeliveriesInput = {
 export type InvoiceDocumentUpdateWithoutDeliveriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -806,6 +835,7 @@ export type InvoiceDocumentUncheckedUpdateWithoutDeliveriesInput = {
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   templateVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -823,6 +853,7 @@ export type InvoiceDocumentUncheckedUpdateWithoutDeliveriesInput = {
 export type InvoiceDocumentCreateWithoutInvoiceInput = {
   id?: string
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -843,6 +874,7 @@ export type InvoiceDocumentUncheckedCreateWithoutInvoiceInput = {
   id?: string
   templateVersionId?: string | null
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -892,6 +924,7 @@ export type InvoiceDocumentScalarWhereInput = {
   invoiceId?: Prisma.UuidFilter<"InvoiceDocument"> | string
   templateVersionId?: Prisma.UuidNullableFilter<"InvoiceDocument"> | string | null
   hasVoidWatermark?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
+  isPaidReceipt?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
   wasBoundRetroactively?: Prisma.BoolFilter<"InvoiceDocument"> | boolean
   renderedData?: Prisma.JsonFilter<"InvoiceDocument">
   status?: Prisma.EnumInvoiceDocumentStatusFilter<"InvoiceDocument"> | $Enums.InvoiceDocumentStatus
@@ -909,6 +942,7 @@ export type InvoiceDocumentScalarWhereInput = {
 export type InvoiceDocumentCreateWithoutTemplateVersionInput = {
   id?: string
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -929,6 +963,7 @@ export type InvoiceDocumentUncheckedCreateWithoutTemplateVersionInput = {
   id?: string
   invoiceId: string
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -974,6 +1009,7 @@ export type InvoiceDocumentCreateManyInvoiceInput = {
   id?: string
   templateVersionId?: string | null
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -991,6 +1027,7 @@ export type InvoiceDocumentCreateManyInvoiceInput = {
 export type InvoiceDocumentUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -1011,6 +1048,7 @@ export type InvoiceDocumentUncheckedUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   templateVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -1030,6 +1068,7 @@ export type InvoiceDocumentUncheckedUpdateManyWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   templateVersionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -1048,6 +1087,7 @@ export type InvoiceDocumentCreateManyTemplateVersionInput = {
   id?: string
   invoiceId: string
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: $Enums.InvoiceDocumentStatus
@@ -1065,6 +1105,7 @@ export type InvoiceDocumentCreateManyTemplateVersionInput = {
 export type InvoiceDocumentUpdateWithoutTemplateVersionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -1085,6 +1126,7 @@ export type InvoiceDocumentUncheckedUpdateWithoutTemplateVersionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -1104,6 +1146,7 @@ export type InvoiceDocumentUncheckedUpdateManyWithoutTemplateVersionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   hasVoidWatermark?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isPaidReceipt?: Prisma.BoolFieldUpdateOperationsInput | boolean
   wasBoundRetroactively?: Prisma.BoolFieldUpdateOperationsInput | boolean
   renderedData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   status?: Prisma.EnumInvoiceDocumentStatusFieldUpdateOperationsInput | $Enums.InvoiceDocumentStatus
@@ -1154,6 +1197,7 @@ export type InvoiceDocumentSelect<ExtArgs extends runtime.Types.Extensions.Inter
   invoiceId?: boolean
   templateVersionId?: boolean
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData?: boolean
   status?: boolean
@@ -1177,6 +1221,7 @@ export type InvoiceDocumentSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   invoiceId?: boolean
   templateVersionId?: boolean
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData?: boolean
   status?: boolean
@@ -1198,6 +1243,7 @@ export type InvoiceDocumentSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   invoiceId?: boolean
   templateVersionId?: boolean
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData?: boolean
   status?: boolean
@@ -1219,6 +1265,7 @@ export type InvoiceDocumentSelectScalar = {
   invoiceId?: boolean
   templateVersionId?: boolean
   hasVoidWatermark?: boolean
+  isPaidReceipt?: boolean
   wasBoundRetroactively?: boolean
   renderedData?: boolean
   status?: boolean
@@ -1233,7 +1280,7 @@ export type InvoiceDocumentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type InvoiceDocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "templateVersionId" | "hasVoidWatermark" | "wasBoundRetroactively" | "renderedData" | "status" | "storageKey" | "checksum" | "sizeBytes" | "pageCount" | "renderWarnings" | "renderError" | "renderedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["invoiceDocument"]>
+export type InvoiceDocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "templateVersionId" | "hasVoidWatermark" | "isPaidReceipt" | "wasBoundRetroactively" | "renderedData" | "status" | "storageKey" | "checksum" | "sizeBytes" | "pageCount" | "renderWarnings" | "renderError" | "renderedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["invoiceDocument"]>
 export type InvoiceDocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   templateVersion?: boolean | Prisma.InvoiceDocument$templateVersionArgs<ExtArgs>
@@ -1261,6 +1308,7 @@ export type $InvoiceDocumentPayload<ExtArgs extends runtime.Types.Extensions.Int
     invoiceId: string
     templateVersionId: string | null
     hasVoidWatermark: boolean
+    isPaidReceipt: boolean
     /**
      * True when the snapshot was cut at first render request rather than at
      * issue — a pre-Phase-16 invoice bound its template retroactively, and the
@@ -1711,6 +1759,7 @@ export interface InvoiceDocumentFieldRefs {
   readonly invoiceId: Prisma.FieldRef<"InvoiceDocument", 'String'>
   readonly templateVersionId: Prisma.FieldRef<"InvoiceDocument", 'String'>
   readonly hasVoidWatermark: Prisma.FieldRef<"InvoiceDocument", 'Boolean'>
+  readonly isPaidReceipt: Prisma.FieldRef<"InvoiceDocument", 'Boolean'>
   readonly wasBoundRetroactively: Prisma.FieldRef<"InvoiceDocument", 'Boolean'>
   readonly renderedData: Prisma.FieldRef<"InvoiceDocument", 'Json'>
   readonly status: Prisma.FieldRef<"InvoiceDocument", 'InvoiceDocumentStatus'>

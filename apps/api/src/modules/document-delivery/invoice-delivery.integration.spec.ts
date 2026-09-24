@@ -89,6 +89,7 @@ describe('Invoice delivery integration', () => {
   let patientId: string;
   let invoiceId: string;
   let draftInvoiceId: string;
+  let admittingDoctorId: string;
   let runStartedAt: Date;
 
   function asAdmin(method: 'get' | 'post', path: string) {
@@ -140,12 +141,12 @@ describe('Invoice delivery integration', () => {
   async function seedInvoice(params: {
     admittingDoctorId: string;
     invoiceNumber: string;
-    status: 'ISSUED' | 'DRAFT';
+    status: 'ISSUED' | 'DRAFT' | 'PAID';
     isRendered: boolean;
   }): Promise<string> {
     // One live admission per patient: every stay after the first is a
     // finished one, which is all an invoice fixture needs.
-    const isFinished = params.status === 'DRAFT';
+    const isFinished = params.status !== 'ISSUED';
     const admission = await prisma.admission.create({
       data: {
         patientId,
@@ -164,7 +165,7 @@ describe('Invoice delivery integration', () => {
         patientId,
         status: params.status,
         totalAmount: 150_000,
-        issuedAt: params.status === 'ISSUED' ? new Date() : null,
+        issuedAt: params.status === 'DRAFT' ? null : new Date(),
       },
       select: { id: true },
     });
@@ -226,6 +227,7 @@ describe('Invoice delivery integration', () => {
       },
       select: { id: true },
     });
+    admittingDoctorId = doctor.id;
     invoiceId = await seedInvoice({
       admittingDoctorId: doctor.id,
       invoiceNumber: `${TEST_MARKER}/001`,
@@ -464,6 +466,46 @@ describe('Invoice delivery integration', () => {
     };
 
     await expect(prisma.documentDelivery.create({ data: base })).rejects.toThrow(/subject_check/);
+  });
+
+  it('sends a paid invoice as its receipt, never the issued snapshot that has no payment on it', async () => {
+    const paidInvoiceId = await seedInvoice({
+      admittingDoctorId,
+      invoiceNumber: `${TEST_MARKER}/003`,
+      status: 'PAID',
+      isRendered: true,
+    });
+    const beforeReceipt = await asAdmin('post', deliveriesPath(paidInvoiceId)).send({
+      channels: ['WHATSAPP'],
+    });
+    const receipt = await prisma.invoiceDocument.create({
+      data: {
+        invoiceId: paidInvoiceId,
+        isPaidReceipt: true,
+        renderedData: {},
+        status: 'READY',
+        storageKey: STORAGE_KEY,
+        checksum: 'b'.repeat(64),
+        sizeBytes: 1024,
+        renderedAt: new Date(),
+      },
+      select: { id: true },
+    });
+
+    const afterReceipt = await asAdmin('post', deliveriesPath(paidInvoiceId)).send({
+      channels: ['WHATSAPP'],
+    });
+
+    expect(beforeReceipt.status).toBe(409);
+    expect(beforeReceipt.body.error.code).toBe('INVOICE_DOCUMENT_NOT_READY');
+    expect(afterReceipt.status).toBe(201);
+    const queued = await prisma.documentDelivery.findMany({
+      where: { invoiceId: paidInvoiceId },
+      select: { invoiceDocumentId: true },
+    });
+    expect(queued).toEqual([{ invoiceDocumentId: receipt.id }]);
+    // Kept out of the worker cases below, which sweep every queued row.
+    await prisma.documentDelivery.deleteMany({ where: { invoiceId: paidInvoiceId } });
   });
 
   describe('public link', () => {

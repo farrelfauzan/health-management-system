@@ -779,8 +779,12 @@ export type DocumentTemplateVersion = Prisma.DocumentTemplateVersionModel
  * `templateVersionId` is null when no published template existed and the
  * built-in fallback layout produced the document. `hasVoidWatermark`
  * separates the pre-void document (retained — it may already be in a
- * patient's hands) from the watermarked one rendered after a void; two
- * hand-written partial unique indexes make each of the four combinations a
+ * patient's hands) from the watermarked one rendered after a void.
+ * `isPaidReceipt` does the same for payment: the ISSUED snapshot stays
+ * byte-identical (FR-E1-09) and the paid receipt — status PAID, payment
+ * method, reference and cashier — is its own row, cut when the payment is
+ * recorded. A row is at most one of the two (CHECK). Two hand-written
+ * partial unique indexes make each (invoice, template version, slot) a
  * singleton, so two cashiers racing the first render insert one row and the
  * loser reads the winner's.
  */

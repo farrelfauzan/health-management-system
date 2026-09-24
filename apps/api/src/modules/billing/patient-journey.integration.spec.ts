@@ -541,7 +541,7 @@ describe('Billing patient journey (end to end)', () => {
     it('issues the invoice and pins a document snapshot for the PDF', async () => {
       const response = await asStaff('post', `/api/v1/invoices/${invoiceId}/issue`);
       const snapshot = await prisma.invoiceDocument.findFirst({
-        where: { invoiceId, hasVoidWatermark: false },
+        where: { invoiceId, hasVoidWatermark: false, isPaidReceipt: false },
         select: { status: true, renderedData: true },
       });
 
@@ -577,6 +577,28 @@ describe('Billing patient journey (end to end)', () => {
           cashierId: STAFF_USER_ID,
         }),
       );
+    });
+
+    it('cuts a paid receipt next to the issued snapshot, which stays as it was', async () => {
+      const documents = await prisma.invoiceDocument.findMany({
+        where: { invoiceId },
+        orderBy: { createdAt: 'asc' },
+        select: { isPaidReceipt: true, hasVoidWatermark: true, renderedData: true },
+      });
+      const [issuedSnapshot, paidReceipt] = documents;
+      const issuedValues = (issuedSnapshot?.renderedData as { values: Record<string, string> })
+        .values;
+      const paidValues = (paidReceipt?.renderedData as { values: Record<string, string> }).values;
+
+      expect(documents).toHaveLength(2);
+      expect(issuedSnapshot?.isPaidReceipt).toBe(false);
+      expect(issuedValues['invoice.status']).toBe('ISSUED');
+      expect(issuedValues['payment.method'] ?? '').toBe('');
+      expect(paidReceipt?.isPaidReceipt).toBe(true);
+      expect(paidReceipt?.hasVoidWatermark).toBe(false);
+      expect(paidValues['invoice.status']).toBe('PAID');
+      expect(paidValues['payment.method']).toBe('CASH');
+      expect(paidValues['payment.paidAt']).toEqual(expect.any(String));
     });
 
     it('shows the settlement on the day’s cashier report', async () => {

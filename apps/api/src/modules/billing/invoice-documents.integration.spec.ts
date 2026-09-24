@@ -5,6 +5,7 @@ import {
   CompleteInvoiceDocumentRenderPayload,
   CreateInvoiceDocumentRecordPayload,
   InvoiceDocumentRecord,
+  InvoiceDocumentSlot,
   InvoiceRenderContextRecord,
 } from '@hms/shared-types';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -45,12 +46,16 @@ class InMemoryInvoiceDocumentRepository {
     return this.contextsByInvoiceId.get(invoiceId) ?? null;
   }
 
+  listRows(): InvoiceDocumentRecord[] {
+    return [...this.rows.values()];
+  }
+
   async findLatestDocument(
     invoiceId: string,
-    hasVoidWatermark: boolean,
+    slot: InvoiceDocumentSlot,
   ): Promise<InvoiceDocumentRecord | null> {
     const matches = [...this.rows.values()]
-      .filter((row) => row.invoiceId === invoiceId && row.hasVoidWatermark === hasVoidWatermark)
+      .filter((row) => row.invoiceId === invoiceId && this.isInSlot(row, slot))
       .sort((first, second) => second.createdAt.getTime() - first.createdAt.getTime());
     return matches[0] ?? null;
   }
@@ -58,15 +63,21 @@ class InMemoryInvoiceDocumentRepository {
   async findDocumentForSlot(
     invoiceId: string,
     templateVersionId: string | null,
-    hasVoidWatermark: boolean,
+    slot: InvoiceDocumentSlot,
   ): Promise<InvoiceDocumentRecord | null> {
     return (
       [...this.rows.values()].find(
         (row) =>
           row.invoiceId === invoiceId &&
           row.templateVersionId === templateVersionId &&
-          row.hasVoidWatermark === hasVoidWatermark,
+          this.isInSlot(row, slot),
       ) ?? null
+    );
+  }
+
+  private isInSlot(row: InvoiceDocumentRecord, slot: InvoiceDocumentSlot): boolean {
+    return (
+      row.hasVoidWatermark === slot.hasVoidWatermark && row.isPaidReceipt === slot.isPaidReceipt
     );
   }
 
@@ -79,6 +90,7 @@ class InMemoryInvoiceDocumentRepository {
       invoiceId: payload.invoiceId,
       templateVersionId: payload.templateVersionId,
       hasVoidWatermark: payload.hasVoidWatermark,
+      isPaidReceipt: payload.isPaidReceipt,
       wasBoundRetroactively: payload.wasBoundRetroactively,
       renderedData: payload.renderedData,
       status: 'PENDING',
@@ -434,6 +446,46 @@ describe('Invoice documents integration', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(retried.body.data.status).toBe('READY');
+  });
+
+  it('renders the PAID receipt with the payment and leaves the ISSUED document untouched', async () => {
+    const token = await buildToken('cashier', 'kasir@hms.local');
+    mockCashier();
+    const paidContext = buildPaidContext();
+    fakeRepository.contextsByInvoiceId.set(INVOICE_ID, {
+      ...paidContext,
+      invoice: { ...paidContext.invoice, status: 'ISSUED' },
+      payment: null,
+    });
+    pdfRendererMock.render.mockResolvedValueOnce(new TextEncoder().encode('%PDF-1.4 issued'));
+    const issued = await request(app.getHttpServer())
+      .post(DOCUMENT_PATH)
+      .set('Authorization', `Bearer ${token}`);
+    const issuedRow = fakeRepository.listRows()[0];
+    fakeRepository.contextsByInvoiceId.set(INVOICE_ID, paidContext);
+    pdfRendererMock.render.mockResolvedValueOnce(new TextEncoder().encode('%PDF-1.4 paid'));
+
+    const paid = await request(app.getHttpServer())
+      .post(DOCUMENT_PATH)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(issued.body.data.isPaidReceipt).toBe(false);
+    expect(paid.status).toBe(200);
+    expect(paid.body.data.status).toBe('READY');
+    expect(paid.body.data.isPaidReceipt).toBe(true);
+    expect(paid.body.data.id).not.toBe(issued.body.data.id);
+    expect(paid.body.data.checksum).not.toBe(issued.body.data.checksum);
+    const receiptHtml = pdfRendererMock.render.mock.calls[1][0] as string;
+    expect(receiptHtml).toContain('QRIS');
+    expect(receiptHtml).toContain('QR-88213771');
+    expect(receiptHtml).toContain('kasir@hms.local');
+    const issuedRowAfter = fakeRepository.listRows().find((row) => row.id === issued.body.data.id);
+    expect(issuedRowAfter).toEqual(issuedRow);
+    expect(issuedRowAfter?.renderedData.values['invoice.status']).toBe('ISSUED');
+    const metadata = await request(app.getHttpServer())
+      .get(DOCUMENT_PATH)
+      .set('Authorization', `Bearer ${token}`);
+    expect(metadata.body.data.id).toBe(paid.body.data.id);
   });
 
   it('answers 404 for metadata before any document exists', async () => {

@@ -16,6 +16,7 @@ export class InvoiceDocumentMapper {
       status: record.status,
       templateVersionId: record.templateVersionId ?? undefined,
       hasVoidWatermark: record.hasVoidWatermark,
+      isPaidReceipt: record.isPaidReceipt,
       wasBoundRetroactively: record.wasBoundRetroactively,
       checksum: record.checksum ?? undefined,
       sizeBytes: record.sizeBytes ?? undefined,

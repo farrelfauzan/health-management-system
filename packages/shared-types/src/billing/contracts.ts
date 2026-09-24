@@ -293,7 +293,9 @@ export type ClinicLogoUploadUrlView = {
  * (fallback layout used, logo unreadable) — a blank on the receipt is always
  * accounted for here. `wasBoundRetroactively` marks a pre-Phase-16 invoice
  * whose snapshot was cut at first render request rather than at issue; the
- * download surface states it rather than hiding it.
+ * download surface states it rather than hiding it. `isPaidReceipt` marks the
+ * receipt cut when the payment was recorded — the issued snapshot is never
+ * rewritten, so a paid invoice's document is a separate row.
  */
 export type InvoiceDocumentView = {
   id: string;
@@ -301,6 +303,7 @@ export type InvoiceDocumentView = {
   status: InvoiceDocumentStatusValue;
   templateVersionId?: string;
   hasVoidWatermark: boolean;
+  isPaidReceipt: boolean;
   wasBoundRetroactively: boolean;
   checksum?: string;
   sizeBytes?: number;

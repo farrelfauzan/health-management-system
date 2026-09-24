@@ -297,6 +297,12 @@ export class BillingService {
           paidAt,
         }),
     );
+    // The paid receipt is its own document: the ISSUED snapshot carries no
+    // payment and must stay byte-identical (FR-E1-09), so the PDF, the
+    // download and the "Kuitansi" delivery switch to a new row that does.
+    // Best-effort like the issue-time snapshot — the first render request
+    // cuts it if this fails; the payment is never blocked by the document.
+    await this.invoiceDocumentService.snapshotOnPayment(invoice.id);
 
     return this.toInvoiceDetail(paid);
   }

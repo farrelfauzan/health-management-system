@@ -7,10 +7,13 @@ import { PDFParse } from 'pdf-parse';
 import {
   ClinicProfileRecord,
   InvoiceDeliverySubjectRecord,
+  InvoiceDocumentBinding,
   InvoiceDocumentDownloadView,
   InvoiceDocumentRecord,
+  InvoiceDocumentSlot,
   InvoiceDocumentView,
   InvoiceRenderContextRecord,
+  InvoiceStatusValue,
   PaperSizeValue,
   ResolvedInvoiceVariables,
   TemplateSettingsValue,
@@ -30,6 +33,7 @@ import { countStayNights } from './count-stay-nights';
 import { InvoiceDocumentMapper } from './invoice-document.mapper';
 import { INVOICE_DOCUMENT_STORAGE_KEY_PREFIX } from './invoice-document-storage-key-prefix';
 import { resolveMateraiThresholdIdr } from './materai-threshold';
+import { resolveInvoiceDocumentSlot } from './resolve-invoice-document-slot';
 import { resolveInvoiceVariables } from './resolve-invoice-variables';
 import { shouldShowMateraiArea } from './should-show-materai-area';
 import { shouldShowTaxInclusiveNote } from './should-show-tax-inclusive-note';
@@ -58,17 +62,21 @@ const PAPER_DIMENSIONS_INCHES: Readonly<
 /**
  * The render pipeline (`P16-T06`): resolve → fill → sidecar → S3 → checksum.
  *
- * Two invariants carry the whole design:
+ * Three invariants carry the whole design:
  *
  *   * **Issuing snapshots the render** (FR-E1-09). The row pins the template
  *     version and the fully resolved values, so a later template edit, tariff
  *     reprice, or patient rename cannot change what a re-render produces —
  *     and a re-download never re-renders at all, it serves the stored bytes.
+ *   * **Each invoice state is its own document.** The ISSUED snapshot is
+ *     never rewritten: paying the bill cuts a separate paid-receipt row
+ *     (status PAID, method, reference, cashier) and voiding it a separate
+ *     watermarked row. Every read picks the slot of the invoice's current
+ *     state — VOID, then PAID, then ISSUED.
  *   * **Billing is never blocked by rendering.** The renderer failing, the
  *     bucket failing, or the sidecar being absent marks the row FAILED with a
- *     reason; recording a payment does not pass through this service, and the
- *     issue-time snapshot is best-effort with the first render request as its
- *     fallback.
+ *     reason; the issue- and payment-time snapshots are best-effort with the
+ *     first render request as their fallback.
  *
  * The row is also where identifiers stop: the context read fetches
  * `nikLast4` only, and the masked value is reconstructed from it — no
@@ -100,44 +108,39 @@ export class InvoiceDocumentService {
    * render request re-cuts the snapshot, marked retroactive.
    */
   async snapshotOnIssue(invoiceId: string): Promise<void> {
-    try {
-      const context = await this.invoiceDocumentRepository.findRenderContext(invoiceId);
-      if (context === null || context.invoice.status !== 'ISSUED') {
-        return;
-      }
-      await this.ensureDocumentRow(context, {
-        hasVoidWatermark: false,
-        wasBoundRetroactively: false,
-      });
-    } catch {
-      this.logger.warn(buildSafeErrorLog('invoice_document_snapshot_failed', { invoiceId }));
-    }
+    await this.snapshotQuietly(invoiceId, 'ISSUED', async () => ({
+      templateVersionId: await this.findCurrentTemplateVersionId(),
+      wasBoundRetroactively: false,
+    }));
+  }
+
+  /**
+   * Cuts the paid-receipt row when a payment is recorded, next to — never
+   * over — the ISSUED snapshot (FR-E1-09). The receipt keeps the layout the
+   * invoice was issued with. Best-effort like the issue-time snapshot: a
+   * failure logs and the first render request cuts the receipt instead.
+   */
+  async snapshotOnPayment(invoiceId: string): Promise<void> {
+    await this.snapshotQuietly(invoiceId, 'PAID', () => this.resolveReceiptBinding(invoiceId));
   }
 
   /**
    * Renders the invoice document, or returns the existing one — idempotent
-   * per (invoice, snapshotted template version, watermark). A FAILED row is
-   * retried; a READY row is returned without touching the renderer, which is
-   * what makes two downloads byte-identical for free.
+   * per (invoice, snapshotted template version, slot), where the slot follows
+   * the invoice's current state. A FAILED row is retried; a READY row is
+   * returned without touching the renderer, which is what makes two
+   * downloads byte-identical for free.
    */
   async requestRender(invoiceId: string): Promise<InvoiceDocumentView> {
     const context = await this.findRenderContextOrThrow(invoiceId);
     if (context.invoice.status === 'DRAFT') {
       throw new ConflictException('Issue the invoice first');
     }
-    const hasVoidWatermark = context.invoice.status === 'VOID';
-    let document = await this.invoiceDocumentRepository.findLatestDocument(
-      invoiceId,
-      hasVoidWatermark,
-    );
+    const slot = resolveInvoiceDocumentSlot(context.invoice.status);
+    let document = await this.invoiceDocumentRepository.findLatestDocument(invoiceId, slot);
     if (document === null) {
-      document = await this.ensureDocumentRow(context, {
-        hasVoidWatermark,
-        // A missing snapshot on a non-void invoice means it was issued before
-        // this feature existed (or the issue-time snapshot failed): the
-        // binding to today's template is retroactive and the row says so.
-        wasBoundRetroactively: !hasVoidWatermark,
-      });
+      const binding = await this.resolveLateBinding(invoiceId, slot);
+      document = await this.ensureDocumentRow(context, slot, binding);
     }
     if (document.status === 'READY') {
       return this.invoiceDocumentMapper.toView(document);
@@ -146,29 +149,15 @@ export class InvoiceDocumentService {
     return this.invoiceDocumentMapper.toView(rendered);
   }
 
+  /** The metadata of the document for the invoice's current state. */
   async getDocument(invoiceId: string): Promise<InvoiceDocumentView> {
-    const context = await this.findRenderContextOrThrow(invoiceId);
-    const hasVoidWatermark = context.invoice.status === 'VOID';
-    const document = await this.invoiceDocumentRepository.findLatestDocument(
-      invoiceId,
-      hasVoidWatermark,
-    );
-    if (document === null) {
-      throw new NotFoundException('No document has been rendered for this invoice');
-    }
-    return this.invoiceDocumentMapper.toView(document);
+    const { record } = await this.findCurrentDocumentOrThrow(invoiceId);
+    return this.invoiceDocumentMapper.toView(record);
   }
 
+  /** A short-lived signed download of the document for the invoice's current state. */
   async createDownloadUrl(invoiceId: string): Promise<InvoiceDocumentDownloadView> {
-    const context = await this.findRenderContextOrThrow(invoiceId);
-    const hasVoidWatermark = context.invoice.status === 'VOID';
-    const document = await this.invoiceDocumentRepository.findLatestDocument(
-      invoiceId,
-      hasVoidWatermark,
-    );
-    if (document === null) {
-      throw new NotFoundException('No document has been rendered for this invoice');
-    }
+    const { record: document, context } = await this.findCurrentDocumentOrThrow(invoiceId);
     if (document.status !== 'READY' || document.storageKey === null) {
       throw new ConflictException('The invoice document is not ready to download');
     }
@@ -213,6 +202,90 @@ export class InvoiceDocumentService {
     return context;
   }
 
+  private async findCurrentDocumentOrThrow(
+    invoiceId: string,
+  ): Promise<{ record: InvoiceDocumentRecord; context: InvoiceRenderContextRecord }> {
+    const context = await this.findRenderContextOrThrow(invoiceId);
+    const record = await this.invoiceDocumentRepository.findLatestDocument(
+      invoiceId,
+      resolveInvoiceDocumentSlot(context.invoice.status),
+    );
+    if (record === null) {
+      throw new NotFoundException('No document has been rendered for this invoice');
+    }
+    return { record, context };
+  }
+
+  /**
+   * Cuts the row of one state transition unless the invoice has already
+   * moved past it. Never throws: the transition that called it has already
+   * committed and must not be reported as failed.
+   */
+  private async snapshotQuietly(
+    invoiceId: string,
+    expectedStatus: InvoiceStatusValue,
+    resolveBinding: () => Promise<InvoiceDocumentBinding>,
+  ): Promise<void> {
+    try {
+      const context = await this.invoiceDocumentRepository.findRenderContext(invoiceId);
+      if (context === null || context.invoice.status !== expectedStatus) {
+        return;
+      }
+      const slot = resolveInvoiceDocumentSlot(expectedStatus);
+      await this.ensureDocumentRow(context, slot, await resolveBinding());
+    } catch {
+      this.logger.warn(buildSafeErrorLog('invoice_document_snapshot_failed', { invoiceId }));
+    }
+  }
+
+  /**
+   * The binding for a slot whose row is first asked for at render time. A
+   * missing ISSUED snapshot means the invoice was issued before this feature
+   * existed (or the issue-time snapshot failed): the binding to today's
+   * template is retroactive and the row says so. A watermarked row is the
+   * natural post-void document, never retroactive.
+   */
+  private async resolveLateBinding(
+    invoiceId: string,
+    slot: InvoiceDocumentSlot,
+  ): Promise<InvoiceDocumentBinding> {
+    if (slot.isPaidReceipt) {
+      return this.resolveReceiptBinding(invoiceId);
+    }
+    return {
+      templateVersionId: await this.findCurrentTemplateVersionId(),
+      wasBoundRetroactively: !slot.hasVoidWatermark,
+    };
+  }
+
+  /**
+   * A receipt inherits the ISSUED snapshot's template version (FR-E1-09: a
+   * republished template never reaches an invoice issued before it). With no
+   * ISSUED snapshot to inherit from, the receipt binds today's template and
+   * is marked retroactive, the same as a late ISSUED snapshot would be.
+   */
+  private async resolveReceiptBinding(invoiceId: string): Promise<InvoiceDocumentBinding> {
+    const issued = await this.invoiceDocumentRepository.findLatestDocument(
+      invoiceId,
+      resolveInvoiceDocumentSlot('ISSUED'),
+    );
+    if (issued === null) {
+      return {
+        templateVersionId: await this.findCurrentTemplateVersionId(),
+        wasBoundRetroactively: true,
+      };
+    }
+    return {
+      templateVersionId: issued.templateVersionId,
+      wasBoundRetroactively: issued.wasBoundRetroactively,
+    };
+  }
+
+  private async findCurrentTemplateVersionId(): Promise<string | null> {
+    const version = await this.documentTemplateService.findDefaultPublishedVersion('INVOICE');
+    return version?.id ?? null;
+  }
+
   /**
    * Creates the snapshot row for one render slot, or adopts the one a
    * concurrent request created first — the partial unique index makes the
@@ -221,18 +294,18 @@ export class InvoiceDocumentService {
    */
   private async ensureDocumentRow(
     context: InvoiceRenderContextRecord,
-    slot: { hasVoidWatermark: boolean; wasBoundRetroactively: boolean },
+    slot: InvoiceDocumentSlot,
+    binding: InvoiceDocumentBinding,
   ): Promise<InvoiceDocumentRecord> {
-    const version = await this.documentTemplateService.findDefaultPublishedVersion('INVOICE');
     const resolved = await this.resolveVariables(context);
     const renderWarnings: TemplateVariableWarning[] = [...resolved.warnings];
-    if (version === null) {
+    if (binding.templateVersionId === null) {
       renderWarnings.push({
         token: 'template',
         reason: 'No published invoice template exists — the built-in layout was used',
       });
     }
-    if (slot.wasBoundRetroactively) {
+    if (binding.wasBoundRetroactively) {
       renderWarnings.push({
         token: 'template',
         reason: 'This invoice predates document templates; its layout was bound retroactively',
@@ -241,9 +314,10 @@ export class InvoiceDocumentService {
     try {
       return await this.invoiceDocumentRepository.createDocument({
         invoiceId: context.invoice.id,
-        templateVersionId: version?.id ?? null,
+        templateVersionId: binding.templateVersionId,
         hasVoidWatermark: slot.hasVoidWatermark,
-        wasBoundRetroactively: slot.wasBoundRetroactively,
+        isPaidReceipt: slot.isPaidReceipt,
+        wasBoundRetroactively: binding.wasBoundRetroactively,
         renderedData: resolved,
         renderWarnings,
       });
@@ -251,8 +325,8 @@ export class InvoiceDocumentService {
       if (this.isUniqueConstraintError(err)) {
         const existing = await this.invoiceDocumentRepository.findDocumentForSlot(
           context.invoice.id,
-          version?.id ?? null,
-          slot.hasVoidWatermark,
+          binding.templateVersionId,
+          slot,
         );
         if (existing !== null) {
           return existing;

@@ -12390,6 +12390,7 @@ export const InvoiceDocumentScalarFieldEnum = {
   invoiceId: 'invoiceId',
   templateVersionId: 'templateVersionId',
   hasVoidWatermark: 'hasVoidWatermark',
+  isPaidReceipt: 'isPaidReceipt',
   wasBoundRetroactively: 'wasBoundRetroactively',
   renderedData: 'renderedData',
   status: 'status',
