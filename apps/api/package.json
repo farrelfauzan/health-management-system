@@ -26,6 +26,7 @@
     "backfill:doctor-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/backfill-doctor-nik.js",
     "seed:sandbox-practitioner-nik": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/seed-sandbox-practitioner-niks.js",
     "seed:satusehat-sandbox": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/seed-satusehat-sandbox.js",
+    "seed:demo": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/seed-demo.js",
     "icd10:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd10",
     "icd9cm:import": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/import-terminology-codes.js icd9cm",
     "report:draft-patients": "nest build --builder swc && node --env-file-if-exists=.env dist/src/scripts/report-draft-patients.js",
