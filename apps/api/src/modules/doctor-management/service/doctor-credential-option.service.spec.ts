@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { renderErrorEnvelope } from '../../../common/observability/render-error-envelope';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorCredentialOptionRepository } from '../repository/doctor-credential-option.repository';
 import { DoctorCredentialOptionService } from './doctor-credential-option.service';
@@ -209,7 +210,7 @@ describe('DoctorCredentialOptionService', () => {
         .catch((error: unknown) => error);
 
       expect(actualError).toBeInstanceOf(BadRequestException);
-      expect((actualError as BadRequestException).getResponse()).toEqual(
+      expect(renderErrorEnvelope(actualError).body.error).toEqual(
         expect.objectContaining({
           details: { field: 'degrees', unknownCodes: ['SP_MADE_UP'] },
         }),

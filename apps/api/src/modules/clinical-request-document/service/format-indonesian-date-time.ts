@@ -13,6 +13,17 @@ const INDONESIAN_MONTHS = [
   'Desember',
 ] as const;
 
+/** Sunday first, the order `Date#getUTCDay` counts in. */
+const INDONESIAN_WEEKDAYS = [
+  'Minggu',
+  'Senin',
+  'Selasa',
+  'Rabu',
+  'Kamis',
+  'Jumat',
+  'Sabtu',
+] as const;
+
 const TWO_DIGITS = 2;
 
 type FormatIndonesianDateTimeParams = {
@@ -20,11 +31,15 @@ type FormatIndonesianDateTimeParams = {
   /** The clinic's zone: a report released at 23:30 in Jakarta is dated that day, not tomorrow. */
   readonly timeZone: string;
   readonly withTime: boolean;
+  /** "Senin, 9 November 2026" — for a document that asks for the *hari*. */
+  readonly withWeekday?: boolean;
 };
 
 /**
  * "7 September 2026" or "7 September 2026, 11:40", in the clinic's time zone
- * (P18-T05). The surat pengantar formats its dates in UTC because a date of
+ * (P18-T05). Every printed clinical letter dates itself through this; a
+ * `@db.Date` column (a date of birth, an HPHT) is passed with `UTC`, because
+ * it names a calendar day rather than an instant. The surat pengantar formats its dates in UTC because a date of
  * birth has no zone; a release has one, and printing it an hour off is how a
  * patient ends up disputing which report came first.
  */
@@ -41,7 +56,11 @@ export function formatIndonesianDateTime(params: FormatIndonesianDateTimeParams)
   const read = (type: Intl.DateTimeFormatPartTypes): string =>
     parts.find((part) => part.type === type)?.value ?? '';
   const monthIndex = Number(read('month')) - 1;
-  const date = `${Number(read('day'))} ${INDONESIAN_MONTHS[monthIndex] ?? ''} ${read('year')}`;
+  const day = Number(read('day'));
+  const calendarDate = `${day} ${INDONESIAN_MONTHS[monthIndex] ?? ''} ${read('year')}`;
+  const weekday =
+    INDONESIAN_WEEKDAYS[new Date(Date.UTC(Number(read('year')), monthIndex, day)).getUTCDay()];
+  const date = params.withWeekday === true ? `${weekday ?? ''}, ${calendarDate}` : calendarDate;
   if (!params.withTime) {
     return date;
   }

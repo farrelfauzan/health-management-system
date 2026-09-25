@@ -8,6 +8,7 @@ import type {
   InvoiceDocumentView,
 } from '@hms/shared-types';
 import { Button, Icon, useAbility } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import {
@@ -24,21 +25,23 @@ type InvoiceDocumentActionsProps = {
 };
 
 /**
- * Download PDF / Print for one invoice (P16-T10).
+ * The invoice PDF for one invoice (P16-T10).
  *
- * Both actions run the same ensure-then-open flow: render (or adopt the
- * existing document — the API is idempotent per snapshot, so a second click
- * never re-renders), then open a short-lived signed URL that is used once and
- * never stored. The download endpoint pins `attachment` disposition, so
- * *Print* hands the same PDF to the browser and printing happens from the
- * viewer — the dialog has no print stylesheet, and printing page chrome would
- * be worse than one extra keystroke.
+ * One action, ensure-then-open: render (or adopt the existing document — the
+ * API is idempotent per snapshot, so a second click never re-renders), then
+ * open a short-lived signed URL that is used once and never stored.
+ *
+ * There is no separate *Print* button. The signed URL pins `attachment`
+ * disposition, so a Print button could only hand over the same download under
+ * a second name — two buttons that do one thing. The cashier prints from the
+ * downloaded PDF, which prints the document itself rather than page chrome.
  *
  * A render another cashier started shows up through the polling hook as
- * "Rendering…" and the dialog stays fully usable throughout — nothing here
+ * "rendering" and the dialog stays fully usable throughout — nothing here
  * blocks payment actions.
  */
 export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps) {
+  const t = useTranslations('operations.billing.invoiceDocument');
   const ability = useAbility();
   const canWriteInvoice = ability.can('write', 'Invoice');
   const documentQuery = useInvoiceDocument(invoice.id, invoice.status);
@@ -51,17 +54,17 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
   const failureReason =
     documentError ??
     (invoiceDocument?.status === 'FAILED'
-      ? (invoiceDocument.renderError ?? 'The document could not be rendered')
+      ? (invoiceDocument.renderError ?? t('renderFailed'))
       : null);
 
   async function ensureReadyAndOpen(): Promise<void> {
     const current = await ensureRenderedDocument();
     if (current.status !== 'READY') {
-      throw new Error(current.renderError ?? 'The document is not ready yet — retry in a moment');
+      throw new Error(current.renderError ?? t('notReady'));
     }
     const download = parseApiSuccess<InvoiceDocumentDownloadView>(
       await invoiceDocumentControllerDownloadDocumentV1(invoice.id),
-      'Failed to prepare the invoice PDF download',
+      t('downloadError'),
     );
     window.open(download.data.url, '_blank', 'noopener,noreferrer');
   }
@@ -74,13 +77,13 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
     if (canWriteInvoice) {
       const rendered = parseApiSuccess<InvoiceDocumentView>(
         await invoiceDocumentControllerRenderDocumentV1(invoice.id),
-        'Failed to render the invoice PDF',
+        t('renderError'),
       );
       return rendered.data;
     }
     const fetched = parseApiSuccess<InvoiceDocumentView>(
       await invoiceDocumentControllerGetDocumentV1(invoice.id),
-      'The invoice PDF has not been rendered yet',
+      t('notRenderedYet'),
     );
     return fetched.data;
   }
@@ -90,7 +93,7 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
     try {
       await openMutation.mutateAsync();
     } catch (error) {
-      setDocumentError(resolveApiErrorMessage(error, 'Failed to prepare the invoice PDF'));
+      setDocumentError(resolveApiErrorMessage(error, t('downloadError')));
     } finally {
       if (!isDraft) {
         void documentQuery.refetch();
@@ -101,18 +104,13 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
   return (
     <div className="space-y-2 rounded-lg border border-slate-200 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium">Invoice PDF</p>
-        {isRenderingElsewhere ? (
-          <p className="text-xs text-slate-500">Rendering document...</p>
-        ) : null}
-        {isBusy ? <p className="text-xs text-slate-500">Preparing document...</p> : null}
+        <p className="text-sm font-medium">{t('title')}</p>
+        {isRenderingElsewhere ? <p className="text-xs text-slate-500">{t('rendering')}</p> : null}
+        {isBusy ? <p className="text-xs text-slate-500">{t('preparing')}</p> : null}
       </div>
 
       {invoiceDocument?.wasBoundRetroactively ? (
-        <InlineNotice tone="warning">
-          This invoice predates document templates — its layout was bound retroactively to the
-          current template.
-        </InlineNotice>
+        <InlineNotice tone="warning">{t('retroactive')}</InlineNotice>
       ) : null}
 
       {failureReason ? (
@@ -125,7 +123,7 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
               disabled={isBusy}
               onClick={() => void handleOpen()}
             >
-              Retry
+              {t('retry')}
             </Button>
           ) : null}
         </InlineNotice>
@@ -140,23 +138,11 @@ export function InvoiceDocumentActions({ invoice }: InvoiceDocumentActionsProps)
           onClick={() => void handleOpen()}
         >
           <Icon name="download" size={18} />
-          Download PDF
-        </Button>
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          disabled={isDraft || isBusy}
-          onClick={() => void handleOpen()}
-        >
-          <Icon name="print" size={18} />
-          Print
+          {t('download')}
         </Button>
       </div>
 
-      {isDraft ? (
-        <p className="text-right text-xs text-slate-500">Issue the invoice first</p>
-      ) : null}
+      {isDraft ? <p className="text-right text-xs text-slate-500">{t('issueFirst')}</p> : null}
     </div>
   );
 }

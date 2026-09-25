@@ -282,9 +282,9 @@ export class LabOrderService {
       order,
       patient: worklistOrder.patient,
       doctorName: resolveLabRequesterLabel(order),
-      doctorLicenseNumber: worklistOrder.orderedByLicenseNumber,
-      clinic: await this.clinicProfileService.getProfile(),
-      clinicLogoDataUri: null,
+      signer: await this.labOrderRepository.findOrderSigner(order.id),
+      letterhead: await this.clinicProfileService.getDocumentLetterhead(),
+      timeZone: this.clinicTimeZone,
     });
 
     return this.clinicalRequestDocumentService.renderAndFile(context, currentUser.sub);

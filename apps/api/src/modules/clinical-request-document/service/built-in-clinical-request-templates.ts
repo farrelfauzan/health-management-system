@@ -32,17 +32,19 @@ const PATIENT_BLOCK = [
   '</tbody></table>',
 ].join('');
 
-// The signature block a request is issued under. The SIP is printed from the
-// doctor's own licence row rather than typed into the layout, so a renewed
-// licence reaches every future letter without an edit.
+// The signature block a request is issued under. The role ("Dokter
+// pemeriksa" / "Bidan pemeriksa") and the licence — SIP, SIPB, or the STR when
+// no practice licence is in force (D-032) — are printed from the clinician's
+// own profile rather than typed into the layout, so a midwife's letter says
+// she signed it and a renewed licence reaches every future letter unedited.
 const SIGNATURE_BLOCK = [
   '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-top:10mm"><tbody><tr>',
   '<td style="width:60%"></td>',
   '<td style="width:40%;text-align:center">',
-  '<p style="margin:0">Dokter pemeriksa,</p>',
+  '<p style="margin:0"><span data-hms-var="doctor.signatureRole"></span>,</p>',
   '<div style="height:18mm"></div>',
   '<p style="margin:0;font-weight:bold"><span data-hms-var="doctor.fullName"></span></p>',
-  '<p style="margin:0;font-size:9pt">SIP: <span data-hms-var="doctor.licenseNumber"></span></p>',
+  '<p style="margin:0;font-size:9pt"><span data-hms-var="doctor.licenseLabel"></span>: <span data-hms-var="doctor.licenseNumber"></span></p>',
   '</td></tr></tbody></table>',
 ].join('');
 
@@ -81,7 +83,6 @@ const PRESCRIPTION_CONTENT_HTML = [
   '<p style="font-size:10pt;margin:3mm 0 0 0">Catatan: <span data-hms-var="prescription.notes"></span></p>',
   SIGNATURE_BLOCK,
 ].join('');
-
 
 // The pregnancy block both maternal letters open with. Written in the same
 // canonical token grammar as the rest of this file, so a clinic that later
@@ -132,7 +133,7 @@ const PREGNANCY_CERTIFICATE_CONTENT_HTML = [
  * Signed by the attendant of *this birth*, not by the doctor who happens to be
  * issuing the document: the person who catches the baby is the person whose
  * STR belongs on it. That is why it carries its own signature block instead of
- * the shared one, which names the requesting doctor's SIP.
+ * the shared one, which names the issuing clinician's practice licence.
  */
 const BIRTH_CERTIFICATE_CONTENT_HTML = [
   LETTERHEAD,
@@ -151,7 +152,7 @@ const BIRTH_CERTIFICATE_CONTENT_HTML = [
   '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-bottom:3mm"><tbody>',
   '<tr><td style="width:28%">Nama ibu</td><td>: <span data-hms-var="mother.fullName"></span></td></tr>',
   '<tr><td>NIK</td><td>: <span data-hms-var="mother.nikMasked"></span></td></tr>',
-  '<tr><td>Tempat kelahiran</td><td>: <span data-hms-var="clinic.name"></span>, <span data-hms-var="clinic.address"></span></td></tr>',
+  '<tr><td>Tempat kelahiran</td><td>: <span data-hms-var="birth.place"></span></td></tr>',
   '</tbody></table>',
   '<p style="font-size:10pt;margin:2mm 0 0 0">Surat keterangan ini dibuat untuk dipergunakan sebagaimana mestinya.</p>',
   '<table width="100%" style="border-collapse:collapse;font-size:10pt;margin-top:10mm"><tbody><tr>',

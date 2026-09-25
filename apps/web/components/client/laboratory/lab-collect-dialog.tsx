@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type {
-  CollectLabSpecimensInput,
-  LabSpecimenLabel,
-  LabSpecimenTypeValue,
-  LabSpecimenView,
-  LabWorklistItem,
+import {
+  LAB_PAYMENT_REQUIRED_ERROR_CODE,
+  type CollectLabSpecimensInput,
+  type LabSpecimenLabel,
+  type LabSpecimenTypeValue,
+  type LabSpecimenView,
+  type LabWorklistItem,
 } from '@hms/shared-types';
 import {
   Badge,
@@ -30,6 +31,8 @@ import {
   labSpecimenControllerGetSpecimenLabelV1,
 } from '#lib/api/generated/laboratory-specimens/laboratory-specimens';
 import { notifyApiError } from '#lib/api/notify-api-error';
+import { notifyStatement } from '#lib/api/notify-statement';
+import { resolveApiErrorCode } from '#lib/api/resolve-api-error-code';
 import { parseApiSuccess } from '#lib/api/response';
 import { invalidateLabQueries } from '#lib/laboratory/invalidate-lab-queries';
 import { printSpecimenLabels } from '#lib/laboratory/print-specimen-labels';
@@ -80,6 +83,13 @@ export function LabCollectDialog({ item, onClose }: LabCollectDialogProps) {
       }
       handleClose();
     } catch (caughtError) {
+      // Pay-before-collect is a known refusal with a known next step (send the
+      // patient to the cashier), so it is said in the reader's language rather
+      // than as the API's English message.
+      if (resolveApiErrorCode(caughtError) === LAB_PAYMENT_REQUIRED_ERROR_CODE) {
+        notifyStatement({ tone: 'error', title: t('paymentRequired') });
+        return;
+      }
       notifyApiError(caughtError, t('error'));
     }
   }

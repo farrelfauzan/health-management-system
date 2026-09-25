@@ -340,7 +340,9 @@
         "generateInvoice": "Buat Tagihan",
         "referencePlaceholder": "Referensi transfer atau QRIS, jika ada",
         "immutableCode": "Kode tidak dapat diubah.",
-        "procedureLink": "Tautkan tarif ke prosedur"
+        "procedureLink": "Tautkan tarif ke prosedur",
+        "recordPayment": "Catat pembayaran",
+        "recordingPayment": "Mencatat…"
       },
       "accommodationNeedsClass": "Tarif akomodasi harus menyebutkan kelas perawatan yang ditagihkan.",
       "templates": {
@@ -690,6 +692,38 @@
         "errors": {
           "CLINICIAN_FEE_RULE_OVERLAP": "Sudah ada aturan lain untuk layanan dan tenaga kesehatan yang sama pada sebagian tanggal ini. Akhiri aturan tersebut terlebih dahulu.",
           "CLINICIAN_FEE_RULE_TARGET_INVALID": "Tarif atau tenaga kesehatan tersebut sudah tidak ada."
+        }
+      },
+      "tariffsDescription": "Daftar harga yang dipakai saat membuat tagihan.",
+      "paymentAmountInvalid": "Masukkan jumlah yang diterima dalam rupiah.",
+      "invoiceDocument": {
+        "title": "PDF tagihan",
+        "rendering": "Dokumen sedang disiapkan…",
+        "preparing": "Menyiapkan dokumen…",
+        "retroactive": "Tagihan ini dibuat sebelum ada templat dokumen, sehingga tata letaknya mengikuti templat yang berlaku sekarang.",
+        "renderFailed": "Dokumen tidak dapat dibuat.",
+        "notReady": "Dokumen belum siap. Coba lagi sebentar lagi.",
+        "notRenderedYet": "PDF tagihan ini belum dibuat.",
+        "renderError": "PDF tagihan tidak dapat dibuat.",
+        "downloadError": "PDF tagihan tidak dapat disiapkan untuk diunduh.",
+        "download": "Unduh PDF",
+        "retry": "Coba lagi",
+        "issueFirst": "Terbitkan tagihan terlebih dahulu"
+      },
+      "gaps": {
+        "allPriced": "Semua layanan pada kunjungan ini sudah ada harganya.",
+        "title": "{count, plural, other {# layanan tidak dapat diberi harga}}",
+        "reasons": {
+          "NO_CONSULTATION_TARIFF": "Belum ada tarif konsultasi untuk poli klinisi ini, dan klinik juga belum punya tarif konsultasi umum. Tambahkan di menu Tarif, lalu buat ulang tagihan.",
+          "AMBIGUOUS_CONSULTATION_TARIFF": "Ada dua tarif konsultasi yang sama-sama cocok untuk kunjungan ini, jadi tidak ada yang ditagihkan agar tidak salah tarif. Tetapkan poli pada salah satunya di menu Tarif, lalu buat ulang tagihan.",
+          "NO_TARIFF_FOR_PROCEDURE": "Tindakan ini belum punya tarif. Tambahkan tarif dengan kode ICD-9-CM-nya lalu buat ulang tagihan, atau tambahkan barisnya secara manual pada draf tagihan.",
+          "UNPRICED_MEDICATION": "Obat yang diserahkan ini belum punya harga, sehingga tidak masuk tagihan.",
+          "NO_ACCOMMODATION_TARIFF": "Kelas ruang rawat ini belum punya tarif akomodasi aktif, sehingga biaya menginap tidak ditagihkan. Tambahkan di menu Tarif, lalu terbitkan ulang.",
+          "UNPRICED_COMPOUND_COMPONENT": "Salah satu bahan racikan ini belum punya harga, sehingga seluruh racikan tidak ditagihkan — racikan dengan harga separuh akan terbaca seperti harga sebenarnya. Beri harga bahan tersebut, lalu buat ulang tagihan.",
+          "NO_COMPOUNDING_FEE_TARIFF": "Racikan sudah dihitung dari bahan-bahannya, tetapi belum ada tarif JASA-RACIK aktif, sehingga jasa racik tidak ditagihkan. Tambahkan di menu Tarif, lalu terbitkan ulang.",
+          "NO_TARIFF_FOR_IMMUNIZATION": "Imunisasi ini belum punya tarif. Tambahkan tarif dengan kode yang sama dengan kode katalog vaksin lalu buat ulang tagihan, atau tambahkan barisnya secara manual pada draf tagihan.",
+          "NO_TARIFF_FOR_LAB_TEST": "Pemeriksaan laboratorium ini belum punya tarif LAB aktif, sehingga tidak masuk tagihan. Beri harga di menu Tarif lalu buat ulang tagihan, atau tambahkan barisnya secara manual pada draf tagihan.",
+          "NO_TARIFF_FOR_LAB_PANEL": "Paket laboratorium ini belum punya tarif LAB aktif. Paket ditagihkan sekali dengan harganya sendiri, jadi memberi harga tiap pemeriksaan di dalamnya tidak menutup kekurangan ini — beri harga paketnya, lalu buat ulang tagihan."
         }
       }
     },
@@ -1940,6 +1974,7 @@
         "success": "{count} spesimen terambil.",
         "popupBlocked": "Label tidak bisa dibuka — izinkan pop-up untuk situs ini, lalu cetak dari halaman permintaan.",
         "error": "Spesimen tidak dapat dicatat.",
+        "paymentRequired": "Tagihan kunjungan ini belum dibayar. Minta pasien menyelesaikan pembayaran di kasir sebelum sampel diambil.",
         "cancel": "Batal",
         "loadError": "Permintaan tidak dapat dimuat."
       },

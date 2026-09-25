@@ -1,4 +1,5 @@
 import {
+  ClinicalDocumentSignerRecord,
   AntenatalDueEpisodeRecord,
   AntenatalExaminationRow,
   AntenatalVisitCodeValue,
@@ -17,7 +18,9 @@ import {
 } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
+import { CLINICIAN_SIGNER_SELECT } from '../../../common/prisma/clinician-signer-select';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { toClinicalDocumentSignerRecord } from '../../../common/prisma/to-clinical-document-signer-record';
 import { buildPatientReachFilter } from './build-patient-reach-filter';
 import { enqueueSatusehatEpisodeClose } from './enqueue-satusehat-episode-close';
 import { PregnancyEpisodeConflictError } from './pregnancy-episode-conflict.error';
@@ -430,6 +433,27 @@ export class MaternalCareRepository {
         nikLast4: true,
       },
     });
+  }
+
+  /**
+   * The clinician a maternal letter is signed by, with the profession and the
+   * licences the signature block reads (D-032).
+   */
+  async findLetterSigner(doctorProfileId: string): Promise<ClinicalDocumentSignerRecord | null> {
+    const row = await this.prisma.findFirstActive(this.prisma.doctorProfile, {
+      where: { id: doctorProfileId },
+      select: CLINICIAN_SIGNER_SELECT,
+    });
+    return row ? toClinicalDocumentSignerRecord(row) : null;
+  }
+
+  /** The clinician the visit was booked with — who signs when the issuer has no profile. */
+  async findEncounterClinicianId(encounterId: string): Promise<string | null> {
+    const row = await this.prisma.encounter.findUnique({
+      where: { id: encounterId },
+      select: { doctorId: true },
+    });
+    return row?.doctorId ?? null;
   }
 
   /**

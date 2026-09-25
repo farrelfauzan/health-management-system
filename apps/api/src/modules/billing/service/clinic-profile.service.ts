@@ -109,17 +109,31 @@ export class ClinicProfileService {
         name: DEFAULT_CLINIC_LABEL,
         legalName: null,
         address: null,
+        phoneNumber: null,
+        email: null,
+        licenseNumber: null,
         taxId: null,
         logoDataUri: null,
       };
     }
-    return {
-      name: record.name.trim() === '' ? DEFAULT_CLINIC_LABEL : record.name,
-      legalName: record.legalName,
-      address: record.address,
-      taxId: record.taxId,
-      logoDataUri: await this.readLogoDataUri(record),
-    };
+    return this.toLetterhead(record);
+  }
+
+  /**
+   * The letterhead a printed clinical letter carries — a resep, a surat
+   * pengantar, a hasil laboratorium, a surat rujukan, a surat keterangan hamil
+   * or lahir. The same shape and the same inlined logo as {@link getLetterhead},
+   * but a clinic that has not configured its profile gets the 404
+   * {@link getProfile} gives rather than the product label: a clinical letter
+   * is legally a letter *from the clinic*, and one printed under a placeholder
+   * name is a document nobody should be handed.
+   */
+  async getDocumentLetterhead(): Promise<ClinicLetterhead> {
+    const record = await this.clinicProfileRepository.findProfile();
+    if (record === null) {
+      throw new NotFoundException('The clinic profile has not been configured yet');
+    }
+    return this.toLetterhead(record);
   }
 
   /**
@@ -414,6 +428,19 @@ export class ClinicProfileService {
       responseContentType: record.logoMimeType ?? CLINIC_LOGO_STORED_MIME_TYPE,
     });
     return toClinicProfileView(record, signed.url);
+  }
+
+  private async toLetterhead(record: ClinicProfileRecord): Promise<ClinicLetterhead> {
+    return {
+      name: record.name.trim() === '' ? DEFAULT_CLINIC_LABEL : record.name,
+      legalName: record.legalName,
+      address: record.address,
+      phoneNumber: record.phoneNumber,
+      email: record.email,
+      licenseNumber: record.licenseNumber,
+      taxId: record.taxId,
+      logoDataUri: await this.readLogoDataUri(record),
+    };
   }
 
   private async readLogoDataUri(record: ClinicProfileRecord): Promise<string | null> {

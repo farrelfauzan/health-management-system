@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { renderErrorEnvelope } from '../../../common/observability/render-error-envelope';
 import { ClinicianFeeStatementService } from '../../clinician-fee/service/clinician-fee-statement.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { ClinicianTaxIdentityRepository } from '../repository/clinician-tax-identity.repository';
@@ -318,8 +319,17 @@ describe('TaxReportService (P27-T05)', () => {
 
       expect(drafted.summary).toMatchObject({ incompleteIdentityCount: 1 });
       expect(drafted.lines[0]).toMatchObject({ identityStatus: 'MISSING', taxAmount: 500_000 });
-      await expect(service.finalizeReport('report-oct-pph21', actor)).rejects.toMatchObject({
-        response: { code: 'TAX_REPORT_IDENTITY_INCOMPLETE' },
+      const actualError = await service
+        .finalizeReport('report-oct-pph21', actor)
+        .catch((error: unknown) => error);
+      expect(renderErrorEnvelope(actualError)).toMatchObject({
+        status: 409,
+        body: {
+          error: {
+            code: 'TAX_REPORT_IDENTITY_INCOMPLETE',
+            details: [expect.objectContaining({ doctorId: DR_A.doctorId })],
+          },
+        },
       });
       expect(taxReportRepositoryMock.finalizeReport).not.toHaveBeenCalled();
     });

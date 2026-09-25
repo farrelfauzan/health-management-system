@@ -1,5 +1,6 @@
 import {
   CancelLabOrderPayload,
+  ClinicalDocumentSignerRecord,
   CreateLabOrderPayload,
   ExistingEncounterLabItemRecord,
   LabOrderEncounterRecord,
@@ -15,7 +16,9 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { CLINICIAN_NAME_SELECT } from '../../../common/prisma/clinician-name-select';
+import { CLINICIAN_SIGNER_SELECT } from '../../../common/prisma/clinician-signer-select';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { toClinicalDocumentSignerRecord } from '../../../common/prisma/to-clinical-document-signer-record';
 import { LabDailyNumberAllocatorRepository } from './lab-daily-number-allocator.repository';
 import { LabOrderListRow, LabOrderRow, LabWorklistRow } from './lab-order-row.types';
 import { toLabOrderItemRecord } from './to-lab-order-item-record';
@@ -276,6 +279,19 @@ export class LabOrderRepository {
       include: LAB_WORKLIST_INCLUDE,
     });
     return row ? this.toWorklistRecord(row as unknown as LabWorklistRow) : null;
+  }
+
+  /**
+   * The ordering clinician as the surat pengantar's signature block reads
+   * them (D-032). Null for an order an outside doctor sent in: nobody at this
+   * clinic signed it.
+   */
+  async findOrderSigner(id: string): Promise<ClinicalDocumentSignerRecord | null> {
+    const row = await this.prisma.labOrder.findUnique({
+      where: { id },
+      select: { orderedBy: { select: CLINICIAN_SIGNER_SELECT } },
+    });
+    return row?.orderedBy ? toClinicalDocumentSignerRecord(row.orderedBy) : null;
   }
 
   async updateLabOrderDisposition(

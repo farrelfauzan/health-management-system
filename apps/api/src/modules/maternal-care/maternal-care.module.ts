@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
+import { BillingModule } from '../billing/billing.module';
 import { DoctorManagementModule } from '../doctor-management/doctor-management.module';
 import { ClinicalRequestDocumentModule } from '../clinical-request-document/clinical-request-document.module';
 import { EmrModule } from '../emr/emr.module';
@@ -47,9 +48,12 @@ import { ShkScreeningService } from './service/shk-screening.service';
   // through the same published-template → Gotenberg → object-storage path the
   // resep and the surat pengantar take, rather than growing a second renderer.
   // `DoctorManagementModule` answers the KB IUD/implant gate (P25-T14): the
-  // midwife's own authority and any mandate covering the method.
+  // midwife's own authority and any mandate covering the method, and whose
+  // profile a letter is signed from. `BillingModule` owns the clinic profile
+  // every letter's letterhead is printed from.
   imports: [
     AuthModule,
+    BillingModule,
     ClinicalRequestDocumentModule,
     DoctorManagementModule,
     NotificationModule,

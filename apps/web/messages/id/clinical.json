@@ -1344,7 +1344,13 @@
           "urgent": "Cito",
           "cancel": "Batalkan",
           "cancelled": "Dibatalkan. Tidak ada pemeriksaan yang dikerjakan.",
-          "waiting": "Menunggu hasil."
+          "waiting": "Menunggu hasil.",
+          "requestDocument": {
+            "action": "Cetak surat pengantar",
+            "issued": "Surat pengantar diterbitkan",
+            "error": "Surat pengantar tidak dapat dicetak. Silakan coba lagi.",
+            "openError": "Surat pengantar sudah diterbitkan, tetapi tidak dapat dibuka. Buka dari tab Dokumen pasien."
+          }
         },
         "step": {
           "ORDERED": "Diminta",
@@ -1454,7 +1460,13 @@
         "referral": "Rujuk ke dokter atau puskesmas"
       },
       "administrativeSubtitle": "Ringkasan administratif kunjungan: siapa, kapan, dan statusnya.",
-      "administrativeNotice": "Isi rekam medis kunjungan ini — catatan SOAP, diagnosis, tindakan, resep, dan hasil laboratorium — hanya dapat dibuka oleh dokter atau bidan yang memeriksa pasien, sesuai aturan klinik."
+      "administrativeNotice": "Isi rekam medis kunjungan ini — catatan SOAP, diagnosis, tindakan, resep, dan hasil laboratorium — hanya dapat dibuka oleh dokter atau bidan yang memeriksa pasien, sesuai aturan klinik.",
+      "prescriptionDocument": {
+        "action": "Cetak resep",
+        "issued": "Resep diterbitkan",
+        "error": "Resep tidak dapat dicetak. Silakan coba lagi.",
+        "openError": "Resep sudah diterbitkan, tetapi tidak dapat dibuka. Buka dari tab Dokumen pasien."
+      }
     }
   }
 }

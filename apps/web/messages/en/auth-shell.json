@@ -26,7 +26,9 @@
       },
       "errors": {
         "invalidCredentials": "Invalid email or password.",
-        "loginFailed": "Unable to sign in right now. Please try again."
+        "loginFailed": "Unable to sign in right now. Please try again.",
+        "throttled": "Too many sign-in attempts. Wait a moment, then try again.",
+        "throttledWithWait": "Too many sign-in attempts. Try again in {minutes, plural, one {# minute} other {# minutes}}."
       },
       "mfa": {
         "challenge": {
@@ -401,7 +403,8 @@
       "submit": "Send report",
       "submitting": "Sending…",
       "submitted": "Thank you. Your report is {reference}.",
-      "submitFailed": "Unable to send the bug report."
+      "submitFailed": "Unable to send the bug report.",
+      "dailyLimitReached": "You have already sent 10 bug reports today. Send more tomorrow, or tell your administrator directly."
     }
   }
 }

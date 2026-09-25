@@ -1,7 +1,9 @@
 import { UnprocessableEntityException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { EncounterAccessService } from '../../emr/service/encounter-access.service';
 import { DeliveryRecordRepository } from '../repository/delivery-record.repository';
@@ -44,6 +46,18 @@ describe('DeliveryRecordService (P25-T09)', () => {
     renderAndFile: jest.fn(),
   } as unknown as ClinicalRequestDocumentService;
   const auditServiceMock = { record: jest.fn() } as unknown as AuditService;
+  const clinicProfileServiceMock = {
+    getDocumentLetterhead: jest.fn().mockResolvedValue({
+      name: 'Klinik Bidan Sehat',
+      legalName: null,
+      address: 'Jl. Merdeka No. 12, Bandung',
+      phoneNumber: '62221234567',
+      email: null,
+      licenseNumber: '440/1234/DPMPTSP',
+      taxId: null,
+      logoDataUri: null,
+    }),
+  } as unknown as ClinicProfileService;
 
   const service = new DeliveryRecordService(
     deliveryRepositoryMock,
@@ -51,6 +65,8 @@ describe('DeliveryRecordService (P25-T09)', () => {
     encounterAccessMock,
     documentServiceMock,
     auditServiceMock,
+    clinicProfileServiceMock,
+    new ConfigService({ CLINIC_TIMEZONE: 'Asia/Jakarta' }),
   );
 
   function buildStoredDelivery(overrides: Record<string, unknown> = {}) {
@@ -270,6 +286,7 @@ describe('DeliveryRecordService (P25-T09)', () => {
           pregnancyEpisodeId: EPISODE_ID,
           attendantDoctor: {
             fullName: 'Bidan Siti Rahma, S.Tr.Keb.',
+            licenseNumber: 'BD00000000000002',
             licenses: [{ licenseNumber: '21 1 1 2 3 24-123456' }],
           },
           pregnancyEpisode: { patientId: 'patient-1' },
@@ -304,9 +321,21 @@ describe('DeliveryRecordService (P25-T09)', () => {
       expect(context.values['attendant.strNumber']).toBe('21 1 1 2 3 24-123456');
       // The birth is printed in clinic time: 20:10Z is 03:10 the next day in
       // Jakarta, which is the date the family registers her under.
-      expect(context.values['baby.birthDate']).toBe('2026-11-09');
+      expect(context.values['baby.birthDate']).toBe('Senin, 9 November 2026');
       expect(context.values['baby.birthTime']).toBe('03:10');
       expect(context.values['mother.nikMasked']).toBe('************3204');
+    });
+
+    it('prints it under the clinic letterhead, born at the clinic', async () => {
+      arrangeNewborn();
+
+      await service.issueBirthCertificate('baby-1', currentUser);
+
+      const calls = (documentServiceMock.renderAndFile as jest.Mock).mock.calls;
+      const [context] = calls[calls.length - 1] as [{ values: Record<string, string> }];
+      expect(context.values['clinic.name']).toBe('Klinik Bidan Sehat');
+      expect(context.values['clinic.address']).toBe('Jl. Merdeka No. 12, Bandung');
+      expect(context.values['birth.place']).toBe('Klinik Bidan Sehat, Jl. Merdeka No. 12, Bandung');
     });
 
     it('refuses one for a stillbirth — that family needs a different document', async () => {
@@ -326,7 +355,9 @@ describe('DeliveryRecordService (P25-T09)', () => {
       });
     });
 
-    it('prints a dash rather than a number when the attendant holds no STR', async () => {
+    // D-032: the flat profile number is the STR, so an attendant with no typed
+    // STR row still signs under a real number rather than a dash.
+    it('falls back to the profile’s flat number when no STR row is on file', async () => {
       arrangeNewborn();
       (deliveryRepositoryMock.findNewbornById as jest.Mock).mockResolvedValue({
         ...(await (deliveryRepositoryMock.findNewbornById as jest.Mock)()),
@@ -334,7 +365,11 @@ describe('DeliveryRecordService (P25-T09)', () => {
           id: 'delivery-1',
           birthAt: new Date('2026-11-08T20:10:00.000Z'),
           pregnancyEpisodeId: EPISODE_ID,
-          attendantDoctor: { fullName: 'Bidan Siti Rahma, S.Tr.Keb.', licenses: [] },
+          attendantDoctor: {
+            fullName: 'Bidan Siti Rahma, S.Tr.Keb.',
+            licenseNumber: 'BD00000000000002',
+            licenses: [],
+          },
           pregnancyEpisode: { patientId: 'patient-1' },
         },
       });
@@ -343,7 +378,7 @@ describe('DeliveryRecordService (P25-T09)', () => {
 
       const calls = (documentServiceMock.renderAndFile as jest.Mock).mock.calls;
       const [context] = calls[calls.length - 1] as [{ values: Record<string, string> }];
-      expect(context.values['attendant.strNumber']).toBe('—');
+      expect(context.values['attendant.strNumber']).toBe('BD00000000000002');
     });
   });
 

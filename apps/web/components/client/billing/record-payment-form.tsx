@@ -55,7 +55,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
     const parsedAmount = Number(amount.trim());
 
     if (!Number.isFinite(parsedAmount)) {
-      setActionError('Enter the amount taken, in rupiah.');
+      setActionError(t('paymentAmountInvalid'));
       return;
     }
 
@@ -147,7 +147,7 @@ export function RecordPaymentForm({ invoice, onRecorded }: RecordPaymentFormProp
           className="bg-primary-container hover:bg-primary"
           disabled={recordMutation.isPending}
         >
-          {recordMutation.isPending ? 'Recording...' : 'Record Payment'}
+          {recordMutation.isPending ? t('labels.recordingPayment') : t('labels.recordPayment')}
         </Button>
       </div>
     </form>

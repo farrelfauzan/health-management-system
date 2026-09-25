@@ -1,5 +1,5 @@
 import {
-  ClinicProfileView,
+  ClinicLetterhead,
   LabOrderRecord,
   LabReportRenderContext,
   LabResultFlagValue,
@@ -7,7 +7,8 @@ import {
   LabWorklistPatientRecord,
 } from '@hms/shared-types';
 
-import { formatIndonesianDateTime } from './format-indonesian-date-time';
+import { buildClinicLetterheadValues } from '../../clinical-request-document/service/build-clinic-letterhead-values';
+import { formatIndonesianDateTime } from '../../clinical-request-document/service/format-indonesian-date-time';
 import { formatLabReportNumber } from './format-lab-report-number';
 import { toPatientAgeYears } from './to-patient-age-years';
 import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
@@ -42,8 +43,7 @@ type BuildLabReportContextParams = {
   patient: LabWorklistPatientRecord;
   /** Every version of every result on the order; the builder keeps the current one per test. */
   results: readonly LabResultRecord[];
-  clinic: ClinicProfileView | null;
-  clinicLogoDataUri: string | null;
+  letterhead: ClinicLetterhead;
   verifierName: string;
   releasedAt: Date;
   /** The release this version replaces, when it is an amendment. */
@@ -67,7 +67,7 @@ type BuildLabReportContextParams = {
  * sheet says the patient was judged against.
  */
 export function buildLabReportContext(params: BuildLabReportContextParams): LabReportRenderContext {
-  const { order, patient, clinic, clinicLogoDataUri, verifierName, releasedAt, timeZone } = params;
+  const { order, patient, letterhead, verifierName, releasedAt, timeZone } = params;
   const current = pickCurrentResults(params.results);
   const specimens = order.specimens.filter((specimen) => specimen.status !== 'REJECTED');
   const collectedAt = specimens
@@ -90,14 +90,7 @@ export function buildLabReportContext(params: BuildLabReportContextParams): LabR
   return {
     title: buildTitle(order.orderNumber, params.supersededReleasedAt !== null),
     values: {
-      'clinic.name': clinic?.name ?? '',
-      'clinic.legalName': clinic?.legalName ?? '',
-      'clinic.address': clinic?.address ?? '',
-      'clinic.phone': clinic?.phoneNumber ?? '',
-      'clinic.email': clinic?.email ?? '',
-      'clinic.licenseNumber': clinic?.licenseNumber ?? '',
-      'clinic.taxId': clinic?.taxId ?? '',
-      'clinic.logo': clinicLogoDataUri ?? '',
+      ...buildClinicLetterheadValues(letterhead),
       'patient.fullName': patient.fullName,
       'patient.mrn': patient.mrn,
       'patient.dateOfBirth': formatIndonesianDateTime({
@@ -105,7 +98,7 @@ export function buildLabReportContext(params: BuildLabReportContextParams): LabR
         timeZone: 'UTC',
         withTime: false,
       }),
-      'patient.sex': SEX_LABELS[patient.sex] ?? '',
+      'patient.sex': SEX_LABELS[patient.sex] ?? '-',
       'patient.age': `${toPatientAgeYears(patient.dateOfBirth, releasedAt)} tahun`,
       'order.number': order.orderNumber,
       'order.orderedAt': formatIndonesianDateTime({

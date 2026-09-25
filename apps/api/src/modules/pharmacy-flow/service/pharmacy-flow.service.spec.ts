@@ -80,7 +80,7 @@ describe('PharmacyFlowService', () => {
   const service = new PharmacyFlowService(
     pharmacyFlowRepositoryMock,
     authRepositoryMock,
-    { getProfile: jest.fn() } as unknown as ClinicProfileService,
+    { getDocumentLetterhead: jest.fn() } as unknown as ClinicProfileService,
     { renderAndFile: jest.fn() } as unknown as ClinicalRequestDocumentService,
     { hasActiveAuthority: hasActiveAuthorityMock } as unknown as DoctorAuthorityService,
     { record: auditRecordMock } as unknown as AuditService,
@@ -839,6 +839,96 @@ describe('PharmacyFlowService', () => {
       expect(repositoryMock.createPrescription).toHaveBeenCalledWith(
         expect.objectContaining({ doctorId, patientId }),
       );
+    });
+
+    // D-046. A walk-in registered without a doctor has an encounter but no
+    // assignment; the clinician examining them may still prescribe.
+    describe('attending clinician of the named encounter (D-046)', () => {
+      const encounterId = 'encounter-1';
+      const encounterPayload = { ...createPayload, doctorId: undefined, encounterId };
+
+      beforeEach(() => {
+        mockPermissions([{ action: 'write', resource: 'Prescription', scope: 'OWN' }]);
+        repositoryMock.findActiveDoctorPatientAssignment.mockResolvedValue(null);
+      });
+
+      it('creates the prescription without asking for an assignment', async () => {
+        await service.createPrescription(encounterPayload, currentUser);
+
+        expect(repositoryMock.findActiveDoctorPatientAssignment).not.toHaveBeenCalled();
+        expect(repositoryMock.createPrescription).toHaveBeenCalledWith(
+          expect.objectContaining({ doctorId, patientId, encounterId }),
+        );
+      });
+
+      it('loads the encounter once for both the reach and the link checks', async () => {
+        await service.createPrescription(encounterPayload, currentUser);
+
+        expect(repositoryMock.findEncounterForPrescription).toHaveBeenCalledTimes(1);
+      });
+
+      it('refuses when another clinician is attending the encounter', async () => {
+        repositoryMock.findEncounterForPrescription.mockResolvedValue({
+          id: encounterId,
+          patientId,
+          doctorId: 'another-doctor',
+          status: 'IN_PROGRESS',
+        });
+
+        await expect(
+          service.createPrescription(encounterPayload, currentUser),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+        expect(repositoryMock.createPrescription).not.toHaveBeenCalled();
+      });
+
+      it('refuses when the attended encounter is already finished', async () => {
+        repositoryMock.findEncounterForPrescription.mockResolvedValue({
+          id: encounterId,
+          patientId,
+          doctorId,
+          status: 'FINISHED',
+        });
+
+        await expect(
+          service.createPrescription(encounterPayload, currentUser),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+      });
+
+      it('refuses when the attended encounter belongs to a different patient', async () => {
+        repositoryMock.findEncounterForPrescription.mockResolvedValue({
+          id: encounterId,
+          patientId: 'another-patient',
+          doctorId,
+          status: 'IN_PROGRESS',
+        });
+
+        await expect(
+          service.createPrescription(encounterPayload, currentUser),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+      });
+
+      it('keeps the assignment rule for a prescription without an encounter', async () => {
+        await expect(
+          service.createPrescription({ ...createPayload, doctorId: undefined }, currentUser),
+        ).rejects.toBeInstanceOf(ForbiddenException);
+        expect(repositoryMock.findEncounterForPrescription).not.toHaveBeenCalled();
+      });
+
+      it('still applies the midwife formulary to an attending midwife', async () => {
+        repositoryMock.findActiveDoctorByOwnerUserId.mockResolvedValue({
+          id: doctorId,
+          ownerUserId: currentUser.sub,
+          profession: 'MIDWIFE',
+        });
+        repositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+          { id: medicationId, code: 'MED-0001', name: 'Amoxicillin', isMidwifePrescribable: false },
+        ]);
+
+        await expect(
+          service.createPrescription(encounterPayload, currentUser),
+        ).rejects.toBeInstanceOf(UnprocessableEntityException);
+        expect(repositoryMock.createPrescription).not.toHaveBeenCalled();
+      });
     });
 
     it('creates a prescription for write:any scope without assignment checks', async () => {

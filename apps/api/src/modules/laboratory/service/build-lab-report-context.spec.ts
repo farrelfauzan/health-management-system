@@ -1,6 +1,8 @@
 import { LabResultRecord } from '@hms/shared-types';
 
 import { buildLabReportContext } from './build-lab-report-context';
+import { buildLabReportHtml } from './build-lab-report-html';
+import { BUILT_IN_LAB_REPORT_TEMPLATE } from './built-in-lab-report-template';
 
 /**
  * The gathering step: which value is current, how a number and its band
@@ -146,23 +148,16 @@ describe('buildLabReportContext', () => {
           flag: 'NORMAL',
         }),
       ],
-      clinic: {
+      letterhead: {
         name: 'Klinik Sehat Bersama',
         legalName: null,
         address: 'Jl. Merdeka No. 12',
-        phoneNumber: '(022) 1234567',
+        phoneNumber: '62221234567',
         email: null,
         licenseNumber: '440/1234',
         taxId: null,
-        hasLogo: false,
-        latitude: null,
-        longitude: null,
-        satusehatLocationId: null,
-        reportingPuskesmasName: null,
-        reportingPuskesmasCode: null,
-        updatedAt: releasedAt.toISOString(),
+        logoDataUri: null,
       },
-      clinicLogoDataUri: null,
       verifierName: 'dr. Andi Wijaya',
       releasedAt,
       supersededReleasedAt: null,
@@ -281,5 +276,41 @@ describe('buildLabReportContext', () => {
     expect(Object.keys(actual.values).some((token) => token.toLowerCase().includes('nik'))).toBe(
       false,
     );
+  });
+
+  // The sheet as it prints for a configured clinic: the letterhead, the
+  // patient, the verifier and the release, with nothing left blank and no
+  // "undefined" where a value should be.
+  it('renders the built-in sheet with no placeholder left empty', () => {
+    const context = build({
+      letterhead: {
+        name: 'Klinik Sehat Bersama',
+        legalName: null,
+        address: 'Jl. Merdeka No. 12',
+        phoneNumber: '62221234567',
+        email: null,
+        licenseNumber: '440/1234',
+        taxId: null,
+        logoDataUri: 'data:image/png;base64,iVBORw0KGgo=',
+      },
+    });
+
+    const html = buildLabReportHtml({
+      contentHtml: BUILT_IN_LAB_REPORT_TEMPLATE.contentHtml,
+      values: context.values,
+      lines: context.lines,
+    });
+
+    const emptyTokens = [...html.matchAll(/<span data-hms-var="([^"]+)"><\/span>/g)].map(
+      (match) => match[1],
+    );
+    // The amendment banner is empty on an original sheet by design: it prints
+    // only on a corrected one.
+    expect(emptyTokens).toEqual(['report.amendmentNotice']);
+    expect(html).toContain('<img src="data:image/png;base64,iVBORw0KGgo="');
+    expect(html).toContain('+62 2212-3456-7');
+    expect(html).toContain('dr. Andi Wijaya');
+    expect(html).toContain('7 September 2026, 11:40');
+    expect(html).not.toMatch(/\bundefined\b|>null</);
   });
 });

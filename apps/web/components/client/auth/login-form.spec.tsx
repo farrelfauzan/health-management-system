@@ -102,6 +102,35 @@ describe('LoginForm', () => {
     expect(replaceMock).not.toHaveBeenCalled();
   });
 
+  it('tells a throttled user in Indonesian how many minutes to wait', async () => {
+    const user = userEvent.setup();
+    loginRequestMock.mockRejectedValueOnce(
+      Object.assign(new Error('Request failed'), {
+        isAxiosError: true,
+        response: {
+          status: 429,
+          data: {
+            error: {
+              code: 'TOO_MANY_REQUESTS',
+              message: 'Too many login attempts. Try again later.',
+              details: { retryAfterSeconds: 60 },
+            },
+          },
+        },
+      }),
+    );
+    renderLoginForm();
+
+    await user.type(screen.getByLabelText('Email'), 'doctor@salingjaga.com');
+    await user.type(screen.getByLabelText('Kata sandi'), 'password-123');
+    await user.click(screen.getByRole('button', { name: 'Masuk' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Terlalu banyak percobaan masuk. Coba lagi dalam 1 menit.',
+    );
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
   it('persists the access token and redirects to the dashboard on success', async () => {
     const user = userEvent.setup();
     loginRequestMock.mockResolvedValueOnce({

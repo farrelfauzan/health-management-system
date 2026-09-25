@@ -1,8 +1,14 @@
 import {
+  ClinicalDocumentSignerRecord,
   ClinicalRequestRenderContext,
-  ClinicProfileView,
+  ClinicLetterhead,
+  getCalendarDateInTimeZone,
   PrescriptionDetailRecord,
 } from '@hms/shared-types';
+
+import { buildClinicLetterheadValues } from '../../clinical-request-document/service/build-clinic-letterhead-values';
+import { buildSignerValues } from '../../clinical-request-document/service/build-signer-values';
+import { formatIndonesianDateTime } from '../../clinical-request-document/service/format-indonesian-date-time';
 
 const SEX_LABELS: Readonly<Record<string, string>> = {
   MALE: 'Laki-laki',
@@ -13,8 +19,11 @@ type BuildPrescriptionContextParams = {
   prescription: PrescriptionDetailRecord;
   patientDateOfBirth: Date | null;
   patientSex: 'MALE' | 'FEMALE' | null;
-  clinic: ClinicProfileView | null;
-  clinicLogoDataUri: string | null;
+  letterhead: ClinicLetterhead;
+  /** The prescribing clinician, with the licences the signature reads. */
+  signer: ClinicalDocumentSignerRecord | null;
+  /** The clinic's zone: a resep written at 00:30 WIB is dated that day. */
+  timeZone: string;
 };
 
 /**
@@ -32,39 +41,37 @@ type BuildPrescriptionContextParams = {
 export function buildPrescriptionContext(
   params: BuildPrescriptionContextParams,
 ): ClinicalRequestRenderContext {
-  const { prescription, patientDateOfBirth, patientSex, clinic, clinicLogoDataUri } = params;
+  const { prescription, patientDateOfBirth, patientSex, letterhead, timeZone } = params;
   const issuedAt = prescription.issuedAt ?? new Date();
+  const issuedOn = formatIndonesianDateTime({ value: issuedAt, timeZone, withTime: false });
 
   return {
     kind: 'PRESCRIPTION',
     subjectId: prescription.id,
     patientId: prescription.patientId,
     encounterId: prescription.encounterId,
-    title: `Resep ${prescription.patient.mrn} — ${formatIndonesianDate(issuedAt)}`,
+    title: `Resep ${prescription.patient.mrn} — ${issuedOn}`,
     values: {
-      'clinic.name': clinic?.name ?? '',
-      'clinic.legalName': clinic?.legalName ?? '',
-      'clinic.address': clinic?.address ?? '',
-      'clinic.phone': clinic?.phoneNumber ?? '',
-      'clinic.email': clinic?.email ?? '',
-      'clinic.licenseNumber': clinic?.licenseNumber ?? '',
-      'clinic.taxId': clinic?.taxId ?? '',
-      'clinic.logo': clinicLogoDataUri ?? '',
+      ...buildClinicLetterheadValues(letterhead),
       'patient.fullName': prescription.patient.fullName,
       'patient.mrn': prescription.patient.mrn,
-      'patient.dateOfBirth': patientDateOfBirth ? formatIndonesianDate(patientDateOfBirth) : '-',
-      'patient.sex': patientSex ? (SEX_LABELS[patientSex] ?? '') : '',
+      'patient.dateOfBirth': patientDateOfBirth
+        ? formatIndonesianDateTime({ value: patientDateOfBirth, timeZone: 'UTC', withTime: false })
+        : '-',
+      'patient.sex': patientSex ? (SEX_LABELS[patientSex] ?? '-') : '-',
       'patient.age': patientDateOfBirth ? `${toAgeYears(patientDateOfBirth, issuedAt)} tahun` : '-',
-      'doctor.fullName': prescription.doctor.fullName,
-      'doctor.licenseNumber': prescription.doctor.licenseNumber,
-      'request.issuedAt': formatIndonesianDate(issuedAt),
+      ...buildSignerValues({
+        signer: params.signer,
+        asOfDate: getCalendarDateInTimeZone(issuedAt, timeZone),
+      }),
+      'request.issuedAt': issuedOn,
       'prescription.notes': prescription.notes ?? '-',
       // The same one-line difference the lab letter carries (P18-T11): a resep
       // the patient fills outside names the apotek they were sent to.
       'prescription.destination':
         prescription.fulfilmentSite === 'EXTERNAL'
           ? (prescription.externalFacilityName ?? 'Apotek rujukan')
-          : `Apotek ${clinic?.name ?? 'klinik'}`,
+          : `Apotek ${letterhead.name}`,
     },
     lines: prescription.items.map((item, index) => ({
       'medication.no': String(index + 1),
@@ -77,25 +84,6 @@ export function buildPrescriptionContext(
       'medication.instructions': item.instructions ?? '-',
     })),
   };
-}
-
-const INDONESIAN_MONTHS = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-];
-
-function formatIndonesianDate(value: Date): string {
-  return `${value.getUTCDate()} ${INDONESIAN_MONTHS[value.getUTCMonth()] ?? ''} ${value.getUTCFullYear()}`;
 }
 
 const MONTHS_PER_YEAR = 12;
