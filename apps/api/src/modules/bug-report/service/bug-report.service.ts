@@ -190,11 +190,9 @@ function measureFieldLengths(payload: CreateBugReportInput): BugReportFieldLengt
 function buildDailyLimitError(): HttpException {
   return new HttpException(
     {
-      error: {
-        code: 'TOO_MANY_REQUESTS',
-        message: `You can file up to ${MAX_REPORTS_PER_DAY} bug reports per day. Try again later.`,
-        details: { retryAfterSeconds: HOURS_PER_DAY * (MILLISECONDS_PER_HOUR / 1000) },
-      },
+      code: 'TOO_MANY_REQUESTS',
+      message: `You can file up to ${MAX_REPORTS_PER_DAY} bug reports per day. Try again later.`,
+      errors: { retryAfterSeconds: HOURS_PER_DAY * (MILLISECONDS_PER_HOUR / 1000) },
     },
     HttpStatus.TOO_MANY_REQUESTS,
   );

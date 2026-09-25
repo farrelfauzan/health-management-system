@@ -570,3 +570,10 @@ export const LAB_REPORT_CONFIGURATION_FAILURE_MESSAGES: Readonly<
   CLINIC_PROFILE_MISSING:
     'The clinic profile has not been configured yet; the report has no letterhead to print',
 };
+
+/**
+ * The refusal a specimen collection meets when the clinic collects only after
+ * payment (P18-T06) and the visit's invoice is not settled. The web names it in
+ * the reader's language rather than showing the API's English message.
+ */
+export const LAB_PAYMENT_REQUIRED_ERROR_CODE = 'LAB_PAYMENT_REQUIRED';

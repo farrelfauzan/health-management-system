@@ -1940,6 +1940,7 @@
         "success": "{count} specimen(s) collected.",
         "popupBlocked": "Labels could not open — allow pop-ups for this site and print them from the order.",
         "error": "The specimens could not be recorded.",
+        "paymentRequired": "This visit's bill has not been paid yet. Ask the patient to settle it at the cashier before the specimen is drawn.",
         "cancel": "Cancel",
         "loadError": "The order could not be loaded."
       },

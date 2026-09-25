@@ -4,6 +4,7 @@ import { ConflictException, UnprocessableEntityException } from '@nestjs/common'
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { renderErrorEnvelope } from '../../../common/observability/render-error-envelope';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { CoretaxFakturSourceRepository } from '../repository/coretax-faktur-source.repository';
@@ -151,13 +152,13 @@ describe('CoretaxFakturExportService (P27-T09)', () => {
         lines: [{ ...buildInvoice({}).lines[0]!, coretaxItemCode: null }],
       }),
     ]);
-    const actual = service.exportXml({ id: REPORT_ID, actor: ACTOR });
-    await expect(actual).rejects.toBeInstanceOf(UnprocessableEntityException);
-    await expect(actual).rejects.toMatchObject({
-      response: {
-        code: 'CORETAX_EXPORT_INVALID',
-        details: [expect.objectContaining({ code: 'ITEM_CODE_MISSING', subjectId: 'invoice-1' })],
-      },
+    const actualError = await service
+      .exportXml({ id: REPORT_ID, actor: ACTOR })
+      .catch((error: unknown) => error);
+    expect(actualError).toBeInstanceOf(UnprocessableEntityException);
+    expect(renderErrorEnvelope(actualError).body.error).toMatchObject({
+      code: 'CORETAX_EXPORT_INVALID',
+      details: [expect.objectContaining({ code: 'ITEM_CODE_MISSING', subjectId: 'invoice-1' })],
     });
   });
 

@@ -1940,6 +1940,7 @@
         "success": "{count} spesimen terambil.",
         "popupBlocked": "Label tidak bisa dibuka — izinkan pop-up untuk situs ini, lalu cetak dari halaman permintaan.",
         "error": "Spesimen tidak dapat dicatat.",
+        "paymentRequired": "Tagihan kunjungan ini belum dibayar. Minta pasien menyelesaikan pembayaran di kasir sebelum sampel diambil.",
         "cancel": "Batal",
         "loadError": "Permintaan tidak dapat dimuat."
       },

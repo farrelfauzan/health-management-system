@@ -7,6 +7,7 @@ import { AuditService } from '../../common/audit/audit.service';
 import { JwtSecretsService } from '../../common/config/jwt-secrets.service';
 import { PasswordHasherService } from '../../common/crypto/password-hasher.service';
 import { RequestContext } from '../../common/observability/observability.types';
+import { renderErrorEnvelope } from '../../common/observability/render-error-envelope';
 import { MfaCryptoService } from '../../common/crypto/mfa-crypto.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from './repository/auth.repository';
@@ -199,9 +200,15 @@ describe('Password policy and login throttling against Postgres', () => {
 
       const sixth = (await failLoginOnce(backoffEmail, originFrom(backoffIp))) as HttpException;
 
-      expect(sixth.getStatus()).toBe(429);
-      expect(sixth.getResponse()).toMatchObject({
-        error: { code: 'TOO_MANY_REQUESTS' },
+      expect(renderErrorEnvelope(sixth)).toEqual({
+        status: 429,
+        body: {
+          error: {
+            code: 'TOO_MANY_REQUESTS',
+            message: 'Too many login attempts. Try again later.',
+            details: { retryAfterSeconds: expect.any(Number) },
+          },
+        },
       });
     });
 

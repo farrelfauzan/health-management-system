@@ -57,10 +57,14 @@ function buildSensitiveDataError(field: string): AxiosError {
   error.response = {
     status: 400,
     statusText: '',
+    // The envelope as the API's global filter renders it: `errors` from the
+    // thrower arrives as `details`.
     data: {
-      code: 'SENSITIVE_DATA_DETECTED',
-      message: 'This field looks like it contains sensitive data (MRN).',
-      errors: [{ path: [field], category: 'MRN' }],
+      error: {
+        code: 'SENSITIVE_DATA_DETECTED',
+        message: 'This field looks like it contains sensitive data (MRN).',
+        details: [{ path: [field], category: 'MRN' }],
+      },
     },
     headers: new AxiosHeaders(),
     config: { headers: new AxiosHeaders() },
@@ -189,6 +193,36 @@ describe('BugReportDialog', () => {
 
     expect(
       await screen.findByText('This field looks like it contains sensitive data (MRN).'),
+    ).toBeInTheDocument();
+    expect(toastSuccessMock).not.toHaveBeenCalled();
+  });
+
+  it('says the daily cap plainly when the API refuses with 429', async () => {
+    const dailyLimitError = new AxiosError('request failed');
+    dailyLimitError.response = {
+      status: 429,
+      statusText: '',
+      data: {
+        error: {
+          code: 'TOO_MANY_REQUESTS',
+          message: 'You can file up to 10 bug reports per day. Try again later.',
+          details: { retryAfterSeconds: 86_400 },
+        },
+      },
+      headers: new AxiosHeaders(),
+      config: { headers: new AxiosHeaders() },
+    };
+    submitReportMock.mockRejectedValue(dailyLimitError);
+    const user = userEvent.setup();
+    renderDialog();
+    await fillRequiredFields(user);
+    await user.click(screen.getByLabelText('This report contains no patient data or passwords'));
+    await user.click(screen.getByRole('button', { name: 'Send report' }));
+
+    expect(
+      await screen.findByText(
+        'You have already sent 10 bug reports today. Send more tomorrow, or tell your administrator directly.',
+      ),
     ).toBeInTheDocument();
     expect(toastSuccessMock).not.toHaveBeenCalled();
   });
