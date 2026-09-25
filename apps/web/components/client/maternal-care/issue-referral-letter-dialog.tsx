@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Button,
   Dialog,
@@ -10,13 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-  toast,
 } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { FormLabel } from '#components/client/shared/form-label';
 import { antenatalExaminationControllerIssueReferralLetterV1 } from '#lib/api/generated/maternal-care/maternal-care';
-import { notifyApiError } from '#lib/api/notify-api-error';
+import { useIssueClinicalDocument } from '#lib/clinical-documents/use-issue-clinical-document';
 import { invalidateMaternalCareQueries } from '#lib/maternal-care/invalidate-maternal-care-queries';
 
 type IssueReferralLetterDialogProps = {
@@ -28,7 +27,8 @@ type IssueReferralLetterDialogProps = {
 /**
  * "Buat surat rujukan" (FR-ANC-04). Only the destination and a free note are
  * asked for — the findings and the triggered rules are printed from the
- * record, so the letter cannot say something the visit does not.
+ * record, so the letter cannot say something the visit does not. The issued
+ * PDF opens straight away, because the letter is what the patient carries.
  */
 export function IssueReferralLetterDialog({
   open,
@@ -41,18 +41,20 @@ export function IssueReferralLetterDialog({
   const [destination, setDestination] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
 
-  const mutation = useMutation({
-    mutationFn: async () =>
+  const referralLetter = useIssueClinicalDocument({
+    issue: () =>
       antenatalExaminationControllerIssueReferralLetterV1(encounterId, {
         destination,
         notes: notes || undefined,
       }),
-    onSuccess: async () => {
+    readFromEncounterId: encounterId,
+    successMessage: t('issued'),
+    issueErrorMessage: t('issueError'),
+    openErrorMessage: t('openError'),
+    onIssued: async () => {
       await invalidateMaternalCareQueries(queryClient);
-      toast.success(t('issued'));
       onOpenChange(false);
     },
-    onError: (error) => notifyApiError(error, t('referralLetter')),
   });
 
   return (
@@ -88,8 +90,8 @@ export function IssueReferralLetterDialog({
           </Button>
           <Button
             type="button"
-            disabled={mutation.isPending || destination.trim().length === 0}
-            onClick={() => mutation.mutate()}
+            disabled={referralLetter.isIssuing || destination.trim().length === 0}
+            onClick={() => referralLetter.issueDocument()}
           >
             {t('referralLetter')}
           </Button>
