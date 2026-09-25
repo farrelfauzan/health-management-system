@@ -5,6 +5,7 @@ import { Can, Card, CardContent, CardHeader, CardTitle } from '@hms/ui';
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncounterPrescriptionForm } from '#components/client/encounters/encounter-prescription-form';
+import { PrescriptionDocumentButton } from '#components/client/encounters/prescription-document-button';
 import { StatusBadge } from '#components/shared/status-badge';
 
 type EncounterPrescriptionsCardProps = {
@@ -61,10 +62,18 @@ export function EncounterPrescriptionsCard({
                     </p>
                   ) : null}
                 </div>
-                <StatusBadge
-                  status={prescription.status}
-                  label={t(`encounters.prescriptionStatus.${prescription.status}`)}
-                />
+                <div className="flex items-center gap-2">
+                  {prescription.status !== 'CANCELLED' ? (
+                    <PrescriptionDocumentButton
+                      prescriptionId={prescription.id}
+                      encounterId={encounterId}
+                    />
+                  ) : null}
+                  <StatusBadge
+                    status={prescription.status}
+                    label={t(`encounters.prescriptionStatus.${prescription.status}`)}
+                  />
+                </div>
               </li>
             ))}
           </ul>

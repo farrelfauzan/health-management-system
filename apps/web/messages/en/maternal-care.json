@@ -168,7 +168,11 @@
         "destination": "Referral destination",
         "notes": "Notes",
         "issued": "Document issued",
-        "reissueHint": "Reissuing renders a new document; the previous one is kept."
+        "reissueHint": "Reissuing renders a new document; the previous one is kept.",
+        "pregnancyCertificateIssued": "Pregnancy certificate issued",
+        "birthCertificateIssued": "Birth certificate issued",
+        "issueError": "The document could not be issued. Please try again.",
+        "openError": "The document was issued but could not be opened. Open it from the patient’s Documents tab."
       }
     },
     "delivery": {

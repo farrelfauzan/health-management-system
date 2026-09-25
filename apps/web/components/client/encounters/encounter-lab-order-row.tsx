@@ -7,10 +7,12 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { EncounterLabCancelDialog } from '#components/client/encounters/encounter-lab-cancel-dialog';
 import { EncounterLabOrderTimeline } from '#components/client/encounters/encounter-lab-order-timeline';
+import { LabRequestDocumentButton } from '#components/client/encounters/lab-request-document-button';
 import { canCancelLabOrder } from '#lib/laboratory/lab-order-status-steps';
 
 type EncounterLabOrderRowProps = {
   order: LabOrderSummary;
+  encounterId: string;
   isEditable: boolean;
 };
 
@@ -21,7 +23,11 @@ type EncounterLabOrderRowProps = {
  * quote and what the analis writes on the worksheet — it is the handle the
  * conversation about this request will use.
  */
-export function EncounterLabOrderRow({ order, isEditable }: EncounterLabOrderRowProps) {
+export function EncounterLabOrderRow({
+  order,
+  encounterId,
+  isEditable,
+}: EncounterLabOrderRowProps) {
   const t = useTranslations('clinical');
   const format = useFormatter();
   const [isCancelling, setIsCancelling] = useState<boolean>(false);
@@ -48,9 +54,17 @@ export function EncounterLabOrderRow({ order, isEditable }: EncounterLabOrderRow
               {t('encounters.laboratory.order.urgent')}
             </Badge>
           ) : null}
+          {order.status !== 'CANCELLED' ? (
+            <LabRequestDocumentButton labOrderId={order.id} encounterId={encounterId} />
+          ) : null}
           {isCancellable ? (
             <Can action="write" subject="LabOrder">
-              <Button type="button" variant="outline" size="sm" onClick={() => setIsCancelling(true)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsCancelling(true)}
+              >
                 <Icon name="close" size={16} />
                 {t('encounters.laboratory.order.cancel')}
               </Button>

@@ -340,7 +340,9 @@
         "generateInvoice": "Generate Invoice",
         "referencePlaceholder": "Transfer or QRIS reference, if any",
         "immutableCode": "Code cannot be changed.",
-        "procedureLink": "Links the tariff to a procedure"
+        "procedureLink": "Links the tariff to a procedure",
+        "recordPayment": "Record payment",
+        "recordingPayment": "Recording…"
       },
       "accommodationNeedsClass": "An accommodation tariff must name the ward class it prices.",
       "templates": {
@@ -690,6 +692,38 @@
         "errors": {
           "CLINICIAN_FEE_RULE_OVERLAP": "Another rule for the same service and clinician is already in force on some of these dates. End that rule first.",
           "CLINICIAN_FEE_RULE_TARGET_INVALID": "The tariff or clinician no longer exists."
+        }
+      },
+      "tariffsDescription": "The price list the invoice generator draws from.",
+      "paymentAmountInvalid": "Enter the amount taken, in rupiah.",
+      "invoiceDocument": {
+        "title": "Invoice PDF",
+        "rendering": "Rendering document…",
+        "preparing": "Preparing document…",
+        "retroactive": "This invoice predates document templates, so its layout follows the template in use today.",
+        "renderFailed": "The document could not be rendered.",
+        "notReady": "The document is not ready yet. Retry in a moment.",
+        "notRenderedYet": "The invoice PDF has not been rendered yet.",
+        "renderError": "Failed to render the invoice PDF.",
+        "downloadError": "Failed to prepare the invoice PDF download.",
+        "download": "Download PDF",
+        "retry": "Retry",
+        "issueFirst": "Issue the invoice first"
+      },
+      "gaps": {
+        "allPriced": "Everything billable on this visit was priced.",
+        "title": "{count, plural, one {# item could not be priced} other {# items could not be priced}}",
+        "reasons": {
+          "NO_CONSULTATION_TARIFF": "No consultation tariff prices this clinician’s poli, and the clinic has no clinic-wide fee either. Add one under Tariffs and regenerate.",
+          "AMBIGUOUS_CONSULTATION_TARIFF": "Two consultation tariffs claim this visit equally, so neither was billed rather than charging the wrong one. Give one of them a poli under Tariffs, then regenerate.",
+          "NO_TARIFF_FOR_PROCEDURE": "This procedure has no matching tariff. Add a tariff with its ICD-9-CM code and regenerate, or add the tariff line by hand from the draft invoice.",
+          "UNPRICED_MEDICATION": "This dispensed medication has no price on its record, so it was left off the invoice.",
+          "NO_ACCOMMODATION_TARIFF": "This ward class has no active accommodation tariff, so its nights were left off the bill. Add one under Tariffs and reissue.",
+          "UNPRICED_COMPOUND_COMPONENT": "One ingredient of this compound has no price, so the whole compound was left off — a half-priced racikan reads as a real number. Price the named ingredient and regenerate.",
+          "NO_COMPOUNDING_FEE_TARIFF": "The compound was priced from its ingredients, but there is no active JASA-RACIK tariff, so the compounding fee was not billed. Add one under Tariffs and reissue.",
+          "NO_TARIFF_FOR_IMMUNIZATION": "This vaccination has no matching tariff. Add a tariff whose code matches the vaccine’s catalog code and regenerate, or add the line by hand from the draft invoice.",
+          "NO_TARIFF_FOR_LAB_TEST": "This laboratory test has no active LAB tariff, so it was left off the bill. Price it under Tariffs and regenerate, or add the line by hand from the draft invoice.",
+          "NO_TARIFF_FOR_LAB_PANEL": "This laboratory panel has no active LAB tariff. A panel is billed once at its own price, so pricing its members individually will not fill this gap — price the panel and regenerate."
         }
       }
     },

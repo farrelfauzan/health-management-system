@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from '@hms/ui';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button, Icon, Skeleton } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
@@ -11,6 +10,7 @@ import { DeliveryCard } from '#components/client/maternal-care/delivery-card';
 import { EndPregnancyEpisodeDialog } from '#components/client/maternal-care/end-pregnancy-episode-dialog';
 import { ExternalDoctorVisitCard } from '#components/client/maternal-care/external-doctor-visit-card';
 import { PostnatalScheduleSection } from '#components/client/maternal-care/postnatal-schedule-section';
+import { PregnancyCertificateButton } from '#components/client/maternal-care/pregnancy-certificate-button';
 import { PregnancyEpisodeHeaderCard } from '#components/client/maternal-care/pregnancy-episode-header-card';
 import { RecordDeliveryDialog } from '#components/client/maternal-care/record-delivery-dialog';
 import { RecordExternalDoctorVisitDialog } from '#components/client/maternal-care/record-external-doctor-visit-dialog';
@@ -20,7 +20,7 @@ import { StartPregnancyEpisodeDialog } from '#components/client/maternal-care/st
 import { TrimesterScheduleCard } from '#components/client/maternal-care/trimester-schedule-card';
 import { EmptyState } from '#components/shared/empty-state';
 import { deliveryRecordControllerIssueBirthCertificateV1 } from '#lib/api/generated/maternal-care/maternal-care';
-import { notifyApiError } from '#lib/api/notify-api-error';
+import { useIssueClinicalDocument } from '#lib/clinical-documents/use-issue-clinical-document';
 import { invalidateMaternalCareQueries } from '#lib/maternal-care/invalidate-maternal-care-queries';
 import { useOwnDoctorProfile } from '#lib/doctor-profile/use-own-doctor-profile';
 import { useActivePregnancyEpisode } from '#lib/maternal-care/use-active-pregnancy-episode';
@@ -48,14 +48,13 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
   // the baby in almost every case. A birth attended by somebody else is
   // corrected on the record afterwards rather than guessed at here.
   const ownProfileQuery = useOwnDoctorProfile();
-  const certificateMutation = useMutation({
-    mutationFn: async (newbornCareRecordId: string) =>
+  const birthCertificate = useIssueClinicalDocument<string>({
+    issue: (newbornCareRecordId) =>
       deliveryRecordControllerIssueBirthCertificateV1(newbornCareRecordId),
-    onSuccess: async () => {
-      await invalidateMaternalCareQueries(queryClient);
-      toast.success(t('maternalCare.delivery.actions.issueBirthCertificate'));
-    },
-    onError: (error) => notifyApiError(error, t('maternalCare.loadError')),
+    successMessage: t('maternalCare.examination.documents.birthCertificateIssued'),
+    issueErrorMessage: t('maternalCare.examination.documents.issueError'),
+    openErrorMessage: t('maternalCare.examination.documents.openError'),
+    onIssued: () => invalidateMaternalCareQueries(queryClient),
   });
 
   if (episodeQuery.isPending) {
@@ -70,9 +69,7 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
         <PostnatalScheduleSection patientId={patientId} />
         <EmptyState
           icon="pregnant_woman"
-          title={
-            episodeQuery.isError ? t('maternalCare.loadError') : t('maternalCare.empty.title')
-          }
+          title={episodeQuery.isError ? t('maternalCare.loadError') : t('maternalCare.empty.title')}
           description={t('maternalCare.empty.description')}
           action={
             <Button type="button" onClick={() => setIsStartDialogOpen(true)}>
@@ -94,7 +91,8 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex flex-wrap justify-end gap-2">
+        <PregnancyCertificateButton pregnancyEpisodeId={episode.episode.id} />
         <Button type="button" variant="outline" onClick={() => setIsEndDialogOpen(true)}>
           <Icon name="event_busy" size={18} />
           {t('maternalCare.actions.end')}
@@ -117,10 +115,8 @@ export function PregnancyPanel({ patientId }: PregnancyPanelProps) {
         motherPatientId={patientId}
         onRecord={() => setIsDeliveryDialogOpen(true)}
         onRecordNewborn={() => setIsNewbornDialogOpen(true)}
-        onIssueCertificate={(newbornCareRecordId) =>
-          certificateMutation.mutate(newbornCareRecordId)
-        }
-        isIssuing={certificateMutation.isPending}
+        onIssueCertificate={birthCertificate.issueDocument}
+        isIssuing={birthCertificate.isIssuing}
         onStartFamilyPlanning={setFamilyPlanningDeliveryId}
       />
 

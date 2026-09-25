@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { ServiceTariffResponse } from '@hms/shared-types';
 import { Button, Card, CardContent, Icon, useAbility } from '@hms/ui';
+import { useTranslations } from 'next-intl';
 
 import { ServiceTariffFormDialog } from '#components/client/billing/service-tariff-form-dialog';
 import { ServiceTariffsTable } from '#components/client/billing/service-tariffs-table';
@@ -17,6 +18,7 @@ type TariffDialogState = {
 };
 
 export function ServiceTariffsPanel() {
+  const t = useTranslations('operations.billing');
   const ability = useAbility();
   const [page, setPage] = useState<number>(1);
   const [dialogState, setDialogState] = useState<TariffDialogState>({
@@ -37,7 +39,7 @@ export function ServiceTariffsPanel() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-slate-500">The price list the invoice generator draws from.</p>
+        <p className="text-sm text-slate-500">{t('tariffsDescription')}</p>
         {canManage ? (
           <Button
             type="button"
@@ -46,7 +48,7 @@ export function ServiceTariffsPanel() {
             onClick={() => setDialogState({ isOpen: true, tariff: null })}
           >
             <Icon name="add" size={18} />
-            New Tariff
+            {t('newTariff')}
           </Button>
         ) : null}
       </div>
