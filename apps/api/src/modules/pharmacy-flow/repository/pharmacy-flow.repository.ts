@@ -9,6 +9,7 @@ import {
   DispenseRecordDetailRecord,
   PrescriptionDetailRecord,
   PrescribingClinicianRecord,
+  PrescriptionEncounterRecord,
   PrescriptionScopeActor,
   resolvePrescriptionStatusAfterDispense,
   resolveUserDisplayName,
@@ -541,7 +542,9 @@ export class PharmacyFlowRepository {
    * pharmacy needs to validate the link — the clinical record itself is read
    * through the EMR module.
    */
-  async findEncounterForPrescription(encounterId: string) {
+  async findEncounterForPrescription(
+    encounterId: string,
+  ): Promise<PrescriptionEncounterRecord | null> {
     return this.prisma.findFirstActive(this.prisma.encounter, {
       where: { id: encounterId },
       select: {
