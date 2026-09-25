@@ -75,7 +75,7 @@ export class CoretaxBp21ExportService {
       throw new UnprocessableEntityException({
         code: CORETAX_EXPORT_INVALID_ERROR_CODE,
         message: `${built.issues.length} problem(s) stop the BP21 file; fix them and export again`,
-        details: built.issues,
+        errors: built.issues,
       });
     }
     const xml = CORETAX_BP21_XML_SERIALIZERS[templateVersion](built.document);

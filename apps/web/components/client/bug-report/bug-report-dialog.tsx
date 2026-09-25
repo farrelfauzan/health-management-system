@@ -30,8 +30,11 @@ import { SensitiveDataBanner } from '#components/client/bug-report/sensitive-dat
 import { SensitiveDataFindings } from '#components/client/bug-report/sensitive-data-findings';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { readFailedRequestIds } from '#lib/api/failed-request-buffer';
+import { isApiStatusError } from '#lib/api/is-api-status-error';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { submitBugReport } from '#lib/bug-report/submit-bug-report';
+
+const HTTP_TOO_MANY_REQUESTS = 429;
 
 type BugReportDialogProps = {
   open: boolean;
@@ -132,6 +135,12 @@ export function BugReportDialog({ open, onOpenChange }: BugReportDialogProps) {
         resetDialog();
         onOpenChange(false);
       } catch (error) {
+        // The daily cap is the one refusal a reporter can do nothing about
+        // today, so it is said plainly rather than as the API's English.
+        if (isApiStatusError(error, HTTP_TOO_MANY_REQUESTS)) {
+          setFormError(t('dailyLimitReached'));
+          return;
+        }
         setFormError(notifyApiError(error, t('submitFailed')));
       }
     },

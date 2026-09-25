@@ -96,6 +96,10 @@ export function LoginForm() {
           resolveLoginErrorMessage(error, {
             invalidCredentials: t('errors.invalidCredentials'),
             loginFailed: t('errors.loginFailed'),
+            throttled: (retryAfterMinutes) =>
+              retryAfterMinutes === null
+                ? t('errors.throttled')
+                : t('errors.throttledWithWait', { minutes: retryAfterMinutes }),
           }),
         );
       }

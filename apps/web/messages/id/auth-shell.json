@@ -26,7 +26,9 @@
       },
       "errors": {
         "invalidCredentials": "Email atau kata sandi tidak valid.",
-        "loginFailed": "Tidak dapat masuk saat ini. Silakan coba lagi."
+        "loginFailed": "Tidak dapat masuk saat ini. Silakan coba lagi.",
+        "throttled": "Terlalu banyak percobaan masuk. Tunggu sebentar, lalu coba lagi.",
+        "throttledWithWait": "Terlalu banyak percobaan masuk. Coba lagi dalam {minutes} menit."
       },
       "mfa": {
         "challenge": {
@@ -381,7 +383,8 @@
       "submit": "Kirim laporan",
       "submitting": "Mengirim…",
       "submitted": "Terima kasih. Laporan Anda: {reference}.",
-      "submitFailed": "Tidak dapat mengirim laporan bug."
+      "submitFailed": "Tidak dapat mengirim laporan bug.",
+      "dailyLimitReached": "Anda sudah mengirim 10 laporan bug hari ini. Kirim lagi besok, atau sampaikan langsung kepada administrator."
     }
   }
 }

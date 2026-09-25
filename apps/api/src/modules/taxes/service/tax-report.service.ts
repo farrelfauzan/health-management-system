@@ -287,7 +287,7 @@ export class TaxReportService {
     throw new ConflictException({
       code: TAX_REPORT_IDENTITY_INCOMPLETE_ERROR_CODE,
       message: `${missing.length} clinician(s) have no NPWP or NIK on file; complete their tax identity before finalizing`,
-      details: missing.map((line) => ({ doctorId: line.doctorId, doctorName: line.doctorName })),
+      errors: missing.map((line) => ({ doctorId: line.doctorId, doctorName: line.doctorName })),
     });
   }
 

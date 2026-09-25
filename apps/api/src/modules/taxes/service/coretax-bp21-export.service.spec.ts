@@ -3,6 +3,7 @@ import { ConflictException, UnprocessableEntityException } from '@nestjs/common'
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { renderErrorEnvelope } from '../../../common/observability/render-error-envelope';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { ClinicianTaxIdentityRepository } from '../repository/clinician-tax-identity.repository';
@@ -114,13 +115,15 @@ describe('CoretaxBp21ExportService (P27-T08)', () => {
     clinicianTaxIdentityRepositoryMock.findCoretaxBp21Sources.mockResolvedValue([
       { doctorId: DOCTOR_ID, taxIdentityNumber: '0987654321098765', ptkpStatus: null },
     ]);
-    const actual = service.exportXml({ id: REPORT_ID, actor: ACTOR });
-    await expect(actual).rejects.toBeInstanceOf(UnprocessableEntityException);
-    await expect(actual).rejects.toMatchObject({
-      response: {
-        code: 'CORETAX_EXPORT_INVALID',
-        details: [expect.objectContaining({ code: 'PTKP_STATUS_MISSING', subjectId: DOCTOR_ID })],
-      },
+    const actualError = await service
+      .exportXml({ id: REPORT_ID, actor: ACTOR })
+      .catch((error: unknown) => error);
+    expect(actualError).toBeInstanceOf(UnprocessableEntityException);
+    // The rendered envelope, not the thrown body: a `details` key the filter
+    // does not read passed the old assertion and never reached the client.
+    expect(renderErrorEnvelope(actualError).body.error).toMatchObject({
+      code: 'CORETAX_EXPORT_INVALID',
+      details: [expect.objectContaining({ code: 'PTKP_STATUS_MISSING', subjectId: DOCTOR_ID })],
     });
     expect(auditServiceMock.record).not.toHaveBeenCalled();
   });

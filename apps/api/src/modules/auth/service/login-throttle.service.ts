@@ -128,11 +128,9 @@ export class LoginThrottleService {
 function buildThrottledError(retryAfterSeconds: number): HttpException {
   return new HttpException(
     {
-      error: {
-        code: 'TOO_MANY_REQUESTS',
-        message: 'Too many login attempts. Try again later.',
-        details: { retryAfterSeconds },
-      },
+      code: 'TOO_MANY_REQUESTS',
+      message: 'Too many login attempts. Try again later.',
+      errors: { retryAfterSeconds },
     },
     HttpStatus.TOO_MANY_REQUESTS,
   );
