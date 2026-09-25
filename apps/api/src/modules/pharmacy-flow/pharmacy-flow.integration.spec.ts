@@ -18,6 +18,7 @@ describe('PharmacyFlow integration', () => {
   const doctorId = '7f0f4be2-6d51-4bfb-a4c8-2f6a1de1a003';
   const medicationId = '9a1f34c8-8e10-4d0e-8c31-4f6a1de1a004';
   const stockReceiptId = 'aa1f34c8-8e10-4d0e-8c31-4f6a1de1a010';
+  const encounterId = 'ba1f34c8-8e10-4d0e-8c31-4f6a1de1a011';
 
   const authRepositoryMock = {
     findUserById: jest.fn(),
@@ -37,6 +38,7 @@ describe('PharmacyFlow integration', () => {
     findActiveDoctorById: jest.fn(),
     findActiveDoctorByOwnerUserId: jest.fn(),
     findActiveDoctorPatientAssignment: jest.fn(),
+    findEncounterForPrescription: jest.fn(),
     findPrescriptionDetailById: jest.fn(),
     createPrescription: jest.fn(),
     createDispense: jest.fn(),
@@ -239,6 +241,12 @@ describe('PharmacyFlow integration', () => {
     });
     pharmacyRepositoryMock.findActiveDoctorPatientAssignment.mockResolvedValue({
       id: 'assignment-1',
+    });
+    pharmacyRepositoryMock.findEncounterForPrescription.mockResolvedValue({
+      id: encounterId,
+      patientId,
+      doctorId,
+      status: 'IN_PROGRESS',
     });
     pharmacyRepositoryMock.findPrescriptionDetailById.mockResolvedValue(prescriptionRecord);
     pharmacyRepositoryMock.createPrescription.mockResolvedValue(prescriptionRecord);
@@ -640,6 +648,81 @@ describe('PharmacyFlow integration', () => {
 
       expect(response.status).toBe(403);
       expect(pharmacyRepositoryMock.createPrescription).not.toHaveBeenCalled();
+    });
+
+    // D-046. A walk-in registered without a doctor has no doctor–patient
+    // assignment, yet the clinician holding the visit already records its
+    // diagnoses, procedures and lab orders; the prescription follows them.
+    describe('walk-in patient without an assignment (D-046)', () => {
+      const walkInPayload = { ...createPayload, doctorId: undefined, encounterId };
+
+      beforeEach(() => {
+        mockActorWithPermissions([{ action: 'write', resource: 'Prescription', scope: 'OWN' }]);
+        pharmacyRepositoryMock.findActiveDoctorPatientAssignment.mockResolvedValue(null);
+      });
+
+      it('returns 201 for the attending doctor of the open encounter', async () => {
+        const token = await buildToken('doctor-user', 'doctor@hms.local');
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/v1/prescriptions')
+          .set('Authorization', `Bearer ${token}`)
+          .send(walkInPayload);
+
+        expect(response.status).toBe(201);
+        expect(pharmacyRepositoryMock.createPrescription).toHaveBeenCalledWith(
+          expect.objectContaining({ patientId, doctorId, encounterId }),
+        );
+      });
+
+      it('returns 403 for a doctor who is not attending the encounter', async () => {
+        const token = await buildToken('other-doctor-user', 'other-doctor@hms.local');
+        pharmacyRepositoryMock.findActiveDoctorByOwnerUserId.mockResolvedValue({
+          id: 'c7f0f4be-6d51-4bfb-a4c8-2f6a1de1a012',
+          ownerUserId: 'other-doctor-user',
+          profession: 'DOCTOR',
+        });
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/v1/prescriptions')
+          .set('Authorization', `Bearer ${token}`)
+          .send(walkInPayload);
+
+        expect(response.status).toBe(403);
+        expect(response.body.error.code).toBe('FORBIDDEN');
+        expect(pharmacyRepositoryMock.createPrescription).not.toHaveBeenCalled();
+      });
+
+      it('returns 403 for a prescription that names no encounter', async () => {
+        const token = await buildToken('doctor-user', 'doctor@hms.local');
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/v1/prescriptions')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ ...createPayload, doctorId: undefined });
+
+        expect(response.status).toBe(403);
+        expect(pharmacyRepositoryMock.createPrescription).not.toHaveBeenCalled();
+      });
+
+      it('returns 201 for the attending midwife on a flagged medication', async () => {
+        const token = await buildToken('midwife-user', 'bidan@hms.local');
+        pharmacyRepositoryMock.findActiveDoctorByOwnerUserId.mockResolvedValue({
+          id: doctorId,
+          ownerUserId: 'midwife-user',
+          profession: 'MIDWIFE',
+        });
+        pharmacyRepositoryMock.findActiveMedicationsByIds.mockResolvedValue([
+          { id: medicationId, code: 'FE-0001', name: 'Tablet Tambah Darah', isMidwifePrescribable: true },
+        ]);
+
+        const response = await request(app.getHttpServer())
+          .post('/api/v1/v1/prescriptions')
+          .set('Authorization', `Bearer ${token}`)
+          .send(walkInPayload);
+
+        expect(response.status).toBe(201);
+      });
     });
 
     it('returns 422 MEDICATION_NOT_MIDWIFE_PRESCRIBABLE for a midwife line on an unflagged medication', async () => {
