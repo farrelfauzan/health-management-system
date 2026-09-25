@@ -179,7 +179,10 @@ describe('built-in clinical letters, rendered', () => {
     dispenseRecords: [],
   };
 
-  function buildContexts(): Record<ClinicalRequestRenderContext['kind'], ClinicalRequestRenderContext> {
+  function buildContexts(): Record<
+    ClinicalRequestRenderContext['kind'],
+    ClinicalRequestRenderContext
+  > {
     const maternalBase = {
       kind: 'REFERRAL_LETTER' as const,
       subjectId: 'visit-1',

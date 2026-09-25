@@ -17,7 +17,8 @@ export function buildClinicLetterheadValues(letterhead: ClinicLetterhead): Recor
     'clinic.legalName': letterhead.legalName ?? '',
     'clinic.address': letterhead.address ?? '',
     // Stored canonical (`62221234567`); printed the way a caller dials it.
-    'clinic.phone': letterhead.phoneNumber === null ? '' : formatPhoneNumber(letterhead.phoneNumber),
+    'clinic.phone':
+      letterhead.phoneNumber === null ? '' : formatPhoneNumber(letterhead.phoneNumber),
     'clinic.email': letterhead.email ?? '',
     'clinic.licenseNumber': letterhead.licenseNumber ?? '',
     'clinic.taxId': letterhead.taxId ?? '',

@@ -14,7 +14,15 @@ const INDONESIAN_MONTHS = [
 ] as const;
 
 /** Sunday first, the order `Date#getUTCDay` counts in. */
-const INDONESIAN_WEEKDAYS = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as const;
+const INDONESIAN_WEEKDAYS = [
+  'Minggu',
+  'Senin',
+  'Selasa',
+  'Rabu',
+  'Kamis',
+  'Jumat',
+  'Sabtu',
+] as const;
 
 const TWO_DIGITS = 2;
 
@@ -50,7 +58,8 @@ export function formatIndonesianDateTime(params: FormatIndonesianDateTimeParams)
   const monthIndex = Number(read('month')) - 1;
   const day = Number(read('day'));
   const calendarDate = `${day} ${INDONESIAN_MONTHS[monthIndex] ?? ''} ${read('year')}`;
-  const weekday = INDONESIAN_WEEKDAYS[new Date(Date.UTC(Number(read('year')), monthIndex, day)).getUTCDay()];
+  const weekday =
+    INDONESIAN_WEEKDAYS[new Date(Date.UTC(Number(read('year')), monthIndex, day)).getUTCDay()];
   const date = params.withWeekday === true ? `${weekday ?? ''}, ${calendarDate}` : calendarDate;
   if (!params.withTime) {
     return date;
