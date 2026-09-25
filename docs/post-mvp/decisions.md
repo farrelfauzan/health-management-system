@@ -384,6 +384,13 @@ Recorded rather than guessed, because a spike that reports certainty it does not
 - **Consequence:** A session row describes its own start time only in the check-in window rule (P19-T16), so a replacement landing on a day with its own weekly window no longer hides that window. `PATCH /appointment-sessions/:id` no longer cancels — cancelling needs a reason.
 
 
+## D-046: The Attending Clinician Prescribes for the Visit They Are Holding, Without a Separate Assignment
+
+- **Status:** Accepted 2026-09-25 (product owner). Narrows D-017 in `docs/MVP/decisions.md` for prescribing only. Cite as `docs/post-mvp/decisions.md` D-046.
+- **Decision:** Under `prescription.write:own`, a clinician — doctor or midwife (D-034) — may prescribe for a patient without an active `DoctorPatient` assignment when the prescription names an encounter that is `IN_PROGRESS`, belongs to that same patient, and whose attending clinician is the caller. A prescription that names no encounter, or names one the caller is not attending, or one already finished, keeps D-017's rule: an active assignment is required. `prescription.write:any` is unchanged. The midwife formulary (P24-T04) and midwife authority checks (P25-T05) apply to the attending midwife exactly as before; the visit authorises the patient, not the medicine.
+- **Why:** Opening an encounter never needed an assignment — the checked-in registration is the authorisation, because walk-ins are the normal case in an FKTP — so a walk-in registered without a doctor could have diagnoses, procedures and lab orders written by the clinician examining them, and then no prescription: `POST /prescriptions` answered 403 "You can only prescribe for patients actively assigned to you". The two rules contradicted each other on the one step a visit most often ends with. D-033 already says the clinical record is for the clinicians who examine the patient; the attending clinician of the open visit is that person.
+- **Consequence:** No assignment is created or inferred (D-017's "never implicit" stands); the reach is the open visit and ends when it closes. Reading and printing what the clinician wrote needs no change: prescription `:own` reach is participant-side (`build-prescription-scope-where.ts`, and the resep PDF's participant check), and the attending clinician is the prescribing doctor on the row. A clinician who is neither attending nor assigned — a colleague looking at the same walk-in — is still refused.
+
 ## D-047: The Clinic Manages Its Own Poli, and Kebidanan Is the Midwife's Poli
 
 - **Status:** Accepted 2026-09-25 (product owner). Cite as `docs/post-mvp/decisions.md` D-047.

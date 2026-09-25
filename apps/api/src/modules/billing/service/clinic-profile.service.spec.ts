@@ -148,6 +148,9 @@ describe('ClinicProfileService', () => {
         name: 'Klinik Sehat Bersama',
         legalName: 'PT Sehat Bersama Indonesia',
         address: 'Jl. Merdeka No. 12, Bandung',
+        phoneNumber: '(022) 1234567',
+        email: 'halo@kliniksehat.id',
+        licenseNumber: '440/1234/DPMPTSP',
         taxId: '01.234.567.8-901.000',
         logoDataUri: `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
       });
@@ -165,6 +168,35 @@ describe('ClinicProfileService', () => {
 
       expect(withBrokenLogo.logoDataUri).toBeNull();
       expect(unconfigured).toMatchObject({ name: 'Saling Jaga', taxId: null, logoDataUri: null });
+    });
+  });
+
+  describe('getDocumentLetterhead', () => {
+    it('hands a clinical letter the full letterhead with the logo inlined', async () => {
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(
+        buildRecord({ logoStorageKey: STORED_KEY, logoMimeType: 'image/png' }),
+      );
+      objectStorageServiceMock.getObject.mockResolvedValue({
+        body: Buffer.from('logo'),
+        contentType: 'image/png',
+      });
+
+      const actual = await service.getDocumentLetterhead();
+
+      expect(actual).toMatchObject({
+        name: 'Klinik Sehat Bersama',
+        phoneNumber: '(022) 1234567',
+        licenseNumber: '440/1234/DPMPTSP',
+        logoDataUri: `data:image/png;base64,${Buffer.from('logo').toString('base64')}`,
+      });
+    });
+
+    // A clinical letter is a letter from the clinic: one printed under the
+    // product label is refused rather than handed to a patient.
+    it('refuses rather than printing under a placeholder when the profile is unset', async () => {
+      clinicProfileRepositoryMock.findProfile.mockResolvedValue(null);
+
+      await expect(service.getDocumentLetterhead()).rejects.toBeInstanceOf(NotFoundException);
     });
   });
 

@@ -211,6 +211,8 @@ appointment have no doctor, and the rule does not apply to them.
 | `POST /api/v1/prescriptions` | `prescription.write:any` or `prescription.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR`               |
 | `POST /api/v1/dispenses`     | `dispense.write:any`                                 | `SUPER_ADMIN`, `ADMIN`, `PHARMACIST`           |
 
+Under `prescription.write:own` the caller prescribes as their own clinician profile, for a patient actively assigned to them — or, since D-046 (`docs/post-mvp/decisions.md`), for the patient of an `IN_PROGRESS` encounter the request names and the caller is attending, with no assignment needed.
+
 ### AI Chatbot (Post-MVP — deferred)
 
 See [docs/post-mvp/ai-chatbot.md](../post-mvp/ai-chatbot.md). Endpoints below are planned for Phase 13, not MVP release.

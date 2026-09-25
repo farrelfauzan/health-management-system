@@ -340,7 +340,15 @@ describe('Bug report intake integration', () => {
       const actualResponse = await postReport(CLEAN_REPORT);
 
       expect(actualResponse.status).toBe(429);
-      expect(actualResponse.body.error.code).toBe('TOO_MANY_REQUESTS');
+      // The whole envelope: a status-derived code alone passed while the
+      // message read "Http Exception" and the wait never reached the reporter.
+      expect(actualResponse.body).toEqual({
+        error: {
+          code: 'TOO_MANY_REQUESTS',
+          message: 'You can file up to 10 bug reports per day. Try again later.',
+          details: { retryAfterSeconds: 86_400 },
+        },
+      });
     });
   });
 

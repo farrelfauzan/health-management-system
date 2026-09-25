@@ -31,9 +31,7 @@ export function EncounterLabCard({ encounterId, labOrders, isEditable }: Encount
   return (
     <Card className="rounded-xl border-slate-200 shadow-none">
       <CardHeader>
-        <CardTitle className="font-heading text-base">
-          {t('encounters.laboratory.title')}
-        </CardTitle>
+        <CardTitle className="font-heading text-base">{t('encounters.laboratory.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {isEditable ? (
@@ -44,7 +42,12 @@ export function EncounterLabCard({ encounterId, labOrders, isEditable }: Encount
         {labOrders.length > 0 ? (
           <ul className="space-y-2">
             {labOrders.map((order) => (
-              <EncounterLabOrderRow key={order.id} order={order} isEditable={isEditable} />
+              <EncounterLabOrderRow
+                key={order.id}
+                order={order}
+                encounterId={encounterId}
+                isEditable={isEditable}
+              />
             ))}
           </ul>
         ) : (

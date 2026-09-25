@@ -1344,7 +1344,13 @@
           "urgent": "Cito",
           "cancel": "Withdraw",
           "cancelled": "Withdrawn. Nothing was run for this request.",
-          "waiting": "Waiting for results."
+          "waiting": "Waiting for results.",
+          "requestDocument": {
+            "action": "Print request letter",
+            "issued": "Request letter issued",
+            "error": "The request letter could not be printed. Please try again.",
+            "openError": "The request letter was issued but could not be opened. Open it from the patient’s Documents tab."
+          }
         },
         "step": {
           "ORDERED": "Requested",
@@ -1454,7 +1460,13 @@
         "referral": "Refer to a doctor or a puskesmas"
       },
       "administrativeSubtitle": "The visit's administrative summary: who, when, and what state it is in.",
-      "administrativeNotice": "The clinical content of this visit — SOAP notes, diagnoses, procedures, prescriptions and laboratory results — can only be opened by the doctor or midwife who examines the patient, under clinic rules."
+      "administrativeNotice": "The clinical content of this visit — SOAP notes, diagnoses, procedures, prescriptions and laboratory results — can only be opened by the doctor or midwife who examines the patient, under clinic rules.",
+      "prescriptionDocument": {
+        "action": "Print prescription",
+        "issued": "Prescription issued",
+        "error": "The prescription could not be printed. Please try again.",
+        "openError": "The prescription was issued but could not be opened. Open it from the patient’s Documents tab."
+      }
     }
   }
 }

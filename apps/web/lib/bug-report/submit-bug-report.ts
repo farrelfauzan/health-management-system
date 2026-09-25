@@ -53,14 +53,20 @@ export async function submitBugReport(
 }
 
 type SensitiveDataResponseBody = {
-  code?: unknown;
-  message?: unknown;
-  errors?: unknown;
+  error?: {
+    code?: unknown;
+    message?: unknown;
+    details?: unknown;
+  };
 };
 
 /**
  * Reads the coded refusal out of a 400 body, or `null` if this is some other
  * failure.
+ *
+ * The body is the API's envelope, `{ error: { code, message, details } }`: the
+ * global filter renders the thrower's `errors` as `details`. Reading `code` at
+ * the top level never matched, so every finding fell through to a toast.
  *
  * Deliberately defensive about the shape: a proxy or a gateway can answer 400
  * with something else entirely, and mistaking that for a sensitive-data finding
@@ -71,15 +77,16 @@ function resolveSensitiveDataError(caughtError: unknown): SensitiveDataFieldErro
   if (typeof responseBody !== 'object' || responseBody === null) {
     return null;
   }
-  if (responseBody.code !== SENSITIVE_DATA_DETECTED) {
+  const envelope = responseBody.error;
+  if (envelope?.code !== SENSITIVE_DATA_DETECTED) {
     return null;
   }
-  const [firstError] = Array.isArray(responseBody.errors) ? responseBody.errors : [];
+  const [firstError] = Array.isArray(envelope.details) ? envelope.details : [];
   const path = (firstError as { path?: unknown })?.path;
   const field = Array.isArray(path) ? String(path[0] ?? '') : '';
   return {
     field,
     category: String((firstError as { category?: unknown })?.category ?? ''),
-    message: typeof responseBody.message === 'string' ? responseBody.message : '',
+    message: typeof envelope.message === 'string' ? envelope.message : '',
   };
 }

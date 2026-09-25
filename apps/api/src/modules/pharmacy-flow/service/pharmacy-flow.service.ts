@@ -13,6 +13,7 @@ import {
   MedicationRecord,
   MedicationResponse,
   PrescribingClinicianRecord,
+  PrescriptionEncounterRecord,
   StockReceiptResponse,
   PrescriptionDetailRecord,
   PrescriptionResponse,
@@ -37,6 +38,7 @@ import { ClinicProfileService } from '../../billing/service/clinic-profile.servi
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { buildPrescriptionContext } from './build-prescription-context';
+import { isAttendingClinicianOfEncounter } from './is-attending-clinician-of-encounter';
 import { CreateDispenseDto } from '../dto/create-dispense.dto';
 import { CreateMedicationDto } from '../dto/create-medication.dto';
 import { CreatePrescriptionDto } from '../dto/create-prescription.dto';
@@ -213,8 +215,9 @@ export class PharmacyFlowService {
       throw new BadRequestException('Patient not found or inactive');
     }
 
+    const encounter = await this.findPrescriptionEncounter(payload.encounterId);
     if (!writeScope.hasAny) {
-      await this.assertActiveAssignment(doctorId, payload.patientId);
+      await this.assertOwnPrescribingReach({ encounter, doctorId, patientId: payload.patientId });
     }
 
     // Both shapes are checked: a product line's medication, and every
@@ -235,7 +238,7 @@ export class PharmacyFlowService {
     }
 
     if (payload.encounterId) {
-      await this.assertEncounterAcceptsPrescription(payload.encounterId, payload.patientId);
+      this.assertEncounterAcceptsPrescription(encounter, payload.patientId);
     }
 
     const created = await this.pharmacyFlowRepository.createPrescription({
@@ -290,8 +293,9 @@ export class PharmacyFlowService {
       prescription,
       patientDateOfBirth: prescription.patient.dateOfBirth,
       patientSex: prescription.patient.sex,
-      clinic: await this.clinicProfileService.getProfile(),
-      clinicLogoDataUri: null,
+      letterhead: await this.clinicProfileService.getDocumentLetterhead(),
+      signer: await this.pharmacyFlowRepository.findPrescriptionSigner(prescription.id),
+      timeZone: this.clinicTimeZone,
     });
 
     return this.clinicalRequestDocumentService.renderAndFile(context, currentUser.sub);
@@ -478,12 +482,10 @@ export class PharmacyFlowService {
    * that is already signed, and attaching it across patients would put one
    * patient's medication in another's chart.
    */
-  private async assertEncounterAcceptsPrescription(
-    encounterId: string,
+  private assertEncounterAcceptsPrescription(
+    encounter: PrescriptionEncounterRecord | null,
     patientId: string,
-  ): Promise<void> {
-    const encounter = await this.pharmacyFlowRepository.findEncounterForPrescription(encounterId);
-
+  ): void {
     if (!encounter) {
       throw new BadRequestException('Encounter not found');
     }
@@ -499,6 +501,41 @@ export class PharmacyFlowService {
     }
   }
 
+  /**
+   * The encounter a prescription names, or null when it names none or one that
+   * does not exist. Loaded once: it decides both whether the attending
+   * clinician may prescribe without an assignment (D-046) and whether the visit
+   * accepts the prescription at all.
+   */
+  private async findPrescriptionEncounter(
+    encounterId?: string,
+  ): Promise<PrescriptionEncounterRecord | null> {
+    if (!encounterId) {
+      return null;
+    }
+    return this.pharmacyFlowRepository.findEncounterForPrescription(encounterId);
+  }
+
+  /**
+   * Under OWN scope a clinician prescribes for a patient they are examining or
+   * one assigned to them. D-046 narrows D-017 here: the attending clinician of
+   * the open encounter the prescription names needs no separate assignment —
+   * the registration that opened the visit already authorised them, exactly as
+   * it did for the encounter's diagnoses, procedures and lab orders. A
+   * prescription written outside an encounter still needs the assignment.
+   */
+  private async assertOwnPrescribingReach(params: {
+    encounter: PrescriptionEncounterRecord | null;
+    doctorId: string;
+    patientId: string;
+  }): Promise<void> {
+    const { encounter, doctorId, patientId } = params;
+    if (isAttendingClinicianOfEncounter({ encounter, clinicianId: doctorId, patientId })) {
+      return;
+    }
+    await this.assertActiveAssignment(doctorId, patientId);
+  }
+
   private async assertActiveAssignment(doctorId: string, patientId: string): Promise<void> {
     const assignment = await this.pharmacyFlowRepository.findActiveDoctorPatientAssignment(
       doctorId,
@@ -506,7 +543,9 @@ export class PharmacyFlowService {
     );
 
     if (!assignment) {
-      throw new ForbiddenException('You can only prescribe for patients actively assigned to you');
+      throw new ForbiddenException(
+        'You can only prescribe for patients actively assigned to you or in an open encounter you are attending',
+      );
     }
   }
 

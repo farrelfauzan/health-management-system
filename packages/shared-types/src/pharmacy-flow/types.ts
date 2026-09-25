@@ -2,6 +2,7 @@ import type {
   ClinicianProfessionValue,
   DoctorAuthorityKindValue,
 } from '#doctor-management/schemas';
+import type { EncounterStatusValue } from '#emr/schemas';
 import type { ChargeModeValue, FulfilmentSiteValue } from '#laboratory/schemas';
 import type { MidwifeFormularyTemplateLookupStatus } from '#pharmacy-flow/contracts';
 import type {
@@ -81,6 +82,18 @@ export type PrescribingClinicianRecord = {
   id: string;
   ownerUserId: string | null;
   profession: ClinicianProfessionValue;
+};
+
+/**
+ * The encounter a prescription names, projected to what the pharmacy needs to
+ * validate the link and to recognise the attending clinician (D-046):
+ * `doctorId` is the clinician profile — doctor or midwife — holding the visit.
+ */
+export type PrescriptionEncounterRecord = {
+  id: string;
+  patientId: string;
+  doctorId: string;
+  status: EncounterStatusValue;
 };
 
 /**

@@ -168,7 +168,11 @@
         "destination": "Tujuan rujukan",
         "notes": "Catatan",
         "issued": "Dokumen diterbitkan",
-        "reissueHint": "Menerbitkan ulang membuat dokumen baru; dokumen lama tetap tersimpan."
+        "reissueHint": "Menerbitkan ulang membuat dokumen baru; dokumen lama tetap tersimpan.",
+        "pregnancyCertificateIssued": "Surat keterangan hamil diterbitkan",
+        "birthCertificateIssued": "Surat keterangan lahir diterbitkan",
+        "issueError": "Dokumen tidak dapat diterbitkan. Silakan coba lagi.",
+        "openError": "Dokumen sudah diterbitkan, tetapi tidak dapat dibuka. Buka dari tab Dokumen pasien."
       }
     },
     "delivery": {

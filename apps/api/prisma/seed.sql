@@ -2440,7 +2440,7 @@ WITH seed_document_types(
     ('CONSENT_FORM', 'Persetujuan tindakan (informed consent)', 'Persetujuan tindakan medis yang spesifik per prosedur', 'GENERIC', TRUE, TRUE, FALSE, 'EITHER', 30),
     ('CLINIC_POLICY_SOP', 'Kebijakan dan SOP klinik', 'Kebijakan internal dan prosedur operasional standar', 'GENERIC', TRUE, FALSE, FALSE, 'EITHER', 40),
     ('LETTER', 'Surat', 'Surat yang diterbitkan klinik — pengantar rujukan, keterangan, korespondensi', 'GENERIC', TRUE, FALSE, FALSE, 'EITHER', 50),
-    ('INVOICE_TEMPLATE', 'Templat faktur', 'Tata letak kuitansi dan faktur (E1)', 'INVOICE_TEMPLATE', FALSE, FALSE, FALSE, 'DRAFTED', 60),
+    ('INVOICE_TEMPLATE', 'Templat faktur', 'Tata letak kuitansi dan faktur', 'INVOICE_TEMPLATE', FALSE, FALSE, FALSE, 'DRAFTED', 60),
     ('CLINIC_CORPUS_DOCUMENT', 'Dokumen korpus klinik', 'Dokumen yang dapat dikutip asisten AI (korpus klinik)', 'CLINIC_CORPUS', TRUE, FALSE, FALSE, 'UPLOADED', 70),
     ('PATIENT_BILL', 'Tagihan pasien', 'PDF faktur yang dibuat saat faktur diterbitkan — tidak pernah disusun atau disetujui', 'PATIENT_BILL', FALSE, TRUE, FALSE, 'UPLOADED', 80),
     ('OTHER', 'Lainnya', 'Dokumen lain yang dikelola klinik', 'GENERIC', FALSE, FALSE, FALSE, 'EITHER', 90)

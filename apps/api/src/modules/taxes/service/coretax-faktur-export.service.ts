@@ -83,7 +83,7 @@ export class CoretaxFakturExportService {
       throw new UnprocessableEntityException({
         code: CORETAX_FAKTUR_EXPORT_INVALID_ERROR_CODE,
         message: `${built.issues.length} problem(s) stop the faktur file; fix them and export again`,
-        details: built.issues,
+        errors: built.issues,
       });
     }
     const xml = CORETAX_FAKTUR_XML_SERIALIZERS[templateVersion](built.document);

@@ -5,6 +5,10 @@ import { resolveLoginErrorMessage } from './login-error';
 const messages = {
   invalidCredentials: 'Email atau kata sandi tidak valid.',
   loginFailed: 'Tidak dapat masuk saat ini. Silakan coba lagi.',
+  throttled: (retryAfterMinutes: number | null): string =>
+    retryAfterMinutes === null
+      ? 'Terlalu banyak percobaan masuk.'
+      : `Terlalu banyak percobaan masuk. Coba lagi dalam ${retryAfterMinutes} menit.`,
 };
 
 function buildAxiosError(status: number, data: unknown): Error {
@@ -23,9 +27,31 @@ describe('resolveLoginErrorMessage', () => {
     expect(resolveLoginErrorMessage(inputError, messages)).toBe(messages.invalidCredentials);
   });
 
-  it('uses localized safe copy for non-401 failures', () => {
+  it('tells a throttled user how long to wait, rounded up to whole minutes', () => {
     const inputError = buildAxiosError(429, {
-      error: { code: 'RATE_LIMITED', message: 'Too many login attempts' },
+      error: {
+        code: 'TOO_MANY_REQUESTS',
+        message: 'Too many login attempts. Try again later.',
+        details: { retryAfterSeconds: 61 },
+      },
+    });
+
+    expect(resolveLoginErrorMessage(inputError, messages)).toBe(
+      'Terlalu banyak percobaan masuk. Coba lagi dalam 2 menit.',
+    );
+  });
+
+  it('still names the throttle when the API sends no wait', () => {
+    const inputError = buildAxiosError(429, {
+      error: { code: 'TOO_MANY_REQUESTS', message: 'Too many login attempts. Try again later.' },
+    });
+
+    expect(resolveLoginErrorMessage(inputError, messages)).toBe('Terlalu banyak percobaan masuk.');
+  });
+
+  it('uses localized safe copy for other failures', () => {
+    const inputError = buildAxiosError(503, {
+      error: { code: 'SERVICE_UNAVAILABLE', message: 'Upstream down' },
     });
 
     expect(resolveLoginErrorMessage(inputError, messages)).toBe(messages.loginFailed);

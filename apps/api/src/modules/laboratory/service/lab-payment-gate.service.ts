@@ -1,4 +1,8 @@
-import { LabOrderRecord, LabWorklistOrderRecord } from '@hms/shared-types';
+import {
+  LAB_PAYMENT_REQUIRED_ERROR_CODE,
+  LabOrderRecord,
+  LabWorklistOrderRecord,
+} from '@hms/shared-types';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -45,11 +49,11 @@ export class LabPaymentGateService {
     if (await this.billingService.hasSettledInvoiceForVisit(order.registrationId)) {
       return;
     }
+    // Top-level `code` and `message`: the global filter builds the envelope
+    // from these, and a body nested under `error` came out as a bare CONFLICT.
     throw new ConflictException({
-      error: {
-        code: 'LAB_PAYMENT_REQUIRED',
-        message: `Lab order ${order.orderNumber} must be paid before the specimen is collected`,
-      },
+      code: LAB_PAYMENT_REQUIRED_ERROR_CODE,
+      message: `Lab order ${order.orderNumber} must be paid before the specimen is collected`,
     });
   }
 

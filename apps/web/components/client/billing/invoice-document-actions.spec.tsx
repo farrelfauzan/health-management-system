@@ -3,8 +3,11 @@ import type { InvoiceDetail, InvoiceDocumentView } from '@hms/shared-types';
 import { AbilityProvider, buildAppAbility, type AppRule } from '@hms/ui';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import enMessages from '../../../messages/en/operations.json';
+import idMessages from '../../../messages/id/operations.json';
 import { InvoiceDocumentActions } from './invoice-document-actions';
 import {
   invoiceDocumentControllerDownloadDocumentV1,
@@ -65,14 +68,24 @@ function buildEnvelope<TData>(data: TData) {
   return { status: 200, headers: {}, data: { data } };
 }
 
-function renderActions(invoice: InvoiceDetail, rules: AppRule[] = CASHIER_RULES): void {
+function renderActions(
+  invoice: InvoiceDetail,
+  rules: AppRule[] = CASHIER_RULES,
+  locale: 'en' | 'id' = 'en',
+): void {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
-    <AbilityProvider ability={buildAppAbility(rules)}>
-      <QueryClientProvider client={queryClient}>
-        <InvoiceDocumentActions invoice={invoice} />
-      </QueryClientProvider>
-    </AbilityProvider>,
+    <NextIntlClientProvider
+      locale={locale}
+      messages={locale === 'en' ? enMessages : idMessages}
+      timeZone="Asia/Jakarta"
+    >
+      <AbilityProvider ability={buildAppAbility(rules)}>
+        <QueryClientProvider client={queryClient}>
+          <InvoiceDocumentActions invoice={invoice} />
+        </QueryClientProvider>
+      </AbilityProvider>
+    </NextIntlClientProvider>,
   );
 }
 
@@ -91,11 +104,10 @@ describe('InvoiceDocumentActions', () => {
     );
   });
 
-  it('disables both actions on a DRAFT invoice with the issue-first hint', () => {
+  it('disables the download on a DRAFT invoice with the issue-first hint', () => {
     renderActions(buildInvoice({ status: 'DRAFT' }));
 
     expect(screen.getByRole('button', { name: /download pdf/i })).toBeDisabled();
-    expect(screen.getByRole('button', { name: /print/i })).toBeDisabled();
     expect(screen.getByText('Issue the invoice first')).toBeInTheDocument();
     // A DRAFT has no document; asking would only 404.
     expect(getRequestMock).not.toHaveBeenCalled();
@@ -117,15 +129,21 @@ describe('InvoiceDocumentActions', () => {
     expect(downloadRequestMock).toHaveBeenCalledWith('invoice-1');
   });
 
-  it('runs the same ensure-then-open flow from the Print action', async () => {
+  // The signed URL is served as an attachment, so a Print button could only
+  // repeat the download under another name.
+  it('offers one download action and no Print button that would repeat it', () => {
     renderActions(buildInvoice({ status: 'VOID', voidReason: 'wrong patient' }));
 
-    await userEvent.click(screen.getByRole('button', { name: /print/i }));
+    expect(screen.getByRole('button', { name: /download pdf/i })).toBeEnabled();
+    expect(screen.queryByRole('button', { name: /print/i })).not.toBeInTheDocument();
+  });
 
-    await waitFor(() => {
-      expect(window.open).toHaveBeenCalledTimes(1);
-    });
-    expect(renderRequestMock).toHaveBeenCalledTimes(1);
+  it('speaks Indonesian to an Indonesian cashier', () => {
+    renderActions(buildInvoice({ status: 'DRAFT' }), CASHIER_RULES, 'id');
+
+    expect(screen.getByText('PDF tagihan')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /unduh pdf/i })).toBeDisabled();
+    expect(screen.getByText('Terbitkan tagihan terlebih dahulu')).toBeInTheDocument();
   });
 
   it('shows the render failure with a Retry action and opens nothing', async () => {
@@ -167,7 +185,7 @@ describe('InvoiceDocumentActions', () => {
 
     renderActions(buildInvoice());
 
-    expect(await screen.findByText(/bound retroactively/i)).toBeInTheDocument();
+    expect(await screen.findByText(/predates document templates/i)).toBeInTheDocument();
   });
 
   it('lets a read-only viewer open an existing document without asking for a render', async () => {

@@ -174,7 +174,7 @@ export class DoctorCredentialOptionService {
     if (unknownCodes.length > 0) {
       throw new BadRequestException({
         message: `Unknown or inactive ${kind} credential option`,
-        details: { field, unknownCodes },
+        errors: { field, unknownCodes },
       });
     }
   }
