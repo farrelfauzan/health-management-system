@@ -1,9 +1,11 @@
-import { ConflictException, ServiceUnavailableException } from '@nestjs/common';
+import { ConflictException, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash } from 'node:crypto';
 
 import {
+  CreateInvoiceDocumentRecordPayload,
   InvoiceDocumentRecord,
+  InvoiceDocumentSlot,
   InvoiceRenderContextRecord,
   resolveDefaultTemplateSettings,
 } from '@hms/shared-types';
@@ -134,6 +136,7 @@ describe('InvoiceDocumentService', () => {
       invoiceId: 'invoice-1',
       templateVersionId: 'version-1',
       hasVoidWatermark: false,
+      isPaidReceipt: false,
       wasBoundRetroactively: false,
       renderedData: {
         values: { 'invoice.number': 'INV/20260901/0007', 'patient.fullName': 'Siti Rahmawati' },
@@ -152,6 +155,42 @@ describe('InvoiceDocumentService', () => {
       updatedAt: new Date('2026-09-01T03:00:00Z'),
       ...overrides,
     };
+  }
+
+  /**
+   * Answers `findLatestDocument` per slot, the way the table does: each
+   * invoice state is its own row, and a slot without one reads null.
+   */
+  function mockLatestDocumentsBySlot(documents: {
+    issued?: InvoiceDocumentRecord;
+    paid?: InvoiceDocumentRecord;
+  }): void {
+    repositoryMock.findLatestDocument.mockImplementation(
+      (_invoiceId: string, slot: InvoiceDocumentSlot) => {
+        if (slot.hasVoidWatermark) {
+          return Promise.resolve(null);
+        }
+        const document = slot.isPaidReceipt ? documents.paid : documents.issued;
+        return Promise.resolve(document ?? null);
+      },
+    );
+  }
+
+  function mockCreateDocumentEcho(): void {
+    repositoryMock.createDocument.mockImplementation(
+      (payload: CreateInvoiceDocumentRecordPayload) =>
+        Promise.resolve(
+          buildDocumentRecord({
+            id: 'document-created',
+            templateVersionId: payload.templateVersionId,
+            hasVoidWatermark: payload.hasVoidWatermark,
+            isPaidReceipt: payload.isPaidReceipt,
+            wasBoundRetroactively: payload.wasBoundRetroactively,
+            renderedData: payload.renderedData,
+            renderWarnings: payload.renderWarnings,
+          }),
+        ),
+    );
   }
 
   beforeEach(() => {
@@ -302,7 +341,10 @@ describe('InvoiceDocumentService', () => {
 
     await service.requestRender('invoice-1');
 
-    expect(repositoryMock.findLatestDocument).toHaveBeenCalledWith('invoice-1', true);
+    expect(repositoryMock.findLatestDocument).toHaveBeenCalledWith('invoice-1', {
+      hasVoidWatermark: true,
+      isPaidReceipt: false,
+    });
     expect(repositoryMock.createDocument.mock.calls[0][0].hasVoidWatermark).toBe(true);
     // Watermark rows are the natural post-void document, not a retroactive
     // binding.
@@ -334,6 +376,155 @@ describe('InvoiceDocumentService', () => {
     repositoryMock.findRenderContext.mockRejectedValue(new Error('database down'));
 
     await expect(service.snapshotOnIssue('invoice-1')).resolves.toBeUndefined();
+  });
+
+  describe('the paid receipt', () => {
+    const issuedSnapshot = buildDocumentRecord({
+      id: 'document-issued',
+      templateVersionId: 'version-issued',
+      status: 'READY',
+      storageKey: 'invoices/documents/issued.pdf',
+      checksum: 'issued-checksum',
+      renderedData: {
+        values: { 'invoice.status': 'ISSUED' },
+        items: [],
+        warnings: [{ token: 'payment.*', reason: 'This invoice has not been paid' }],
+      },
+    });
+
+    it('cuts a PAID receipt on payment next to the ISSUED snapshot, pinned to its version', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext());
+      mockLatestDocumentsBySlot({ issued: issuedSnapshot });
+      mockCreateDocumentEcho();
+      documentTemplateServiceMock.findDefaultPublishedVersion.mockResolvedValue({
+        id: 'version-republished',
+      });
+
+      await service.snapshotOnPayment('invoice-1');
+
+      expect(repositoryMock.createDocument).toHaveBeenCalledTimes(1);
+      const actualPayload = repositoryMock.createDocument.mock
+        .calls[0][0] as CreateInvoiceDocumentRecordPayload;
+      expect(actualPayload.isPaidReceipt).toBe(true);
+      expect(actualPayload.hasVoidWatermark).toBe(false);
+      // FR-E1-09: a template republished after issue never reaches this bill.
+      expect(actualPayload.templateVersionId).toBe('version-issued');
+      expect(actualPayload.wasBoundRetroactively).toBe(false);
+      expect(actualPayload.renderedData.values['invoice.status']).toBe('PAID');
+      expect(actualPayload.renderedData.values['payment.method']).toBe('QRIS');
+      expect(actualPayload.renderedData.values['payment.reference']).toBe('QR-88213771');
+      expect(actualPayload.renderedData.values['payment.cashierName']).toBe('kasir@hms.local');
+      // The ISSUED snapshot is never rewritten or re-rendered.
+      expect(repositoryMock.completeRender).not.toHaveBeenCalled();
+      expect(repositoryMock.failRender).not.toHaveBeenCalled();
+      expect(pdfRendererMock.render).not.toHaveBeenCalled();
+    });
+
+    it('does not cut a receipt for an invoice that is not PAID', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext({ status: 'ISSUED' }));
+
+      await service.snapshotOnPayment('invoice-1');
+
+      expect(repositoryMock.createDocument).not.toHaveBeenCalled();
+    });
+
+    it('never lets a receipt snapshot failure escape recordPayment', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext());
+      mockLatestDocumentsBySlot({ issued: issuedSnapshot });
+      repositoryMock.createDocument.mockRejectedValueOnce(new Error('database down'));
+
+      await expect(service.snapshotOnPayment('invoice-1')).resolves.toBeUndefined();
+    });
+
+    it('serves the receipt, not the ISSUED snapshot, for a PAID invoice', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext());
+      mockLatestDocumentsBySlot({
+        issued: issuedSnapshot,
+        paid: buildDocumentRecord({
+          id: 'document-paid',
+          isPaidReceipt: true,
+          status: 'READY',
+          storageKey: 'invoices/documents/paid.pdf',
+          checksum: 'paid-checksum',
+        }),
+      });
+      objectStorageMock.getSignedUrl.mockResolvedValue({
+        url: 'https://signed.example/paid.pdf',
+        expiresAt: '2026-09-01T07:15:00.000Z',
+      });
+
+      const actualRender = await service.requestRender('invoice-1');
+      const actualMetadata = await service.getDocument('invoice-1');
+      await service.createDownloadUrl('invoice-1');
+
+      expect(actualRender.id).toBe('document-paid');
+      expect(actualRender.isPaidReceipt).toBe(true);
+      expect(actualMetadata.checksum).toBe('paid-checksum');
+      expect(objectStorageMock.getSignedUrl).toHaveBeenCalledWith(
+        expect.objectContaining({ key: 'invoices/documents/paid.pdf' }),
+      );
+      expect(pdfRendererMock.render).not.toHaveBeenCalled();
+    });
+
+    it('cuts and renders the receipt on first request for an invoice paid before receipts existed', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext());
+      mockLatestDocumentsBySlot({ issued: issuedSnapshot });
+      mockCreateDocumentEcho();
+      repositoryMock.findDocumentById.mockResolvedValue(
+        buildDocumentRecord({
+          id: 'document-created',
+          isPaidReceipt: true,
+          status: 'READY',
+          storageKey: 'k',
+          checksum: 'c',
+        }),
+      );
+
+      const actual = await service.requestRender('invoice-1');
+
+      const actualPayload = repositoryMock.createDocument.mock
+        .calls[0][0] as CreateInvoiceDocumentRecordPayload;
+      expect(actualPayload.isPaidReceipt).toBe(true);
+      expect(actualPayload.templateVersionId).toBe('version-issued');
+      expect(repositoryMock.completeRender).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'document-created' }),
+      );
+      expect(actual.isPaidReceipt).toBe(true);
+      expect(actual.status).toBe('READY');
+    });
+
+    it("binds today's template retroactively when there is no ISSUED snapshot to inherit", async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext());
+      mockLatestDocumentsBySlot({});
+      mockCreateDocumentEcho();
+      documentTemplateServiceMock.findDefaultPublishedVersion.mockResolvedValue({
+        id: 'version-current',
+      });
+
+      await service.snapshotOnPayment('invoice-1');
+
+      const actualPayload = repositoryMock.createDocument.mock
+        .calls[0][0] as CreateInvoiceDocumentRecordPayload;
+      expect(actualPayload.templateVersionId).toBe('version-current');
+      expect(actualPayload.wasBoundRetroactively).toBe(true);
+    });
+
+    it('answers 404 for the metadata of a PAID invoice whose receipt was never cut', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext());
+      mockLatestDocumentsBySlot({ issued: issuedSnapshot });
+
+      await expect(service.getDocument('invoice-1')).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('keeps serving the ISSUED snapshot to an invoice that is not paid yet', async () => {
+      repositoryMock.findRenderContext.mockResolvedValue(buildContext({ status: 'ISSUED' }));
+      mockLatestDocumentsBySlot({ issued: issuedSnapshot });
+
+      const actual = await service.getDocument('invoice-1');
+
+      expect(actual.id).toBe('document-issued');
+      expect(actual.isPaidReceipt).toBe(false);
+    });
   });
 
   it('mints an attachment download with the compact invoice-number filename', async () => {

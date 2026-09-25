@@ -593,6 +593,7 @@ export type InvoiceDocumentRecord = {
   invoiceId: string;
   templateVersionId: string | null;
   hasVoidWatermark: boolean;
+  isPaidReceipt: boolean;
   wasBoundRetroactively: boolean;
   renderedData: ResolvedInvoiceVariables;
   status: InvoiceDocumentStatusValue;
@@ -607,10 +608,32 @@ export type InvoiceDocumentRecord = {
   updatedAt: Date;
 };
 
+/**
+ * Which render slot of an invoice a document belongs to. An invoice has one
+ * live slot per state — ISSUED (neither flag), PAID (`isPaidReceipt`), VOID
+ * (`hasVoidWatermark`) — and the rows of earlier states are retained: each may
+ * already be in a patient's hands.
+ */
+export type InvoiceDocumentSlot = {
+  readonly hasVoidWatermark: boolean;
+  readonly isPaidReceipt: boolean;
+};
+
+/**
+ * The template binding a new snapshot row is cut with: the version it pins
+ * (null for the built-in layout) and whether that binding was made after the
+ * fact rather than when the invoice was issued.
+ */
+export type InvoiceDocumentBinding = {
+  readonly templateVersionId: string | null;
+  readonly wasBoundRetroactively: boolean;
+};
+
 export type CreateInvoiceDocumentRecordPayload = {
   invoiceId: string;
   templateVersionId: string | null;
   hasVoidWatermark: boolean;
+  isPaidReceipt: boolean;
   wasBoundRetroactively: boolean;
   renderedData: ResolvedInvoiceVariables;
   renderWarnings: TemplateVariableWarning[];

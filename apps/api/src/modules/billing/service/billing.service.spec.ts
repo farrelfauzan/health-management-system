@@ -58,6 +58,7 @@ describe('BillingService', () => {
 
   const invoiceDocumentServiceMock = {
     snapshotOnIssue: jest.fn().mockResolvedValue(undefined),
+    snapshotOnPayment: jest.fn().mockResolvedValue(undefined),
   };
 
   /** The tax module off: every line untaxed and resolved, as before P27-T04. */
@@ -879,6 +880,26 @@ describe('BillingService', () => {
       );
     });
 
+    it('cuts the paid-receipt snapshot once the payment is recorded', async () => {
+      const callOrder: string[] = [];
+      billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
+        ...invoiceWithRelationsRecord,
+        status: 'ISSUED',
+      });
+      billingRepositoryMock.recordPayment.mockImplementationOnce(async () => {
+        callOrder.push('recordPayment');
+        return { ...invoiceDetailRecord, status: 'PAID' };
+      });
+      invoiceDocumentServiceMock.snapshotOnPayment.mockImplementationOnce(async () => {
+        callOrder.push('snapshotOnPayment');
+      });
+
+      await service.recordPayment(invoiceId, inputPayload, cashierUser);
+
+      expect(invoiceDocumentServiceMock.snapshotOnPayment).toHaveBeenCalledWith(invoiceId);
+      expect(callOrder).toEqual(['recordPayment', 'snapshotOnPayment']);
+    });
+
     it('writes the jasa medis accruals inside the payment transaction (P27-T06)', async () => {
       const mockTransaction = { marker: 'payment-tx' };
       billingRepositoryMock.findInvoiceWithRelationsById.mockResolvedValue({
@@ -894,7 +915,9 @@ describe('BillingService', () => {
 
       await service.recordPayment(invoiceId, inputPayload, cashierUser);
 
-      const [actualPayload] = billingRepositoryMock.recordPayment.mock.calls[0] as [{ paidAt: Date }];
+      const [actualPayload] = billingRepositoryMock.recordPayment.mock.calls[0] as [
+        { paidAt: Date },
+      ];
       expect(clinicianFeeLedgerServiceMock.recordAccrualsForPaidInvoice).toHaveBeenCalledWith(
         mockTransaction,
         { invoiceId, paidAt: actualPayload.paidAt },
@@ -915,6 +938,7 @@ describe('BillingService', () => {
         ),
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(billingRepositoryMock.recordPayment).not.toHaveBeenCalled();
+      expect(invoiceDocumentServiceMock.snapshotOnPayment).not.toHaveBeenCalled();
     });
 
     it('rejects paying a DRAFT invoice', async () => {
@@ -977,7 +1001,9 @@ describe('BillingService', () => {
 
       await service.voidInvoice(invoiceId, inputPayload, cashierUser);
 
-      const [actualPayload] = billingRepositoryMock.voidInvoice.mock.calls[0] as [{ voidedAt: Date }];
+      const [actualPayload] = billingRepositoryMock.voidInvoice.mock.calls[0] as [
+        { voidedAt: Date },
+      ];
       expect(clinicianFeeLedgerServiceMock.recordReversalsForVoidedInvoice).toHaveBeenCalledWith(
         mockTransaction,
         { invoiceId, voidedAt: actualPayload.voidedAt },

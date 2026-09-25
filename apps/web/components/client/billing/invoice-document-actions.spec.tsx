@@ -51,6 +51,7 @@ function buildDocumentView(overrides: Partial<InvoiceDocumentView> = {}): Invoic
     invoiceId: 'invoice-1',
     status: 'READY',
     hasVoidWatermark: false,
+    isPaidReceipt: false,
     wasBoundRetroactively: false,
     checksum: 'abc123',
     warnings: [],

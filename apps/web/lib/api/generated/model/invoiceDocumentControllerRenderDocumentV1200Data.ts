@@ -13,6 +13,7 @@ export type InvoiceDocumentControllerRenderDocumentV1200Data = {
   status: string;
   templateVersionId?: string;
   hasVoidWatermark: boolean;
+  isPaidReceipt: boolean;
   wasBoundRetroactively: boolean;
   checksum?: string;
   sizeBytes?: number;

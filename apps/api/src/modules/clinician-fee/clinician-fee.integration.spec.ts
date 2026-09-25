@@ -212,6 +212,8 @@ describe('Clinician fee sharing (P27-T06)', () => {
     await prisma.clinicianFeeRule.deleteMany({ where: { doctorId: { in: doctorIds } } });
     await prisma.payment.deleteMany({ where: { invoiceId: { in: invoiceIds } } });
     await prisma.invoiceItem.deleteMany({ where: { invoiceId: { in: invoiceIds } } });
+    // Recording a payment cuts the paid-receipt document row.
+    await prisma.invoiceDocument.deleteMany({ where: { invoiceId: { in: invoiceIds } } });
     await prisma.invoice.deleteMany({ where: { id: { in: invoiceIds } } });
     await prisma.encounter.deleteMany({ where: { patientId: { in: patientIds } } });
     await prisma.registration.deleteMany({ where: { patientId: { in: patientIds } } });
