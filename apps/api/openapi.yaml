@@ -10499,6 +10499,344 @@ paths:
         - bearer: []
       summary: Get patient privacy notice evidence history
       tags: *a15
+  /api/v1/doctor-patient-assignments:
+    post:
+      operationId: DoctorPatientController_assignDoctorToPatient_v1
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDoctorPatientAssignmentDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  doctorId: 22222222-2222-4222-8222-222222222222
+                  patientId: 11111111-1111-4111-8111-111111111111
+      responses:
+        "201":
+          description: The active assignment. Repeated requests are idempotent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      patientId:
+                        type: string
+                      assignedById:
+                        type: string
+                      assignedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - patientId
+                      - assignedById
+                      - assignedAt
+                      - createdAt
+                      - updatedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 88888888-8888-4888-8888-888888888888
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    assignedById: 33333333-3333-4333-8333-333333333333
+                    assignedAt: 2026-07-20T08:00:00.000Z
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor assigned to patient
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Assign a doctor to a patient
+      tags: &a16
+        - Doctor Patient
+  /api/v1/doctor-patient-assignments/activity:
+    get:
+      operationId: DoctorPatientController_listActivity_v1
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            exclusiveMinimum: false
+            default: 1
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          schema:
+            minimum: 1
+            maximum: 100
+            exclusiveMaximum: false
+            exclusiveMinimum: false
+            default: 10
+            type: integer
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: patientId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: action
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ASSIGNED
+              - UNASSIGNED
+        - name: actorUserId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: occurredFrom
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+        - name: occurredTo
+          required: false
+          in: query
+          schema:
+            format: date-time
+            type: string
+      responses:
+        "200":
+          description: A filtered, paginated, append-only activity log.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        assignmentId:
+                          type: string
+                        doctorId:
+                          type: string
+                        patientId:
+                          type: string
+                        action:
+                          type: string
+                        actorUserId:
+                          type: string
+                        occurredAt:
+                          type: string
+                      required:
+                        - id
+                        - assignmentId
+                        - doctorId
+                        - patientId
+                        - action
+                        - actorUserId
+                        - occurredAt
+                  meta:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                      limit:
+                        type: integer
+                      total:
+                        type: integer
+                    required:
+                      - page
+                      - limit
+                      - total
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    - id: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
+                      assignmentId: 88888888-8888-4888-8888-888888888888
+                      doctorId: 22222222-2222-4222-8222-222222222222
+                      patientId: 11111111-1111-4111-8111-111111111111
+                      action: ASSIGNED
+                      actorUserId: 33333333-3333-4333-8333-333333333333
+                      occurredAt: 2026-07-20T08:00:00.000Z
+                  meta:
+                    page: 1
+                    limit: 10
+                    total: 1
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: List doctor-patient assignment activity
+      tags: *a16
+  /api/v1/doctor-patient-assignments/{id}:
+    delete:
+      operationId: DoctorPatientController_unassignDoctorFromPatient_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The audited assignment state. Repeated requests are idempotent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      doctorId:
+                        type: string
+                      patientId:
+                        type: string
+                      assignedById:
+                        type: string
+                      assignedAt:
+                        type: string
+                      createdAt:
+                        type: string
+                      updatedAt:
+                        type: string
+                      unassignedById:
+                        type: string
+                      unassignedAt:
+                        type: string
+                    required:
+                      - id
+                      - doctorId
+                      - patientId
+                      - assignedById
+                      - assignedAt
+                      - createdAt
+                      - updatedAt
+                      - unassignedById
+                      - unassignedAt
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 88888888-8888-4888-8888-888888888888
+                    doctorId: 22222222-2222-4222-8222-222222222222
+                    patientId: 11111111-1111-4111-8111-111111111111
+                    assignedById: 33333333-3333-4333-8333-333333333333
+                    assignedAt: 2026-07-20T08:00:00.000Z
+                    createdAt: 2026-07-20T08:00:00.000Z
+                    updatedAt: 2026-07-20T08:00:00.000Z
+                    unassignedById: 33333333-3333-4333-8333-333333333333
+                    unassignedAt: 2026-07-20T08:00:00.000Z
+                  message: Doctor unassigned from patient
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: Assignment not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: Assignment not found.
+      security:
+        - bearer: []
+      summary: Unassign a doctor from a patient
+      tags: *a16
   /api/v1/regions/provinces:
     get:
       operationId: RegionsController_listProvinces_v1
@@ -10550,7 +10888,7 @@ paths:
       security:
         - bearer: []
       summary: List provinces
-      tags: &a16
+      tags: &a17
         - Regions
   /api/v1/regions/regencies:
     get:
@@ -10613,7 +10951,7 @@ paths:
       security:
         - bearer: []
       summary: List regencies in a province
-      tags: *a16
+      tags: *a17
   /api/v1/regions/districts:
     get:
       operationId: RegionsController_listDistricts_v1
@@ -10675,7 +11013,7 @@ paths:
       security:
         - bearer: []
       summary: List districts in a regency
-      tags: *a16
+      tags: *a17
   /api/v1/regions/villages:
     get:
       operationId: RegionsController_listVillages_v1
@@ -10781,7 +11119,7 @@ paths:
       security:
         - bearer: []
       summary: Search villages in a district
-      tags: *a16
+      tags: *a17
   /api/v1/service-tariffs:
     get:
       operationId: ServiceTariffController_listServiceTariffs_v1
@@ -10920,7 +11258,7 @@ paths:
       security:
         - bearer: []
       summary: List service tariffs
-      tags: &a17
+      tags: &a18
         - Service Tariffs
     post:
       operationId: ServiceTariffController_createServiceTariff_v1
@@ -11024,7 +11362,7 @@ paths:
       security:
         - bearer: []
       summary: Create a service tariff
-      tags: *a17
+      tags: *a18
   /api/v1/service-tariffs/{id}:
     patch:
       operationId: ServiceTariffController_updateServiceTariff_v1
@@ -11138,7 +11476,7 @@ paths:
       security:
         - bearer: []
       summary: Update a service tariff
-      tags: *a17
+      tags: *a18
   /api/v1/invoices:
     get:
       operationId: InvoiceController_listInvoices_v1
@@ -11316,7 +11654,7 @@ paths:
       security:
         - bearer: []
       summary: List invoices
-      tags: &a18
+      tags: &a19
         - Invoices
     post:
       operationId: InvoiceController_generateInvoice_v1
@@ -11503,7 +11841,7 @@ paths:
       security:
         - bearer: []
       summary: Generate an invoice from a finished encounter
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}:
     get:
       operationId: InvoiceController_getInvoiceById_v1
@@ -11653,7 +11991,7 @@ paths:
       security:
         - bearer: []
       summary: Get an invoice
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/lab-only:
     post:
       operationId: InvoiceController_generateLabOnlyInvoice_v1
@@ -11826,7 +12164,7 @@ paths:
       security:
         - bearer: []
       summary: Generate an invoice for a laboratory-only visit
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}/items:
     post:
       operationId: InvoiceController_addInvoiceItem_v1
@@ -12005,7 +12343,7 @@ paths:
       security:
         - bearer: []
       summary: Add a tariff line to a draft invoice
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}/items/{itemId}:
     delete:
       operationId: InvoiceController_removeInvoiceItem_v1
@@ -12165,7 +12503,7 @@ paths:
       security:
         - bearer: []
       summary: Remove a line from a draft invoice
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}/issue:
     post:
       operationId: InvoiceController_issueInvoice_v1
@@ -12320,7 +12658,7 @@ paths:
       security:
         - bearer: []
       summary: Issue a draft invoice
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}/payment:
     post:
       operationId: InvoiceController_recordPayment_v1
@@ -12530,7 +12868,7 @@ paths:
       security:
         - bearer: []
       summary: Record the payment for an issued invoice
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}/void:
     post:
       operationId: InvoiceController_voidInvoice_v1
@@ -12711,7 +13049,7 @@ paths:
       security:
         - bearer: []
       summary: Void an invoice
-      tags: *a18
+      tags: *a19
   /api/v1/invoices/{id}/document:
     post:
       operationId: InvoiceDocumentController_renderDocument_v1
@@ -12839,7 +13177,7 @@ paths:
       security:
         - bearer: []
       summary: Render the invoice PDF, or return the existing document
-      tags: &a19
+      tags: &a20
         - Invoices
     get:
       operationId: InvoiceDocumentController_getDocument_v1
@@ -12962,7 +13300,7 @@ paths:
       security:
         - bearer: []
       summary: Get the invoice document metadata
-      tags: *a19
+      tags: *a20
   /api/v1/invoices/{id}/document/download:
     get:
       operationId: InvoiceDocumentController_downloadDocument_v1
@@ -13032,7 +13370,7 @@ paths:
       security:
         - bearer: []
       summary: Get a short-lived download URL for the rendered PDF
-      tags: *a19
+      tags: *a20
   /api/v1/reports/cashier-daily:
     get:
       operationId: CashierReportController_getDailyReport_v1
@@ -13249,7 +13587,7 @@ paths:
       security:
         - bearer: []
       summary: Read the clinic profile
-      tags: &a20
+      tags: &a21
         - Clinic Profile
     patch:
       operationId: ClinicProfileController_updateClinicProfile_v1
@@ -13368,7 +13706,7 @@ paths:
       security:
         - bearer: []
       summary: Create or update the clinic profile
-      tags: *a20
+      tags: *a21
   /api/v1/clinic-profile/logo-upload-url:
     post:
       operationId: ClinicProfileController_createLogoUploadUrl_v1
@@ -13459,7 +13797,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a browser-direct logo upload
-      tags: *a20
+      tags: *a21
   /api/v1/document-templates:
     get:
       operationId: DocumentTemplateController_listTemplates_v1
@@ -13643,7 +13981,7 @@ paths:
       security:
         - bearer: []
       summary: List document templates of one kind
-      tags: &a21
+      tags: &a22
         - Document Templates
     post:
       operationId: DocumentTemplateController_createTemplate_v1
@@ -13831,7 +14169,7 @@ paths:
       security:
         - bearer: []
       summary: Create a document template
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/{id}:
     patch:
       operationId: DocumentTemplateController_updateTemplate_v1
@@ -14040,7 +14378,7 @@ paths:
       security:
         - bearer: []
       summary: Update a document template
-      tags: *a21
+      tags: *a22
     delete:
       operationId: DocumentTemplateController_archiveTemplate_v1
       parameters:
@@ -14109,7 +14447,7 @@ paths:
       security:
         - bearer: []
       summary: Archive a document template
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/import-upload-url:
     post:
       operationId: DocumentTemplateController_createImportUploadUrl_v1
@@ -14196,7 +14534,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a browser-direct upload of a Word file to import as a template
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/{id}/import:
     post:
       operationId: DocumentTemplateController_importTemplate_v1
@@ -14305,7 +14643,7 @@ paths:
       security:
         - bearer: []
       summary: Convert a staged Word file into a layout the editor can load
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/{id}/preview:
     post:
       operationId: DocumentTemplateController_previewTemplate_v1
@@ -14388,7 +14726,7 @@ paths:
       security:
         - bearer: []
       summary: Render the working copy against the built-in fixture invoice
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/{id}/approval-preview:
     post:
       operationId: DocumentTemplateController_previewTemplateSubmission_v1
@@ -14491,7 +14829,7 @@ paths:
         - bearer: []
       summary: Render a template's open submission and diff it against the published
         version
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/{id}/publish:
     post:
       operationId: DocumentTemplateController_publishTemplate_v1
@@ -14680,7 +15018,7 @@ paths:
       security:
         - bearer: []
       summary: Publish an immutable version of a template
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/{id}/set-default:
     post:
       operationId: DocumentTemplateController_setDefaultTemplate_v1
@@ -14867,7 +15205,7 @@ paths:
       security:
         - bearer: []
       summary: Make a template the default for its kind
-      tags: *a21
+      tags: *a22
   /api/v1/document-templates/variables:
     get:
       operationId: DocumentTemplateVariableController_listTemplateVariables_v1
@@ -15113,7 +15451,7 @@ paths:
       security:
         - bearer: []
       summary: List document types
-      tags: &a22
+      tags: &a23
         - Document Types
     post:
       operationId: DocumentTypeController_createType_v1
@@ -15259,7 +15597,7 @@ paths:
       security:
         - bearer: []
       summary: Create a clinic document type
-      tags: *a22
+      tags: *a23
   /api/v1/document-types/{id}:
     patch:
       operationId: DocumentTypeController_updateType_v1
@@ -15430,7 +15768,7 @@ paths:
       security:
         - bearer: []
       summary: Update a document type
-      tags: *a22
+      tags: *a23
     delete:
       operationId: DocumentTypeController_deleteType_v1
       parameters:
@@ -15500,7 +15838,7 @@ paths:
       security:
         - bearer: []
       summary: Delete a clinic document type
-      tags: *a22
+      tags: *a23
   /api/v1/document-types/{id}/default-approvers:
     put:
       operationId: DocumentTypeController_setDefaultApprovers_v1
@@ -15668,7 +16006,7 @@ paths:
       security:
         - bearer: []
       summary: Replace the default approvers of a document type
-      tags: *a22
+      tags: *a23
   /api/v1/documents:
     get:
       operationId: ManagedDocumentController_listDocuments_v1
@@ -15925,7 +16263,7 @@ paths:
       security:
         - bearer: []
       summary: List and search the documents registry
-      tags: &a23
+      tags: &a24
         - Documents
     post:
       operationId: ManagedDocumentController_createDocument_v1
@@ -16159,7 +16497,7 @@ paths:
       security:
         - bearer: []
       summary: Draft a document in the registry
-      tags: *a23
+      tags: *a24
   /api/v1/documents/export:
     get:
       operationId: ManagedDocumentController_exportDocuments_v1
@@ -16226,7 +16564,7 @@ paths:
             export with the row count and the filters (NFR-PRIV-01). Capped at
             5000 rows.
       summary: Export the filtered registry as CSV
-      tags: *a23
+      tags: *a24
   /api/v1/documents/eligible-approvers:
     get:
       operationId: ManagedDocumentController_listEligibleApprovers_v1
@@ -16309,7 +16647,7 @@ paths:
       security:
         - bearer: []
       summary: List who may be named as an approver
-      tags: *a23
+      tags: *a24
   /api/v1/documents/upload-url:
     post:
       operationId: ManagedDocumentController_createUploadUrl_v1
@@ -16403,7 +16741,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a browser-direct upload of a document’s body
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}:
     get:
       operationId: ManagedDocumentController_getDocument_v1
@@ -16606,7 +16944,7 @@ paths:
       security:
         - bearer: []
       summary: Read one document
-      tags: *a23
+      tags: *a24
     patch:
       operationId: ManagedDocumentController_updateDocument_v1
       parameters:
@@ -16835,7 +17173,7 @@ paths:
       security:
         - bearer: []
       summary: Edit a draft
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}/download:
     get:
       operationId: ManagedDocumentController_getDownloadUrl_v1
@@ -16904,7 +17242,7 @@ paths:
       security:
         - bearer: []
       summary: Mint a signed download URL for an uploaded document body
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}/preview:
     get:
       operationId: ManagedDocumentController_getPreview_v1
@@ -16998,7 +17336,7 @@ paths:
       security:
         - bearer: []
       summary: Read an uploaded document’s text, for review before a decision
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}/history:
     get:
       operationId: ManagedDocumentController_getHistory_v1
@@ -17218,7 +17556,7 @@ paths:
       security:
         - bearer: []
       summary: Read a document’s history
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}/submit:
     post:
       operationId: ManagedDocumentController_submitDocument_v1
@@ -17492,7 +17830,7 @@ paths:
       security:
         - bearer: []
       summary: Submit a draft for approval
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}/withdraw:
     post:
       operationId: ManagedDocumentController_withdrawDocument_v1
@@ -17699,7 +18037,7 @@ paths:
       security:
         - bearer: []
       summary: Withdraw an open approval request
-      tags: *a23
+      tags: *a24
   /api/v1/documents/{id}/issue:
     post:
       operationId: ManagedDocumentController_issueDocument_v1
@@ -17911,7 +18249,7 @@ paths:
       security:
         - bearer: []
       summary: Issue a draft directly
-      tags: *a23
+      tags: *a24
   /api/v1/document-approvals:
     get:
       operationId: DocumentApprovalController_listApprovals_v1
@@ -18160,7 +18498,7 @@ paths:
       security:
         - bearer: []
       summary: List approval requests
-      tags: &a24
+      tags: &a25
         - Documents
   /api/v1/document-approvals/pending-count:
     get:
@@ -18213,7 +18551,7 @@ paths:
       security:
         - bearer: []
       summary: Count the approvals waiting on the caller
-      tags: *a24
+      tags: *a25
   /api/v1/document-approvals/bulk-approve:
     post:
       operationId: DocumentApprovalController_bulkApprove_v1
@@ -18318,7 +18656,7 @@ paths:
       security:
         - bearer: []
       summary: Approve several documents in one call
-      tags: *a24
+      tags: *a25
   /api/v1/document-approvals/{id}/approve:
     post:
       operationId: DocumentApprovalController_approve_v1
@@ -18531,7 +18869,7 @@ paths:
       security:
         - bearer: []
       summary: Approve a document
-      tags: *a24
+      tags: *a25
   /api/v1/document-approvals/{id}/reject:
     post:
       operationId: DocumentApprovalController_reject_v1
@@ -18759,7 +19097,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a document
-      tags: *a24
+      tags: *a25
   /api/v1/clinician-fee-rules:
     get:
       operationId: ClinicianFeeRuleController_listRules_v1
@@ -18857,7 +19195,7 @@ paths:
       security:
         - bearer: []
       summary: List jasa medis rules
-      tags: &a25
+      tags: &a26
         - Clinician Fees
     post:
       operationId: ClinicianFeeRuleController_createRule_v1
@@ -18984,7 +19322,7 @@ paths:
       security:
         - bearer: []
       summary: Create a jasa medis rule
-      tags: *a25
+      tags: *a26
   /api/v1/clinician-fee-rules/{id}:
     patch:
       operationId: ClinicianFeeRuleController_updateRule_v1
@@ -19112,7 +19450,7 @@ paths:
       security:
         - bearer: []
       summary: Change the terms of a jasa medis rule
-      tags: *a25
+      tags: *a26
     delete:
       operationId: ClinicianFeeRuleController_deleteRule_v1
       parameters:
@@ -19167,7 +19505,7 @@ paths:
       security:
         - bearer: []
       summary: Delete a jasa medis rule
-      tags: *a25
+      tags: *a26
   /api/v1/clinician-fees/statements:
     get:
       operationId: ClinicianFeeStatementController_getPeriodSummary_v1
@@ -19285,7 +19623,7 @@ paths:
       security:
         - bearer: []
       summary: A month's jasa medis totals per clinician
-      tags: &a26
+      tags: &a27
         - Clinician Fees
   /api/v1/clinician-fees/statements/{doctorId}:
     get:
@@ -19439,7 +19777,7 @@ paths:
       security:
         - bearer: []
       summary: One clinician's monthly jasa medis statement
-      tags: *a26
+      tags: *a27
   /api/v1/clinician-fees/statements/{doctorId}/export:
     get:
       operationId: ClinicianFeeStatementController_exportStatement_v1
@@ -19460,7 +19798,7 @@ paths:
           description: A header block with the totals, then one row per ledger entry.
             Totals equal the on-screen statement. Audited as an export.
       summary: Export one clinician's monthly jasa medis statement as CSV
-      tags: *a26
+      tags: *a27
   /api/v1/patients/{patientId}/visit-reminder-consent:
     get:
       operationId: PatientVisitReminderConsentController_getConsent_v1
@@ -19580,7 +19918,7 @@ paths:
       security:
         - bearer: []
       summary: Read a patient's visit-reminder consent
-      tags: &a27
+      tags: &a28
         - Visit Reminder Consent
     put:
       operationId: PatientVisitReminderConsentController_upsertConsent_v1
@@ -19725,7 +20063,7 @@ paths:
       security:
         - bearer: []
       summary: Capture or withdraw visit-reminder consent
-      tags: *a27
+      tags: *a28
   /api/v1/admin/channel-gateway/whatsapp/session:
     get:
       operationId: ChannelGatewayAdminController_getSessionHealth_v1
@@ -19794,7 +20132,7 @@ paths:
       security:
         - bearer: []
       summary: Read the WhatsApp session’s health
-      tags: &a28
+      tags: &a29
         - Channel Gateway
   /api/v1/admin/channel-gateway/whatsapp/session/pairing:
     post:
@@ -19855,7 +20193,7 @@ paths:
       security:
         - bearer: []
       summary: Start a QR pairing for the WhatsApp session
-      tags: *a28
+      tags: *a29
   /api/v1/admin/channel-gateway/telegram/webhook:
     get:
       operationId: ChannelGatewayAdminController_getTelegramWebhookHealth_v1
@@ -19946,7 +20284,7 @@ paths:
       security:
         - bearer: []
       summary: Read the Telegram webhook’s registration health
-      tags: *a28
+      tags: *a29
     post:
       operationId: ChannelGatewayAdminController_registerTelegramWebhook_v1
       parameters: []
@@ -20038,7 +20376,7 @@ paths:
       security:
         - bearer: []
       summary: Point Telegram at this deployment
-      tags: *a28
+      tags: *a29
   /api/v1/admin/conversations:
     get:
       operationId: CsAdminController_listConversations_v1
@@ -20188,7 +20526,7 @@ paths:
       security:
         - bearer: []
       summary: List channel conversations
-      tags: &a29
+      tags: &a30
         - Customer Service
   /api/v1/admin/conversations/handoff-summary:
     get:
@@ -20249,7 +20587,7 @@ paths:
       security:
         - bearer: []
       summary: Count the conversations waiting for a human
-      tags: *a29
+      tags: *a30
   /api/v1/admin/conversations/metrics:
     get:
       operationId: CsAdminController_getMetrics_v1
@@ -20396,7 +20734,7 @@ paths:
       security:
         - bearer: []
       summary: Read the channel’s operating metrics (§8.4)
-      tags: *a29
+      tags: *a30
   /api/v1/admin/conversations/{id}:
     get:
       operationId: CsAdminController_getTranscript_v1
@@ -20571,7 +20909,7 @@ paths:
       security:
         - bearer: []
       summary: Read one conversation transcript
-      tags: *a29
+      tags: *a30
   /api/v1/admin/conversations/{id}/takeover:
     post:
       operationId: CsAdminController_takeOver_v1
@@ -20681,7 +21019,7 @@ paths:
       security:
         - bearer: []
       summary: Take a conversation over from the bot
-      tags: *a29
+      tags: *a30
   /api/v1/admin/conversations/{id}/release:
     post:
       operationId: CsAdminController_release_v1
@@ -20789,7 +21127,7 @@ paths:
       security:
         - bearer: []
       summary: Hand a conversation back to the bot
-      tags: *a29
+      tags: *a30
   /api/v1/admin/conversations/{id}/reply:
     post:
       operationId: CsAdminController_reply_v1
@@ -20905,7 +21243,7 @@ paths:
       security:
         - bearer: []
       summary: Reply to the customer on their original channel
-      tags: *a29
+      tags: *a30
   /api/v1/admin/conversations/{id}/block:
     post:
       operationId: CsAdminController_block_v1
@@ -21033,7 +21371,7 @@ paths:
       security:
         - bearer: []
       summary: Block a chat (§8.3 abuse control)
-      tags: *a29
+      tags: *a30
     delete:
       operationId: CsAdminController_unblock_v1
       parameters:
@@ -21139,7 +21477,7 @@ paths:
       security:
         - bearer: []
       summary: Unblock a chat
-      tags: *a29
+      tags: *a30
   /api/v1/admin/channel-arrivals:
     get:
       operationId: ChannelArrivalController_listArrivals_v1
@@ -21309,7 +21647,7 @@ paths:
       security:
         - bearer: []
       summary: List channel-sourced bookings for the check-in desk
-      tags: &a30
+      tags: &a31
         - Customer Service
   /api/v1/admin/channel-arrivals/merge-candidates:
     get:
@@ -21396,7 +21734,7 @@ paths:
       security:
         - bearer: []
       summary: Find the records a chat-created draft could be merged into
-      tags: *a30
+      tags: *a31
   /api/v1/admin/channel-arrivals/patients/{draftPatientId}/merge:
     post:
       operationId: ChannelArrivalController_mergeDraftPatient_v1
@@ -21504,7 +21842,7 @@ paths:
       security:
         - bearer: []
       summary: Merge a chat-created draft into an existing patient
-      tags: *a30
+      tags: *a31
   /api/v1/prospective-patients:
     get:
       operationId: ProspectivePatientController_listProspectivePatients_v1
@@ -21694,7 +22032,7 @@ paths:
       security:
         - bearer: []
       summary: List people who booked through a channel and have not been registered
-      tags: &a31
+      tags: &a32
         - Customer Service
   /api/v1/prospective-patients/{prospectivePatientId}/match-candidates:
     get:
@@ -21817,7 +22155,7 @@ paths:
       security:
         - bearer: []
       summary: Search the registry before spending an MRN on this person
-      tags: *a31
+      tags: *a32
   /api/v1/prospective-patients/{prospectivePatientId}/link:
     post:
       operationId: ProspectivePatientController_linkToExistingPatient_v1
@@ -21927,7 +22265,7 @@ paths:
         - bearer: []
       summary: The arriving person is already a patient — point the booking at their
         record
-      tags: *a31
+      tags: *a32
   /api/v1/prospective-patients/{prospectivePatientId}/convert:
     post:
       operationId: ProspectivePatientController_convertToNewPatient_v1
@@ -22079,7 +22417,7 @@ paths:
       security:
         - bearer: []
       summary: The arriving person is new — register them and allocate their MRN
-      tags: *a31
+      tags: *a32
   /api/v1/admin/ai-providers:
     get:
       operationId: AiProviderController_listConfigs_v1
@@ -22201,7 +22539,7 @@ paths:
       security:
         - bearer: []
       summary: List the clinic’s AI provider configurations
-      tags: &a32
+      tags: &a33
         - AI Chatbot
     post:
       operationId: AiProviderController_createConfig_v1
@@ -22337,7 +22675,7 @@ paths:
       security:
         - bearer: []
       summary: Create an AI provider configuration
-      tags: *a32
+      tags: *a33
   /api/v1/admin/ai-providers/{id}:
     patch:
       operationId: AiProviderController_updateConfig_v1
@@ -22483,7 +22821,7 @@ paths:
       security:
         - bearer: []
       summary: Update an AI provider configuration
-      tags: *a32
+      tags: *a33
     delete:
       operationId: AiProviderController_deleteConfig_v1
       parameters:
@@ -22548,7 +22886,7 @@ paths:
       security:
         - bearer: []
       summary: Retire an AI provider configuration
-      tags: *a32
+      tags: *a33
   /api/v1/admin/ai-providers/{id}/activate:
     post:
       operationId: AiProviderController_activateConfig_v1
@@ -22673,7 +23011,7 @@ paths:
       security:
         - bearer: []
       summary: Route chat traffic to an AI provider configuration
-      tags: *a32
+      tags: *a33
   /api/v1/admin/ai-providers/{id}/test:
     post:
       operationId: AiProviderController_testConnection_v1
@@ -22746,7 +23084,7 @@ paths:
       security:
         - bearer: []
       summary: Test the stored AI provider credentials
-      tags: *a32
+      tags: *a33
   /api/v1/chat/availability:
     get:
       operationId: ChatController_getAvailability_v1
@@ -22806,7 +23144,7 @@ paths:
       security:
         - bearer: []
       summary: Check whether chat can answer right now
-      tags: &a33
+      tags: &a34
         - AI Chatbot
   /api/v1/chat/sessions:
     post:
@@ -22904,7 +23242,7 @@ paths:
       security:
         - bearer: []
       summary: Start a chat session
-      tags: *a33
+      tags: *a34
     get:
       operationId: ChatController_listSessions_v1
       parameters:
@@ -23008,7 +23346,7 @@ paths:
       security:
         - bearer: []
       summary: List your own chat sessions
-      tags: *a33
+      tags: *a34
   /api/v1/chat/admin/sessions:
     get:
       operationId: ChatController_listAllSessions_v1
@@ -23119,7 +23457,7 @@ paths:
       security:
         - bearer: []
       summary: List every chat session (admin support view)
-      tags: *a33
+      tags: *a34
   /api/v1/chat/sessions/{id}:
     get:
       operationId: ChatController_getSession_v1
@@ -23201,7 +23539,7 @@ paths:
       security:
         - bearer: []
       summary: Read one of your chat sessions
-      tags: *a33
+      tags: *a34
     delete:
       operationId: ChatController_deleteSession_v1
       parameters:
@@ -23267,7 +23605,7 @@ paths:
       security:
         - bearer: []
       summary: Delete one of your chat sessions
-      tags: *a33
+      tags: *a34
   /api/v1/chat/sessions/{id}/messages:
     post:
       operationId: ChatController_sendMessage_v1
@@ -23494,7 +23832,7 @@ paths:
       security:
         - bearer: []
       summary: Send a message and receive the assistant’s reply
-      tags: *a33
+      tags: *a34
     get:
       operationId: ChatController_listMessages_v1
       parameters:
@@ -23621,7 +23959,7 @@ paths:
       security:
         - bearer: []
       summary: Read a session transcript
-      tags: *a33
+      tags: *a34
   /api/v1/appointments:
     get:
       operationId: AppointmentManagementController_listAppointments_v1
@@ -23831,7 +24169,7 @@ paths:
       security:
         - bearer: []
       summary: List appointments
-      tags: &a34
+      tags: &a35
         - Appointment Management
     post:
       operationId: AppointmentManagementController_createAppointment_v1
@@ -23957,7 +24295,7 @@ paths:
       security:
         - bearer: []
       summary: Create an appointment
-      tags: *a34
+      tags: *a35
   /api/v1/appointments/{id}:
     get:
       operationId: AppointmentManagementController_getAppointmentById_v1
@@ -24067,7 +24405,7 @@ paths:
       security:
         - bearer: []
       summary: Get an appointment
-      tags: *a34
+      tags: *a35
     patch:
       operationId: AppointmentManagementController_updateAppointment_v1
       parameters:
@@ -24201,7 +24539,7 @@ paths:
       security:
         - bearer: []
       summary: Update an appointment
-      tags: *a34
+      tags: *a35
   /api/v1/appointments/{id}/approve:
     post:
       operationId: AppointmentManagementController_approveAppointment_v1
@@ -24335,7 +24673,7 @@ paths:
       security:
         - bearer: []
       summary: Approve a special appointment request
-      tags: *a34
+      tags: *a35
   /api/v1/appointments/{id}/reject:
     post:
       operationId: AppointmentManagementController_rejectAppointment_v1
@@ -24469,7 +24807,7 @@ paths:
       security:
         - bearer: []
       summary: Reject a special appointment request
-      tags: *a34
+      tags: *a35
   /api/v1/appointments/{id}/cancel:
     post:
       operationId: AppointmentManagementController_cancelAppointment_v1
@@ -24603,7 +24941,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel an appointment
-      tags: *a34
+      tags: *a35
   /api/v1/appointment-sessions/materialize:
     post:
       operationId: AppointmentSessionChangeController_materializeSession_v1
@@ -24711,7 +25049,7 @@ paths:
       security:
         - bearer: []
       summary: Materialise one occurrence of a weekly practice window
-      tags: &a35
+      tags: &a36
         - Appointment Management
   /api/v1/appointment-sessions/{id}/cancel:
     post:
@@ -24847,7 +25185,7 @@ paths:
       security:
         - bearer: []
       summary: Cancel a practice session with a reason
-      tags: *a35
+      tags: *a36
   /api/v1/appointment-sessions/{id}/reschedule:
     post:
       operationId: AppointmentSessionChangeController_rescheduleSession_v1
@@ -25077,7 +25415,7 @@ paths:
       security:
         - bearer: []
       summary: Move a practice session to another window in the same week
-      tags: *a35
+      tags: *a36
   /api/v1/doctors/{doctorId}/sessions:
     get:
       operationId: AppointmentSessionController_listDoctorSessions_v1
@@ -25194,7 +25532,7 @@ paths:
       security:
         - bearer: []
       summary: List bookable sessions for a doctor
-      tags: &a36
+      tags: &a37
         - Appointment Management
   /api/v1/appointment-sessions:
     get:
@@ -25318,7 +25656,7 @@ paths:
       security:
         - bearer: []
       summary: List sessions across all doctors
-      tags: *a36
+      tags: *a37
   /api/v1/appointment-sessions/{id}/queue:
     get:
       operationId: AppointmentSessionController_getSessionQueue_v1
@@ -25469,7 +25807,7 @@ paths:
       security:
         - bearer: []
       summary: Get the patient queue for a session
-      tags: *a36
+      tags: *a37
   /api/v1/appointment-sessions/{id}:
     patch:
       operationId: AppointmentSessionController_updateSession_v1
@@ -25588,7 +25926,7 @@ paths:
       security:
         - bearer: []
       summary: Update a session
-      tags: *a36
+      tags: *a37
   /api/v1/doctors:
     get:
       operationId: DoctorManagementController_listDoctors_v1
@@ -25852,7 +26190,7 @@ paths:
       security:
         - bearer: []
       summary: List doctors
-      tags: &a37
+      tags: &a38
         - Doctor Management
     post:
       operationId: DoctorManagementController_createDoctor_v1
@@ -26055,7 +26393,7 @@ paths:
       security:
         - bearer: []
       summary: Create a doctor
-      tags: *a37
+      tags: *a38
   /api/v1/doctors/{id}:
     get:
       operationId: DoctorManagementController_getDoctorById_v1
@@ -26381,7 +26719,7 @@ paths:
       security:
         - bearer: []
       summary: Get a doctor
-      tags: *a37
+      tags: *a38
     patch:
       operationId: DoctorManagementController_updateDoctor_v1
       parameters:
@@ -26575,7 +26913,7 @@ paths:
       security:
         - bearer: []
       summary: Update a doctor
-      tags: *a37
+      tags: *a38
   /api/v1/doctors/{id}/identifiers:
     get:
       operationId: DoctorManagementController_getDoctorIdentifiers_v1
@@ -26642,7 +26980,7 @@ paths:
       security:
         - bearer: []
       summary: Reveal a practitioner national identifier
-      tags: *a37
+      tags: *a38
   /api/v1/doctors/{id}/invitation:
     post:
       operationId: DoctorManagementController_inviteDoctorAccount_v1
@@ -26836,7 +27174,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a doctor who has no account
-      tags: *a37
+      tags: *a38
   /api/v1/doctors/{id}/schedule:
     patch:
       operationId: DoctorManagementController_updateDoctorSchedule_v1
@@ -26942,7 +27280,7 @@ paths:
       security:
         - bearer: []
       summary: Replace a doctor schedule
-      tags: *a37
+      tags: *a38
   /api/v1/me/doctor-profile:
     get:
       operationId: DoctorOwnProfileController_getOwnDoctorProfile_v1
@@ -27264,7 +27602,7 @@ paths:
       security:
         - bearer: []
       summary: Get my doctor profile
-      tags: &a38
+      tags: &a39
         - Doctor Management
     patch:
       operationId: DoctorOwnProfileController_updateOwnDoctorProfile_v1
@@ -27615,7 +27953,7 @@ paths:
       security:
         - bearer: []
       summary: Update my doctor profile
-      tags: *a38
+      tags: *a39
   /api/v1/me/doctor-profile/completion:
     post:
       operationId: DoctorOwnProfileController_completeOwnDoctorProfile_v1
@@ -27964,7 +28302,7 @@ paths:
       security:
         - bearer: []
       summary: Complete my doctor profile
-      tags: *a38
+      tags: *a39
   /api/v1/doctor-licenses/expiry:
     get:
       operationId: DoctorLicenseExpiryController_listExpiryBuckets_v1
@@ -28244,7 +28582,7 @@ paths:
       security:
         - bearer: []
       summary: List doctor credential options
-      tags: &a39
+      tags: &a40
         - Doctor Credential Options
     post:
       operationId: DoctorCredentialOptionController_createDoctorCredentialOption_v1
@@ -28347,7 +28685,7 @@ paths:
       security:
         - bearer: []
       summary: Add a doctor credential option
-      tags: *a39
+      tags: *a40
   /api/v1/doctor-credential-options/{id}:
     patch:
       operationId: DoctorCredentialOptionController_updateDoctorCredentialOption_v1
@@ -28464,7 +28802,7 @@ paths:
       security:
         - bearer: []
       summary: Edit or deactivate a doctor credential option
-      tags: *a39
+      tags: *a40
   /api/v1/doctors/{doctorId}/authorities:
     get:
       operationId: DoctorAuthorityController_listAuthorities_v1
@@ -28588,7 +28926,7 @@ paths:
       security:
         - bearer: []
       summary: List a clinician’s delegated authorities
-      tags: &a40
+      tags: &a41
         - Doctor Authorities
     post:
       operationId: DoctorAuthorityController_createAuthority_v1
@@ -28746,7 +29084,7 @@ paths:
       security:
         - bearer: []
       summary: Grant a delegated authority
-      tags: *a40
+      tags: *a41
   /api/v1/doctors/{doctorId}/authorities/upload-url:
     post:
       operationId: DoctorAuthorityController_createGrantDocumentUploadUrl_v1
@@ -28847,7 +29185,7 @@ paths:
       security:
         - bearer: []
       summary: Sign an upload of a grant document
-      tags: *a40
+      tags: *a41
   /api/v1/doctors/{doctorId}/authorities/{id}:
     patch:
       operationId: DoctorAuthorityController_updateAuthority_v1
@@ -29001,7 +29339,7 @@ paths:
       security:
         - bearer: []
       summary: Edit a delegated authority
-      tags: *a40
+      tags: *a41
   /api/v1/doctors/{doctorId}/authorities/{id}/revoke:
     post:
       operationId: DoctorAuthorityController_revokeAuthority_v1
@@ -29152,7 +29490,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a delegated authority
-      tags: *a40
+      tags: *a41
   /api/v1/doctors/{doctorId}/authorities/{id}/grant-document/download:
     get:
       operationId: DoctorAuthorityController_getGrantDocumentDownloadUrl_v1
@@ -29222,7 +29560,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a download of the grant document
-      tags: *a40
+      tags: *a41
   /api/v1/doctors/{doctorId}/mandates:
     get:
       operationId: DoctorMandateController_listMandates_v1
@@ -29355,7 +29693,7 @@ paths:
       security:
         - bearer: []
       summary: List the pelimpahan a midwife works under
-      tags: &a41
+      tags: &a42
         - Doctor Mandates
     post:
       operationId: DoctorMandateController_createMandate_v1
@@ -29522,7 +29860,7 @@ paths:
       security:
         - bearer: []
       summary: Record a pelimpahan
-      tags: *a41
+      tags: *a42
   /api/v1/doctors/{doctorId}/mandates/upload-url:
     post:
       operationId: DoctorMandateController_createInstructionUploadUrl_v1
@@ -29623,7 +29961,7 @@ paths:
       security:
         - bearer: []
       summary: Sign an upload of the written instruction
-      tags: *a41
+      tags: *a42
   /api/v1/doctors/{doctorId}/mandates/{id}/revoke:
     post:
       operationId: DoctorMandateController_revokeMandate_v1
@@ -29781,7 +30119,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a pelimpahan
-      tags: *a41
+      tags: *a42
   /api/v1/doctors/{doctorId}/mandates/{id}/instruction/download:
     get:
       operationId: DoctorMandateController_getInstructionDownloadUrl_v1
@@ -29851,7 +30189,7 @@ paths:
       security:
         - bearer: []
       summary: Sign a download of the written instruction
-      tags: *a41
+      tags: *a42
   /api/v1/me/account:
     get:
       operationId: OwnAccountController_getOwnAccount_v1
@@ -29912,7 +30250,7 @@ paths:
       security:
         - bearer: []
       summary: Get my account
-      tags: &a42
+      tags: &a43
         - Account
     patch:
       operationId: OwnAccountController_updateOwnAccount_v1
@@ -29995,7 +30333,7 @@ paths:
       security:
         - bearer: []
       summary: Correct the name on my account
-      tags: *a42
+      tags: *a43
   /api/v1/me/account/nik:
     put:
       operationId: OwnAccountController_updateOwnAccountNik_v1
@@ -30082,7 +30420,7 @@ paths:
       security:
         - bearer: []
       summary: Add or replace the NIK on my account
-      tags: *a42
+      tags: *a43
   /api/v1/users/invitations:
     get:
       operationId: UserInvitationAdminController_listInvitations_v1
@@ -30232,7 +30570,7 @@ paths:
       security:
         - bearer: []
       summary: List staff invitations
-      tags: &a43
+      tags: &a44
         - Admin Management
     post:
       operationId: UserInvitationAdminController_createInvitation_v1
@@ -30350,7 +30688,7 @@ paths:
       security:
         - bearer: []
       summary: Invite a staff user by email
-      tags: *a43
+      tags: *a44
   /api/v1/users/invitations/{id}/resend:
     post:
       operationId: UserInvitationAdminController_resendInvitation_v1
@@ -30459,7 +30797,7 @@ paths:
       security:
         - bearer: []
       summary: Resend a staff invitation
-      tags: *a43
+      tags: *a44
   /api/v1/users/invitations/{id}:
     delete:
       operationId: UserInvitationAdminController_revokeInvitation_v1
@@ -30568,7 +30906,7 @@ paths:
       security:
         - bearer: []
       summary: Revoke a staff invitation
-      tags: *a43
+      tags: *a44
   /api/v1/invitations/{token}:
     get:
       operationId: UserInvitationPublicController_previewInvitation_v1
@@ -30615,7 +30953,7 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Validate an invitation link
-      tags: &a44
+      tags: &a45
         - Admin Management
   /api/v1/invitations/{token}/accept:
     post:
@@ -30681,344 +31019,6 @@ paths:
                     code: NOT_FOUND
                     message: No invitation matches this link.
       summary: Accept an invitation and set a password
-      tags: *a44
-  /api/v1/doctor-patient-assignments:
-    post:
-      operationId: DoctorPatientController_assignDoctorToPatient_v1
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateDoctorPatientAssignmentDto"
-            examples:
-              default:
-                summary: Valid request
-                value:
-                  doctorId: 22222222-2222-4222-8222-222222222222
-                  patientId: 11111111-1111-4111-8111-111111111111
-      responses:
-        "201":
-          description: The active assignment. Repeated requests are idempotent.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      doctorId:
-                        type: string
-                      patientId:
-                        type: string
-                      assignedById:
-                        type: string
-                      assignedAt:
-                        type: string
-                      createdAt:
-                        type: string
-                      updatedAt:
-                        type: string
-                    required:
-                      - id
-                      - doctorId
-                      - patientId
-                      - assignedById
-                      - assignedAt
-                      - createdAt
-                      - updatedAt
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    id: 88888888-8888-4888-8888-888888888888
-                    doctorId: 22222222-2222-4222-8222-222222222222
-                    patientId: 11111111-1111-4111-8111-111111111111
-                    assignedById: 33333333-3333-4333-8333-333333333333
-                    assignedAt: 2026-07-20T08:00:00.000Z
-                    createdAt: 2026-07-20T08:00:00.000Z
-                    updatedAt: 2026-07-20T08:00:00.000Z
-                  message: Doctor assigned to patient
-        "400":
-          description: Request validation failed.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: BAD_REQUEST
-                    message: Request validation failed
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: Assign a doctor to a patient
-      tags: &a45
-        - Doctor Patient
-  /api/v1/doctor-patient-assignments/activity:
-    get:
-      operationId: DoctorPatientController_listActivity_v1
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            exclusiveMinimum: false
-            default: 1
-            type: integer
-        - name: limit
-          required: false
-          in: query
-          schema:
-            minimum: 1
-            maximum: 100
-            exclusiveMaximum: false
-            exclusiveMinimum: false
-            default: 10
-            type: integer
-        - name: doctorId
-          required: false
-          in: query
-          schema:
-            format: uuid
-            type: string
-        - name: patientId
-          required: false
-          in: query
-          schema:
-            format: uuid
-            type: string
-        - name: action
-          required: false
-          in: query
-          schema:
-            type: string
-            enum:
-              - ASSIGNED
-              - UNASSIGNED
-        - name: actorUserId
-          required: false
-          in: query
-          schema:
-            format: uuid
-            type: string
-        - name: occurredFrom
-          required: false
-          in: query
-          schema:
-            format: date-time
-            type: string
-        - name: occurredTo
-          required: false
-          in: query
-          schema:
-            format: date-time
-            type: string
-      responses:
-        "200":
-          description: A filtered, paginated, append-only activity log.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                        assignmentId:
-                          type: string
-                        doctorId:
-                          type: string
-                        patientId:
-                          type: string
-                        action:
-                          type: string
-                        actorUserId:
-                          type: string
-                        occurredAt:
-                          type: string
-                      required:
-                        - id
-                        - assignmentId
-                        - doctorId
-                        - patientId
-                        - action
-                        - actorUserId
-                        - occurredAt
-                  meta:
-                    type: object
-                    properties:
-                      page:
-                        type: integer
-                      limit:
-                        type: integer
-                      total:
-                        type: integer
-                    required:
-                      - page
-                      - limit
-                      - total
-                required:
-                  - data
-                  - meta
-                example:
-                  data:
-                    - id: aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa
-                      assignmentId: 88888888-8888-4888-8888-888888888888
-                      doctorId: 22222222-2222-4222-8222-222222222222
-                      patientId: 11111111-1111-4111-8111-111111111111
-                      action: ASSIGNED
-                      actorUserId: 33333333-3333-4333-8333-333333333333
-                      occurredAt: 2026-07-20T08:00:00.000Z
-                  meta:
-                    page: 1
-                    limit: 10
-                    total: 1
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-      security:
-        - bearer: []
-      summary: List doctor-patient assignment activity
-      tags: *a45
-  /api/v1/doctor-patient-assignments/{id}:
-    delete:
-      operationId: DoctorPatientController_unassignDoctorFromPatient_v1
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The audited assignment state. Repeated requests are idempotent.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                      doctorId:
-                        type: string
-                      patientId:
-                        type: string
-                      assignedById:
-                        type: string
-                      assignedAt:
-                        type: string
-                      createdAt:
-                        type: string
-                      updatedAt:
-                        type: string
-                      unassignedById:
-                        type: string
-                      unassignedAt:
-                        type: string
-                    required:
-                      - id
-                      - doctorId
-                      - patientId
-                      - assignedById
-                      - assignedAt
-                      - createdAt
-                      - updatedAt
-                      - unassignedById
-                      - unassignedAt
-                  message:
-                    type: string
-                required:
-                  - data
-                  - message
-                example:
-                  data:
-                    id: 88888888-8888-4888-8888-888888888888
-                    doctorId: 22222222-2222-4222-8222-222222222222
-                    patientId: 11111111-1111-4111-8111-111111111111
-                    assignedById: 33333333-3333-4333-8333-333333333333
-                    assignedAt: 2026-07-20T08:00:00.000Z
-                    createdAt: 2026-07-20T08:00:00.000Z
-                    updatedAt: 2026-07-20T08:00:00.000Z
-                    unassignedById: 33333333-3333-4333-8333-333333333333
-                    unassignedAt: 2026-07-20T08:00:00.000Z
-                  message: Doctor unassigned from patient
-        "401":
-          description: Authentication is required.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: UNAUTHORIZED
-                    message: Authentication is required
-        "403":
-          description: The authenticated user does not have the required permission.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: FORBIDDEN
-                    message: Insufficient permission
-        "404":
-          description: Assignment not found.
-          content:
-            application/json:
-              schema:
-                example:
-                  error:
-                    code: NOT_FOUND
-                    message: Assignment not found.
-      security:
-        - bearer: []
-      summary: Unassign a doctor from a patient
       tags: *a45
   /api/v1/registrations:
     get:
@@ -63060,6 +63060,18 @@ components:
           nullable: true
         isActive:
           type: boolean
+    CreateDoctorPatientAssignmentDto:
+      type: object
+      properties:
+        doctorId:
+          type: string
+          format: uuid
+        patientId:
+          type: string
+          format: uuid
+      required:
+        - doctorId
+        - patientId
     CreateServiceTariffDto:
       type: object
       properties:
@@ -64885,18 +64897,6 @@ components:
           maxLength: 200
       required:
         - password
-    CreateDoctorPatientAssignmentDto:
-      type: object
-      properties:
-        doctorId:
-          type: string
-          format: uuid
-        patientId:
-          type: string
-          format: uuid
-      required:
-        - doctorId
-        - patientId
     CreateRegistrationDto:
       type: object
       properties:

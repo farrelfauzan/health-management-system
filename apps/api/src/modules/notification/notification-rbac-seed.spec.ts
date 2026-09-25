@@ -10,7 +10,15 @@ import { resolve } from 'node:path';
  */
 describe('notification RBAC seed', () => {
   const PERMISSION_KEYS = ['notification.read:own', 'notification.manage:own'] as const;
-  const HUMAN_ROLES = ['ADMIN', 'DOCTOR', 'PHARMACIST', 'PATIENT'] as const;
+  const HUMAN_ROLES = [
+    'ADMIN',
+    'DOCTOR',
+    'PHARMACIST',
+    'PATIENT',
+    'MIDWIFE',
+    // D-048. The bench is told about new orders, so it needs the bell too.
+    'LAB_TECHNICIAN',
+  ] as const;
   const SERVICE_ROLES = ['BPJS_ANTREAN_SYSTEM', 'CUSTOMER_SERVICE_CHANNEL'] as const;
   const seedSql = readFileSync(resolve(process.cwd(), 'prisma', 'seed.sql'), 'utf8');
 

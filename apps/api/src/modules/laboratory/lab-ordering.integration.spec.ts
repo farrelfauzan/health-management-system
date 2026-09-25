@@ -8,6 +8,8 @@ import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
+import { NotificationHrefService } from '../notification/service/notification-href.service';
+import { NotificationService } from '../notification/service/notification.service';
 import { LabCatalogRepository } from './repository/lab-catalog.repository';
 import { LabOrderRepository } from './repository/lab-order.repository';
 import { LabSpecimenRepository } from './repository/lab-specimen.repository';
@@ -55,6 +57,20 @@ describe('Laboratory ordering integration', () => {
     listWorklist: jest.fn(),
     cancelLabOrder: jest.fn(),
     updateLabOrderDisposition: jest.fn(),
+    findLabOrderPatientName: jest.fn(),
+  };
+
+  const notificationServiceMock = {
+    listUserIdsWithPermission: jest.fn(),
+    createForUsers: jest.fn(),
+  };
+  // Prisma is stubbed here, so the real resolver's role lookup would reject and
+  // the producer's best-effort catch would silently drop the bell (D-048).
+  const notificationHrefServiceMock = {
+    groupUserIdsByShell: jest.fn(),
+    buildLabOrderHrefForShell: jest.fn(
+      (params: { shell: string; orderId: string }) => `/${params.shell}/laboratory/${params.orderId}`,
+    ),
   };
 
   const labSpecimenRepositoryMock = {
@@ -152,6 +168,10 @@ describe('Laboratory ordering integration', () => {
       .useValue(labSpecimenRepositoryMock)
       .overrideProvider(LabCatalogRepository)
       .useValue(labCatalogRepositoryMock)
+      .overrideProvider(NotificationService)
+      .useValue(notificationServiceMock)
+      .overrideProvider(NotificationHrefService)
+      .useValue(notificationHrefServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -182,6 +202,14 @@ describe('Laboratory ordering integration', () => {
     labOrderRepositoryMock.createLabOrder.mockResolvedValue(buildOrderRecord());
     labCatalogRepositoryMock.findActiveLabTestsByIds.mockResolvedValue([{ id: labTestId }]);
     labCatalogRepositoryMock.findActiveLabPanelsByIds.mockResolvedValue([]);
+    labOrderRepositoryMock.findLabOrderPatientName.mockResolvedValue('Siti Aminah');
+    notificationServiceMock.listUserIdsWithPermission.mockResolvedValue([analystUserId]);
+    notificationServiceMock.createForUsers.mockImplementation(
+      async (userIds: string[]) => userIds.length,
+    );
+    notificationHrefServiceMock.groupUserIdsByShell.mockImplementation(
+      async (userIds: string[]) => new Map(userIds.length > 0 ? [['admin', userIds]] : []),
+    );
   });
 
   it('returns 401 without a bearer token', async () => {
@@ -201,6 +229,50 @@ describe('Laboratory ordering integration', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.data.orderNumber).toBe('LAB/20260728/0001');
+  });
+
+  it('tells the bench a new order is waiting, and not the doctor who raised it (D-048)', async () => {
+    const token = await buildToken(attendingDoctorUserId, 'dokter@hms.local');
+    mockActorWithPermissions('DOCTOR', DOCTOR_PERMISSIONS);
+    notificationServiceMock.listUserIdsWithPermission.mockResolvedValue([
+      analystUserId,
+      attendingDoctorUserId,
+    ]);
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/encounters/${encounterId}/lab-orders`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ testIds: [labTestId] });
+
+    expect(response.status).toBe(201);
+    expect(notificationServiceMock.listUserIdsWithPermission).toHaveBeenCalledWith(
+      'lab-specimen.write:any',
+    );
+    expect(notificationServiceMock.createForUsers).toHaveBeenCalledWith([analystUserId], {
+      type: 'LAB_ORDER_CREATED',
+      titleKey: 'labOrderCreated.title',
+      bodyKey: 'labOrderCreated.body',
+      params: {
+        orderNumber: 'LAB/20260728/0001',
+        patientName: 'Siti Aminah',
+        testCount: '0',
+        priority: 'ROUTINE',
+      },
+      href: `/admin/laboratory/${labOrderId}`,
+    });
+  });
+
+  it('still records the order when the bell fails (D-048)', async () => {
+    const token = await buildToken(attendingDoctorUserId, 'dokter@hms.local');
+    mockActorWithPermissions('DOCTOR', DOCTOR_PERMISSIONS);
+    notificationServiceMock.listUserIdsWithPermission.mockRejectedValue(new Error('down'));
+
+    const response = await request(app.getHttpServer())
+      .post(`/api/v1/v1/encounters/${encounterId}/lab-orders`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ testIds: [labTestId] });
+
+    expect(response.status).toBe(201);
   });
 
   // The OWN rule the ticket names: a covering doctor who wants a test opens

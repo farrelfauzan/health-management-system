@@ -133,6 +133,23 @@ export const NOTIFICATION_TYPES = [
    */
   'APPOINTMENT_RESCHEDULED',
   'APPOINTMENT_SESSION_CANCELLED',
+  /**
+   * Clinic hand-offs between roles (D-048). Each tells the next person in a
+   * visit that something is now theirs to do, and none is ever addressed to
+   * the person whose action raised it.
+   *
+   * `LAB_ORDER_CREATED` goes to everyone who works the bench
+   * (`lab-specimen.write:any`), and only for orders this clinic's own lab
+   * runs. `PATIENT_CHECKED_IN` goes to the clinician the visit is booked
+   * with; `PATIENT_ASSIGNED` to a clinician put on a patient's care team.
+   * `CLINICIAN_JOINED` and `STAFF_JOINED` tell the people who administer
+   * accounts that an invitation was accepted.
+   */
+  'LAB_ORDER_CREATED',
+  'PATIENT_CHECKED_IN',
+  'PATIENT_ASSIGNED',
+  'CLINICIAN_JOINED',
+  'STAFF_JOINED',
 ] as const;
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES);
 export type NotificationTypeValue = z.infer<typeof notificationTypeSchema>;

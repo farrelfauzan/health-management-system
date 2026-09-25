@@ -1000,6 +1000,9 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('DOCTOR', 'feature.read-availability:own'),
     ('PHARMACIST', 'feature.read-availability:own'),
     ('PATIENT', 'feature.read-availability:own'),
+    -- D-048. The bench's shell draws its navigation from the same feature
+    -- list, and was the one staff role left out of it.
+    ('LAB_TECHNICIAN', 'feature.read-availability:own'),
     -- IMP-12. Inventory is the ward clerk's job, so ADMIN owns the whole
     -- RoomClass/Ward/Room/Bed tree.
     ('ADMIN', 'roomclass.read:any'),
@@ -1062,6 +1065,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('PHARMACIST', 'notification.manage:own'),
     ('PATIENT', 'notification.read:own'),
     ('PATIENT', 'notification.manage:own'),
+    -- D-048. The bench is told when a new order arrives, so it needs a bell.
+    -- It was the one staff role seeded without one.
+    ('LAB_TECHNICIAN', 'notification.read:own'),
+    ('LAB_TECHNICIAN', 'notification.manage:own'),
     -- SJ-1. The clinic's own administrator owns its org chart, so ADMIN holds
     -- all three. No other seeded role gets any of them: the chart is back-office
     -- structure with nothing clinical hanging off it, and a role that needs

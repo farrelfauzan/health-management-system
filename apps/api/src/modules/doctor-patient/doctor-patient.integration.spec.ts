@@ -6,6 +6,8 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { NotificationHrefService } from '../notification/service/notification-href.service';
+import { NotificationService } from '../notification/service/notification.service';
 import { DoctorPatientRepository } from './repository/doctor-patient.repository';
 
 describe('DoctorPatient integration', () => {
@@ -29,6 +31,17 @@ describe('DoctorPatient integration', () => {
     createAssignment: jest.fn(),
     unassignAssignment: jest.fn(),
     listActivities: jest.fn(),
+    findActiveClinicianAccounts: jest.fn(),
+  };
+
+  const notificationServiceMock = { createForUsers: jest.fn() };
+  // Prisma is stubbed here, so the real resolver's role lookup would reject and
+  // the producer's best-effort catch would silently drop the bell (D-048).
+  const notificationHrefServiceMock = {
+    groupUserIdsByShell: jest.fn(),
+    buildPatientHref: jest.fn(
+      (shell: string, targetPatientId: string) => `/${shell}/patients/${targetPatientId}`,
+    ),
   };
 
   const prismaServiceMock = {
@@ -72,6 +85,10 @@ describe('DoctorPatient integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(DoctorPatientRepository)
       .useValue(doctorPatientRepositoryMock)
+      .overrideProvider(NotificationService)
+      .useValue(notificationServiceMock)
+      .overrideProvider(NotificationHrefService)
+      .useValue(notificationHrefServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -96,7 +113,19 @@ describe('DoctorPatient integration', () => {
     jest.clearAllMocks();
 
     doctorPatientRepositoryMock.findActiveDoctorById.mockResolvedValue({ id: doctorId });
-    doctorPatientRepositoryMock.findActivePatientById.mockResolvedValue({ id: patientId });
+    doctorPatientRepositoryMock.findActivePatientById.mockResolvedValue({
+      id: patientId,
+      fullName: 'Rina Wati',
+    });
+    doctorPatientRepositoryMock.findActiveClinicianAccounts.mockResolvedValue([
+      { doctorId, ownerUserId: 'doctor-user' },
+    ]);
+    notificationHrefServiceMock.groupUserIdsByShell.mockImplementation(
+      async (userIds: string[]) => new Map(userIds.length > 0 ? [['doctor', userIds]] : []),
+    );
+    notificationServiceMock.createForUsers.mockImplementation(
+      async (userIds: string[]) => userIds.length,
+    );
     doctorPatientRepositoryMock.findActiveAssignment.mockResolvedValue(null);
     doctorPatientRepositoryMock.createAssignment.mockResolvedValue({
       id: assignmentId,
@@ -162,6 +191,54 @@ describe('DoctorPatient integration', () => {
     });
   });
 
+  it('tells the assigned clinician, linking the patient in their shell (D-048)', async () => {
+    const token = await buildToken('actor-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'assign', resource: 'DoctorPatient', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctor-patient-assignments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ doctorId, patientId });
+
+    expect(response.status).toBe(201);
+    expect(notificationServiceMock.createForUsers).toHaveBeenCalledWith(['doctor-user'], {
+      type: 'PATIENT_ASSIGNED',
+      titleKey: 'patientAssigned.title',
+      bodyKey: 'patientAssigned.body',
+      params: { patientName: 'Rina Wati' },
+      href: `/doctor/patients/${patientId}`,
+    });
+  });
+
+  it('does not tell a clinician who assigned the patient to themselves (D-048)', async () => {
+    const token = await buildToken('actor-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'assign', resource: 'DoctorPatient', scope: 'ANY' }]);
+    doctorPatientRepositoryMock.findActiveClinicianAccounts.mockResolvedValue([
+      { doctorId, ownerUserId: 'actor-user' },
+    ]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctor-patient-assignments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ doctorId, patientId });
+
+    expect(response.status).toBe(201);
+    expect(notificationServiceMock.createForUsers).not.toHaveBeenCalled();
+  });
+
+  it('still assigns when the bell fails (D-048)', async () => {
+    const token = await buildToken('actor-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'assign', resource: 'DoctorPatient', scope: 'ANY' }]);
+    notificationServiceMock.createForUsers.mockRejectedValue(new Error('down'));
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/doctor-patient-assignments')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ doctorId, patientId });
+
+    expect(response.status).toBe(201);
+  });
+
   it('returns the active assignment without re-creating it', async () => {
     const token = await buildToken('actor-user', 'admin@hms.local');
     mockActorWithPermissions([{ action: 'assign', resource: 'DoctorPatient', scope: 'ANY' }]);
@@ -185,6 +262,7 @@ describe('DoctorPatient integration', () => {
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('Doctor already assigned to patient');
     expect(doctorPatientRepositoryMock.createAssignment).not.toHaveBeenCalled();
+    expect(notificationServiceMock.createForUsers).not.toHaveBeenCalled();
   });
 
   it('unassigns an active assignment with unassign:any permission', async () => {

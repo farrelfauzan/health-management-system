@@ -32,6 +32,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { PatientAssignmentNotificationService } from '../../doctor-patient/service/patient-assignment-notification.service';
 import { RegionsService } from '../../regions/service/regions.service';
 import { ImportPatientDto } from '../dto/import-patient.dto';
 import { ListPatientsQueryDto } from '../dto/list-patients-query.dto';
@@ -103,6 +104,7 @@ export class PatientManagementService {
     private readonly privacyNoticeRepository: PrivacyNoticeRepository,
     private readonly regionsService: RegionsService,
     private readonly newbornSatusehatNikService: NewbornSatusehatNikService,
+    private readonly patientAssignmentNotificationService: PatientAssignmentNotificationService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone =
@@ -360,6 +362,7 @@ export class PatientManagementService {
       ...this.buildCreatePayload(payload, currentUser),
       convertsProspectivePatient: { prospectivePatientId, convertedAt: new Date() },
     });
+    await this.notifyAssignedClinicians(payload.doctorIds, result.patient, currentUser);
 
     return {
       patient: this.toPatientResponse(result.patient),
@@ -720,7 +723,27 @@ export class PatientManagementService {
     payload: CreatePatientBaseInput & { mrn?: string },
     currentUser: CurrentUser,
   ): Promise<PatientRecord> {
-    return this.runPatientCreate(this.buildCreatePayload(payload, currentUser));
+    const created = await this.runPatientCreate(this.buildCreatePayload(payload, currentUser));
+    await this.notifyAssignedClinicians(payload.doctorIds, created, currentUser);
+    return created;
+  }
+
+  /**
+   * Tells the clinicians a new patient was registered onto (D-048). The
+   * assignments themselves were written in the create transaction; this only
+   * rings the bell, and never fails the registration it follows.
+   */
+  private async notifyAssignedClinicians(
+    doctorIds: string[] | undefined,
+    patient: PatientRecord,
+    currentUser: CurrentUser,
+  ): Promise<void> {
+    await this.patientAssignmentNotificationService.notifyAssigned({
+      doctorIds: doctorIds ?? [],
+      patientId: patient.id,
+      patientName: patient.fullName,
+      actorUserId: currentUser.sub,
+    });
   }
 
   /**

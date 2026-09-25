@@ -30,6 +30,7 @@ import { LabCatalogMapper } from './service/lab-catalog.mapper';
 import { LabCatalogService } from './service/lab-catalog.service';
 import { LabOrderAccessService } from './service/lab-order-access.service';
 import { LabOrderMapper } from './service/lab-order.mapper';
+import { LabOrderNotificationService } from './service/lab-order-notification.service';
 import { LabOrderService } from './service/lab-order.service';
 import { LabPaymentGateService } from './service/lab-payment-gate.service';
 import { LabReportMapper } from './service/lab-report.mapper';
@@ -102,6 +103,7 @@ import { LaboratorySettingsService } from './service/laboratory-settings.service
     LabReportMapper,
     LabCatalogService,
     LabOrderAccessService,
+    LabOrderNotificationService,
     LabOrderService,
     LabPaymentGateService,
     LabSpecimenService,

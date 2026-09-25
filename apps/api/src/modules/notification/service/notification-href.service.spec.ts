@@ -179,4 +179,75 @@ describe('NotificationHrefService', () => {
       expect(actualHref).toBe(`/admin/laboratory/${inputOrderId}`);
     });
   });
+
+  // D-048. What the broadcast producers use once recipients are grouped.
+  describe('buildLabOrderHrefForShell', () => {
+    it('sends a doctor-shell reader to the encounter the order belongs to', () => {
+      const actualHref = service.buildLabOrderHrefForShell({
+        shell: 'doctor',
+        orderId: inputOrderId,
+        encounterId: inputEncounterId,
+      });
+      expect(actualHref).toBe(`/doctor/encounters/${inputEncounterId}`);
+    });
+
+    it('sends everyone else, and every walk-in order, to the admin order page', () => {
+      const actualAdminHref = service.buildLabOrderHrefForShell({
+        shell: 'admin',
+        orderId: inputOrderId,
+        encounterId: inputEncounterId,
+      });
+      const actualWalkInHref = service.buildLabOrderHrefForShell({
+        shell: 'doctor',
+        orderId: inputOrderId,
+        encounterId: null,
+      });
+      expect(actualAdminHref).toBe(`/admin/laboratory/${inputOrderId}`);
+      expect(actualWalkInHref).toBe(`/admin/laboratory/${inputOrderId}`);
+    });
+  });
+
+  describe('groupUserIdsByShell', () => {
+    it('groups recipients by shell, once each, and drops accounts that no longer resolve', async () => {
+      mockRepository.findShellClaimsByUserId.mockImplementation(async (userId: string) => {
+        if (userId === 'gone') {
+          return null;
+        }
+        return userId.startsWith('admin')
+          ? { roleCodes: ['ADMIN'], permissionKeys: [] }
+          : { roleCodes: ['MIDWIFE'], permissionKeys: [] };
+      });
+      const actualGroups = await service.groupUserIdsByShell([
+        'admin-1',
+        'midwife-1',
+        'gone',
+        'admin-1',
+      ]);
+      expect(actualGroups).toEqual(
+        new Map([
+          ['admin', ['admin-1']],
+          ['doctor', ['midwife-1']],
+        ]),
+      );
+    });
+  });
+
+  describe('buildPatientHref', () => {
+    it('builds the patient page in the given shell', () => {
+      expect(service.buildPatientHref('doctor', 'patient-1')).toBe('/doctor/patients/patient-1');
+      expect(service.buildPatientHref('admin', 'patient-1')).toBe('/admin/patients/patient-1');
+    });
+  });
+
+  describe('buildCheckInQueueHref', () => {
+    it("sends a clinician to that day's agenda, which is where the booking sits", () => {
+      expect(service.buildCheckInQueueHref('doctor', '2026-09-25')).toBe(
+        '/doctor/appointments?view=day&date=2026-09-25',
+      );
+    });
+
+    it('sends an admin-shell account to the queue itself', () => {
+      expect(service.buildCheckInQueueHref('admin', '2026-09-25')).toBe('/admin/registrations');
+    });
+  });
 });

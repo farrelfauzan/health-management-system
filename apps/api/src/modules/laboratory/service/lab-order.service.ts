@@ -35,6 +35,7 @@ import { ListLabOrdersQueryDto } from '../dto/list-lab-orders-query.dto';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabCatalogService } from './lab-catalog.service';
 import { LabOrderAccessService } from './lab-order-access.service';
+import { LabOrderNotificationService } from './lab-order-notification.service';
 import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 import { LabOrderMapper } from './lab-order.mapper';
 import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
@@ -73,6 +74,7 @@ export class LabOrderService {
     private readonly clinicProfileService: ClinicProfileService,
     private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
     private readonly registrationFlowService: RegistrationFlowService,
+    private readonly labOrderNotificationService: LabOrderNotificationService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -119,6 +121,7 @@ export class LabOrderService {
         priority: created.priority,
       },
     });
+    await this.labOrderNotificationService.notifyOrderCreated(created, currentUser.sub);
 
     return this.labOrderMapper.toLabOrderView(created);
   }
@@ -482,6 +485,7 @@ export class LabOrderService {
         priority: created.priority,
       },
     });
+    await this.labOrderNotificationService.notifyOrderCreated(created, currentUser.sub);
 
     return this.labOrderMapper.toLabOrderView(created);
   }
