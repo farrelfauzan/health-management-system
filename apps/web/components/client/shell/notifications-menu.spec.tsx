@@ -73,6 +73,65 @@ const DOCUMENT_APPROVAL_ROW: NotificationView = {
   createdAt: '2026-08-26T09:58:00.000Z',
 };
 
+// D-048. The clinic hand-off rows, each with the params its producer writes.
+const CLINIC_EVENT_ROWS: NotificationView[] = [
+  {
+    id: 'notification-3',
+    type: 'LAB_ORDER_CREATED',
+    titleKey: 'labOrderCreated.title',
+    bodyKey: 'labOrderCreated.body',
+    params: {
+      orderNumber: 'LAB/20260925/0001',
+      patientName: 'Siti Aminah',
+      testCount: '3',
+      priority: 'URGENT',
+    },
+    href: '/admin/laboratory/order-1',
+    readAt: null,
+    createdAt: '2026-08-26T09:59:00.000Z',
+  },
+  {
+    id: 'notification-4',
+    type: 'PATIENT_CHECKED_IN',
+    titleKey: 'patientCheckedIn.title',
+    bodyKey: 'patientCheckedIn.body',
+    params: { patientName: 'Budi Santoso', poliName: 'Poli Umum' },
+    href: '/doctor/appointments?view=day&date=2026-08-26',
+    readAt: null,
+    createdAt: '2026-08-26T09:58:00.000Z',
+  },
+  {
+    id: 'notification-5',
+    type: 'PATIENT_ASSIGNED',
+    titleKey: 'patientAssigned.title',
+    bodyKey: 'patientAssigned.body',
+    params: { patientName: 'Rina Wati' },
+    href: '/doctor/patients/patient-1',
+    readAt: null,
+    createdAt: '2026-08-26T09:57:00.000Z',
+  },
+  {
+    id: 'notification-6',
+    type: 'CLINICIAN_JOINED',
+    titleKey: 'clinicianJoined.title',
+    bodyKey: 'clinicianJoined.body',
+    params: { clinicianName: 'Bd. Ratna Sari', profession: 'MIDWIFE' },
+    href: '/admin/doctors/doctor-1',
+    readAt: null,
+    createdAt: '2026-08-26T09:56:00.000Z',
+  },
+  {
+    id: 'notification-7',
+    type: 'STAFF_JOINED',
+    titleKey: 'staffJoined.title',
+    bodyKey: 'staffJoined.body',
+    params: { staffName: 'Dewi Lestari', roleNames: 'Lab Technician' },
+    href: '/admin/administration?tab=users',
+    readAt: null,
+    createdAt: '2026-08-26T09:55:00.000Z',
+  },
+];
+
 function mockResponses({
   unreadCount,
   rows = [NOTIFICATION_ROW],
@@ -146,6 +205,42 @@ describe('NotificationsMenu', () => {
       screen.getByText('drafter@klinik.test meminta persetujuan Anda atas “SOP Sterilisasi Alat”.'),
     ).toBeInTheDocument();
     expect(screen.queryByText('documentApprovalRequested.title')).not.toBeInTheDocument();
+  });
+
+  it('translates the clinic hand-off rows (D-048)', async () => {
+    const user = userEvent.setup();
+    mockResponses({ unreadCount: 5, rows: CLINIC_EVENT_ROWS });
+    renderMenu(FULL_RULES);
+
+    await user.click(await screen.findByRole('button', { name: 'Buka notifikasi' }));
+
+    expect(await screen.findByText('Order laboratorium baru')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'LAB/20260925/0001 untuk Siti Aminah: 3 pemeriksaan (cito). Sudah masuk daftar kerja laboratorium.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Pasien Budi Santoso sudah check-in dan menunggu di antrean Poli Umum.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Pasien baru ditugaskan ke Anda: Rina Wati.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Bd. Ratna Sari (Bidan) telah bergabung dan sudah bisa masuk ke aplikasi.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Dewi Lestari (Lab Technician) telah bergabung dan sudah bisa masuk ke aplikasi.'),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the row target on select', async () => {
+    const user = userEvent.setup();
+    mockResponses({ unreadCount: 0, rows: CLINIC_EVENT_ROWS });
+    renderMenu(FULL_RULES);
+
+    await user.click(await screen.findByRole('button', { name: 'Buka notifikasi' }));
+    await user.click(await screen.findByText('Order laboratorium baru'));
+
+    expect(pushMock).toHaveBeenCalledWith('/admin/laboratory/order-1');
   });
 
   it('marks everything read when the menu opens with unread rows', async () => {

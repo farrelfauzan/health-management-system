@@ -273,6 +273,26 @@
         "taxPp55LastYear": {
           "title": "Last year on PP 55",
           "body": "{lastEligibleYear} is the last tax year this clinic may use the 0.5% PP 55 rate. Plan for the general regime from the year after."
+        },
+        "labOrderCreated": {
+          "title": "New lab order",
+          "body": "{orderNumber} for {patientName}: {testCount, plural, one {# test} other {# tests}}{priority, select, URGENT { (urgent)} other {}}. It is waiting on the lab worklist."
+        },
+        "patientCheckedIn": {
+          "title": "Patient checked in",
+          "body": "{patientName} has checked in and is waiting in the {poliName} queue."
+        },
+        "patientAssigned": {
+          "title": "New patient assigned",
+          "body": "A new patient has been assigned to you: {patientName}."
+        },
+        "clinicianJoined": {
+          "title": "A clinician has joined",
+          "body": "{clinicianName} ({profession, select, MIDWIFE {Midwife} other {Doctor}}) has accepted the invitation and can now sign in."
+        },
+        "staffJoined": {
+          "title": "A staff member has joined",
+          "body": "{staffName} ({roleNames}) has accepted the invitation and can now sign in."
         }
       },
       "profile": {
