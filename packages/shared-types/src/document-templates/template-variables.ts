@@ -420,12 +420,33 @@ const CLINICAL_REQUEST_SHARED_VARIABLES: readonly TemplateVariable[] = [
     sample: 'dr. Yusuf Hidayat',
   },
   {
-    // The practice licence a request has to be signed under. Printed from the
-    // doctor's own licence row rather than typed into the template, so a
-    // renewed SIP reaches every future letter without an edit.
+    // "Dokter pemeriksa" or "Bidan pemeriksa": the line above the signature
+    // names the profession of whoever signs, because a midwife's surat
+    // rujukan signed as a doctor misstates who examined the patient.
+    token: 'doctor.signatureRole',
+    labelId: 'Jabatan penanda tangan',
+    labelEn: 'Signer role',
+    type: 'text',
+    sample: 'Dokter pemeriksa',
+  },
+  {
+    // What the number beside it is: SIP (a doctor's practice licence), SIPB
+    // (a midwife's), or STR when no practice licence is in force. D-032 makes
+    // the flat profile number the STR, so printing "SIP" next to it would
+    // mislabel it.
+    token: 'doctor.licenseLabel',
+    labelId: 'Jenis izin penanda tangan',
+    labelEn: 'Signer licence type',
+    type: 'text',
+    sample: 'SIP',
+  },
+  {
+    // The practice licence in force, or the STR when there is none. Printed
+    // from the clinician's own licence rows rather than typed into the
+    // template, so a renewed SIP reaches every future letter without an edit.
     token: 'doctor.licenseNumber',
-    labelId: 'Nomor SIP',
-    labelEn: 'Practice licence number',
+    labelId: 'Nomor SIP/SIPB atau STR',
+    labelEn: 'Practice licence or STR number',
     type: 'text',
     sample: 'SIP-2026-0005',
   },
@@ -911,7 +932,7 @@ export const BIRTH_CERTIFICATE_TEMPLATE_VARIABLES: readonly TemplateVariable[] =
     labelId: 'Tanggal lahir',
     labelEn: 'Date of birth',
     type: 'date',
-    sample: '2026-11-09',
+    sample: 'Senin, 9 November 2026',
   },
   {
     token: 'baby.birthTime',
@@ -940,6 +961,15 @@ export const BIRTH_CERTIFICATE_TEMPLATE_VARIABLES: readonly TemplateVariable[] =
     labelEn: 'Birth order',
     type: 'text',
     sample: 'Anak ke-2',
+  },
+  {
+    // The clinic's name and address joined, so a clinic with no address on
+    // file prints its name alone rather than a dangling comma.
+    token: 'birth.place',
+    labelId: 'Tempat kelahiran',
+    labelEn: 'Place of birth',
+    type: 'text',
+    sample: 'Klinik Sehat Bersama, Jl. Merdeka No. 12',
   },
   {
     token: 'mother.fullName',

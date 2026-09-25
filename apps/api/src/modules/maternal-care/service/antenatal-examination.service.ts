@@ -1,6 +1,7 @@
 import {
   AntenatalExaminationResponse,
   buildTenTChecklist,
+  ClinicalDocumentSignerRecord,
   computeGestationalAge,
   DismissAntenatalReferralInput,
   IssueAntenatalReferralLetterInput,
@@ -12,10 +13,13 @@ import {
   UpsertAntenatalExaminationInput,
 } from '@hms/shared-types';
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
+import { DoctorOwnProfileService } from '../../doctor-management/service/doctor-own-profile.service';
 import { EncounterAccessService } from '../../emr/service/encounter-access.service';
 import { MaternalCareRepository } from '../repository/maternal-care.repository';
 import { toDateOnly } from '../to-date-only';
@@ -23,6 +27,8 @@ import { toMaternalDate } from '../to-maternal-date';
 import { buildMaternalLetterValues } from './build-maternal-letter-values';
 
 const AUDIT_RESOURCE = 'AntenatalVisit';
+
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The integrated 10T examination of an antenatal visit, the sourced referral
@@ -37,12 +43,19 @@ const AUDIT_RESOURCE = 'AntenatalVisit';
  */
 @Injectable()
 export class AntenatalExaminationService {
+  private readonly clinicTimeZone: string;
+
   constructor(
     private readonly maternalCareRepository: MaternalCareRepository,
     private readonly encounterAccessService: EncounterAccessService,
     private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
     private readonly auditService: AuditService,
-  ) {}
+    private readonly clinicProfileService: ClinicProfileService,
+    private readonly doctorOwnProfileService: DoctorOwnProfileService,
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
 
   async getExamination(
     encounterId: string,
@@ -139,6 +152,9 @@ export class AntenatalExaminationService {
           examination,
           vitals,
           triggeredRules,
+          letterhead: await this.clinicProfileService.getDocumentLetterhead(),
+          signer: await this.resolveLetterSigner(currentUser, encounterId),
+          timeZone: this.clinicTimeZone,
           destination: payload.destination,
           notes: payload.notes,
         }),
@@ -185,6 +201,9 @@ export class AntenatalExaminationService {
           examination: null,
           vitals: { systolicBloodPressure: null, diastolicBloodPressure: null },
           triggeredRules: [],
+          letterhead: await this.clinicProfileService.getDocumentLetterhead(),
+          signer: await this.resolveLetterSigner(currentUser, null),
+          timeZone: this.clinicTimeZone,
         }),
         lines: [],
       },
@@ -197,6 +216,33 @@ export class AntenatalExaminationService {
       title: filed.title,
       renderedAt: filed.renderedAt,
     };
+  }
+
+  /**
+   * Who signs a maternal letter: the clinician issuing it, from their own
+   * profile — a midwife signs as *bidan* under her SIPB, a doctor under a SIP.
+   * An issuer with no clinician profile falls back to the clinician the visit
+   * was booked with; with neither, the block prints dashes rather than a name
+   * the record does not hold.
+   */
+  private async resolveLetterSigner(
+    currentUser: CurrentUser,
+    encounterId: string | null,
+  ): Promise<ClinicalDocumentSignerRecord | null> {
+    const ownProfileId = await this.doctorOwnProfileService
+      .resolveOwnDoctorProfileId(currentUser.sub)
+      .catch((caughtError: unknown) => {
+        if (caughtError instanceof NotFoundException) {
+          return null;
+        }
+        throw caughtError;
+      });
+    const signerId =
+      ownProfileId ??
+      (encounterId === null
+        ? null
+        : await this.maternalCareRepository.findEncounterClinicianId(encounterId));
+    return signerId === null ? null : this.maternalCareRepository.findLetterSigner(signerId);
   }
 
   private async buildResponse(params: {

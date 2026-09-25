@@ -80,7 +80,7 @@ describe('PharmacyFlowService', () => {
   const service = new PharmacyFlowService(
     pharmacyFlowRepositoryMock,
     authRepositoryMock,
-    { getProfile: jest.fn() } as unknown as ClinicProfileService,
+    { getDocumentLetterhead: jest.fn() } as unknown as ClinicProfileService,
     { renderAndFile: jest.fn() } as unknown as ClinicalRequestDocumentService,
     { hasActiveAuthority: hasActiveAuthorityMock } as unknown as DoctorAuthorityService,
     { record: auditRecordMock } as unknown as AuditService,

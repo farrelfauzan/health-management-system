@@ -20,21 +20,22 @@ describe('buildLabRequestContext', () => {
     bpjsNumberIndex: null,
   };
 
-  const clinic = {
+  const letterhead = {
     name: 'Klinik Sehat Bersama',
     legalName: 'PT Sehat Bersama',
     address: 'Jl. Merdeka No. 12',
-    phoneNumber: '(022) 1234567',
+    phoneNumber: '62221234567',
     email: 'halo@kliniksehat.id',
     licenseNumber: '440/1234/DPMPTSP',
     taxId: '01.234.567.8-901.000',
-    hasLogo: false,
-    latitude: null,
-    longitude: null,
-    satusehatLocationId: null,
-    reportingPuskesmasName: null,
-    reportingPuskesmasCode: null,
-    updatedAt: timestamp.toISOString(),
+    logoDataUri: 'data:image/png;base64,iVBORw0KGgo=',
+  };
+
+  const signer = {
+    fullName: 'dr. Yusuf Hidayat',
+    profession: 'DOCTOR' as const,
+    strNumber: 'KK00000000000001',
+    practiceLicenses: [{ licenseNumber: 'SIP-2026-0005', expiresAt: null }],
   };
 
   function buildOrder(overrides: Partial<LabOrderRecord> = {}): LabOrderRecord {
@@ -80,14 +81,19 @@ describe('buildLabRequestContext', () => {
     };
   }
 
-  function build(order: LabOrderRecord = buildOrder()) {
+  function build(
+    order: LabOrderRecord = buildOrder(),
+    overrides: Partial<Parameters<typeof buildLabRequestContext>[0]> = {},
+  ) {
     return buildLabRequestContext({
       order,
       patient,
       doctorName: resolveLabRequesterLabel(order),
-      doctorLicenseNumber: 'SIP-2026-0005',
-      clinic,
-      clinicLogoDataUri: null,
+      signer,
+      letterhead,
+      timeZone: 'Asia/Jakarta',
+      issuedAt: timestamp,
+      ...overrides,
     });
   }
 
@@ -119,8 +125,30 @@ describe('buildLabRequestContext', () => {
 
     expect(actual.values['clinic.name']).toBe('Klinik Sehat Bersama');
     expect(actual.values['clinic.licenseNumber']).toBe('440/1234/DPMPTSP');
+    expect(actual.values['clinic.phone']).toBe('+62 2212-3456-7');
+    expect(actual.values['clinic.logo']).toBe('data:image/png;base64,iVBORw0KGgo=');
     expect(actual.values['doctor.fullName']).toBe('dr. Yusuf Hidayat');
+    expect(actual.values['doctor.signatureRole']).toBe('Dokter pemeriksa');
+    expect(actual.values['doctor.licenseLabel']).toBe('SIP');
     expect(actual.values['doctor.licenseNumber']).toBe('SIP-2026-0005');
+  });
+
+  // D-032: the flat profile number is the STR. Labelling it "SIP" put a false
+  // statement on every letter from a doctor with no practice licence on file.
+  it('labels the flat profile number as the STR when no SIP is on file', () => {
+    const actual = build(undefined, { signer: { ...signer, practiceLicenses: [] } });
+
+    expect(actual.values['doctor.licenseLabel']).toBe('STR');
+    expect(actual.values['doctor.licenseNumber']).toBe('KK00000000000001');
+  });
+
+  it('dates the letter by the clinic’s calendar, not by UTC', () => {
+    const afterMidnightInJakarta = new Date('2026-07-20T17:30:00.000Z');
+
+    const actual = build(undefined, { issuedAt: afterMidnightInJakarta });
+
+    expect(actual.values['request.issuedAt']).toBe('21 Juli 2026');
+    expect(actual.values['patient.dateOfBirth']).toBe('12 April 1990');
   });
 
   it('addresses an in-house order to the clinic’s own laboratory', () => {

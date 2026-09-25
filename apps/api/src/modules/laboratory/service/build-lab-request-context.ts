@@ -1,11 +1,16 @@
 import {
+  ClinicalDocumentSignerRecord,
   ClinicalRequestRenderContext,
-  ClinicProfileView,
+  ClinicLetterhead,
+  getCalendarDateInTimeZone,
   LabOrderRecord,
   LabWorklistPatientRecord,
 } from '@hms/shared-types';
 
+import { buildClinicLetterheadValues } from '../../clinical-request-document/service/build-clinic-letterhead-values';
+import { buildSignerValues } from '../../clinical-request-document/service/build-signer-values';
 import { encodeCode128Svg } from '../../clinical-request-document/service/encode-code128-svg';
+import { formatIndonesianDateTime } from '../../clinical-request-document/service/format-indonesian-date-time';
 import { toPatientAgeYears } from './to-patient-age-years';
 
 const SPECIMEN_LABELS: Readonly<Record<string, string>> = {
@@ -32,16 +37,22 @@ const SEX_LABELS: Readonly<Record<string, string>> = {
 type BuildLabRequestContextParams = {
   order: LabOrderRecord;
   patient: LabWorklistPatientRecord;
+  /** The requester line: our clinician, or the outside doctor who sent the patient. */
   doctorName: string;
-  doctorLicenseNumber: string | null;
-  clinic: ClinicProfileView | null;
+  /**
+   * The ordering clinician with the licences the signature reads (D-032), or
+   * null for an order an outside doctor sent in — nobody here signs it.
+   */
+  signer: ClinicalDocumentSignerRecord | null;
   /**
    * The letterhead prints the clinic's name, address, telephone and izin — what
-   * a surat pengantar is legally expected to carry. The logo is cosmetic and
-   * arrives with the caller that can read its bytes; null prints a text-only
-   * letterhead, which is a complete letter.
+   * a surat pengantar is legally expected to carry — with the logo inlined.
    */
-  clinicLogoDataUri: string | null;
+  letterhead: ClinicLetterhead;
+  /** The clinic's zone: a letter printed at 00:30 WIB is dated that day. */
+  timeZone: string;
+  /** When the letter is printed; the clock in production. */
+  issuedAt?: Date;
 };
 
 /**
@@ -59,8 +70,7 @@ type BuildLabRequestContextParams = {
 export function buildLabRequestContext(
   params: BuildLabRequestContextParams,
 ): ClinicalRequestRenderContext {
-  const { order, patient, doctorName, doctorLicenseNumber, clinic, clinicLogoDataUri } = params;
-  const issuedAt = new Date();
+  const { order, patient, letterhead, timeZone, issuedAt = new Date() } = params;
 
   return {
     kind: 'LAB_REQUEST',
@@ -69,22 +79,24 @@ export function buildLabRequestContext(
     encounterId: order.encounterId,
     title: `Surat pengantar laboratorium ${order.orderNumber}`,
     values: {
-      'clinic.name': clinic?.name ?? '',
-      'clinic.legalName': clinic?.legalName ?? '',
-      'clinic.address': clinic?.address ?? '',
-      'clinic.phone': clinic?.phoneNumber ?? '',
-      'clinic.email': clinic?.email ?? '',
-      'clinic.licenseNumber': clinic?.licenseNumber ?? '',
-      'clinic.taxId': clinic?.taxId ?? '',
-      'clinic.logo': clinicLogoDataUri ?? '',
+      ...buildClinicLetterheadValues(letterhead),
       'patient.fullName': patient.fullName,
       'patient.mrn': patient.mrn,
-      'patient.dateOfBirth': formatIndonesianDate(patient.dateOfBirth),
-      'patient.sex': SEX_LABELS[patient.sex] ?? '',
+      'patient.dateOfBirth': formatIndonesianDateTime({
+        value: patient.dateOfBirth,
+        timeZone: 'UTC',
+        withTime: false,
+      }),
+      'patient.sex': SEX_LABELS[patient.sex] ?? '-',
       'patient.age': `${toPatientAgeYears(patient.dateOfBirth, issuedAt)} tahun`,
-      'doctor.fullName': doctorName,
-      'doctor.licenseNumber': doctorLicenseNumber ?? '',
-      'request.issuedAt': formatIndonesianDate(issuedAt),
+      ...buildSignerValues({
+        signer: params.signer,
+        asOfDate: getCalendarDateInTimeZone(issuedAt, timeZone),
+      }),
+      // After the signer: an outside requester is named on the letter even
+      // though nobody here signs it.
+      'doctor.fullName': params.doctorName,
+      'request.issuedAt': formatIndonesianDateTime({ value: issuedAt, timeZone, withTime: false }),
       'order.number': order.orderNumber,
       // Null when the number carries a character Code set B cannot express,
       // which is never for `LAB/YYYYMMDD/####` — but the letter still prints
@@ -98,7 +110,7 @@ export function buildLabRequestContext(
       'order.destination':
         order.fulfilmentSite === 'EXTERNAL'
           ? (order.externalFacilityName ?? 'Laboratorium rujukan')
-          : `Laboratorium ${clinic?.name ?? 'klinik'}`,
+          : `Laboratorium ${letterhead.name}`,
     },
     lines: order.items.map((item, index) => ({
       'test.no': String(index + 1),
@@ -108,23 +120,4 @@ export function buildLabRequestContext(
       'test.specimen': SPECIMEN_LABELS[item.specimenType] ?? item.specimenType,
     })),
   };
-}
-
-const INDONESIAN_MONTHS = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-];
-
-function formatIndonesianDate(value: Date): string {
-  return `${value.getUTCDate()} ${INDONESIAN_MONTHS[value.getUTCMonth()] ?? ''} ${value.getUTCFullYear()}`;
 }

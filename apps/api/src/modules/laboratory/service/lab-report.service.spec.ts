@@ -58,7 +58,7 @@ describe('LabReportService', () => {
     uploadObject: jest.fn(),
     getSignedUrl: jest.fn(),
   };
-  const clinicProfileServiceMock = { getProfile: jest.fn() };
+  const clinicProfileServiceMock = { getDocumentLetterhead: jest.fn() };
   const patientDocumentDeliveryServiceMock = {
     isDispatchByDefault: jest.fn(),
     requestDispatch: jest.fn(),
@@ -167,7 +167,7 @@ describe('LabReportService', () => {
     pdfRendererServiceMock.render.mockResolvedValue(new Uint8Array([0x25, 0x50, 0x44, 0x46]));
     objectStorageServiceMock.generateObjectKey.mockReturnValue('lab-report/document/x.pdf');
     objectStorageServiceMock.uploadObject.mockResolvedValue({ key: 'lab-report/document/x.pdf' });
-    clinicProfileServiceMock.getProfile.mockResolvedValue({
+    clinicProfileServiceMock.getDocumentLetterhead.mockResolvedValue({
       name: 'Klinik Sehat Bersama',
       legalName: null,
       address: null,
@@ -175,8 +175,7 @@ describe('LabReportService', () => {
       email: null,
       licenseNumber: null,
       taxId: null,
-      hasLogo: false,
-      updatedAt: releasedAt.toISOString(),
+      logoDataUri: null,
     });
     patientDocumentDeliveryServiceMock.isDispatchByDefault.mockReturnValue(true);
     patientDocumentDeliveryServiceMock.requestDispatch.mockResolvedValue({
@@ -369,7 +368,7 @@ describe('LabReportService', () => {
     // registry's message rather than "NotFoundException", and the render is
     // never attempted.
     it('parks a missing clinic profile FAILED at once rather than spending the attempts', async () => {
-      clinicProfileServiceMock.getProfile.mockRejectedValue(
+      clinicProfileServiceMock.getDocumentLetterhead.mockRejectedValue(
         new NotFoundException('The clinic profile has not been configured yet'),
       );
 
@@ -384,7 +383,7 @@ describe('LabReportService', () => {
     });
 
     it('still retries a clinic profile read that failed for any other reason', async () => {
-      clinicProfileServiceMock.getProfile.mockRejectedValue(new Error('connection reset'));
+      clinicProfileServiceMock.getDocumentLetterhead.mockRejectedValue(new Error('connection reset'));
 
       await service.renderClaimedReport(buildReport({ attemptCount: 0 }));
 

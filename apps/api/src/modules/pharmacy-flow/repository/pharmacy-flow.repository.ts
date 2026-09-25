@@ -1,4 +1,5 @@
 import {
+  ClinicalDocumentSignerRecord,
   CreateDispenseRecordPayload,
   CreateMedicationRecordPayload,
   CreatePrescriptionRecordPayload,
@@ -18,8 +19,10 @@ import {
 } from '@hms/shared-types';
 import { ConflictException, Injectable } from '@nestjs/common';
 
+import { CLINICIAN_SIGNER_SELECT } from '../../../common/prisma/clinician-signer-select';
 import { PrismaService } from '../../../common/prisma/prisma.service';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import { toClinicalDocumentSignerRecord } from '../../../common/prisma/to-clinical-document-signer-record';
 import { USER_DISPLAY_NAME_SELECT } from '../../../common/prisma/user-display-name-select';
 import { Prisma } from '../../../generated/prisma/client';
 import { buildPrescriptionScopeWhere } from './build-prescription-scope-where';
@@ -577,6 +580,21 @@ export class PharmacyFlowRepository {
       include: PRESCRIPTION_DETAIL_INCLUDE,
     });
     return prescription ? toPrescriptionDetailRecord(prescription) : null;
+  }
+
+  /**
+   * The prescribing clinician as the resep's signature block reads them: the
+   * name, the profession and the licences (D-032). Selected on its own rather
+   * than added to the detail include, which every prescription screen loads.
+   */
+  async findPrescriptionSigner(
+    prescriptionId: string,
+  ): Promise<ClinicalDocumentSignerRecord | null> {
+    const prescription = await this.prisma.prescription.findUnique({
+      where: { id: prescriptionId },
+      select: { doctor: { select: CLINICIAN_SIGNER_SELECT } },
+    });
+    return prescription ? toClinicalDocumentSignerRecord(prescription.doctor) : null;
   }
 
   async createPrescription(

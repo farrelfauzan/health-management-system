@@ -13,9 +13,11 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { EncounterAccessService } from '../../emr/service/encounter-access.service';
 import { DeliveryRecordRepository } from '../repository/delivery-record.repository';
@@ -26,6 +28,8 @@ import { toNewbornShkSummary } from './to-newborn-shk-summary';
 export const MIDWIFE_DELIVERY_MODE_OUT_OF_AUTHORITY_ERROR_CODE =
   'MIDWIFE_DELIVERY_MODE_OUT_OF_AUTHORITY';
 export const DELIVERY_REFERRAL_REQUIRED_ERROR_CODE = 'DELIVERY_REFERRAL_REQUIRED';
+
+const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /** The tear grades a clinic may not simply record and move on from. */
 const TEAR_GRADES_REQUIRING_REFERRAL: readonly string[] = ['GRADE_3', 'GRADE_4'];
@@ -49,13 +53,19 @@ const TEAR_GRADES_REQUIRING_REFERRAL: readonly string[] = ['GRADE_3', 'GRADE_4']
  */
 @Injectable()
 export class DeliveryRecordService {
+  private readonly clinicTimeZone: string;
+
   constructor(
     private readonly deliveryRecordRepository: DeliveryRecordRepository,
     private readonly maternalCareRepository: MaternalCareRepository,
     private readonly encounterAccessService: EncounterAccessService,
     private readonly clinicalRequestDocumentService: ClinicalRequestDocumentService,
     private readonly auditService: AuditService,
-  ) {}
+    private readonly clinicProfileService: ClinicProfileService,
+    configService: ConfigService,
+  ) {
+    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+  }
 
   async getDelivery(
     pregnancyEpisodeId: string,
@@ -234,17 +244,24 @@ export class DeliveryRecordService {
         encounterId: null,
         title: `Surat Keterangan Lahir — ${newborn.newbornPatient?.fullName ?? mother.fullName}`,
         values: buildBirthCertificateValues({
-          motherName: mother.fullName,
-          motherNikLast4: mother.nikLast4,
-          babyName: newborn.newbornPatient?.fullName ?? null,
-          sex: newborn.sex,
-          birthAt: newborn.deliveryRecord.birthAt,
-          birthWeightGrams: newborn.birthWeightGrams,
-          lengthCm: newborn.lengthCm === null ? null : Number(newborn.lengthCm),
-          birthOrder: newborn.newbornPatient?.birthOrder ?? null,
-          attendantName: newborn.deliveryRecord.attendantDoctor.fullName,
-          attendantStrNumber:
-            newborn.deliveryRecord.attendantDoctor.licenses[0]?.licenseNumber ?? null,
+          subject: {
+            motherName: mother.fullName,
+            motherNikLast4: mother.nikLast4,
+            babyName: newborn.newbornPatient?.fullName ?? null,
+            sex: newborn.sex,
+            birthAt: newborn.deliveryRecord.birthAt,
+            birthWeightGrams: newborn.birthWeightGrams,
+            lengthCm: newborn.lengthCm === null ? null : Number(newborn.lengthCm),
+            birthOrder: newborn.newbornPatient?.birthOrder ?? null,
+            attendantName: newborn.deliveryRecord.attendantDoctor.fullName,
+            // A typed STR row when one is on file, else the flat profile
+            // number — which D-032 fixes as the STR.
+            attendantStrNumber:
+              newborn.deliveryRecord.attendantDoctor.licenses[0]?.licenseNumber ??
+              newborn.deliveryRecord.attendantDoctor.licenseNumber,
+          },
+          letterhead: await this.clinicProfileService.getDocumentLetterhead(),
+          timeZone: this.clinicTimeZone,
         }),
         lines: [],
       },

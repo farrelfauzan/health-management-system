@@ -1,5 +1,5 @@
 import {
-  ClinicProfileView,
+  ClinicLetterhead,
   DELIVERY_CHANNELS,
   EnqueueLabReportPayload,
   LabOrderRecord,
@@ -304,8 +304,7 @@ export class LabReportService {
       order,
       patient: worklistOrder.patient,
       results,
-      clinic: await this.resolveClinicProfile(),
-      clinicLogoDataUri: null,
+      letterhead: await this.resolveLetterhead(),
       verifierName: verifier.displayName,
       releasedAt: report.releasedAt,
       supersededReleasedAt: superseded?.releasedAt ?? null,
@@ -320,9 +319,9 @@ export class LabReportService {
    * *report*: it is re-thrown as the configuration failure it is, so the
    * worker parks the row at once and the screen can point at the setting.
    */
-  private async resolveClinicProfile(): Promise<ClinicProfileView> {
+  private async resolveLetterhead(): Promise<ClinicLetterhead> {
     try {
-      return await this.clinicProfileService.getProfile();
+      return await this.clinicProfileService.getDocumentLetterhead();
     } catch (caughtError) {
       if (caughtError instanceof NotFoundException) {
         throw new LabReportConfigurationError('CLINIC_PROFILE_MISSING');

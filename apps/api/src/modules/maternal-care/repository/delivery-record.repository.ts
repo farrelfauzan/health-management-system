@@ -62,6 +62,9 @@ export class DeliveryRecordRepository {
             attendantDoctor: {
               select: {
                 fullName: true,
+                // The flat profile number is the STR (D-032); a typed STR row
+                // below wins when one is on file.
+                licenseNumber: true,
                 // The STR, not the SIP: the surat keterangan lahir is signed
                 // under the registration that says this person may practise at
                 // all. Soft-deleted licences are left out; a withdrawn one is
