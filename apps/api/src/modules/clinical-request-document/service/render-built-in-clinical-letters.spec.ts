@@ -43,7 +43,7 @@ describe('built-in clinical letters, rendered', () => {
     name: 'Klinik Sehat Bersama',
     legalName: 'PT Sehat Bersama',
     address: 'Jl. Merdeka No. 12, Bandung',
-    phoneNumber: '(022) 1234567',
+    phoneNumber: '62221234567',
     email: 'halo@kliniksehat.id',
     licenseNumber: '440/1234/DPMPTSP',
     taxId: '01.234.567.8-901.000',
@@ -303,7 +303,7 @@ describe('built-in clinical letters, rendered', () => {
 
     expect(html).toContain('Klinik Sehat Bersama');
     expect(html).toContain('Jl. Merdeka No. 12, Bandung');
-    expect(html).toContain('(022) 1234567');
+    expect(html).toContain('+62 2212-3456-7');
     expect(html).toContain('<img src="data:image/png;base64,iVBORw0KGgo="');
   });
 

@@ -152,7 +152,7 @@ describe('buildLabReportContext', () => {
         name: 'Klinik Sehat Bersama',
         legalName: null,
         address: 'Jl. Merdeka No. 12',
-        phoneNumber: '(022) 1234567',
+        phoneNumber: '62221234567',
         email: null,
         licenseNumber: '440/1234',
         taxId: null,
@@ -287,7 +287,7 @@ describe('buildLabReportContext', () => {
         name: 'Klinik Sehat Bersama',
         legalName: null,
         address: 'Jl. Merdeka No. 12',
-        phoneNumber: '(022) 1234567',
+        phoneNumber: '62221234567',
         email: null,
         licenseNumber: '440/1234',
         taxId: null,
@@ -308,7 +308,7 @@ describe('buildLabReportContext', () => {
     // only on a corrected one.
     expect(emptyTokens).toEqual(['report.amendmentNotice']);
     expect(html).toContain('<img src="data:image/png;base64,iVBORw0KGgo="');
-    expect(html).toContain('(022) 1234567');
+    expect(html).toContain('+62 2212-3456-7');
     expect(html).toContain('dr. Andi Wijaya');
     expect(html).toContain('7 September 2026, 11:40');
     expect(html).not.toMatch(/\bundefined\b|>null</);

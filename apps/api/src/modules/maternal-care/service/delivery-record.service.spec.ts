@@ -51,7 +51,7 @@ describe('DeliveryRecordService (P25-T09)', () => {
       name: 'Klinik Bidan Sehat',
       legalName: null,
       address: 'Jl. Merdeka No. 12, Bandung',
-      phoneNumber: '(022) 1234567',
+      phoneNumber: '62221234567',
       email: null,
       licenseNumber: '440/1234/DPMPTSP',
       taxId: null,

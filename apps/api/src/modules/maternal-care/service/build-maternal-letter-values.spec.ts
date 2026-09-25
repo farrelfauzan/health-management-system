@@ -16,7 +16,7 @@ describe('buildMaternalLetterValues', () => {
     name: 'Klinik Bidan Sehat',
     legalName: null,
     address: 'Jl. Merdeka No. 12, Bandung',
-    phoneNumber: '(022) 1234567',
+    phoneNumber: '62221234567',
     email: null,
     licenseNumber: '440/1234/DPMPTSP',
     taxId: null,
@@ -78,7 +78,7 @@ describe('buildMaternalLetterValues', () => {
 
     expect(actual['clinic.name']).toBe('Klinik Bidan Sehat');
     expect(actual['clinic.address']).toBe('Jl. Merdeka No. 12, Bandung');
-    expect(actual['clinic.phone']).toBe('(022) 1234567');
+    expect(actual['clinic.phone']).toBe('+62 2212-3456-7');
     expect(actual['clinic.licenseNumber']).toBe('440/1234/DPMPTSP');
   });
 

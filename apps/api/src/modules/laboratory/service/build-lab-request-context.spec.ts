@@ -24,7 +24,7 @@ describe('buildLabRequestContext', () => {
     name: 'Klinik Sehat Bersama',
     legalName: 'PT Sehat Bersama',
     address: 'Jl. Merdeka No. 12',
-    phoneNumber: '(022) 1234567',
+    phoneNumber: '62221234567',
     email: 'halo@kliniksehat.id',
     licenseNumber: '440/1234/DPMPTSP',
     taxId: '01.234.567.8-901.000',
@@ -125,7 +125,7 @@ describe('buildLabRequestContext', () => {
 
     expect(actual.values['clinic.name']).toBe('Klinik Sehat Bersama');
     expect(actual.values['clinic.licenseNumber']).toBe('440/1234/DPMPTSP');
-    expect(actual.values['clinic.phone']).toBe('(022) 1234567');
+    expect(actual.values['clinic.phone']).toBe('+62 2212-3456-7');
     expect(actual.values['clinic.logo']).toBe('data:image/png;base64,iVBORw0KGgo=');
     expect(actual.values['doctor.fullName']).toBe('dr. Yusuf Hidayat');
     expect(actual.values['doctor.signatureRole']).toBe('Dokter pemeriksa');
