@@ -19,6 +19,7 @@ import { AuthRepository } from '../../auth/repository/auth.repository';
 import { CreateDoctorPatientAssignmentDto } from '../dto/create-doctor-patient-assignment.dto';
 import { ListDoctorPatientActivityQueryDto } from '../dto/list-doctor-patient-activity-query.dto';
 import { DoctorPatientRepository } from '../repository/doctor-patient.repository';
+import { PatientAssignmentNotificationService } from './patient-assignment-notification.service';
 
 function isUniqueConstraintError(err: unknown): boolean {
   return (
@@ -34,6 +35,7 @@ export class DoctorPatientService {
   constructor(
     private readonly doctorPatientRepository: DoctorPatientRepository,
     private readonly authRepository: AuthRepository,
+    private readonly patientAssignmentNotificationService: PatientAssignmentNotificationService,
   ) {}
 
   async assignDoctorToPatient(payload: CreateDoctorPatientAssignmentDto, currentUser: CurrentUser) {
@@ -72,6 +74,12 @@ export class DoctorPatientService {
       const createdAssignment = await this.doctorPatientRepository.createAssignment({
         doctorId: payload.doctorId,
         patientId: payload.patientId,
+        actorUserId: currentUser.sub,
+      });
+      await this.patientAssignmentNotificationService.notifyAssigned({
+        doctorIds: [payload.doctorId],
+        patientId: payload.patientId,
+        patientName: patient.fullName,
         actorUserId: currentUser.sub,
       });
 

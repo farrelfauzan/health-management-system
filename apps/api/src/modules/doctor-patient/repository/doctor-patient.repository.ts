@@ -1,4 +1,5 @@
 import {
+  ClinicianAccountRecord,
   CreateAssignmentPayload,
   ListActivitiesParams,
   UnassignAssignmentPayload,
@@ -31,8 +32,24 @@ export class DoctorPatientRepository {
       },
       select: {
         id: true,
+        fullName: true,
       },
     });
+  }
+
+  /**
+   * The accounts behind active clinician profiles, for addressing an
+   * assignment notification (D-048). A profile with no account comes back
+   * with `ownerUserId: null` and is skipped by the caller.
+   */
+  async findActiveClinicianAccounts(
+    doctorIds: readonly string[],
+  ): Promise<ClinicianAccountRecord[]> {
+    const rows = await this.prisma.doctorProfile.findMany({
+      where: { id: { in: [...doctorIds] }, isActive: true, deletedAt: null },
+      select: { id: true, ownerUserId: true },
+    });
+    return rows.map((row) => ({ doctorId: row.id, ownerUserId: row.ownerUserId }));
   }
 
   async findActiveAssignment(doctorId: string, patientId: string) {

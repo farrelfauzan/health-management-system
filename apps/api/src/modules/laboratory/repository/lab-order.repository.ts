@@ -170,6 +170,19 @@ export class LabOrderRepository {
     return row ? this.toLabOrderRecord(row as unknown as LabOrderRow) : null;
   }
 
+  /**
+   * The name of the patient an order is for, read through the order itself —
+   * the bench's new-order bell names the person the tube belongs to (D-048),
+   * and nothing else from the record.
+   */
+  async findLabOrderPatientName(orderId: string): Promise<string | null> {
+    const row = await this.prisma.labOrder.findUnique({
+      where: { id: orderId },
+      select: { patient: { select: { fullName: true } } },
+    });
+    return row?.patient.fullName ?? null;
+  }
+
   async findLabOrdersByEncounterId(encounterId: string): Promise<LabOrderRecord[]> {
     const rows = await this.prisma.labOrder.findMany({
       where: { encounterId },

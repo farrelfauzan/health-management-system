@@ -10,6 +10,8 @@ const ADMIN_VAULT_HREF = '/admin/vault';
 const DOCTOR_VAULT_HREF = '/doctor/vault';
 const ADMIN_LAB_ORDER_PATH_PREFIX = '/admin/laboratory/';
 const DOCTOR_ENCOUNTER_PATH_PREFIX = '/doctor/encounters/';
+const ADMIN_REGISTRATIONS_HREF = '/admin/registrations';
+const DOCTOR_DAY_AGENDA_PATH = '/doctor/appointments?view=day&date=';
 
 /**
  * Resolves the shell-relative `href` stored on a notification row (IMP-21).
@@ -83,9 +85,55 @@ export class NotificationHrefService {
       return `${ADMIN_LAB_ORDER_PATH_PREFIX}${params.orderId}`;
     }
     const shell = await this.resolveShellForUser(params.userId);
-    return shell === 'doctor'
+    return this.buildLabOrderHrefForShell({ ...params, shell: shell ?? 'admin' });
+  }
+
+  /**
+   * The same decision as {@link buildLabOrderHrefForUser} for a shell that is
+   * already resolved — what a broadcast producer uses after
+   * {@link groupUserIdsByShell}.
+   */
+  buildLabOrderHrefForShell(params: {
+    shell: NotificationShell;
+    orderId: string;
+    encounterId: string | null;
+  }): string {
+    return params.shell === 'doctor' && params.encounterId !== null
       ? `${DOCTOR_ENCOUNTER_PATH_PREFIX}${params.encounterId}`
       : `${ADMIN_LAB_ORDER_PATH_PREFIX}${params.orderId}`;
+  }
+
+  /**
+   * Splits recipients by the shell each lands in, dropping any whose account
+   * no longer resolves — a deactivated account has nobody to read the row.
+   * Producers then write one batch per shell, each with that shell's `href`.
+   */
+  async groupUserIdsByShell(
+    userIds: readonly string[],
+  ): Promise<Map<NotificationShell, string[]>> {
+    const grouped = new Map<NotificationShell, string[]>();
+    for (const userId of new Set(userIds)) {
+      const shell = await this.resolveShellForUser(userId);
+      if (shell !== null) {
+        grouped.set(shell, [...(grouped.get(shell) ?? []), userId]);
+      }
+    }
+    return grouped;
+  }
+
+  /** A patient's record page; both shells have one at the same path. */
+  buildPatientHref(shell: NotificationShell, patientId: string): string {
+    return `/${shell}/patients/${patientId}`;
+  }
+
+  /**
+   * Where a clinician sees who is waiting for them (D-048). The doctor shell
+   * has no queue page — the queue board is the front desk's — so a clinician
+   * lands on that day's agenda, where the checked-in patient's booking sits.
+   * An account in the admin shell gets the queue itself.
+   */
+  buildCheckInQueueHref(shell: NotificationShell, queueDate: string): string {
+    return shell === 'doctor' ? `${DOCTOR_DAY_AGENDA_PATH}${queueDate}` : ADMIN_REGISTRATIONS_HREF;
   }
 
   /**

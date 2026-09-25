@@ -45,6 +45,14 @@ describe('User invitations against Postgres', () => {
     { permissionKey: 'user.read:any', resource: 'User', action: 'read', scope: 'ANY' },
     { permissionKey: 'user.create:any', resource: 'User', action: 'create', scope: 'ANY' },
     { permissionKey: 'user.update:any', resource: 'User', action: 'update', scope: 'ANY' },
+    // D-048. Puts the fixture admin in the admin shell, which is where the
+    // STAFF_JOINED row links to; an account no shell resolves for is not told.
+    {
+      permissionKey: 'portal.admin-access:any',
+      resource: 'Portal',
+      action: 'admin-access',
+      scope: 'ANY',
+    },
   ];
 
   const sentMails: SendMailRequest[] = [];
@@ -268,6 +276,27 @@ describe('User invitations against Postgres', () => {
       });
       expect(invitedUser?.isActive).toBe(true);
       expect(invitedUser?.roles.map((userRole) => userRole.role.code)).toEqual([INVITEE_ROLE_CODE]);
+    });
+
+    it('tells the staff administrator the invitee joined, and not the invitee (D-048)', async () => {
+      const invitedUser = await prisma.user.findUnique({ where: { email: INVITEE_EMAIL } });
+      const adminRows = await prisma.notification.findMany({
+        where: { userId: ADMIN_USER_ID, type: 'STAFF_JOINED' },
+      });
+      const inviteeRows = await prisma.notification.findMany({
+        where: { userId: invitedUser?.id ?? '' },
+      });
+
+      expect(adminRows).toHaveLength(1);
+      expect(adminRows[0]).toEqual(
+        expect.objectContaining({
+          titleKey: 'staffJoined.title',
+          bodyKey: 'staffJoined.body',
+          params: { staffName: 'Siti Rahma', roleNames: `${TEST_MARKER} nurse` },
+          href: '/admin/administration?tab=users',
+        }),
+      );
+      expect(inviteeRows).toHaveLength(0);
     });
 
     // The whole ticket in one assertion: the account works, and the only

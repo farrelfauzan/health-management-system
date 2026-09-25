@@ -10,6 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuditService } from '../../../common/audit/audit.service';
 import { PrivacyNoticeRepository } from '../../../common/privacy-notice/privacy-notice.repository';
 import { AuthRepository } from '../../auth/repository/auth.repository';
+import { PatientAssignmentNotificationService } from '../../doctor-patient/service/patient-assignment-notification.service';
 
 import { RegionsService } from '../../regions/service/regions.service';
 import { PatientIdentifierConflictError } from '../repository/patient-identifier-conflict.error';
@@ -98,6 +99,11 @@ describe('PatientManagementService', () => {
     sendFirstNik: jest.fn().mockResolvedValue(null),
   } as unknown as NewbornSatusehatNikService;
 
+  const notifyAssignedMock = jest.fn();
+  const patientAssignmentNotificationServiceMock = {
+    notifyAssigned: notifyAssignedMock,
+  } as unknown as PatientAssignmentNotificationService;
+
   const service = new PatientManagementService(
     patientManagementRepositoryMock,
     authRepositoryMock,
@@ -105,6 +111,7 @@ describe('PatientManagementService', () => {
     privacyNoticeRepositoryMock,
     regionsServiceMock,
     newbornSatusehatNikServiceMock,
+    patientAssignmentNotificationServiceMock,
     configServiceMock,
   );
 
@@ -477,6 +484,12 @@ describe('PatientManagementService', () => {
       }),
     );
     expect(result.patient.mrn).toBe('MRN-0003');
+    expect(notifyAssignedMock).toHaveBeenCalledWith({
+      doctorIds: ['58e9a316-40b2-4f4c-9207-2a58028babc4', '0b6ff86c-cb15-4d70-b7d3-f542e26a2af8'],
+      patientId: '3a6d785d-f729-4af2-b415-30f96439dad0',
+      patientName: 'Jane Patient',
+      actorUserId: currentUser.sub,
+    });
   });
 
   it('throws bad request when date value is invalid', async () => {
