@@ -619,3 +619,42 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('manage', 'NotionConnector')).toBe(true);
   });
 });
+
+describe('resolveAppAbilityRules for a seeded LAB_TECHNICIAN (D-048)', () => {
+  // The claim the API issues for a bench account once the seed carries the
+  // staff baseline; before D-048 the last three keys were missing.
+  const LAB_TECHNICIAN_PERMISSIONS = [
+    'portal.admin-access:any',
+    'auth.logout:own',
+    'user.update:own',
+    'lab-test.read:any',
+    'lab-order.read:any',
+    'lab-specimen.write:any',
+    'lab-result.write:any',
+    'lab-result.verify:any',
+    'lab-settings.read:any',
+    'clinic-profile.read:any',
+    'bug-report.create:own',
+    'notification.read:own',
+    'notification.manage:own',
+    'feature.read-availability:own',
+  ];
+
+  it('gives the bench a bell it can read and clear', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: LAB_TECHNICIAN_PERMISSIONS, roles: ['LAB_TECHNICIAN'] }),
+    );
+
+    expect(ability.can('read', 'Notification')).toBe(true);
+    expect(ability.can('manage', 'Notification')).toBe(true);
+  });
+
+  it('keeps the bench out of the rest of the admin shell', () => {
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({ permissions: LAB_TECHNICIAN_PERMISSIONS, roles: ['LAB_TECHNICIAN'] }),
+    );
+
+    expect(ability.can('read', 'Patient')).toBe(false);
+    expect(ability.can('read', 'Encounter')).toBe(false);
+  });
+});
