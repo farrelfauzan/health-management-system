@@ -69,6 +69,7 @@ import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateDoctorQueries } from '#lib/doctors/invalidate-doctor-queries';
 import { DOCTOR_FORM_REQUIRED_FIELDS } from '#lib/doctors/doctor-form-required-fields';
 import { usePatientsList } from '#lib/patients/use-patients-list';
+import { findMidwiferySpecialtyId } from '#lib/specialties/find-midwifery-specialty-id';
 import { useSpecialtiesList } from '#lib/specialties/use-specialties-list';
 
 const PATIENT_PICKER_PAGE = { page: 1, limit: 100 };
@@ -134,7 +135,7 @@ export function DoctorFormDialog({
     setEducationRows((rows) => rows.map((row) => (row.key === key ? { ...row, ...changes } : row)));
   }
   const patientsQuery = usePatientsList(PATIENT_PICKER_PAGE);
-  const specialtiesQuery = useSpecialtiesList();
+  const specialtiesQuery = useSpecialtiesList({ activeOnly: true });
   const createMutation = useMutation({
     mutationFn: (input: CreateDoctorInput) => doctorManagementControllerCreateDoctorV1(input),
   });
@@ -259,7 +260,21 @@ export function DoctorFormDialog({
                 </FormLabel>
                 <Select
                   value={field.state.value}
-                  onValueChange={(value) => field.handleChange(value as ClinicianProfessionValue)}
+                  onValueChange={(value) => {
+                    field.handleChange(value as ClinicianProfessionValue);
+                    // A new midwife starts in Kebidanan when the clinic runs
+                    // one; a poli already picked is never overwritten.
+                    const midwiferySpecialtyId = findMidwiferySpecialtyId(
+                      specialtiesQuery.specialties,
+                    );
+                    if (
+                      value === 'MIDWIFE' &&
+                      midwiferySpecialtyId &&
+                      form.getFieldValue('specialtyId') === ''
+                    ) {
+                      form.setFieldValue('specialtyId', midwiferySpecialtyId);
+                    }
+                  }}
                 >
                   <SelectTrigger
                     id={field.name}

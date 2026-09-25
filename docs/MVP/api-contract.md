@@ -128,6 +128,8 @@ Patient relation behavior:
 | `POST /api/v1/doctors`               | `doctor.create:any`                                        | `SUPER_ADMIN`, `ADMIN`                      |
 | `PATCH /api/v1/doctors/:id/schedule` | `doctor.schedule.write:any` or `doctor.schedule.write:own` | `SUPER_ADMIN`, `ADMIN`, `DOCTOR` (own)      |
 
+The poli (specialty) catalog: `GET /api/v1/specialties` needs `doctor.read`. `POST /api/v1/specialties` and `PATCH /api/v1/specialties/:id` (rename, deactivate, reactivate; never delete) need `specialty.manage:any` (D-047, `docs/post-mvp/decisions.md`).
+
 Doctor relation behavior:
 
 - Create payloads may include optional `patientIds`; creation and initial assignments are atomic.

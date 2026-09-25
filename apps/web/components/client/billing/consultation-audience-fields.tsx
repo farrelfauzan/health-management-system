@@ -30,7 +30,7 @@ export function ConsultationAudienceFields({
   onProfessionChange,
 }: ConsultationAudienceFieldsProps) {
   const t = useTranslations('operations.billing');
-  const specialtiesQuery = useSpecialtiesList();
+  const specialtiesQuery = useSpecialtiesList({ activeOnly: true });
 
   return (
     <div className="space-y-3 rounded-md border border-slate-200 p-3">

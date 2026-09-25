@@ -410,6 +410,18 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     expect(ability.can('manage', 'OrganizationUnitMember')).toBe(true);
   });
 
+  it('maps the poli grant to the Specialty subject', () => {
+    const withGrant = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['specialty.manage:any'] }),
+    );
+    const withoutGrant = buildAppAbility(
+      resolveAppAbilityRules({ permissions: ['doctor.read:any'] }),
+    );
+
+    expect(withGrant.can('manage', 'Specialty')).toBe(true);
+    expect(withoutGrant.can('manage', 'Specialty')).toBe(false);
+  });
+
   it('lets a read-only organization grant see the chart without editing it', () => {
     // This is the account SJ-2's read-only tree exists for: the nav entry and
     // the page must resolve, and every edit control must not.

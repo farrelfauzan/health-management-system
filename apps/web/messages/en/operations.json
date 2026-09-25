@@ -2295,6 +2295,10 @@
         "doctorCredentials": {
           "title": "Doctor credentials",
           "description": "The titles, degrees and fields of study doctor profiles are described by."
+        },
+        "specialties": {
+          "title": "Poli",
+          "description": "The clinic's poli: what a doctor or midwife practises under, what a consultation is priced by, and what patients queue for."
         }
       }
     },
@@ -2335,6 +2339,41 @@
       "saveError": "The credential option could not be saved.",
       "codeRequired": "Enter a code in upper-snake ASCII, for example SP_PD.",
       "labelRequired": "Enter the printed label."
+    },
+    "specialties": {
+      "title": "Poli",
+      "description": "The poli a doctor or midwife practises under. A poli is never deleted: deactivating one takes it out of the forms, and every visit and invoice that named it keeps its name.",
+      "add": "Add poli",
+      "columns": {
+        "name": "Name",
+        "description": "Description",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "inactive": "Inactive",
+      "empty": "No poli yet.",
+      "loading": "Loading poli…",
+      "loadError": "The poli list could not be loaded.",
+      "rename": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate",
+      "deactivateHint": "A poli still used by an active doctor, midwife or tariff cannot be deactivated. Move them to another poli first.",
+      "createTitle": "Add poli",
+      "editTitle": "Edit poli",
+      "dialogDescription": "The name appears on the doctor form, the queue, the tariff list and the invoice.",
+      "fields": {
+        "name": "Poli name",
+        "description": "Description (optional)"
+      },
+      "namePlaceholder": "Kebidanan",
+      "save": "Save",
+      "nameRequired": "Enter a poli name of at least 2 characters.",
+      "saved": "Poli saved.",
+      "saveError": "The poli could not be saved.",
+      "nameTaken": "Another poli already has this name.",
+      "inUseSeparator": " and ",
+      "inUse": "This poli cannot be deactivated: {clinicians, plural, =0 {} one {# active doctor or midwife} other {# active doctors or midwives}}{separator}{tariffs, plural, =0 {} one {# active tariff} other {# active tariffs}} still use it. Move or deactivate them first."
     },
     "taxes": {
       "settings": {

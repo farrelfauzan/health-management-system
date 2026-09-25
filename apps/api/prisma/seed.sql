@@ -351,6 +351,7 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     ('bpjs.reference.sync:any', 'BpjsReference', 'sync', 'ANY', 'Sync BPJS PCare reference catalogs and run keyword search-and-cache lookups'),
     ('bpjs.reference.read:any', 'BpjsReference', 'read', 'ANY', 'Read the synced BPJS PCare reference catalogs and their sync status'),
     ('bpjs.mapping.manage:any', 'BpjsMapping', 'manage', 'ANY', 'Map doctors, specialties, and medications to BPJS PCare codes'),
+    ('specialty.manage:any', 'Specialty', 'manage', 'ANY', 'Add, rename, deactivate and reactivate the clinic''s poli'),
     ('bpjs.eligibility.check:any', 'BpjsEligibility', 'check', 'ANY', 'Check BPJS membership eligibility for a patient at registration check-in'),
     ('bpjs.submission.read:any', 'BpjsSubmission', 'read', 'ANY', 'Read BPJS PCare submission outbox status'),
     ('bpjs.submission.retry:any', 'BpjsSubmission', 'retry', 'ANY', 'Retry failed BPJS PCare submissions'),
@@ -1070,6 +1071,10 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('ADMIN', 'organization.structure.read:any'),
     ('ADMIN', 'organization.structure.manage:any'),
     ('ADMIN', 'organization.member.manage:any'),
+    -- The poli catalog is the clinic's own set-up, like its org chart: ADMIN
+    -- runs it, SUPER_ADMIN holds it through the catalog-wide grant, and no
+    -- clinician or patient role gets it.
+    ('ADMIN', 'specialty.manage:any'),
     -- P23-T08. Every human staff role that works in the portal, because the
     -- person who finds the bug is whoever happened to be on that screen.
     -- SUPER_ADMIN holds it through the catalog-wide grant above. PATIENT and the
@@ -1569,7 +1574,18 @@ WHERE NOT EXISTS (
 )
 ON CONFLICT ("code") WHERE "deleted_at" IS NULL DO NOTHING;
 
--- Specialty catalog baseline. Safe to re-run; keeps names unique and revives soft-deleted rows.
+-- Specialty catalog baseline: the clinic's poli. Safe to re-run.
+--
+-- Insert-only since the poli became manageable from the admin screen: a re-run
+-- must not undo what the clinic decided. `DO NOTHING` keeps an admin's
+-- deactivation, and the NOT EXISTS on the derived id keeps a *renamed* seeded
+-- row from colliding with its own primary key -- without it, renaming
+-- "Pediatrics" to "Poli Anak" would make the next seed fail outright, because
+-- ON CONFLICT ("name") never sees a clash on "id".
+--
+-- 'Kebidanan' is the midwife's poli (P24). Names stay as first seeded -- the
+-- English ones included -- because an existing clinic's rows are matched by
+-- them here; a clinic that wants Indonesian names renames them in the app.
 WITH seed_specialties(name) AS (
   VALUES
     ('General Practice'),
@@ -1588,7 +1604,8 @@ WITH seed_specialties(name) AS (
     ('Urology'),
     ('Anesthesiology'),
     ('Radiology'),
-    ('Dentistry')
+    ('Dentistry'),
+    ('Kebidanan')
 )
 INSERT INTO "specialties" (
   "id",
@@ -1606,11 +1623,11 @@ SELECT
   NOW(),
   NULL
 FROM seed_specialties
-ON CONFLICT ("name") DO UPDATE
-SET
-  "is_active" = true,
-  "updated_at" = NOW(),
-  "deleted_at" = NULL;
+WHERE NOT EXISTS (
+  SELECT 1 FROM "specialties" existing
+  WHERE existing."id" = md5('specialty:' || lower(seed_specialties.name))::uuid
+)
+ON CONFLICT ("name") DO NOTHING;
 
 -- Doctor credential catalog (P19-T14): the titles, degrees and education
 -- fields of study a doctor's credentials are picked from, replacing the free

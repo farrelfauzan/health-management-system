@@ -21,8 +21,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  CreateSpecialtyDto,
+  SpecialtyControllerCreateSpecialtyV1200,
   SpecialtyControllerListSpecialtiesV1200,
-  SpecialtyControllerListSpecialtiesV1Params
+  SpecialtyControllerListSpecialtiesV1Params,
+  SpecialtyControllerUpdateSpecialtyV1200,
+  UpdateSpecialtyDto
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -127,6 +131,201 @@ export function useSpecialtyControllerListSpecialtiesV1<TData = Awaited<ReturnTy
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getSpecialtyControllerListSpecialtiesV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Add a poli
+ */
+export const specialtyControllerCreateSpecialtyV1 = (
+    createSpecialtyDto: CreateSpecialtyDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SpecialtyControllerCreateSpecialtyV1200>(
+      {url: `/api/v1/specialties`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createSpecialtyDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getSpecialtyControllerCreateSpecialtyV1QueryKey = (createSpecialtyDto?: CreateSpecialtyDto,) => {
+    return [
+    'POST', `/api/v1/specialties`, createSpecialtyDto
+    ] as const;
+    }
+
+
+export const getSpecialtyControllerCreateSpecialtyV1QueryOptions = <TData = Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError = unknown>(createSpecialtyDto: CreateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSpecialtyControllerCreateSpecialtyV1QueryKey(createSpecialtyDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>> = ({ signal }) => specialtyControllerCreateSpecialtyV1(createSpecialtyDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SpecialtyControllerCreateSpecialtyV1QueryResult = NonNullable<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>>
+export type SpecialtyControllerCreateSpecialtyV1QueryError = unknown
+
+
+export function useSpecialtyControllerCreateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError = unknown>(
+ createSpecialtyDto: CreateSpecialtyDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>,
+          TError,
+          Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSpecialtyControllerCreateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError = unknown>(
+ createSpecialtyDto: CreateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>,
+          TError,
+          Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSpecialtyControllerCreateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError = unknown>(
+ createSpecialtyDto: CreateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Add a poli
+ */
+
+export function useSpecialtyControllerCreateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError = unknown>(
+ createSpecialtyDto: CreateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerCreateSpecialtyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSpecialtyControllerCreateSpecialtyV1QueryOptions(createSpecialtyDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Rename, deactivate or reactivate a poli
+ */
+export const specialtyControllerUpdateSpecialtyV1 = (
+    id: string,
+    updateSpecialtyDto: UpdateSpecialtyDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<SpecialtyControllerUpdateSpecialtyV1200>(
+      {url: `/api/v1/specialties/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateSpecialtyDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getSpecialtyControllerUpdateSpecialtyV1QueryKey = (id: string,
+    updateSpecialtyDto?: UpdateSpecialtyDto,) => {
+    return [
+    'PATCH', `/api/v1/specialties/${id}`, updateSpecialtyDto
+    ] as const;
+    }
+
+
+export const getSpecialtyControllerUpdateSpecialtyV1QueryOptions = <TData = Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError = unknown>(id: string,
+    updateSpecialtyDto: UpdateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSpecialtyControllerUpdateSpecialtyV1QueryKey(id,updateSpecialtyDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>> = ({ signal }) => specialtyControllerUpdateSpecialtyV1(id,updateSpecialtyDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SpecialtyControllerUpdateSpecialtyV1QueryResult = NonNullable<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>>
+export type SpecialtyControllerUpdateSpecialtyV1QueryError = unknown
+
+
+export function useSpecialtyControllerUpdateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError = unknown>(
+ id: string,
+    updateSpecialtyDto: UpdateSpecialtyDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>,
+          TError,
+          Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSpecialtyControllerUpdateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError = unknown>(
+ id: string,
+    updateSpecialtyDto: UpdateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>,
+          TError,
+          Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSpecialtyControllerUpdateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError = unknown>(
+ id: string,
+    updateSpecialtyDto: UpdateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Rename, deactivate or reactivate a poli
+ */
+
+export function useSpecialtyControllerUpdateSpecialtyV1<TData = Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError = unknown>(
+ id: string,
+    updateSpecialtyDto: UpdateSpecialtyDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof specialtyControllerUpdateSpecialtyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSpecialtyControllerUpdateSpecialtyV1QueryOptions(id,updateSpecialtyDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

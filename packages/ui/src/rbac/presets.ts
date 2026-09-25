@@ -175,6 +175,8 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   { action: 'sync', subject: 'BpjsReference' },
   { action: 'read', subject: 'BpjsReference' },
   { action: 'manage', subject: 'BpjsMapping' },
+  // Mirrors `('ADMIN', 'specialty.manage:any')` in seed.sql: the poli screen.
+  { action: 'manage', subject: 'Specialty' },
   { action: 'check', subject: 'BpjsEligibility' },
   { action: 'read', subject: 'BpjsSubmission' },
   { action: 'retry', subject: 'BpjsSubmission' },
