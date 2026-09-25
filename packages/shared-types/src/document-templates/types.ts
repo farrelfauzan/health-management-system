@@ -105,3 +105,19 @@ export type ClinicalRequestRenderContext = {
   /** The repeating block: requested tests, or prescribed medications. */
   lines: readonly Readonly<Record<string, string>>[];
 };
+
+/**
+ * The clinician a printed clinical letter is signed by, as persistence holds
+ * them.
+ *
+ * `strNumber` is the flat licence number on the profile, which D-032 fixes as
+ * the STR; `practiceLicenses` are the SIP rows of the typed licence list (a
+ * midwife's is her SIPB). The letter prints the practice licence when one is
+ * in force and falls back to the STR otherwise, labelled as what it is.
+ */
+export type ClinicalDocumentSignerRecord = {
+  fullName: string | null;
+  profession: 'DOCTOR' | 'MIDWIFE';
+  strNumber: string;
+  practiceLicenses: readonly { licenseNumber: string; expiresAt: Date | null }[];
+};

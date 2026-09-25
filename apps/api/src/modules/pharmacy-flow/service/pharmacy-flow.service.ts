@@ -290,8 +290,9 @@ export class PharmacyFlowService {
       prescription,
       patientDateOfBirth: prescription.patient.dateOfBirth,
       patientSex: prescription.patient.sex,
-      clinic: await this.clinicProfileService.getProfile(),
-      clinicLogoDataUri: null,
+      letterhead: await this.clinicProfileService.getDocumentLetterhead(),
+      signer: await this.pharmacyFlowRepository.findPrescriptionSigner(prescription.id),
+      timeZone: this.clinicTimeZone,
     });
 
     return this.clinicalRequestDocumentService.renderAndFile(context, currentUser.sub);

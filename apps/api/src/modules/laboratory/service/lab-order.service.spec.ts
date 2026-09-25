@@ -66,7 +66,7 @@ describe('LabOrderService', () => {
 
   const billingServiceMock = { hasIssuedInvoiceForVisit: jest.fn() };
 
-  const clinicProfileServiceMock = { getProfile: jest.fn() };
+  const clinicProfileServiceMock = { getDocumentLetterhead: jest.fn() };
 
   const clinicalRequestDocumentServiceMock = { renderAndFile: jest.fn() };
 

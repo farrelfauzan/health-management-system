@@ -395,6 +395,10 @@ export type ClinicLetterhead = {
   name: string;
   legalName: string | null;
   address: string | null;
+  /** The telephone, e-mail and izin a clinical letter prints under its name. */
+  phoneNumber: string | null;
+  email: string | null;
+  licenseNumber: string | null;
   taxId: string | null;
   logoDataUri: string | null;
 };

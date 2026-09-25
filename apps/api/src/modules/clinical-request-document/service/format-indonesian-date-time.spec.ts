@@ -24,4 +24,17 @@ describe('formatIndonesianDateTime', () => {
       formatIndonesianDateTime({ value: afterMidnight, timeZone: 'Asia/Jakarta', withTime: true }),
     ).toBe('8 September 2026, 00:30');
   });
+
+  it('names the weekday of the clinic-zone date when asked', () => {
+    const afterMidnight = new Date('2026-09-07T17:30:00.000Z');
+
+    expect(
+      formatIndonesianDateTime({
+        value: afterMidnight,
+        timeZone: 'Asia/Jakarta',
+        withTime: false,
+        withWeekday: true,
+      }),
+    ).toBe('Selasa, 8 September 2026');
+  });
 });
