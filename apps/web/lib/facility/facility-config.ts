@@ -19,6 +19,6 @@ export function getFacilityKindLabel(kind: FacilityKind, locale = 'id'): string 
 }
 
 export const FACILITY_CONFIG: FacilityConfig = {
-  name: 'Saling Jaga',
+  name: 'MetaKlinik',
   kind: 'clinic',
 };
