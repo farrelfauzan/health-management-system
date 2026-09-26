@@ -50,6 +50,11 @@ describe('resolveVisibleSettingsHubCards', () => {
     expect(resolveKeys([{ action: 'read', subject: 'Doctor' }])).toEqual([]);
   });
 
+  it('opens the poli card on the poli manage key only', () => {
+    expect(resolveKeys([{ action: 'manage', subject: 'Specialty' }])).toEqual(['specialties']);
+    expect(resolveKeys([{ action: 'read', subject: 'Doctor' }])).toEqual([]);
+  });
+
   it('drops a card whose destination a disabled feature has removed', () => {
     const actual = resolveKeys(
       [

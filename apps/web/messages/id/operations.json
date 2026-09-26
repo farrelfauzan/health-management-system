@@ -2330,6 +2330,10 @@
         "doctorCredentials": {
           "title": "Kredensial dokter",
           "description": "Gelar depan, gelar belakang, dan bidang studi yang dipakai pada profil dokter."
+        },
+        "specialties": {
+          "title": "Poli",
+          "description": "Daftar poli klinik: tempat dokter dan bidan berpraktik, dasar tarif konsultasi, dan antrean pasien."
         }
       }
     },
@@ -2370,6 +2374,41 @@
       "saveError": "Pilihan kredensial gagal disimpan.",
       "codeRequired": "Isi kode dengan huruf kapital dan garis bawah, misalnya SP_PD.",
       "labelRequired": "Isi label tercetak."
+    },
+    "specialties": {
+      "title": "Poli",
+      "description": "Poli tempat dokter dan bidan berpraktik. Poli tidak pernah dihapus: menonaktifkannya hanya mengeluarkannya dari formulir, sementara kunjungan dan tagihan yang sudah memakainya tetap menampilkan namanya.",
+      "add": "Tambah poli",
+      "columns": {
+        "name": "Nama",
+        "description": "Keterangan",
+        "status": "Status",
+        "actions": "Tindakan"
+      },
+      "active": "Aktif",
+      "inactive": "Nonaktif",
+      "empty": "Belum ada poli.",
+      "loading": "Memuat poli…",
+      "loadError": "Daftar poli gagal dimuat.",
+      "rename": "Ubah",
+      "deactivate": "Nonaktifkan",
+      "reactivate": "Aktifkan lagi",
+      "deactivateHint": "Poli yang masih dipakai dokter, bidan, atau tarif yang aktif tidak dapat dinonaktifkan. Pindahkan mereka ke poli lain terlebih dahulu.",
+      "createTitle": "Tambah poli",
+      "editTitle": "Ubah poli",
+      "dialogDescription": "Nama ini tampil di formulir dokter, antrean, daftar tarif, dan tagihan.",
+      "fields": {
+        "name": "Nama poli",
+        "description": "Keterangan (opsional)"
+      },
+      "namePlaceholder": "Kebidanan",
+      "save": "Simpan",
+      "nameRequired": "Isi nama poli, minimal 2 karakter.",
+      "saved": "Poli tersimpan.",
+      "saveError": "Poli gagal disimpan.",
+      "nameTaken": "Nama poli ini sudah dipakai poli lain.",
+      "inUseSeparator": " dan ",
+      "inUse": "Poli ini tidak dapat dinonaktifkan karena masih dipakai {clinicians, plural, =0 {} other {# dokter/bidan aktif}}{separator}{tariffs, plural, =0 {} other {# tarif aktif}}. Pindahkan atau nonaktifkan terlebih dahulu."
     },
     "taxes": {
       "settings": {

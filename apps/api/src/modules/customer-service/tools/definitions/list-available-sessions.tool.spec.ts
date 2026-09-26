@@ -85,6 +85,12 @@ describe('ListAvailableSessionsTool', () => {
     expect(actualSessions.map((session) => session.specialty)).toEqual([expectedSpecialty]);
   });
 
+  it('finds the midwife poli for a customer who asks for a bidan', async () => {
+    const inputSessions = [buildSession('a', 'Kebidanan'), buildSession('b', 'Dentistry')];
+    const actualSessions = await executeWithName(inputSessions, 'mau ke bidan');
+    expect(actualSessions.map((session) => session.specialty)).toEqual(['Kebidanan']);
+  });
+
   it('does not hand every session to a customer who named one poli', async () => {
     const inputSessions = [
       buildSession('a', 'Pediatrics'),

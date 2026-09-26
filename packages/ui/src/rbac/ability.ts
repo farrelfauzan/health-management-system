@@ -179,6 +179,8 @@ export type AppSubject =
   | 'BpjsConfig'
   | 'BpjsReference'
   | 'BpjsMapping'
+  // The poli catalog; `specialty.manage:any` is an administrator's grant.
+  | 'Specialty'
   | 'BpjsEligibility'
   | 'BpjsSubmission'
   // P25-T16. The bidan jejaring's monthly non-capitation claim recap; billing, so ADMIN (D-033).

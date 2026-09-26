@@ -35,6 +35,9 @@ export const SPECIALTY_SYNONYMS: readonly {
   { specialty: 'pulmonology', aliases: ['paru'] },
   { specialty: 'orthopedics', aliases: ['tulang', 'ortopedi'] },
   { specialty: 'obstetrics', aliases: ['kandungan', 'kebidanan', 'obgyn'] },
+  // The midwife's poli. Already Indonesian, so "poli kebidanan" matches it
+  // directly; the alias catches a customer who asks for "bidan".
+  { specialty: 'kebidanan', aliases: ['bidan'] },
   { specialty: 'urology', aliases: ['urologi', 'saluran kemih'] },
   { specialty: 'general surgery', aliases: ['bedah'] },
   { specialty: 'otorhinolaryngology', aliases: ['tht', 'telinga', 'hidung', 'tenggorokan'] },

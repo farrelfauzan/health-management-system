@@ -55,7 +55,7 @@ export function DoctorProfileCompletionForm({
 }: DoctorProfileCompletionFormProps) {
   const t = useTranslations('clinical');
   const [formError, setFormError] = useState<string | null>(null);
-  const specialtiesQuery = useSpecialtiesList();
+  const specialtiesQuery = useSpecialtiesList({ activeOnly: true });
   const isCreating = doctor === undefined;
   const needsNik = isCreating || !doctor.nikMasked;
   const completeMutation = useMutation({

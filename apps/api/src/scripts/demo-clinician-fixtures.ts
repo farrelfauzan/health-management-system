@@ -35,7 +35,7 @@ export const DEMO_CLINICIAN_FIXTURES: readonly DemoClinicianFixture[] = [
     profession: 'MIDWIFE',
     fullName: 'Ayu Lestari',
     licenseNumber: 'DEMO-SIPB-BIDAN-001',
-    specialtyName: 'Obstetrics & Gynecology',
+    specialtyName: 'Kebidanan',
     phoneNumber: '081200000102',
     nik: '3174016506909012',
     licenses: [

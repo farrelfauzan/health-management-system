@@ -6,6 +6,7 @@ export type SettingsHubCardKey =
   | 'taxes'
   | 'laboratory'
   | 'doctorCredentials'
+  | 'specialties'
   | 'documentTemplates'
   | 'integrations'
   | 'aiProviders'
@@ -75,6 +76,14 @@ export const SETTINGS_HUB_CARDS: readonly SettingsHubCard[] = [
     // the credential catalog is the same administrative act as editing a
     // doctor, and the API gates both on `doctor.update:any`.
     abilities: [{ action: 'update', subject: 'Doctor' }],
+  },
+  {
+    // The poli catalog: what a doctor or midwife practises under, what a
+    // consultation tariff prices and what a registration queues for.
+    key: 'specialties',
+    href: '/admin/settings/poli',
+    icon: 'local_hospital',
+    abilities: [{ action: 'manage', subject: 'Specialty' }],
   },
   {
     key: 'documentTemplates',

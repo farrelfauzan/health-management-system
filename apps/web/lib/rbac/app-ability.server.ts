@@ -184,6 +184,9 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'bpjs.config': 'BpjsConfig',
   'bpjs.reference': 'BpjsReference',
   'bpjs.mapping': 'BpjsMapping',
+  // `specialty.manage:any` → the poli management screen. Without this row the
+  // grant resolves to nothing and the settings card never renders.
+  specialty: 'Specialty',
   'bpjs.eligibility': 'BpjsEligibility',
   'bpjs.submission': 'BpjsSubmission',
   // P25-T16. `bpjs.non-capitation.read:any` → resource `bpjs.non-capitation`
