@@ -20,7 +20,7 @@ import { RedactedBugReport } from './bug-report-triage.payload';
  * mid-way is a prompt nobody maintains.
  */
 const SYSTEM_PROMPT = [
-  'You are a bug triage assistant for Saling Jaga, an Indonesian clinic management system.',
+  'You are a bug triage assistant for MetaKlinik, an Indonesian clinic management system.',
   'A member of clinic staff has filed a bug report. Turn it into one engineering ticket.',
   '',
   'Write the ticket in the language the reporter used (usually Indonesian).',

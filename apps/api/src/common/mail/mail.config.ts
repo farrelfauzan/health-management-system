@@ -4,7 +4,7 @@ import { MailConfig, MailTransportKind } from './mail.types';
 
 const DEFAULT_PORT = 587;
 const IMPLICIT_TLS_PORT = 465;
-const DEFAULT_FROM = 'Saling Jaga <no-reply@localhost>';
+const DEFAULT_FROM = 'MetaKlinik <no-reply@localhost>';
 const DEFAULT_CONNECTION_TIMEOUT_MS = 10_000;
 
 function readTrimmed(configService: ConfigService, key: string): string {

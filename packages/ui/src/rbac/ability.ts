@@ -196,7 +196,7 @@ export type AppSubject =
   // desk. Its own subject: it neither links nor reads a record, and the
   // operator's own NIK goes to the platform with every session.
   | 'SatusehatKyc'
-  // P23-T04/T05. Saling Jaga's Notion bug-report connector. Its own subject
+  // P23-T04/T05. MetaKlinik's Notion bug-report connector. Its own subject
   // rather than a mode of `BpjsConfig` or a generic integrations one, because
   // the two grants answer to different owners: a clinic administrator
   // configures BPJS, and nobody at the clinic configures this — the board

@@ -139,7 +139,7 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     key: 'bug-reporting',
     name: 'Bug Reporting',
     description:
-      'The in-app “Report a bug” dialog for staff, and the triage that turns a report into a ticket for Saling Jaga.',
+      'The in-app “Report a bug” dialog for staff, and the triage that turns a report into a ticket for MetaKlinik.',
     // No nav entry: reporting is reached from the profile menu on every screen,
     // because the moment you need it is the moment you are somewhere else.
     navHrefs: [],

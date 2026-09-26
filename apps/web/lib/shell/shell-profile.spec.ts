@@ -63,7 +63,7 @@ describe('resolveShellProfile', () => {
 
   it('falls back to defaults when claims are missing', () => {
     expect(resolveShellProfile(null)).toEqual({
-      displayName: 'Saling Jaga User',
+      displayName: 'MetaKlinik User',
       isFallbackName: true,
       roleLabel: 'Staff',
       roleKey: 'staff',
@@ -74,7 +74,7 @@ describe('resolveShellProfile', () => {
   it('uses the placeholder only when there is neither a name nor an address', () => {
     const actualProfile = resolveShellProfile({ roles: ['ADMIN'] });
 
-    expect(actualProfile.displayName).toBe('Saling Jaga User');
+    expect(actualProfile.displayName).toBe('MetaKlinik User');
     expect(actualProfile.isFallbackName).toBe(true);
   });
 

@@ -17,7 +17,7 @@ export type ShellProfile = {
 };
 
 const FALLBACK_PROFILE: ShellProfile = {
-  displayName: 'Saling Jaga User',
+  displayName: 'MetaKlinik User',
   isFallbackName: true,
   roleLabel: 'Staff',
   roleKey: 'staff',

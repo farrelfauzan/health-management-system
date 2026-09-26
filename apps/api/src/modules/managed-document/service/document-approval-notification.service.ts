@@ -220,7 +220,7 @@ export class DocumentApprovalNotificationService {
     try {
       return await this.clinicProfileService.getClinicName();
     } catch {
-      return 'Saling Jaga';
+      return 'MetaKlinik';
     }
   }
 

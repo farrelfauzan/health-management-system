@@ -599,7 +599,7 @@ describe('resolveAppAbilityRules for a seeded DOCTOR', () => {
     // test: a session hint carrying `notion-connector.manage:any` resolves to
     // no rule at all unless `SUBJECT_BY_RESOURCE` knows the resource, and the
     // Notion card then silently never renders. An administrator holding every
-    // BPJS grant must not pick it up — the board is Saling Jaga's, not the
+    // BPJS grant must not pick it up — the board is MetaKlinik's, not the
     // clinic's.
     const superAdmin = buildAppAbility(
       resolveAppAbilityRules({ permissions: ['notion-connector.manage:any'] }),

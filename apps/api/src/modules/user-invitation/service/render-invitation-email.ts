@@ -2,7 +2,7 @@ import { InvitationEmailPayload } from '@hms/shared-types';
 
 import { RenderedMail } from '../../../common/mail/mail.types';
 
-const CLINIC_LABEL = 'Saling Jaga';
+const CLINIC_LABEL = 'MetaKlinik';
 
 /**
  * Renders the invitation email.

@@ -1,14 +1,14 @@
 # Notion Bug Board: onboarding, rotation, revocation
 
 In-app bug reports (P23) are triaged by AI and published as tickets on the
-Saling Jaga **Bug Board** in Notion. This runbook covers the Notion-side work:
+MetaKlinik **Bug Board** in Notion. This runbook covers the Notion-side work:
 the integrations, what they may reach, and the three operations that keep them
 correct. It is the companion to `docs/security/secrets.md`, which owns the
 secret inventory, and to `apps/api/.env.example`, which owns the variables.
 
 **Nothing in this file names a real Notion id, token, or board URL. This
 repository is public.** Ids live in each deployment's secret store and in the
-Saling Jaga ops vault, never in git, never in a ticket, never in a commit
+MetaKlinik ops vault, never in git, never in a ticket, never in a commit
 message.
 
 ---
@@ -23,7 +23,7 @@ Notion can express.
 | | |
 | --- | --- |
 | Name | `HMS Bug Intake — <clinic>` |
-| Type | Internal integration, Saling Jaga workspace |
+| Type | Internal integration, MetaKlinik workspace |
 | Capabilities | **Read content** and **Insert content** — nothing else |
 | Not granted | Update content, Comment, Read user information |
 | Shared with | The Bug Board **only** (production) or the sandbox board only (dev/staging) |
@@ -88,7 +88,7 @@ the field check expects.
 ## 4. Add a clinic
 
 1. **Notion → Settings → Connections → Develop or manage integrations → New
-   integration.** Workspace: Saling Jaga. Name: `HMS Bug Intake — <clinic>`.
+   integration.** Workspace: MetaKlinik. Name: `HMS Bug Intake — <clinic>`.
 2. Capabilities: tick **Read content** and **Insert content**. Untick
    everything else, including user information.
 3. Copy the **Internal Integration Secret**. This is the only time Notion

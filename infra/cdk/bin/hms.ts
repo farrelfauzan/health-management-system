@@ -31,7 +31,7 @@ const mailEnv = {
 
 new DevAssetsStack(app, 'SalingJagaDevAssets', {
   env,
-  description: 'Dev object storage and access identities for Saling Jaga',
+  description: 'Dev object storage and access identities for MetaKlinik',
 });
 
 // The mail stack is opt-in on `-c mailSender=…`. Without it, `cdk synth` and

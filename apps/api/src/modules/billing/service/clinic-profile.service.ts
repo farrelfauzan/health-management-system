@@ -30,7 +30,7 @@ import {
 } from './clinic-logo-storage-key-prefix';
 import { isStagedClinicLogoStorageKey } from './is-clinic-logo-storage-key';
 
-const DEFAULT_CLINIC_LABEL = 'Saling Jaga';
+const DEFAULT_CLINIC_LABEL = 'MetaKlinik';
 
 const CLINIC_PROFILE_AUDIT_RESOURCE = 'clinic-profile';
 const LOGO_FILE_EXTENSION = 'png';

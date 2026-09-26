@@ -22,7 +22,7 @@ const DEFAULT_MAX_TOKENS = 2_048;
 const DEFAULT_STALE_AFTER_MS = 3_600_000;
 
 /**
- * Reads the Saling Jaga-owned triage settings (P23-T09).
+ * Reads the MetaKlinik-owned triage settings (P23-T09).
  *
  * These are deliberately **not** the clinic's `AiProviderConfig` row, and the
  * separation is a product decision rather than a technical one: that row is the

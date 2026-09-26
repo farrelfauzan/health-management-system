@@ -2,8 +2,8 @@
   "authShell": {
     "auth": {
       "metadata": {
-        "title": "Masuk | Saling Jaga",
-        "description": "Masuk ke portal manajemen kesehatan Saling Jaga"
+        "title": "Masuk | MetaKlinik",
+        "description": "Masuk ke portal manajemen kesehatan MetaKlinik"
       },
       "brand": {
         "logoAlt": "Logo {facilityName}",
@@ -14,7 +14,7 @@
       "title": "Masuk",
       "subtitle": "Gunakan akun staf Anda untuk mengakses portal.",
       "emailLabel": "Email",
-      "emailPlaceholder": "anda@salingjaga.com",
+      "emailPlaceholder": "anda@example.com",
       "passwordLabel": "Kata sandi",
       "passwordPlaceholder": "Masukkan kata sandi Anda",
       "submit": "Masuk",
@@ -75,10 +75,10 @@
       }
     },
     "invite": {
-      "metadataTitle": "Terima undangan | Saling Jaga",
-      "metadataDescription": "Tentukan kata sandi untuk akun staf Saling Jaga Anda",
+      "metadataTitle": "Terima undangan | MetaKlinik",
+      "metadataDescription": "Tentukan kata sandi untuk akun staf MetaKlinik Anda",
       "title": "Tentukan kata sandi",
-      "subtitle": "Anda diundang bergabung dengan Saling Jaga sebagai {email}.",
+      "subtitle": "Anda diundang bergabung dengan MetaKlinik sebagai {email}.",
       "expiresAt": "Tautan ini berlaku sampai {date}.",
       "checking": "Memeriksa undangan Anda…",
       "passwordLabel": "Kata sandi",
@@ -280,7 +280,7 @@
       "profile": {
         "openMenu": "Buka menu profil",
         "logout": "Keluar",
-        "fallbackName": "Pengguna Saling Jaga",
+        "fallbackName": "Pengguna MetaKlinik",
         "roles": {
           "superAdmin": "Super Admin",
           "admin": "Admin",
@@ -330,7 +330,7 @@
         "billingCashier": "Penagihan & Kasir",
         "billingSubtitle": "Buat tagihan dari kunjungan yang selesai, lakukan pembayaran, dan rekonsiliasi kas.",
         "aiClinicalAssistant": "Asisten Klinis AI",
-        "aiAssistantSubtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien Saling Jaga.",
+        "aiAssistantSubtitle": "Ajukan pertanyaan klinis berdasarkan konteks pasien MetaKlinik.",
         "integrationsSubtitle": "Konfigurasikan BPJS PCare dan pantau pengiriman data kesehatan eksternal.",
         "administrationSubtitle": "Kelola pengguna sistem, peran, dan izin.",
         "aiProvidersSubtitle": "Atur penyedia AI yang menjawab percakapan chatbot."
@@ -343,7 +343,7 @@
       }
     },
     "deliveryLink": {
-      "metadataTitle": "Dokumen Anda | Saling Jaga",
+      "metadataTitle": "Dokumen Anda | MetaKlinik",
       "metadataDescription": "Unduh dokumen yang dikirimkan klinik kepada Anda",
       "title": "Dokumen Anda dari klinik",
       "checking": "Memeriksa tautan Anda…",
@@ -358,7 +358,7 @@
     "bugReport": {
       "menuItem": "Laporkan bug",
       "title": "Laporkan bug",
-      "description": "Ceritakan apa yang salah. Setiap laporan dibaca oleh teknisi Saling Jaga.",
+      "description": "Ceritakan apa yang salah. Setiap laporan dibaca oleh teknisi MetaKlinik.",
       "warning": "Jangan sertakan data pasien: nama, NIK, nomor BPJS, nomor rekam medis, telepon, alamat, diagnosis, atau kata sandi apa pun.",
       "fields": {
         "title": "Apa masalahnya, dalam satu baris?",

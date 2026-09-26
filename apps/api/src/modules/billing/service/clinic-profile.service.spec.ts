@@ -167,7 +167,7 @@ describe('ClinicProfileService', () => {
       const unconfigured = await service.getLetterhead();
 
       expect(withBrokenLogo.logoDataUri).toBeNull();
-      expect(unconfigured).toMatchObject({ name: 'Saling Jaga', taxId: null, logoDataUri: null });
+      expect(unconfigured).toMatchObject({ name: 'MetaKlinik', taxId: null, logoDataUri: null });
     });
   });
 

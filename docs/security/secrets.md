@@ -80,11 +80,11 @@ Feature-gated: absent, the integration is off and the rest of the API boots.
 | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY`          | object-store IAM         | [external API keys](#external-api-keys)      |
 | `AI_PLATFORM_API_KEY`                                | AI vendor console        | [external API keys](#external-api-keys)      |
 | `WA_GATEWAY_*` (basic auth, webhook secret, API key) | set by us on the gateway | change on both sides in one restart          |
-| `NOTION_API_TOKEN`                                   | Saling Jaga ops          | [Notion bug-intake token](#notion-bug-intake-token) |
+| `NOTION_API_TOKEN`                                   | MetaKlinik ops          | [Notion bug-intake token](#notion-bug-intake-token) |
 
 `NOTION_API_TOKEN` and `NOTION_BUG_BOARD_DATA_SOURCE_ID` are set together or
 not at all — the API refuses to start with one and not the other, and an empty
-string counts as unset. Owner: Saling Jaga ops, not the clinic: the Bug Board
+string counts as unset. Owner: MetaKlinik ops, not the clinic: the Bug Board
 is ours, so neither value is editable through the admin UI. Each clinic
 deployment holds its **own** integration token, scoped to Read + Insert on
 that one board, so revoking one clinic touches no other. Neither value goes

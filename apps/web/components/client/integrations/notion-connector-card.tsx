@@ -16,7 +16,7 @@ import { useNotionConnectorStatus } from '#lib/integrations/use-notion-connector
  * The Notion bug-report connector card (P23-T05).
  *
  * Read-only by design, and the design is the decision: the configuration is
- * environment-only (P23-T02) because the Bug Board belongs to Saling Jaga and
+ * environment-only (P23-T02) because the Bug Board belongs to MetaKlinik and
  * not to the clinic, so there is no form here and an unconfigured deployment
  * gets a hint about the server's `NOTION_*` variables rather than fields to
  * fill in.

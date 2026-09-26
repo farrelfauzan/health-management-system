@@ -10,7 +10,7 @@ export type BugReportStatusValue = 'RECEIVED' | 'TRIAGED' | 'HELD' | 'PUBLISHED'
  * What intake answers with (P23-T08).
  *
  * The reference and the status, and deliberately nothing else. There is no
- * Notion link here even once one exists: the Bug Board is Saling Jaga's
+ * Notion link here even once one exists: the Bug Board is MetaKlinik's
  * engineering record, not the clinic's, and handing a reporter a URL they
  * cannot open is worse than handing them nothing. The `BR-` reference is what
  * support asks for.

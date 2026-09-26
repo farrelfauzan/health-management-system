@@ -9874,7 +9874,7 @@ paths:
                 value:
                   sex: FEMALE
                   dateOfBirth: 2026-09-20
-                  placeOfBirth: Klinik Saling Jaga
+                  placeOfBirth: Klinik Pratama Sehat Bersama
                   birthOrder: 2
                   privacyNotice:
                     privacyNoticeVersionId: 99999999-9999-4999-8999-999999999999
@@ -10024,7 +10024,7 @@ paths:
                     source: FRONT_DESK
                     fullName: Bayi Ny. Aisha Rahman
                     dateOfBirth: 2026-09-20
-                    placeOfBirth: Klinik Saling Jaga
+                    placeOfBirth: Klinik Pratama Sehat Bersama
                     sex: FEMALE
                     status: OUT_PATIENT
                     phoneNumber: "+628123456789"

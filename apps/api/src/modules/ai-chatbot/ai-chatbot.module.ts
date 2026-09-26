@@ -109,7 +109,7 @@ import { ListMyPatientsTool } from './tools/definitions/list-my-patients.tool';
   // `AiProviderRegistry` is exported for bug-report triage (`P23-T09`), and it
   // is the *registry* rather than the resolver on purpose. The resolver's whole
   // job is to answer "which provider has this clinic configured", and triage
-  // must never ask that question: it runs on Saling Jaga's own key
+  // must never ask that question: it runs on MetaKlinik's own key
   // (`BUG_TRIAGE_AI_*`), because the clinic's row is the clinic's bill, covered
   // by a chat-only DPA, and switchable off — and a bug report has to reach us
   // precisely when the clinic has switched things off. What triage needs from

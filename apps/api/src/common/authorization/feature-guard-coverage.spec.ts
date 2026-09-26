@@ -162,7 +162,7 @@ const NEVER_GATED_CONTROLLERS: readonly string[] = [
   // silently wider than the operator asked for. The token itself is the
   // authorisation here, and it is still checked, rate-limited and revocable.
   'DeliveryLinkPublicController',
-  // P23-T04. Saling Jaga's own connector, not a module the clinic bought:
+  // P23-T04. MetaKlinik's own connector, not a module the clinic bought:
   // there is no entitlement to sell, and switching it off would only hide the
   // one screen that explains why bug reports stopped arriving.
   'NotionConnectorController',

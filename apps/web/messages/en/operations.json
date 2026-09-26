@@ -827,8 +827,8 @@
         "title": "Notion bug board",
         "configured": "Connected",
         "notConfigured": "Not configured",
-        "configuredHint": "In-app bug reports are published to the Saling Jaga Bug Board.",
-        "notConfiguredHint": "Set NOTION_API_TOKEN and NOTION_BUG_BOARD_DATA_SOURCE_ID on the server. There is no form here: the board belongs to Saling Jaga, not to the clinic.",
+        "configuredHint": "In-app bug reports are published to the MetaKlinik Bug Board.",
+        "notConfiguredHint": "Set NOTION_API_TOKEN and NOTION_BUG_BOARD_DATA_SOURCE_ID on the server. There is no form here: the board belongs to MetaKlinik, not to the clinic.",
         "apiVersion": "API version",
         "boardHint": "Board",
         "breaker": "Circuit breaker",
@@ -2374,7 +2374,7 @@
     "taxes": {
       "settings": {
         "title": "Tax profile",
-        "description": "Every tax figure the clinic gets — tax on invoices and the monthly report drafts — is computed from these answers. Saling Jaga prepares drafts; the clinic pays and files in Coretax itself.",
+        "description": "Every tax figure the clinic gets — tax on invoices and the monthly report drafts — is computed from these answers. MetaKlinik prepares drafts; the clinic pays and files in Coretax itself.",
         "loadError": "The tax settings could not be loaded.",
         "save": "Save tax profile",
         "saved": "Tax profile saved",
@@ -2442,7 +2442,7 @@
       },
       "codes": {
         "title": "Tax codes",
-        "description": "Each tariff and medicine is taxed under a code. System codes come with Saling Jaga; add your own for anything they do not describe. A new rate starts on its date and never changes invoices already issued.",
+        "description": "Each tariff and medicine is taxed under a code. System codes come with MetaKlinik; add your own for anything they do not describe. A new rate starts on its date and never changes invoices already issued.",
         "add": "Add tax code",
         "loadError": "The tax codes could not be loaded.",
         "saved": "Tax code saved",

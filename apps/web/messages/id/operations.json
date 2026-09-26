@@ -827,8 +827,8 @@
         "title": "Bug board Notion",
         "configured": "Terhubung",
         "notConfigured": "Belum dikonfigurasi",
-        "configuredHint": "Laporan bug dari aplikasi dikirim ke Bug Board Saling Jaga.",
-        "notConfiguredHint": "Atur NOTION_API_TOKEN dan NOTION_BUG_BOARD_DATA_SOURCE_ID di server. Tidak ada formulir di sini: board ini milik Saling Jaga, bukan milik klinik.",
+        "configuredHint": "Laporan bug dari aplikasi dikirim ke Bug Board MetaKlinik.",
+        "notConfiguredHint": "Atur NOTION_API_TOKEN dan NOTION_BUG_BOARD_DATA_SOURCE_ID di server. Tidak ada formulir di sini: board ini milik MetaKlinik, bukan milik klinik.",
         "apiVersion": "Versi API",
         "boardHint": "Board",
         "breaker": "Circuit breaker",
@@ -2374,7 +2374,7 @@
     "taxes": {
       "settings": {
         "title": "Profil pajak",
-        "description": "Semua angka pajak klinik — pajak pada invoice dan draft laporan bulanan — dihitung dari jawaban di sini. Saling Jaga menyiapkan draft; klinik tetap menyetor dan melapor sendiri di Coretax.",
+        "description": "Semua angka pajak klinik — pajak pada invoice dan draft laporan bulanan — dihitung dari jawaban di sini. MetaKlinik menyiapkan draft; klinik tetap menyetor dan melapor sendiri di Coretax.",
         "loadError": "Pengaturan pajak tidak dapat dimuat.",
         "save": "Simpan profil pajak",
         "saved": "Profil pajak disimpan",
@@ -2442,7 +2442,7 @@
       },
       "codes": {
         "title": "Kode pajak",
-        "description": "Setiap tarif dan obat dikenai pajak menurut satu kode. Kode sistem sudah disediakan Saling Jaga; tambahkan kode sendiri untuk yang belum tercakup. Tarif baru berlaku mulai tanggalnya dan tidak mengubah invoice yang sudah terbit.",
+        "description": "Setiap tarif dan obat dikenai pajak menurut satu kode. Kode sistem sudah disediakan MetaKlinik; tambahkan kode sendiri untuk yang belum tercakup. Tarif baru berlaku mulai tanggalnya dan tidak mengubah invoice yang sudah terbit.",
         "add": "Tambah kode pajak",
         "loadError": "Kode pajak tidak dapat dimuat.",
         "saved": "Kode pajak disimpan",
