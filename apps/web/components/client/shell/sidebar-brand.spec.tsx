@@ -22,13 +22,13 @@ describe('SidebarBrand', () => {
     document.cookie = 'sidebar_state=; path=/; max-age=0';
   });
 
-  it('renders the facility logo, not a placeholder icon', () => {
+  it('renders the MetaKlinik mark, not a placeholder icon', () => {
     renderBrand();
 
-    const logo = screen.getByAltText('Logo Saling Jaga');
+    const logo = screen.getByRole('img', { name: 'Logo MetaKlinik' });
 
-    expect(logo).toBeInTheDocument();
-    expect(logo.getAttribute('src')).toContain('saling-jaga-mark.png');
+    expect(logo.tagName.toLowerCase()).toBe('svg');
+    expect(logo.querySelectorAll('path')).toHaveLength(5);
   });
 
   it('links the brand back to the dashboard', () => {

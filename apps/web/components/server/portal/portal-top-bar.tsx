@@ -1,10 +1,11 @@
 import type { PortalShellValue } from '@hms/shared-types';
-import { Icon } from '@hms/ui';
 import { getTranslations } from 'next-intl/server';
 
 import { PortalNavLink } from '#components/client/portal/portal-nav-link';
 import { LanguageSwitcher } from '#components/client/shared/language-switcher';
 import { ProfileMenu } from '#components/client/shell/profile-menu';
+import { BrandMark } from '#components/shared/brand-mark';
+import { FACILITY_CONFIG } from '#lib/facility/facility-config';
 import type { ShellProfile } from '#lib/shell/shell-profile';
 
 type PortalTopBarProps = {
@@ -15,13 +16,18 @@ type PortalTopBarProps = {
 
 export async function PortalTopBar({ profile, openableShells }: PortalTopBarProps) {
   const t = await getTranslations('authShell.shell.portal');
+  const tBrand = await getTranslations('authShell.shell.brand');
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b bg-card px-8 shadow-sm">
-      <span className="flex size-9 items-center justify-center rounded-lg bg-primary-container text-white">
-        <Icon name="local_hospital" size={20} />
-      </span>
+      <BrandMark
+        size={36}
+        label={tBrand('logoAlt', { facilityName: FACILITY_CONFIG.name })}
+        className="size-9 shrink-0"
+      />
       <span className="grid leading-tight">
-        <span className="font-heading text-sm font-semibold text-slate-900">Saling Jaga</span>
+        <span className="font-heading text-sm font-semibold text-slate-900">
+          {FACILITY_CONFIG.name}
+        </span>
         <span className="text-xs text-muted-foreground">{t('name')}</span>
       </span>
       {/* The portal had one screen and reached it by redirect; a second one

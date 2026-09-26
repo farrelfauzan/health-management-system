@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Saling Jaga',
-  description: 'Saling Jaga health management system',
+  title: 'MetaKlinik',
+  description: 'MetaKlinik health management system',
 };
 
 type RootLayoutProps = {
