@@ -339,11 +339,11 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- environment (P23-T02), so this grants the status view and the Bug Board
     -- schema test, not the ability to change where bug reports go. Held by
     -- SUPER_ADMIN through the catalog-wide grant and by nobody else — the
-    -- board belongs to Saling Jaga, not to the clinic.
+    -- board belongs to MetaKlinik, not to the clinic.
     ('notion-connector.manage:any', 'NotionConnector', 'manage', 'ANY', 'Read the Notion bug-report connector status and test the Bug Board connection'),
     -- P23-T08. Scope OWN because a reporter files their own reports and there
     -- is no read side to this permission at all: nobody in the clinic lists
-    -- bug reports, because the tickets live on Saling Jaga's board rather than
+    -- bug reports, because the tickets live on MetaKlinik's board rather than
     -- in the clinic's portal. Granted to the staff roles below and deliberately
     -- not to PATIENT — a patient with a problem talks to the clinic, and a
     -- report goes to our engineers with its text attached.

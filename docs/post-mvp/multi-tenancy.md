@@ -69,7 +69,7 @@ So this is not a compliance checkbox — it is a blast-radius and procurement de
 
 Two candidate boundaries, and they are not the same:
 
-- **Organization (badan usaha)** — the legal entity that signs the contract and pays. `Klinik Saling Jaga Group`.
+- **Organization (badan usaha)** — the legal entity that signs the contract and pays. `Klinik Pratama Sehat Bersama Group`.
 - **Facility (fasilitas kesehatan)** — the physical practice location. Its own SIP-registered doctors, its own BPJS PKS and PCare credentials, its own SATUSEHAT `Organization` id, its own paper folders and therefore its own MRN series.
 
 **Decision: one database per organization. `Facility` is a table inside that database.**

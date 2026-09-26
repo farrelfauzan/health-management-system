@@ -73,7 +73,7 @@ klinik clinic hospital rumahsakit puskesmas apotek apotik farmasi dokter doctor
 perawat nurse pasien patient bidan medis medical kesehatan health obat medicine
 resep rekammedis rekam antrian antrean pendaftaran poli poliklinik igd ugd
 bpjs jkn kis satusehat kemenkes dinkes labor laboratorium radiologi rontgen
-salingjaga sjaga hms admin1 adminklinik adminrs operator kasir
+metaklinik mklinik salingjaga sjaga hms admin1 adminklinik adminrs operator kasir
 `;
 
 /** Names, which are the single largest category in most real corpora. */

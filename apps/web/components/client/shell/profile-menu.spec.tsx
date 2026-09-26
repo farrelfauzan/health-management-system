@@ -130,14 +130,14 @@ describe('ProfileMenu', () => {
 
     it('uses the translated placeholder only with neither a name nor an address', () => {
       renderProfileMenu(undefined, {
-        displayName: 'Saling Jaga User',
+        displayName: 'MetaKlinik User',
         isFallbackName: true,
         roleLabel: 'Staff',
         roleKey: 'staff',
         email: '',
       });
 
-      expect(screen.getByText('Pengguna Saling Jaga')).toBeInTheDocument();
+      expect(screen.getByText('Pengguna MetaKlinik')).toBeInTheDocument();
     });
   });
 });

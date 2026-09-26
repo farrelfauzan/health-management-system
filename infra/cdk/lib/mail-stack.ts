@@ -211,7 +211,7 @@ export class MailStack extends Stack {
         IAM_SECRET_ACCESS_KEY: accessKey.secretAccessKey,
         MAIL_HOST: SecretValue.unsafePlainText(`email-smtp.${this.region}.amazonaws.com`),
         MAIL_PORT: SecretValue.unsafePlainText(String(SMTP_STARTTLS_PORT)),
-        MAIL_FROM: SecretValue.unsafePlainText(`Saling Jaga <${props.senderAddress}>`),
+        MAIL_FROM: SecretValue.unsafePlainText(`MetaKlinik <${props.senderAddress}>`),
       },
     });
 
@@ -224,7 +224,7 @@ export class MailStack extends Stack {
       description: 'MAIL_PORT — STARTTLS. Leave MAIL_SECURE false on this port',
     });
     new CfnOutput(this, 'MailFrom', {
-      value: `Saling Jaga <${props.senderAddress}>`,
+      value: `MetaKlinik <${props.senderAddress}>`,
       description: 'MAIL_FROM — SES rejects any From address it has not verified',
     });
     new CfnOutput(this, 'MailCredentialsSecretName', {

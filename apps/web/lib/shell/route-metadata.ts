@@ -154,7 +154,7 @@ export const ADMIN_ROUTE_METADATA: Record<AdminRouteKey, AdminRouteMetadata> = {
   'ai-assistant': {
     breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'AI Assistant' }],
     title: 'AI Clinical Assistant',
-    subtitle: 'Ask clinical questions grounded in Saling Jaga patient context.',
+    subtitle: 'Ask clinical questions grounded in MetaKlinik patient context.',
   },
   integrations: {
     breadcrumbs: [ADMIN_ROOT_BREADCRUMB, { label: 'Integrations' }],

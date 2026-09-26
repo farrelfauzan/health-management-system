@@ -1,7 +1,7 @@
 import { buildCsSystemPrompt } from './build-cs-system-prompt';
 
 describe('buildCsSystemPrompt', () => {
-  const inputClinicName = 'Klinik SalingJaga';
+  const inputClinicName = 'Klinik Pratama Sehat Bersama';
   const inputCurrentDate = '2026-08-14';
 
   it('names the clinic it is answering for', () => {

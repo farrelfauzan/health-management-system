@@ -84,7 +84,7 @@ without knowing the deployment's configured URL.
 Two more classes of recipient were added after this section was first written,
 and both are inventoried below rather than here because neither is an AI chat
 boundary: the **delivery processors** of §5b (WhatsApp, SMTP) and the **bug
-reporting** processors of §5c (a Saling Jaga-owned triage vendor, and Notion).
+reporting** processors of §5c (a MetaKlinik-owned triage vendor, and Notion).
 §5c is the only one written *before* the code — deliberately, because §5b
 exists to record the opposite. Its processors have since been built (P23-T09/T10)
 against the boundary it had already drawn.
@@ -287,10 +287,10 @@ data, because sooner or later it will.
 
 | | ❺ Bug-triage AI vendor | ❻ Notion |
 |---|---|---|
-| What it is | A **Saling Jaga-owned** key (`BUG_TRIAGE_AI_*`), never the clinic's `AiProviderConfig` row | Notion, US-hosted, reached with one internal integration per clinic deployment (P23-T01) |
+| What it is | A **MetaKlinik-owned** key (`BUG_TRIAGE_AI_*`), never the clinic's `AiProviderConfig` row | Notion, US-hosted, reached with one internal integration per clinic deployment (P23-T01) |
 | Why not the clinic's key | That row is the clinic's chat provider: the clinic's bill, a DPA that covers chat only, and it may be switched off — a bug report must still reach us when it is | — |
 | What crosses | The **redacted** report text, the route it was filed from, the reporter's **role**, the app version, recent request ids | The AI-written title and body, plus the Bug Board fields of P23-T01 §2 |
-| Who it reaches | The vendor named in `BUG_TRIAGE_AI_*` for that deployment | Notion, and everyone with access to the Saling Jaga workspace |
+| Who it reaches | The vendor named in `BUG_TRIAGE_AI_*` for that deployment | Notion, and everyone with access to the MetaKlinik workspace |
 | Controller instrument | **Unknown — same gap shape as G1/G2** | **Unknown — same gap shape** |
 
 ### What never leaves, at either boundary

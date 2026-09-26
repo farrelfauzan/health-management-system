@@ -1,4 +1,4 @@
-# WhatsApp / Telegram Customer Service Strategy (SalingJaga)
+# WhatsApp / Telegram Customer Service Strategy (MetaKlinik)
 
 Strategy for a conversational customer-service channel over **WhatsApp** (via a self-hosted gateway — GOWA or WAHA) and **Telegram** (official Bot API). An LLM classifies the intent of each inbound message, executes tools inside HMS, and replies to the customer directly on the same channel.
 
@@ -341,7 +341,7 @@ At the clinic, the admin's existing check-in flow gains a worklist: channel-sour
 
 ## 7. Telegram Specifics
 
-- One bot (`@SalingJagaBot` or clinic-branded), webhook to `/api/v1/channel-gateway/telegram/webhook`, authenticated by the BotFather `secret_token` header.
+- One bot (`@MetaKlinikBot` or clinic-branded), webhook to `/api/v1/channel-gateway/telegram/webhook`, authenticated by the BotFather `secret_token` header.
 - Telegram allows richer UX at zero cost — use it, but keep parity thinking: **inline keyboards** for session selection (tap a session instead of typing "number 2") and `/start`, `/booking`, `/faq` command hints. The conversation core stays text-first so WhatsApp (plain text + numbered lists) runs the identical logic; the gateway adapter decides *presentation* (buttons vs numbered list) from the same normalized reply structure (`text + options[]`).
 - Telegram is the **pilot channel**: ship it first (no ban risk, free, instant setup), harden the flows on real traffic, then attach the WhatsApp number.
 

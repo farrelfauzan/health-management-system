@@ -2,8 +2,8 @@
   "authShell": {
     "auth": {
       "metadata": {
-        "title": "Sign in | Saling Jaga",
-        "description": "Sign in to the Saling Jaga health management portal"
+        "title": "Sign in | MetaKlinik",
+        "description": "Sign in to the MetaKlinik health management portal"
       },
       "brand": {
         "logoAlt": "{facilityName} logo",
@@ -14,7 +14,7 @@
       "title": "Sign in",
       "subtitle": "Use your staff account to access the portal.",
       "emailLabel": "Email",
-      "emailPlaceholder": "you@salingjaga.com",
+      "emailPlaceholder": "you@example.com",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Enter your password",
       "submit": "Sign in",
@@ -75,10 +75,10 @@
       }
     },
     "invite": {
-      "metadataTitle": "Accept your invitation | Saling Jaga",
-      "metadataDescription": "Set a password for your Saling Jaga staff account",
+      "metadataTitle": "Accept your invitation | MetaKlinik",
+      "metadataDescription": "Set a password for your MetaKlinik staff account",
       "title": "Set your password",
-      "subtitle": "You were invited to join Saling Jaga as {email}.",
+      "subtitle": "You were invited to join MetaKlinik as {email}.",
       "expiresAt": "This link expires on {date}.",
       "checking": "Checking your invitation…",
       "passwordLabel": "Password",
@@ -300,7 +300,7 @@
       "profile": {
         "openMenu": "Open profile menu",
         "logout": "Log out",
-        "fallbackName": "Saling Jaga User",
+        "fallbackName": "MetaKlinik User",
         "roles": {
           "superAdmin": "Super Admin",
           "admin": "Admin",
@@ -350,7 +350,7 @@
         "billingCashier": "Billing & Cashier",
         "billingSubtitle": "Generate invoices from finished visits, settle them, and reconcile the drawer.",
         "aiClinicalAssistant": "AI Clinical Assistant",
-        "aiAssistantSubtitle": "Ask clinical questions grounded in Saling Jaga patient context.",
+        "aiAssistantSubtitle": "Ask clinical questions grounded in MetaKlinik patient context.",
         "integrationsSubtitle": "Configure BPJS PCare and monitor external health-data submissions.",
         "administrationSubtitle": "Manage system users, roles, and permissions.",
         "aiProvidersSubtitle": "Configure the upstream AI provider that answers chatbot conversations."
@@ -363,7 +363,7 @@
       }
     },
     "deliveryLink": {
-      "metadataTitle": "Your document | Saling Jaga",
+      "metadataTitle": "Your document | MetaKlinik",
       "metadataDescription": "Download a document the clinic sent you",
       "title": "Your document from the clinic",
       "checking": "Checking your link…",
@@ -378,7 +378,7 @@
     "bugReport": {
       "menuItem": "Report a bug",
       "title": "Report a bug",
-      "description": "Tell us what went wrong. An engineer at Saling Jaga reads every report.",
+      "description": "Tell us what went wrong. An engineer at MetaKlinik reads every report.",
       "warning": "Do not include patient data: name, NIK, BPJS number, MRN, phone, address, diagnosis, or any password.",
       "fields": {
         "title": "What is the problem, in one line?",

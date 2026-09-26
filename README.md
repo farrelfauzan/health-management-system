@@ -1,15 +1,16 @@
 <p align="center">
-  <img src="apps/web/public/saling-jaga-lockup.png" alt="Saling Jaga — Health Management System" width="280">
+  <img src="apps/web/app/icon.png" alt="MetaKlinik" width="96">
 </p>
 
-<h3 align="center"><em>Saling jaga, sehat bersama.</em></h3>
-<p align="center">Look after each other, stay healthy together.</p>
+<h1 align="center">MetaKlinik</h1>
+<h3 align="center"><em>Medis · Engagement · Terintegrasi · Administrasi</em></h3>
+<p align="center">One layer above the clinic's daily work.</p>
 
 ---
 
-## What is Saling Jaga?
+## What is MetaKlinik?
 
-**Saling Jaga** is a clinic management system built for Indonesian healthcare facilities, starting with the *klinik pratama* (FKTP). The name means *"looking after one another"*, and that is the idea behind the product: the clinic looks after its patients, and the system looks after the clinic's paperwork.
+**MetaKlinik** is a clinic management system built for Indonesian healthcare facilities, starting with the *klinik pratama* (FKTP). The name comes from *meta*, "a layer above": the system sits over the clinic's daily work so that staff can look after patients while it looks after the paperwork. Its four pillars spell the name: **M**edis (the medical record), **E**ngagement (the WhatsApp agent), **T**erintegrasi (SATUSEHAT and BPJS) and **A**dministrasi (billing, stock and reporting).
 
 It brings the whole visit into one place. A patient books on WhatsApp, checks in at the front desk, sees the doctor, collects medicine and pays. The medical record, lab results, prescriptions, invoice and government reporting are all handled along the way, so nobody types the same data twice.
 
@@ -25,7 +26,7 @@ It brings the whole visit into one place. A patient books on WhatsApp, checks in
 
 ## Who it's for
 
-Saling Jaga has three workspaces, and each person sees only what their role permits.
+MetaKlinik has three workspaces, and each person sees only what their role permits.
 
 | Workspace | Who uses it | What they do there |
 |---|---|---|
@@ -105,7 +106,7 @@ An AI assistant built into the workspace for **doctors** and **clinic staff**.
 
 - **Answers from your clinic's own documents.** It searches the clinic's approved knowledge library and each doctor's personal knowledge base, and shows the passages it used.
 - **Looks up live clinic data** such as today's appointments, a patient summary, the queue board, medication stock and expiry, or the daily cashier report. It only ever sees what the person asking is allowed to see.
-- **Works with the AI provider the clinic chooses:** OpenAI, Azure OpenAI, Anthropic Claude, Google Gemini, DeepSeek, a self-hosted Ollama, or any OpenAI-compatible service. Each clinic enters its own API key, which is stored encrypted. Saling Jaga does not run AI models itself.
+- **Works with the AI provider the clinic chooses:** OpenAI, Azure OpenAI, Anthropic Claude, Google Gemini, DeepSeek, a self-hosted Ollama, or any OpenAI-compatible service. Each clinic enters its own API key, which is stored encrypted. MetaKlinik does not run AI models itself.
 - **Can keep documents on-premise.** With a local embedding model (Ollama), the clinic's documents never leave its own infrastructure.
 
 **Safety comes first.** The assistant never diagnoses and never prescribes. Every answer carries a disclaimer in Bahasa Indonesia and English, and emergency symptoms trigger a "go to the emergency room" reply. It will not state a clinic fact it hasn't actually looked up. Personal data is minimised before anything reaches the AI provider, uploaded documents are screened for prompt-injection attempts, and every conversation is kept for audit.
@@ -122,7 +123,7 @@ An AI customer-service agent that talks to patients where they already are.
 
 ### 🇮🇩 SATUSEHAT
 
-Saling Jaga sends clinical data to **SATUSEHAT**, the Ministry of Health's national health data platform, as the regulations require.
+MetaKlinik sends clinical data to **SATUSEHAT**, the Ministry of Health's national health data platform, as the regulations require.
 
 - Each **visit** is sent with its diagnoses, observations, procedures, vaccinations, allergies, medications, prescriptions and dispensing. Each **lab report** is sent with its specimens and results.
 - Patients and doctors are matched to their SATUSEHAT (IHS) identities.
@@ -143,7 +144,7 @@ Connects the clinic's queue to **Mobile JKN**, the national JKN app.
 
 - BPJS patients can **take, check and cancel a queue number** from their phone, and new patients can register.
 - The clinic's own queue progress (added, called, cancelled) is published back to BPJS.
-- The doctor schedule held by BPJS (HFIS) is compared with the schedule in Saling Jaga, so differences are caught early.
+- The doctor schedule held by BPJS (HFIS) is compared with the schedule in MetaKlinik, so differences are caught early.
 - The endpoints BPJS calls are protected and every call is logged.
 
 ### ✉️ Email & PDF
@@ -167,7 +168,7 @@ The interface is fully bilingual in **Bahasa Indonesia** (default) and **English
 
 ---
 
-## Running Saling Jaga
+## Running MetaKlinik
 
 ### Environment setup
 

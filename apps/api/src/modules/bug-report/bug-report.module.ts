@@ -35,7 +35,7 @@ import { BugReportService } from './service/bug-report.service';
  * `AiProviderConfig` row (§5c): that is the clinic's chat provider, on the
  * clinic's bill, under a DPA written for chat, and switchable off. A bug report
  * has to reach us precisely when the clinic has switched things off, so triage
- * runs on Saling Jaga's own `BUG_TRIAGE_AI_*` key or falls back to publishing the
+ * runs on MetaKlinik's own `BUG_TRIAGE_AI_*` key or falls back to publishing the
  * reporter's redacted words.
  */
 @Module({

@@ -123,7 +123,7 @@ steps.
 | `MAIL_PORT` | `587` | |
 | `MAIL_SECURE` | `port === 465` | Implicit TLS. On 587 leave it false — STARTTLS still applies |
 | `MAIL_USER` / `MAIL_PASSWORD` | *(empty)* | **Set together or not at all.** A half-filled pair fails at boot |
-| `MAIL_FROM` | `Saling Jaga <no-reply@localhost>` | Must be an address the provider authorises, or messages are dropped |
+| `MAIL_FROM` | `MetaKlinik <no-reply@localhost>` | Must be an address the provider authorises, or messages are dropped |
 | `MAIL_CONNECTION_TIMEOUT_MS` | `10000` | Also the greeting timeout |
 | `WEB_APP_BASE_URL` | `http://localhost:3000` | The **web** origin links point at, not the API's |
 
@@ -163,7 +163,7 @@ With no `MAIL_*` set, invite someone from the admin UI and read the link out of
 the API's stdout:
 
 ```
-[mail:log-transport] to=… subject=Undangan akun Saling Jaga / …
+[mail:log-transport] to=… subject=Undangan akun MetaKlinik / …
 … http://localhost:3000/invite/<token> …
 ```
 

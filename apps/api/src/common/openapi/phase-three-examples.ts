@@ -687,7 +687,7 @@ export const PHASE_THREE_EXAMPLES = {
     registerNewbornRequest: {
       sex: 'FEMALE',
       dateOfBirth: '2026-09-20',
-      placeOfBirth: 'Klinik Saling Jaga',
+      placeOfBirth: 'Klinik Pratama Sehat Bersama',
       birthOrder: 2,
       privacyNotice: {
         privacyNoticeVersionId,
@@ -706,7 +706,7 @@ export const PHASE_THREE_EXAMPLES = {
       mrn: '00000002',
       fullName: 'Bayi Ny. Aisha Rahman',
       dateOfBirth: optionalExample('2026-09-20'),
-      placeOfBirth: 'Klinik Saling Jaga',
+      placeOfBirth: 'Klinik Pratama Sehat Bersama',
       nikMasked: optionalExample(null),
       guardianName: optionalExample('Aisha Rahman'),
       guardianRelation: optionalExample('Ibu'),

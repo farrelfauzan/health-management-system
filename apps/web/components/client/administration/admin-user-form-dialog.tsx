@@ -133,7 +133,7 @@ export function AdminUserFormDialog({ open, onOpenChange, user }: AdminUserFormD
                   id={field.name}
                   type="email"
                   value={field.state.value}
-                  placeholder="admin@salingjaga.com"
+                  placeholder="admin@example.com"
                   onChange={(event) => field.handleChange(event.target.value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}

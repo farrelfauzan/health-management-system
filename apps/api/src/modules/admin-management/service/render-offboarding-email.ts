@@ -2,7 +2,7 @@ import { OffboardingEmailPayload } from '@hms/shared-types';
 
 import { RenderedMail } from '../../../common/mail/mail.types';
 
-const CLINIC_LABEL = 'Saling Jaga';
+const CLINIC_LABEL = 'MetaKlinik';
 
 /**
  * Renders the two offboarding emails (`P16-T41`, FR-E3-27): the one sent the

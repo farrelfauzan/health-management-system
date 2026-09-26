@@ -32,7 +32,7 @@ const BUG_REPORT_AUDIT_RESOURCE = 'BugReport';
  * The config id the breaker and the logs key triage calls on.
  *
  * A constant rather than a database id because there is no row behind this
- * provider — it is Saling Jaga's own key, one per deployment. Distinct from the
+ * provider — it is MetaKlinik's own key, one per deployment. Distinct from the
  * chat gateway's `platform-env` so a dead triage vendor never opens the
  * clinic's chat circuit, and vice versa.
  */

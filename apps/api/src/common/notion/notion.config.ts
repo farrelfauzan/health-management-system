@@ -94,7 +94,7 @@ function readCredentials(configService: ConfigService): {
  * Resolves and validates the Notion connector settings at startup (P23-T02).
  *
  * The configuration is environment-only on purpose: the Bug Board belongs to
- * Saling Jaga, not to the clinic, so a clinic administrator must not be able
+ * MetaKlinik, not to the clinic, so a clinic administrator must not be able
  * to read the token or redirect where bug reports go. There is no admin form
  * and no database row behind this.
  *

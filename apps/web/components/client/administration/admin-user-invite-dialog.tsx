@@ -128,7 +128,7 @@ export function AdminUserInviteDialog({ open, onOpenChange }: AdminUserInviteDia
                   id={field.name}
                   type="email"
                   value={field.state.value}
-                  placeholder="perawat@salingjaga.com"
+                  placeholder="perawat@example.com"
                   onChange={(event) => field.handleChange(event.target.value)}
                   onBlur={field.handleBlur}
                   aria-invalid={field.state.meta.errors.length > 0}
