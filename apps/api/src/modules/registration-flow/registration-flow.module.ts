@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { AppointmentManagementModule } from '../appointment-management/appointment-management.module';
 import { AuthModule } from '../auth/auth.module';
+import { NotificationModule } from '../notification/notification.module';
 import { PrivacyNoticeModule } from '../../common/privacy-notice/privacy-notice.module';
 import { RegistrationFlowController } from './controller/registration-flow.controller';
 import { QueueNumberAllocatorRepository } from './repository/queue-number-allocator.repository';
 import { RegistrationFlowRepository } from './repository/registration-flow.repository';
+import { RegistrationCheckInNotificationService } from './service/registration-check-in-notification.service';
 import { RegistrationFlowService } from './service/registration-flow.service';
 
 /**
@@ -15,9 +17,14 @@ import { RegistrationFlowService } from './service/registration-flow.service';
  * decided in one place — cancelled sessions and standing schedules included.
  */
 @Module({
-  imports: [AppointmentManagementModule, AuthModule, PrivacyNoticeModule],
+  imports: [AppointmentManagementModule, AuthModule, NotificationModule, PrivacyNoticeModule],
   controllers: [RegistrationFlowController],
-  providers: [QueueNumberAllocatorRepository, RegistrationFlowRepository, RegistrationFlowService],
+  providers: [
+    QueueNumberAllocatorRepository,
+    RegistrationFlowRepository,
+    RegistrationCheckInNotificationService,
+    RegistrationFlowService,
+  ],
   exports: [RegistrationFlowService],
 })
 export class RegistrationFlowModule {}

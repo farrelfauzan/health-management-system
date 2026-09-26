@@ -10,6 +10,7 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { RegistrationFlowRepository } from '../repository/registration-flow.repository';
+import { RegistrationCheckInNotificationService } from './registration-check-in-notification.service';
 import { RegistrationFlowService } from './registration-flow.service';
 
 type PermissionScope = 'ANY' | 'OWN';
@@ -71,11 +72,17 @@ describe('RegistrationFlowService', () => {
     record: jest.fn(),
   } as unknown as AuditService;
 
+  const notifyCheckedInMock = jest.fn();
+  const registrationCheckInNotificationServiceMock = {
+    notifyCheckedIn: notifyCheckedInMock,
+  } as unknown as RegistrationCheckInNotificationService;
+
   const service = new RegistrationFlowService(
     registrationFlowRepositoryMock,
     authRepositoryMock,
     appointmentManagementServiceMock,
     auditServiceMock,
+    registrationCheckInNotificationServiceMock,
     configServiceMock,
   );
 
@@ -861,6 +868,35 @@ describe('RegistrationFlowService', () => {
       expect(repositoryMock.updateRegistration).toHaveBeenCalledWith(
         expect.objectContaining({ status: 'CHECKED_IN' }),
       );
+    });
+
+    it('tells the booked clinician their patient is waiting in the poli queue (D-048)', async () => {
+      mockPermissions(checkInPermissions);
+      repositoryMock.findRegistrationDetailById.mockResolvedValue(sessionRegistrationRecord);
+      repositoryMock.updateRegistration.mockResolvedValue({
+        ...sessionRegistrationRecord,
+        status: 'CHECKED_IN',
+      });
+      freezeClinicClock('2026-07-18T08:00:00.000Z');
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(notifyCheckedInMock).toHaveBeenCalledWith({
+        registrationId,
+        doctorId,
+        patientName: 'Patient One',
+        poliName: 'Poli Umum',
+        queueDate: '2026-07-18',
+        actorUserId: currentUser.sub,
+      });
+    });
+
+    it('tells nobody when a walk-in with no booked clinician is checked in', async () => {
+      mockPermissions(checkInPermissions);
+
+      await service.updateRegistration(registrationId, { status: 'CHECKED_IN' }, currentUser);
+
+      expect(notifyCheckedInMock).not.toHaveBeenCalled();
     });
 
     it('checks in within the early-arrival grace', async () => {

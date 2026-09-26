@@ -156,3 +156,17 @@ export type RegistrationWithRelationsRecord = RegistrationRecord & {
   appointment: RegistrationAppointmentProjection | null;
   specialty: RegistrationSpecialtyProjection | null;
 };
+
+/**
+ * What a PATIENT_CHECKED_IN notification is raised from (D-048): the
+ * clinician profile the visit is booked with, and what the bell row says.
+ * `queueDate` is the clinic-local day (`YYYY-MM-DD`) the ticket belongs to.
+ */
+export type PatientCheckedInNotice = {
+  registrationId: string;
+  doctorId: string;
+  patientName: string;
+  poliName: string;
+  queueDate: string;
+  actorUserId: string;
+};

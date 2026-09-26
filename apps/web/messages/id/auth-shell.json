@@ -275,6 +275,26 @@
         "taxPp55LastYear": {
           "title": "Tahun terakhir PP 55",
           "body": "{lastEligibleYear} adalah tahun pajak terakhir klinik ini boleh memakai tarif final 0,5% PP 55. Siapkan peralihan ke rezim umum tahun berikutnya."
+        },
+        "labOrderCreated": {
+          "title": "Order laboratorium baru",
+          "body": "{orderNumber} untuk {patientName}: {testCount} pemeriksaan{priority, select, URGENT { (cito)} other {}}. Sudah masuk daftar kerja laboratorium."
+        },
+        "patientCheckedIn": {
+          "title": "Pasien sudah check-in",
+          "body": "Pasien {patientName} sudah check-in dan menunggu di antrean {poliName}."
+        },
+        "patientAssigned": {
+          "title": "Pasien baru untuk Anda",
+          "body": "Pasien baru ditugaskan ke Anda: {patientName}."
+        },
+        "clinicianJoined": {
+          "title": "Tenaga medis baru bergabung",
+          "body": "{clinicianName} ({profession, select, MIDWIFE {Bidan} other {Dokter}}) telah bergabung dan sudah bisa masuk ke aplikasi."
+        },
+        "staffJoined": {
+          "title": "Staf baru bergabung",
+          "body": "{staffName} ({roleNames}) telah bergabung dan sudah bisa masuk ke aplikasi."
         }
       },
       "profile": {

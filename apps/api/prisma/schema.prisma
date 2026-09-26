@@ -5713,6 +5713,16 @@ enum NotificationType {
   /// body carries the doctor, the new window (or none) and the clinic's reason.
   APPOINTMENT_RESCHEDULED
   APPOINTMENT_SESSION_CANCELLED
+  /// Clinic hand-offs between roles (D-048), never addressed to the person
+  /// whose action raised them: a new in-house lab order to the bench
+  /// (`lab-specimen.write:any`), a check-in to the clinician the visit is
+  /// booked with, a care-team assignment to the clinician assigned, and an
+  /// accepted invitation to whoever administers clinicians or accounts.
+  LAB_ORDER_CREATED
+  PATIENT_CHECKED_IN
+  PATIENT_ASSIGNED
+  CLINICIAN_JOINED
+  STAFF_JOINED
 
   @@map("notification_type")
 }

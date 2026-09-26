@@ -40,6 +40,7 @@ import { ListRegistrationsQueryDto } from '../dto/list-registrations-query.dto';
 import { QueueBoardQueryDto } from '../dto/queue-board-query.dto';
 import { UpdateRegistrationDto } from '../dto/update-registration.dto';
 import { RegistrationFlowRepository } from '../repository/registration-flow.repository';
+import { RegistrationCheckInNotificationService } from './registration-check-in-notification.service';
 import { CurrentPrivacyNoticeEvidenceRequiredError } from '../../../common/privacy-notice/privacy-notice.repository';
 
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
@@ -119,6 +120,7 @@ export class RegistrationFlowService {
     private readonly authRepository: AuthRepository,
     private readonly appointmentManagementService: AppointmentManagementService,
     private readonly auditService: AuditService,
+    private readonly registrationCheckInNotificationService: RegistrationCheckInNotificationService,
     configService: ConfigService,
   ) {
     this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
@@ -447,7 +449,36 @@ export class RegistrationFlowService {
       this.buildUpdatePayload(id, payload),
     );
 
+    if (payload.status === 'CHECKED_IN') {
+      await this.notifyClinicianOfCheckIn(updated, currentUser.sub);
+    }
+
     return this.attachCheckInWindow(updated);
+  }
+
+  /**
+   * Tells the clinician the visit is booked with that their patient is here
+   * (D-048). A visit with no appointment names no clinician — a walk-in whose
+   * doctor is decided at the desk — so there is nobody to tell yet.
+   */
+  private async notifyClinicianOfCheckIn(
+    registration: RegistrationWithRelationsRecord,
+    actorUserId: string,
+  ): Promise<void> {
+    const appointment = registration.appointment;
+    if (!appointment) {
+      return;
+    }
+    await this.registrationCheckInNotificationService.notifyCheckedIn({
+      registrationId: registration.id,
+      doctorId: appointment.doctorId,
+      patientName: registration.patient.fullName,
+      poliName: registration.specialty?.name ?? appointment.doctor.specialty.name,
+      queueDate: registration.queueDate
+        ? formatCalendarDate(registration.queueDate)
+        : getCalendarDateInTimeZone(new Date(), this.clinicTimeZone),
+      actorUserId,
+    });
   }
 
   /**

@@ -41,6 +41,14 @@ const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
   BUG_REPORT_PUBLISH_FAILED: 'sync_problem',
   // P25-T10. A baby called back for another SHK heel prick.
   SHK_RECALL: 'child_care',
+  // D-048. Hand-offs between roles: work arriving at the bench, a patient
+  // arriving for a clinician, a patient joining their care team, and a new
+  // colleague accepting an invitation.
+  LAB_ORDER_CREATED: 'science',
+  PATIENT_CHECKED_IN: 'how_to_reg',
+  PATIENT_ASSIGNED: 'person_add',
+  CLINICIAN_JOINED: 'stethoscope',
+  STAFF_JOINED: 'group_add',
 };
 
 /**

@@ -7,6 +7,8 @@ import request from 'supertest';
 import { AppModule } from '../../app.module';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
+import { NotificationHrefService } from '../notification/service/notification-href.service';
+import { NotificationService } from '../notification/service/notification.service';
 import { RegistrationFlowRepository } from './repository/registration-flow.repository';
 
 describe('RegistrationFlow integration', () => {
@@ -33,6 +35,17 @@ describe('RegistrationFlow integration', () => {
     createRegistration: jest.fn(),
     updateRegistration: jest.fn(),
     listQueueBoard: jest.fn(),
+    findActiveClinicianUserId: jest.fn(),
+  };
+
+  const notificationServiceMock = { createForUser: jest.fn() };
+  // Prisma is stubbed here, so the real resolver's role lookup would reject and
+  // the producer's best-effort catch would silently drop the bell (D-048).
+  const notificationHrefServiceMock = {
+    resolveShellForUser: jest.fn(),
+    buildCheckInQueueHref: jest.fn(
+      (shell: string, queueDate: string) => `/${shell}/appointments?view=day&date=${queueDate}`,
+    ),
   };
 
   const prismaServiceMock = {
@@ -108,6 +121,10 @@ describe('RegistrationFlow integration', () => {
       .useValue(authRepositoryMock)
       .overrideProvider(RegistrationFlowRepository)
       .useValue(registrationRepositoryMock)
+      .overrideProvider(NotificationService)
+      .useValue(notificationServiceMock)
+      .overrideProvider(NotificationHrefService)
+      .useValue(notificationHrefServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
       .compile();
@@ -435,6 +452,64 @@ describe('RegistrationFlow integration', () => {
     expect(registrationRepositoryMock.updateRegistration).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'CHECKED_IN' }),
     );
+  });
+
+  it('tells the booked clinician their patient checked in (D-048)', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'update', resource: 'Registration', scope: 'ANY' }]);
+    registrationRepositoryMock.updateRegistration.mockResolvedValue({
+      ...registrationRecord,
+      status: 'CHECKED_IN',
+      checkedInAt: new Date('2026-07-18T09:00:00.000Z'),
+      appointmentId: 'b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e',
+      specialtyId,
+      specialty: { id: specialtyId, name: 'Poli Umum' },
+      appointment: {
+        id: 'b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e',
+        type: 'SESSION',
+        doctorId,
+        scheduledAt: new Date('2026-07-18T07:00:00.000Z'),
+        status: 'SCHEDULED',
+        doctor: { id: doctorId, fullName: 'dr. Ayu', specialty: { name: 'Poli Umum' } },
+        session: {
+          id: 'c2d3e4f5-a6b7-4c8d-9e0f-1a2b3c4d5e6f',
+          sessionDate: new Date('2026-07-18T00:00:00.000Z'),
+          startTime: '08:00',
+          endTime: '12:00',
+        },
+      },
+    });
+    registrationRepositoryMock.findActiveClinicianUserId.mockResolvedValue('doctor-user');
+    notificationHrefServiceMock.resolveShellForUser.mockResolvedValue('doctor');
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/registrations/${registrationId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ status: 'CHECKED_IN' });
+
+    expect(response.status).toBe(200);
+    expect(registrationRepositoryMock.findActiveClinicianUserId).toHaveBeenCalledWith(doctorId);
+    expect(notificationServiceMock.createForUser).toHaveBeenCalledWith({
+      userId: 'doctor-user',
+      type: 'PATIENT_CHECKED_IN',
+      titleKey: 'patientCheckedIn.title',
+      bodyKey: 'patientCheckedIn.body',
+      params: { patientName: 'Patient One', poliName: 'Poli Umum' },
+      href: '/doctor/appointments?view=day&date=2026-07-18',
+    });
+  });
+
+  it('tells nobody when a walk-in with no booked clinician checks in (D-048)', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'update', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/registrations/${registrationId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ status: 'CHECKED_IN' });
+
+    expect(response.status).toBe(200);
+    expect(notificationServiceMock.createForUser).not.toHaveBeenCalled();
   });
 
   it('returns 403 for registration update without update permission', async () => {

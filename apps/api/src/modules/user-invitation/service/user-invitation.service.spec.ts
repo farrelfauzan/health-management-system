@@ -13,6 +13,7 @@ import { MailService } from '../../../common/mail/mail.service';
 import { AdminManagementRepository } from '../../admin-management/repository/admin-management.repository';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { UserInvitationRepository } from '../repository/user-invitation.repository';
+import { InviteeJoinedNotificationService } from './invitee-joined-notification.service';
 import { UserInvitationService } from './user-invitation.service';
 
 const CURRENT_USER_ID = '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8';
@@ -23,6 +24,7 @@ function buildInvitationRow(overrides: Record<string, unknown> = {}) {
     id: INVITATION_ID,
     email: 'siti@example.com',
     fullName: 'Siti Rahma',
+    doctorProfileId: null,
     doctorProfile: null,
     tokenHash: 'unused-in-these-tests',
     roleCodes: ['NURSE'],
@@ -59,6 +61,7 @@ describe('UserInvitationService', () => {
   let authRepositoryMock: { findUserById: jest.Mock };
   let auditServiceMock: { record: jest.Mock };
   let mailServiceMock: { sendMail: jest.Mock };
+  let inviteeJoinedNotificationServiceMock: { notifyJoined: jest.Mock };
   let service: UserInvitationService;
 
   function buildService(): UserInvitationService {
@@ -71,6 +74,7 @@ describe('UserInvitationService', () => {
       new BreachedPasswordCheckerService(new ConfigService({})),
       mailServiceMock as unknown as MailService,
       new ConfigService({ WEB_APP_BASE_URL: 'https://klinik.example' }),
+      inviteeJoinedNotificationServiceMock as unknown as InviteeJoinedNotificationService,
     );
   }
 
@@ -97,6 +101,7 @@ describe('UserInvitationService', () => {
     mailServiceMock = {
       sendMail: jest.fn().mockResolvedValue({ accepted: true, messageId: 'id' }),
     };
+    inviteeJoinedNotificationServiceMock = { notifyJoined: jest.fn().mockResolvedValue(0) };
     service = buildService();
   });
 
@@ -288,6 +293,25 @@ describe('UserInvitationService', () => {
       );
     });
 
+    it('announces a member of staff who joined, by name and roles (D-048)', async () => {
+      userInvitationRepositoryMock.acceptInvitation.mockResolvedValue({
+        id: 'new-user-id',
+        email: 'siti@example.com',
+      } as never);
+
+      await service.acceptInvitation('raw-token', {
+        password: 'a-perfectly-good-passphrase',
+      });
+
+      expect(inviteeJoinedNotificationServiceMock.notifyJoined).toHaveBeenCalledWith({
+        userId: 'new-user-id',
+        displayName: 'Siti Rahma',
+        doctorProfileId: null,
+        profession: null,
+        roleCodes: ['NURSE'],
+      });
+    });
+
     it("names a doctor's account from the profile, which carries no invitation name", async () => {
       userInvitationRepositoryMock.findInvitationByTokenHash.mockResolvedValue(
         buildInvitationRow({
@@ -311,6 +335,36 @@ describe('UserInvitationService', () => {
       expect(userInvitationRepositoryMock.acceptInvitation).toHaveBeenCalledWith(
         expect.objectContaining({ fullName: 'dr. Olivia Kirana, Sp.OG' }),
       );
+    });
+
+    it('announces a joining midwife as a clinician, with her profile and profession (D-048)', async () => {
+      userInvitationRepositoryMock.findInvitationByTokenHash.mockResolvedValue(
+        buildInvitationRow({
+          fullName: null,
+          roleCodes: ['MIDWIFE'],
+          doctorProfileId: 'doctor-profile-id',
+          doctorProfile: { fullName: 'Bd. Ratna Sari', profession: 'MIDWIFE' },
+        }) as never,
+      );
+      adminManagementRepositoryMock.findActiveRolesByCodes.mockResolvedValue([
+        { id: 'role-2', code: 'MIDWIFE' },
+      ]);
+      userInvitationRepositoryMock.acceptInvitation.mockResolvedValue({
+        id: 'new-user-id',
+        email: 'ratna@example.com',
+      } as never);
+
+      await service.acceptInvitation('raw-token', {
+        password: 'a-perfectly-good-passphrase',
+      });
+
+      expect(inviteeJoinedNotificationServiceMock.notifyJoined).toHaveBeenCalledWith({
+        userId: 'new-user-id',
+        displayName: 'Bd. Ratna Sari',
+        doctorProfileId: 'doctor-profile-id',
+        profession: 'MIDWIFE',
+        roleCodes: ['MIDWIFE'],
+      });
     });
 
     it('accepts an invitation raised before names were collected, leaving the account unnamed', async () => {

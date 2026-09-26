@@ -45,3 +45,21 @@ export type ActivityRecord = {
     patientId: string;
   };
 };
+
+/**
+ * What a PATIENT_ASSIGNED notification is raised from (D-048): one patient
+ * put on the care team of one or more clinician profiles. `actorUserId` made
+ * the assignment and is never told about it.
+ */
+export type PatientAssignedNotice = {
+  doctorIds: readonly string[];
+  patientId: string;
+  patientName: string;
+  actorUserId: string;
+};
+
+/** The account behind a clinician profile, for addressing a notification. */
+export type ClinicianAccountRecord = {
+  doctorId: string;
+  ownerUserId: string | null;
+};

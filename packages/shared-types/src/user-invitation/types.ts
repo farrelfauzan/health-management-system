@@ -1,3 +1,5 @@
+import type { ClinicianProfessionValue } from '#doctor-management/schemas';
+import type { CreateNotificationPayload } from '#notification/types';
 import type { UserInvitationStatusValue } from '#user-invitation/schemas';
 
 export type ListUserInvitationsParams = {
@@ -80,4 +82,27 @@ export type InvitationEmailPayload = {
    * address is kept for the line an invitee can reply to.
    */
   invitedByName: string | null;
+};
+
+/**
+ * What a CLINICIAN_JOINED or STAFF_JOINED notification is raised from
+ * (D-048): an invitation that was just accepted. `doctorProfileId` decides
+ * which one: an invitation bound to a clinician profile announces a
+ * clinician, any other announces a member of staff.
+ */
+export type InviteeJoinedNotice = {
+  userId: string;
+  displayName: string;
+  doctorProfileId: string | null;
+  profession: ClinicianProfessionValue | null;
+  roleCodes: readonly string[];
+};
+
+/**
+ * The bell row a joined invitee produces, before it is addressed: which
+ * permission's holders receive it, and the admin-shell page it links to.
+ */
+export type InviteeJoinedMessage = Omit<CreateNotificationPayload, 'userId' | 'href'> & {
+  permissionKey: string;
+  adminHref: string;
 };

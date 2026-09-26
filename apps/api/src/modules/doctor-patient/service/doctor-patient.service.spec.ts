@@ -7,6 +7,7 @@ import {
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorPatientRepository } from '../repository/doctor-patient.repository';
 import { DoctorPatientService } from './doctor-patient.service';
+import { PatientAssignmentNotificationService } from './patient-assignment-notification.service';
 
 type PermissionScope = 'ANY' | 'OWN';
 
@@ -53,7 +54,16 @@ describe('DoctorPatientService', () => {
     findUserById: jest.fn(),
   } as unknown as AuthRepository;
 
-  const service = new DoctorPatientService(doctorPatientRepositoryMock, authRepositoryMock);
+  const notifyAssignedMock = jest.fn();
+  const patientAssignmentNotificationServiceMock = {
+    notifyAssigned: notifyAssignedMock,
+  } as unknown as PatientAssignmentNotificationService;
+
+  const service = new DoctorPatientService(
+    doctorPatientRepositoryMock,
+    authRepositoryMock,
+    patientAssignmentNotificationServiceMock,
+  );
 
   const currentUser = {
     sub: '4e8580c4-9e80-44ff-9f8f-8c8f9d8d90f8',
@@ -112,6 +122,7 @@ describe('DoctorPatientService', () => {
     });
     (doctorPatientRepositoryMock.findActivePatientById as jest.Mock).mockResolvedValue({
       id: patientId,
+      fullName: 'Rina Wati',
     });
     (doctorPatientRepositoryMock.findActiveAssignment as jest.Mock).mockResolvedValue(null);
     (doctorPatientRepositoryMock.createAssignment as jest.Mock).mockResolvedValue(
@@ -123,6 +134,12 @@ describe('DoctorPatientService', () => {
     expect(doctorPatientRepositoryMock.createAssignment).toHaveBeenCalledWith({
       doctorId,
       patientId,
+      actorUserId: currentUser.sub,
+    });
+    expect(notifyAssignedMock).toHaveBeenCalledWith({
+      doctorIds: [doctorId],
+      patientId,
+      patientName: 'Rina Wati',
       actorUserId: currentUser.sub,
     });
     expect(result.created).toBe(true);
@@ -150,6 +167,7 @@ describe('DoctorPatientService', () => {
     expect(result.created).toBe(false);
     expect(result.assignment.id).toBe(activeAssignment.id);
     expect(doctorPatientRepositoryMock.createAssignment).not.toHaveBeenCalled();
+    expect(notifyAssignedMock).not.toHaveBeenCalled();
   });
 
   it('throws not found when unassigning an unknown assignment', async () => {

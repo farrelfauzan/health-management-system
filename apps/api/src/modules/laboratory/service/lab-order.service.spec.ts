@@ -9,6 +9,7 @@ import { CreateLabOrderDto } from '../dto/create-lab-order.dto';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabCatalogService } from './lab-catalog.service';
 import { LabOrderAccessService } from './lab-order-access.service';
+import { LabOrderNotificationService } from './lab-order-notification.service';
 import { LabOrderMapper } from './lab-order.mapper';
 import { LabOrderService } from './lab-order.service';
 import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
@@ -74,6 +75,8 @@ describe('LabOrderService', () => {
 
   const registrationFlowServiceMock = { createLabOnlyRegistration: jest.fn() };
 
+  const labOrderNotificationServiceMock = { notifyOrderCreated: jest.fn() };
+
   const service = new LabOrderService(
     labOrderRepositoryMock as unknown as LabOrderRepository,
     labCatalogServiceMock as unknown as LabCatalogService,
@@ -84,6 +87,7 @@ describe('LabOrderService', () => {
     clinicProfileServiceMock as unknown as ClinicProfileService,
     clinicalRequestDocumentServiceMock as unknown as ClinicalRequestDocumentService,
     registrationFlowServiceMock as unknown as RegistrationFlowService,
+    labOrderNotificationServiceMock as unknown as LabOrderNotificationService,
     configServiceMock as unknown as ConfigService,
   );
 
@@ -286,6 +290,23 @@ describe('LabOrderService', () => {
         }),
       );
     });
+
+    it('tells the bench about the new order, naming the ordering doctor as the actor (D-048)', async () => {
+      labCatalogServiceMock.findOrderableLabTests.mockResolvedValue([{ id: glucoseId }]);
+      const expectedOrder = buildOrderRecord();
+      labOrderRepositoryMock.createLabOrder.mockResolvedValue(expectedOrder);
+
+      await service.createLabOrder(
+        encounterId,
+        { testIds: [glucoseId] } as CreateLabOrderDto,
+        doctorUser,
+      );
+
+      expect(labOrderNotificationServiceMock.notifyOrderCreated).toHaveBeenCalledWith(
+        expectedOrder,
+        doctorUser.sub,
+      );
+    });
   });
 
   describe('cancelLabOrder', () => {
@@ -471,6 +492,10 @@ describe('LabOrderService', () => {
           orderedById: null,
           externalRequesterName: null,
         }),
+      );
+      expect(labOrderNotificationServiceMock.notifyOrderCreated).toHaveBeenCalledWith(
+        expect.objectContaining({ encounterId: null }),
+        doctorUser.sub,
       );
     });
 

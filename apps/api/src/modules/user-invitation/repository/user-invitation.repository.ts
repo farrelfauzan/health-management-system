@@ -17,6 +17,8 @@ const INVITATION_INCLUDE = {
   doctorProfile: {
     select: {
       fullName: true,
+      // Which of the two a joining clinician is, for the admins' bell (D-048).
+      profession: true,
     },
   },
 } as const;

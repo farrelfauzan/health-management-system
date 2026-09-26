@@ -33,6 +33,7 @@ import { UserInvitationRepository } from '../repository/user-invitation.reposito
 import { resolveUserInvitationConfig } from '../user-invitation.config';
 import { UserInvitationConfig } from '../user-invitation.types';
 import { buildInvitationUrl } from './build-invitation-url';
+import { InviteeJoinedNotificationService } from './invitee-joined-notification.service';
 import { renderInvitationEmail } from './render-invitation-email';
 import { resolveInvitationStatus } from './resolve-invitation-status';
 
@@ -59,6 +60,7 @@ export class UserInvitationService {
     private readonly breachedPasswordChecker: BreachedPasswordCheckerService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    private readonly inviteeJoinedNotificationService: InviteeJoinedNotificationService,
   ) {
     this.config = resolveUserInvitationConfig(this.configService);
   }
@@ -268,14 +270,15 @@ export class UserInvitationService {
       throw new BadRequestException('One or more role codes on this invitation no longer exist');
     }
     const passwordHash = await this.passwordHasher.hashPassword(payload.password);
+    // A doctor invitation carries no name of its own: the administrator typed
+    // one onto the profile when the doctor was created (D-024), and asking the
+    // invitee to type it again would replace a name the clinic vouches for
+    // with one nobody checked.
+    const fullName = invitation.fullName ?? invitation.doctorProfile?.fullName ?? null;
     const user = await this.userInvitationRepository.acceptInvitation({
       invitationId: invitation.id,
       email: invitation.email,
-      // A doctor invitation carries no name of its own: the administrator
-      // typed one onto the profile when the doctor was created (D-024), and
-      // asking the invitee to type it again would replace a name the clinic
-      // vouches for with one nobody checked.
-      fullName: invitation.fullName ?? invitation.doctorProfile?.fullName ?? null,
+      fullName,
       passwordHash,
       roleIds: roles.map((role) => role.id),
       assignedById: invitation.invitedById,
@@ -295,6 +298,13 @@ export class UserInvitationService {
       actorUserId: user.id,
       resourceId: user.id,
       metadata: { via: 'invitation', roleCodes: invitation.roleCodes.join(',') },
+    });
+    await this.inviteeJoinedNotificationService.notifyJoined({
+      userId: user.id,
+      displayName: resolveUserDisplayName({ fullName, email: user.email }),
+      doctorProfileId: invitation.doctorProfileId,
+      profession: invitation.doctorProfile?.profession ?? null,
+      roleCodes: invitation.roleCodes,
     });
     return { email: user.email };
   }

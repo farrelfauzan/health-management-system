@@ -469,6 +469,19 @@ export class RegistrationFlowRepository {
   }
 
   /**
+   * The account behind the clinician a visit is booked with, for the
+   * check-in bell (D-048). Null for a profile with no account yet, or one
+   * that has been deactivated — there is nobody to tell.
+   */
+  async findActiveClinicianUserId(doctorId: string): Promise<string | null> {
+    const doctor = await this.prisma.doctorProfile.findFirst({
+      where: { id: doctorId, isActive: true, deletedAt: null },
+      select: { ownerUserId: true },
+    });
+    return doctor?.ownerUserId ?? null;
+  }
+
+  /**
    * The poli a registration belongs to is its appointment's doctor's
    * specialty — the clinic has no standalone poli entity, and a registration
    * reaches BPJS through exactly that path (see `Specialty.bpjsPoliCode`).
