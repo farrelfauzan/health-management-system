@@ -7,9 +7,13 @@ import type { ShkStatusInput } from '#shk-screening/types';
  * Both window edges are inclusive: exactly 48 h after birth is DUE, and so is
  * exactly 72 h; one minute later is OVERDUE. What has happened outranks the
  * clock — a sample taken late is TAKEN, not OVERDUE, because the question the
- * worklist answers is "who still has to be pricked".
+ * worklist answers is "who still has to be pricked". A sample closed as not
+ * screened (P25-T18) never had a prick, so it answers that question too.
  */
 export function resolveShkScreeningStatus(input: ShkStatusInput): ShkScreeningStatusValue {
+  if (input.notScreenedAt !== null) {
+    return 'NOT_SCREENED';
+  }
   if (input.resultReceivedAt !== null) {
     return 'RESULTED';
   }

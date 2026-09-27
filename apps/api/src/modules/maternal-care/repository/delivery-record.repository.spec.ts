@@ -27,13 +27,14 @@ describe('DeliveryRecordRepository SHK writes (P25-T10)', () => {
     txMock.newbornCareRecord.create.mockResolvedValue({ id: 'newborn-1' });
   });
 
-  it('moves only untaken first-sample windows when the birth time changes', async () => {
+  it('moves only untaken, open first-sample windows when the birth time changes', async () => {
     await repository.updateDelivery('delivery-1', { birthAt: '2026-09-30T22:30:00.000Z' });
 
     expect(txMock.shkScreening.updateMany).toHaveBeenCalledWith({
       where: {
         sequence: 1,
         sampleTakenAt: null,
+        notScreenedAt: null,
         newbornCareRecord: { deliveryRecordId: 'delivery-1' },
       },
       data: {

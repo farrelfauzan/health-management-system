@@ -12,9 +12,27 @@ export const shkResultSchema = z.enum(['NORMAL', 'RECALL', 'INVALID_SAMPLE']);
 export type ShkResultValue = z.infer<typeof shkResultSchema>;
 
 /**
+ * Why a sample was closed without a heel prick (P25-T18). `RECORDED_BEFORE_TRACKING`
+ * is the baby born before SHK was tracked here, whose backfilled first sample
+ * (P25-T10) would otherwise sit as OVERDUE forever with nobody able to say
+ * whether it was ever done.
+ */
+export const shkNotScreenedReasonSchema = z.enum([
+  'PARENT_DECLINED',
+  'SCREENED_ELSEWHERE',
+  'INFANT_DIED',
+  'LOST_TO_FOLLOW_UP',
+  'RECORDED_BEFORE_TRACKING',
+  'OTHER',
+]);
+
+export type ShkNotScreenedReasonValue = z.infer<typeof shkNotScreenedReasonSchema>;
+
+/**
  * Where one sample stands, derived from its window and its timestamps and
  * never stored: `DUE` turns into `OVERDUE` by the clock alone, and a stored
- * status would be wrong the moment nobody wrote to it.
+ * status would be wrong the moment nobody wrote to it. `NOT_SCREENED` is a
+ * sample closed without a heel prick (P25-T18), and outranks the clock too.
  */
 export const shkScreeningStatusSchema = z.enum([
   'UPCOMING',
@@ -23,6 +41,7 @@ export const shkScreeningStatusSchema = z.enum([
   'TAKEN',
   'SENT',
   'RESULTED',
+  'NOT_SCREENED',
 ]);
 
 export type ShkScreeningStatusValue = z.infer<typeof shkScreeningStatusSchema>;
@@ -65,3 +84,24 @@ export const recordShkResultSchema = z.object({
 });
 
 export type RecordShkResultInput = z.infer<typeof recordShkResultSchema>;
+
+/**
+ * Closes an untaken sample without a heel prick (P25-T18). `OTHER` must say
+ * why in `notes`: a bare "other" would be the one reason nobody can audit.
+ */
+export const recordShkNotScreenedSchema = z
+  .object({
+    reason: shkNotScreenedReasonSchema,
+    notes: z.string().trim().max(2000).nullish(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.reason === 'OTHER' && (value.notes ?? '').length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['notes'],
+        message: 'Explain why the sample was not taken',
+      });
+    }
+  });
+
+export type RecordShkNotScreenedInput = z.infer<typeof recordShkNotScreenedSchema>;

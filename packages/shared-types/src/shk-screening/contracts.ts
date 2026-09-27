@@ -1,4 +1,8 @@
-import type { ShkResultValue, ShkScreeningStatusValue } from '#shk-screening/schemas';
+import type {
+  ShkNotScreenedReasonValue,
+  ShkResultValue,
+  ShkScreeningStatusValue,
+} from '#shk-screening/schemas';
 
 /** One SHK sample on the worklist (P25-T10). */
 export type ShkScreeningView = {
@@ -17,6 +21,10 @@ export type ShkScreeningView = {
   laboratoryName: string | null;
   resultReceivedAt: string | null;
   result: ShkResultValue | null;
+  /** Set when the sample was closed without a heel prick (P25-T18). */
+  notScreenedAt: string | null;
+  notScreenedReason: ShkNotScreenedReasonValue | null;
+  notScreenedByName: string | null;
   notes: string | null;
   birthAt: string;
   /** The mother, whose pregnancy tab the newborn card lives on. */
@@ -37,4 +45,5 @@ export type NewbornShkSummary = {
   dueUntil: string;
   isEarly: boolean;
   result: ShkResultValue | null;
+  notScreenedReason: ShkNotScreenedReasonValue | null;
 };

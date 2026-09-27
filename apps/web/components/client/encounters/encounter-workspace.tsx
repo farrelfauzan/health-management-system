@@ -177,7 +177,11 @@ export function EncounterWorkspace({
           {/* P25-T12. Beside the ANC card: a visit after the birth is counted
               here instead, as a KF visit of the mother or a KN one of the baby. */}
           {isMaternalCareEnabled ? (
-            <EncounterPostnatalCard encounterId={encounter.id} isEditable={isEditable} />
+            <EncounterPostnatalCard
+              encounterId={encounter.id}
+              patientId={encounter.patientId}
+              isEditable={isEditable}
+            />
           ) : null}
           {/* P18-T07. Released values sit beside the vitals because that is
               how they are read — a haemoglobin next to a blood pressure, not

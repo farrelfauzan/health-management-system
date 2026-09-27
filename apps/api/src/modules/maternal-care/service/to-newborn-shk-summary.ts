@@ -25,5 +25,6 @@ export function toNewbornShkSummary(
     dueUntil: latest.dueUntil.toISOString(),
     isEarly: isShkSampleEarly(latest),
     result: latest.result,
+    notScreenedReason: latest.notScreenedReason,
   };
 }

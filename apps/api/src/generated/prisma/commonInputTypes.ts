@@ -2730,6 +2730,13 @@ export type EnumShkResultNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel> | $Enums.ShkResult | null
 }
 
+export type EnumShkNotScreenedReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkNotScreenedReason | Prisma.EnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel> | $Enums.ShkNotScreenedReason | null
+}
+
 export type EnumShkResultNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
   in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
@@ -2738,6 +2745,16 @@ export type EnumShkResultNullableWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
+}
+
+export type EnumShkNotScreenedReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkNotScreenedReason | Prisma.EnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkNotScreenedReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ShkNotScreenedReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel>
 }
 
 export type EnumFetalPresentationNullableFilter<$PrismaModel = never> = {
@@ -5564,6 +5581,13 @@ export type NestedEnumShkResultNullableFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel> | $Enums.ShkResult | null
 }
 
+export type NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkNotScreenedReason | Prisma.EnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel> | $Enums.ShkNotScreenedReason | null
+}
+
 export type NestedEnumShkResultNullableWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ShkResult | Prisma.EnumShkResultFieldRefInput<$PrismaModel> | null
   in?: $Enums.ShkResult[] | Prisma.ListEnumShkResultFieldRefInput<$PrismaModel> | null
@@ -5572,6 +5596,16 @@ export type NestedEnumShkResultNullableWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
   _min?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
   _max?: Prisma.NestedEnumShkResultNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumShkNotScreenedReasonNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ShkNotScreenedReason | Prisma.EnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ShkNotScreenedReason[] | Prisma.ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumShkNotScreenedReasonNullableWithAggregatesFilter<$PrismaModel> | $Enums.ShkNotScreenedReason | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumShkNotScreenedReasonNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumFetalPresentationNullableFilter<$PrismaModel = never> = {

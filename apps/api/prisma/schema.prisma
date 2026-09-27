@@ -380,6 +380,9 @@ enum AuditAction {
   /// can be traced from.
   SHK_SAMPLE_TAKEN
   SHK_RESULT_RECORDED
+  /// An untaken SHK sample was closed without a heel prick, with a reason
+  /// (P25-T18).
+  SHK_NOT_SCREENED
   /// The clinic's tax profile changed (P27-T02): taxpayer type, PP 55 regime,
   /// PKP status, NITKU or pricing mode. Carries each changed field's old and
   /// new value — every later tax computation reads this row, and a report is
@@ -1272,6 +1275,7 @@ model User {
   revokedDoctorMandates         DoctorMandate[]                @relation("DoctorMandateRevokedBy")
   recordedDeliveries            DeliveryRecord[]               @relation("DeliveryRecordedBy")
   shkSamplesTaken               ShkScreening[]                 @relation("ShkSampleTakenBy")
+  shkSamplesNotScreened         ShkScreening[]                 @relation("ShkNotScreenedBy")
 
   @@index([organizationUnitId])
   /// The offboarding sweep's one read: everyone currently in a window.
@@ -7412,6 +7416,18 @@ enum ShkResult {
   @@map("shk_result")
 }
 
+/// Why an SHK sample was closed without a heel prick (P25-T18).
+enum ShkNotScreenedReason {
+  PARENT_DECLINED
+  SCREENED_ELSEWHERE
+  INFANT_DIED
+  LOST_TO_FOLLOW_UP
+  RECORDED_BEFORE_TRACKING
+  OTHER
+
+  @@map("shk_not_screened_reason")
+}
+
 /// One SHK (congenital hypothyroidism) heel-prick sample of one live baby
 /// (P25-T10).
 ///
@@ -7419,28 +7435,34 @@ enum ShkResult {
 /// hours after birth as absolute offsets. A RECALL or INVALID_SAMPLE result
 /// creates the next sequence, due at once. The status (DUE, OVERDUE, TAKEN…)
 /// is derived on read and never stored: the clock alone moves a sample from
-/// DUE to OVERDUE.
+/// DUE to OVERDUE. An untaken sample can be closed as not screened (P25-T18),
+/// which takes it off every open list.
 model ShkScreening {
-  id                  String     @id @default(uuid()) @db.Uuid
-  newbornCareRecordId String     @map("newborn_care_record_id") @db.Uuid
+  id                  String                @id @default(uuid()) @db.Uuid
+  newbornCareRecordId String                @map("newborn_care_record_id") @db.Uuid
   sequence            Int
-  dueFrom             DateTime   @map("due_from") @db.Timestamptz(3)
-  dueUntil            DateTime   @map("due_until") @db.Timestamptz(3)
-  sampleTakenAt       DateTime?  @map("sample_taken_at") @db.Timestamptz(3)
-  sampleTakenById     String?    @map("sample_taken_by_id") @db.Uuid
-  sentAt              DateTime?  @map("sent_at") @db.Timestamptz(3)
-  laboratoryName      String?    @map("laboratory_name")
-  resultReceivedAt    DateTime?  @map("result_received_at") @db.Timestamptz(3)
+  dueFrom             DateTime              @map("due_from") @db.Timestamptz(3)
+  dueUntil            DateTime              @map("due_until") @db.Timestamptz(3)
+  sampleTakenAt       DateTime?             @map("sample_taken_at") @db.Timestamptz(3)
+  sampleTakenById     String?               @map("sample_taken_by_id") @db.Uuid
+  sentAt              DateTime?             @map("sent_at") @db.Timestamptz(3)
+  laboratoryName      String?               @map("laboratory_name")
+  resultReceivedAt    DateTime?             @map("result_received_at") @db.Timestamptz(3)
   result              ShkResult?
+  notScreenedAt       DateTime?             @map("not_screened_at") @db.Timestamptz(3)
+  notScreenedReason   ShkNotScreenedReason? @map("not_screened_reason")
+  notScreenedById     String?               @map("not_screened_by_id") @db.Uuid
   notes               String?
-  createdAt           DateTime   @default(now()) @map("created_at")
-  updatedAt           DateTime   @updatedAt @map("updated_at")
+  createdAt           DateTime              @default(now()) @map("created_at")
+  updatedAt           DateTime              @updatedAt @map("updated_at")
 
   newbornCareRecord NewbornCareRecord @relation(fields: [newbornCareRecordId], references: [id], onDelete: Cascade)
   sampleTakenBy     User?             @relation("ShkSampleTakenBy", fields: [sampleTakenById], references: [id], onDelete: Restrict)
+  notScreenedBy     User?             @relation("ShkNotScreenedBy", fields: [notScreenedById], references: [id], onDelete: Restrict)
 
   @@unique([newbornCareRecordId, sequence])
   @@index([sampleTakenById])
+  @@index([notScreenedById])
   @@index([dueUntil])
   @@map("shk_screenings")
 }

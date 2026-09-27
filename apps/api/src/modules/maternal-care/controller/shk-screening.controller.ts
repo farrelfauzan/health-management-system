@@ -21,6 +21,7 @@ import { ApiEndpoint } from '../../../common/openapi/api-endpoint.decorator';
 import { SHK_SCREENING_EXAMPLES } from '../../../common/openapi/shk-screening-examples';
 import { AuditAction } from '../../../generated/prisma/client';
 import { ListShkScreeningsQueryDto } from '../dto/list-shk-screenings-query.dto';
+import { RecordShkNotScreenedDto } from '../dto/record-shk-not-screened.dto';
 import { RecordShkResultDto } from '../dto/record-shk-result.dto';
 import { RecordShkSampleDto } from '../dto/record-shk-sample.dto';
 import { RecordShkSentDto } from '../dto/record-shk-sent.dto';
@@ -28,7 +29,8 @@ import { ShkScreeningService } from '../service/shk-screening.service';
 
 /**
  * SHK screening (P25-T10): the due-sample worklist and the three steps of one
- * sample. Authorised on the `Encounter` subject like the birth it follows.
+ * sample, plus closing one that will never be taken (P25-T18). Authorised on
+ * the `Encounter` subject like the birth it follows.
  */
 @ApiTags('Maternal Care')
 @RequireFeature('maternal-care')
@@ -136,6 +138,36 @@ export class ShkScreeningController {
     return {
       data: await this.shkScreeningService.recordResult(id, payload, this.requireUser(currentUser)),
       message: 'SHK result recorded',
+    };
+  }
+
+  @Post(':id/not-screened')
+  @HttpCode(HttpStatus.OK)
+  @Auth([{ action: 'write', subject: 'Encounter' }])
+  @ApiEndpoint({
+    summary: 'Close the sample as not screened',
+    responseDescription:
+      'Closes a sample nobody pricked, with a reason, and takes it off every worklist filter. OTHER needs notes (400). 409 SHK_SAMPLE_ALREADY_TAKEN once the heel prick is recorded; 409 SHK_SAMPLE_CLOSED when it was already closed.',
+    requestType: RecordShkNotScreenedDto,
+    requestExample: SHK_SCREENING_EXAMPLES.notScreenedRequest,
+    responseExample: {
+      data: SHK_SCREENING_EXAMPLES.notScreened,
+      message: 'SHK sample closed as not screened',
+    },
+    notFoundDescription: 'SHK screening not found.',
+  })
+  async recordNotScreened(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() payload: RecordShkNotScreenedDto,
+    @AuthUser() currentUser?: CurrentUser,
+  ) {
+    return {
+      data: await this.shkScreeningService.recordNotScreened(
+        id,
+        payload,
+        this.requireUser(currentUser),
+      ),
+      message: 'SHK sample closed as not screened',
     };
   }
 

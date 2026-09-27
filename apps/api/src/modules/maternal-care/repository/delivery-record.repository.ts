@@ -137,6 +137,7 @@ export class DeliveryRecordRepository {
           where: {
             sequence: 1,
             sampleTakenAt: null,
+            notScreenedAt: null,
             newbornCareRecord: { deliveryRecordId: id },
           },
           data: computeShkSampleWindow(birthAt),

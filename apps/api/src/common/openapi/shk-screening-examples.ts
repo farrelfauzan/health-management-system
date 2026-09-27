@@ -17,6 +17,9 @@ const SCREENING = {
   laboratoryName: null,
   resultReceivedAt: null,
   result: null,
+  notScreenedAt: null,
+  notScreenedReason: null,
+  notScreenedByName: null,
   notes: null,
   birthAt: '2026-09-30T20:00:00.000Z',
   motherPatientId: '4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4',
@@ -35,6 +38,18 @@ export const SHK_SCREENING_EXAMPLES = {
     receivedAt: '2026-10-10T02:00:00.000Z',
     result: 'RECALL',
     notes: 'TSH 25 mU/L, ambil sampel konfirmasi',
+  },
+  notScreenedRequest: {
+    reason: 'SCREENED_ELSEWHERE',
+    notes: 'Diskrining di RSUD saat rawat inap neonatus',
+  },
+  notScreened: {
+    ...SCREENING,
+    status: 'NOT_SCREENED',
+    notScreenedAt: '2026-10-05T02:00:00.000Z',
+    notScreenedReason: 'SCREENED_ELSEWHERE',
+    notScreenedByName: 'Bidan Siti Rahma, S.Tr.Keb.',
+    notes: 'Diskrining di RSUD saat rawat inap neonatus',
   },
   taken: {
     ...SCREENING,

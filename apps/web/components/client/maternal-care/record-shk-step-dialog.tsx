@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { ShkResultValue, ShkScreeningView } from '@hms/shared-types';
+import {
+  shkNotScreenedReasonSchema,
+  type ShkNotScreenedReasonValue,
+  type ShkResultValue,
+  type ShkScreeningView,
+} from '@hms/shared-types';
 import {
   Button,
   Dialog,
@@ -23,6 +28,7 @@ import { useTranslations } from 'next-intl';
 
 import { FormLabel } from '#components/client/shared/form-label';
 import {
+  shkScreeningControllerRecordNotScreenedV1,
   shkScreeningControllerRecordResultV1,
   shkScreeningControllerRecordSampleV1,
   shkScreeningControllerRecordSentV1,
@@ -40,6 +46,7 @@ type RecordShkStepDialogProps = {
 };
 
 const SHK_RESULTS: readonly ShkResultValue[] = ['NORMAL', 'RECALL', 'INVALID_SAMPLE'];
+const NOT_SCREENED_REASONS: readonly ShkNotScreenedReasonValue[] = shkNotScreenedReasonSchema.options;
 
 /**
  * One step of one SHK sample (P25-T10): the heel prick, the card sent to the
@@ -47,7 +54,9 @@ const SHK_RESULTS: readonly ShkResultValue[] = ['NORMAL', 'RECALL', 'INVALID_SAM
  * moved back — the step is often written up after it happened.
  *
  * A RECALL or INVALID_SAMPLE answer opens the next sample on the server; the
- * worklist shows it as soon as the list is re-read.
+ * worklist shows it as soon as the list is re-read. Closing an untaken sample
+ * as not screened (P25-T18) takes a reason instead of a time — the server
+ * stamps when it was closed — and `OTHER` must say why.
  */
 export function RecordShkStepDialog({ screening, action, onOpenChange }: RecordShkStepDialogProps) {
   const t = useTranslations('maternalCare.shk');
@@ -56,11 +65,22 @@ export function RecordShkStepDialog({ screening, action, onOpenChange }: RecordS
   const [laboratoryName, setLaboratoryName] = useState<string>('');
   const [result, setResult] = useState<ShkResultValue>('NORMAL');
   const [notes, setNotes] = useState<string>('');
-  const isSubmittable =
-    occurredAt.length > 0 && (action !== 'sent' || laboratoryName.trim().length > 0);
+  const [notScreenedReason, setNotScreenedReason] =
+    useState<ShkNotScreenedReasonValue>('PARENT_DECLINED');
+  const isNotScreened = action === 'notScreened';
+  const isNotesRequired = isNotScreened && notScreenedReason === 'OTHER';
+  const isSubmittable = isNotScreened
+    ? !isNotesRequired || notes.trim().length > 0
+    : occurredAt.length > 0 && (action !== 'sent' || laboratoryName.trim().length > 0);
 
   const mutation = useMutation({
     mutationFn: async () => {
+      if (action === 'notScreened') {
+        return shkScreeningControllerRecordNotScreenedV1(screening.id, {
+          reason: notScreenedReason,
+          ...(notes.trim().length > 0 ? { notes: notes.trim() } : {}),
+        });
+      }
       const instant = toInstant(occurredAt);
       if (action === 'sample') {
         return shkScreeningControllerRecordSampleV1(screening.id, { takenAt: instant });
@@ -92,17 +112,41 @@ export function RecordShkStepDialog({ screening, action, onOpenChange }: RecordS
           <DialogTitle>{t(`actions.${action}`)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="space-y-2">
-            <FormLabel htmlFor="shk-occurred-at" required>
-              {t(`fields.${action}At`)}
-            </FormLabel>
-            <Input
-              id="shk-occurred-at"
-              type="datetime-local"
-              value={occurredAt}
-              onChange={(event) => setOccurredAt(event.target.value)}
-            />
-          </div>
+          {isNotScreened ? <p className="text-sm text-slate-600">{t('notScreenedHint')}</p> : null}
+          {isNotScreened ? (
+            <div className="space-y-2">
+              <FormLabel htmlFor="shk-not-screened-reason" required>
+                {t('fields.notScreenedReason')}
+              </FormLabel>
+              <Select
+                value={notScreenedReason}
+                onValueChange={(value) => setNotScreenedReason(value as ShkNotScreenedReasonValue)}
+              >
+                <SelectTrigger id="shk-not-screened-reason">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {NOT_SCREENED_REASONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {t(`notScreenedReasons.${option}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <FormLabel htmlFor="shk-occurred-at" required>
+                {t(`fields.${action}At`)}
+              </FormLabel>
+              <Input
+                id="shk-occurred-at"
+                type="datetime-local"
+                value={occurredAt}
+                onChange={(event) => setOccurredAt(event.target.value)}
+              />
+            </div>
+          )}
           {action === 'sent' ? (
             <div className="space-y-2">
               <FormLabel htmlFor="shk-laboratory" required>
@@ -113,6 +157,19 @@ export function RecordShkStepDialog({ screening, action, onOpenChange }: RecordS
                 value={laboratoryName}
                 maxLength={200}
                 onChange={(event) => setLaboratoryName(event.target.value)}
+              />
+            </div>
+          ) : null}
+          {isNotScreened ? (
+            <div className="space-y-2">
+              <FormLabel htmlFor="shk-not-screened-notes" required={isNotesRequired}>
+                {t('fields.notes')}
+              </FormLabel>
+              <Textarea
+                id="shk-not-screened-notes"
+                value={notes}
+                maxLength={2000}
+                onChange={(event) => setNotes(event.target.value)}
               />
             </div>
           ) : null}

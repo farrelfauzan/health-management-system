@@ -25,6 +25,10 @@ export function toShkScreeningView(record: ShkScreeningRecord, now: Date): ShkSc
     laboratoryName: record.laboratoryName,
     resultReceivedAt: record.resultReceivedAt?.toISOString() ?? null,
     result: record.result,
+    notScreenedAt: record.notScreenedAt?.toISOString() ?? null,
+    notScreenedReason: record.notScreenedReason,
+    notScreenedByName:
+      record.notScreenedBy === null ? null : resolveUserDisplayName(record.notScreenedBy),
     notes: record.notes,
     birthAt: delivery.birthAt.toISOString(),
     motherPatientId: delivery.pregnancyEpisode.patientId,

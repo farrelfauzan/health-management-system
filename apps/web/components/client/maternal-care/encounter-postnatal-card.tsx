@@ -7,6 +7,7 @@ import { toast } from '@hms/ui';
 import { useTranslations } from 'next-intl';
 
 import { PostnatalExaminationForm } from '#components/client/maternal-care/postnatal-examination-form';
+import { PostnatalFamilyPlanningAction } from '#components/client/maternal-care/postnatal-family-planning-action';
 import { postnatalVisitControllerLinkVisitV1 } from '#lib/api/generated/maternal-care/maternal-care';
 import { notifyApiError } from '#lib/api/notify-api-error';
 import { invalidateMaternalCareQueries } from '#lib/maternal-care/invalidate-maternal-care-queries';
@@ -14,6 +15,7 @@ import { useEncounterPostnatalVisit } from '#lib/maternal-care/use-encounter-pos
 
 type EncounterPostnatalCardProps = {
   encounterId: string;
+  patientId: string;
   isEditable: boolean;
 };
 
@@ -21,9 +23,14 @@ type EncounterPostnatalCardProps = {
  * The nifas / neonatal line in the encounter workspace (P25-T12): which KF or
  * KN window this visit falls in — "di luar jendela" when none — and, for the
  * mother's visit, the nifas examination. Unlinked, it offers both kinds; the
- * API refuses the one that does not fit this patient.
+ * API refuses the one that does not fit this patient. A mother's visit also
+ * offers KB pasca salin (P25-T18).
  */
-export function EncounterPostnatalCard({ encounterId, isEditable }: EncounterPostnatalCardProps) {
+export function EncounterPostnatalCard({
+  encounterId,
+  patientId,
+  isEditable,
+}: EncounterPostnatalCardProps) {
   const t = useTranslations('maternalCare.postnatal');
   const queryClient = useQueryClient();
   const visitQuery = useEncounterPostnatalVisit(encounterId, true);
@@ -85,6 +92,13 @@ export function EncounterPostnatalCard({ encounterId, isEditable }: EncounterPos
               </div>
             ) : null}
           </div>
+        ) : null}
+        {visit !== null && visit.subject === 'MOTHER' ? (
+          <PostnatalFamilyPlanningAction
+            patientId={patientId}
+            encounterId={encounterId}
+            isEditable={isEditable}
+          />
         ) : null}
         {visit !== null && visit.subject === 'MOTHER' ? (
           <PostnatalExaminationForm

@@ -313,6 +313,10 @@
         "empty": "Nobody is due in the next 7 days.",
         "inDays": "{count, plural, =0 {Due today} one {Due in # day} other {Due in # days}}",
         "overdueDays": "{count, plural, one {# day overdue} other {# days overdue}}"
+      },
+      "postnatalAction": {
+        "liveCourse": "Family planning in use: {method}, since {date}.",
+        "prompt": "She has not started postpartum family planning since this birth."
       }
     },
     "postnatal": {
@@ -405,7 +409,8 @@
         "OVERDUE": "Overdue",
         "TAKEN": "Sample taken",
         "SENT": "Sent to lab",
-        "RESULTED": "Resulted"
+        "RESULTED": "Resulted",
+        "NOT_SCREENED": "Not screened"
       },
       "results": {
         "NORMAL": "Normal",
@@ -428,7 +433,8 @@
       "actions": {
         "sample": "Record sample taken",
         "sent": "Record sent",
-        "result": "Record result"
+        "result": "Record result",
+        "notScreened": "Mark as not screened"
       },
       "fields": {
         "sampleAt": "Time taken",
@@ -436,13 +442,24 @@
         "resultAt": "Time result received",
         "laboratoryName": "Referral laboratory",
         "result": "Result",
-        "notes": "Notes"
+        "notes": "Notes",
+        "notScreenedReason": "Reason"
       },
       "repeatHint": "This result opens the next sample and notifies the clinicians.",
+      "notScreenedHint": "This sample will not be taken. Once closed, the baby leaves the due and overdue lists. For \"Other\", explain in the notes.",
+      "notScreenedReasons": {
+        "PARENT_DECLINED": "Parents declined",
+        "SCREENED_ELSEWHERE": "Screened at another facility",
+        "INFANT_DIED": "Baby died",
+        "LOST_TO_FOLLOW_UP": "Could not be reached",
+        "RECORDED_BEFORE_TRACKING": "Born before SHK was recorded in the system",
+        "OTHER": "Other"
+      },
       "saved": {
         "sample": "SHK sample recorded",
         "sent": "SHK sample sending recorded",
-        "result": "SHK result recorded"
+        "result": "SHK result recorded",
+        "notScreened": "SHK sample closed as not screened"
       },
       "save": "Save",
       "cancel": "Cancel",

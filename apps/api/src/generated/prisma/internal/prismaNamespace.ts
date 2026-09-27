@@ -13645,6 +13645,9 @@ export const ShkScreeningScalarFieldEnum = {
   laboratoryName: 'laboratoryName',
   resultReceivedAt: 'resultReceivedAt',
   result: 'result',
+  notScreenedAt: 'notScreenedAt',
+  notScreenedReason: 'notScreenedReason',
+  notScreenedById: 'notScreenedById',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -15668,6 +15671,20 @@ export type EnumShkResultFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
  * Reference to a field of type 'ShkResult[]'
  */
 export type ListEnumShkResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShkResult[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ShkNotScreenedReason'
+ */
+export type EnumShkNotScreenedReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShkNotScreenedReason'>
+    
+
+
+/**
+ * Reference to a field of type 'ShkNotScreenedReason[]'
+ */
+export type ListEnumShkNotScreenedReasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ShkNotScreenedReason[]'>
     
 
 

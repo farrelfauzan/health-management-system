@@ -27,6 +27,16 @@ function readNeonatalVisit(
   return formatDate(visit?.startedAt ?? null, timeZone);
 }
 
+/** The SHK result cell: the answer, "not screened" (P25-T18), or blank. */
+function readShkResult(source: MaternalReportNewbornRegisterSource): string {
+  if (source.newborn.shkNotScreened) {
+    return MATERNAL_REPORT_LABELS.shkNotScreened;
+  }
+  return source.newborn.shkResult === null
+    ? NOT_RECORDED
+    : MATERNAL_REPORT_LABELS.shkResult[source.newborn.shkResult];
+}
+
 /**
  * One **provisional** kohort bayi row per baby in `KOHORT_BAYI_COLUMNS` order
  * (P25-T15, D-040). A baby not yet registered as a patient prints her mother's
@@ -63,9 +73,7 @@ export function buildKohortBayiRows(
       readNeonatalVisit(source, 'KN2', timeZone),
       readNeonatalVisit(source, 'KN3', timeZone),
       formatDate(source.newborn.shkSampleTakenAt, timeZone),
-      source.newborn.shkResult === null
-        ? NOT_RECORDED
-        : MATERNAL_REPORT_LABELS.shkResult[source.newborn.shkResult],
+      readShkResult(source),
       NOT_RECORDED,
     ],
   }));

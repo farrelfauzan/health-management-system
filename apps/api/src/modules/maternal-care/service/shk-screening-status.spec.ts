@@ -25,6 +25,7 @@ describe('SHK sample window and status (P25-T10)', () => {
       sampleTakenAt: null,
       sentAt: null,
       resultReceivedAt: null,
+      notScreenedAt: null,
       now: new Date(BIRTH_AT.getTime() + offsetMs),
     });
   }
@@ -56,10 +57,24 @@ describe('SHK sample window and status (P25-T10)', () => {
       sampleTakenAt: steps.sampleTakenAt ? lateInstant : null,
       sentAt: steps.sentAt ? lateInstant : null,
       resultReceivedAt: steps.resultReceivedAt ? lateInstant : null,
+      notScreenedAt: null,
       now: new Date(BIRTH_AT.getTime() + 200 * HOUR),
     });
 
     expect(actualStatus).toBe(expectedStatus);
+  });
+
+  it('reads a sample closed without a heel prick as NOT_SCREENED, whatever the clock says (P25-T18)', () => {
+    const actualStatus = resolveShkScreeningStatus({
+      ...window,
+      sampleTakenAt: null,
+      sentAt: null,
+      resultReceivedAt: null,
+      notScreenedAt: new Date(BIRTH_AT.getTime() + 500 * HOUR),
+      now: new Date(BIRTH_AT.getTime() + 600 * HOUR),
+    });
+
+    expect(actualStatus).toBe('NOT_SCREENED');
   });
 
   it('makes a repeat sample due the moment its result arrives', () => {
@@ -74,6 +89,7 @@ describe('SHK sample window and status (P25-T10)', () => {
         sampleTakenAt: null,
         sentAt: null,
         resultReceivedAt: null,
+        notScreenedAt: null,
         now: receivedAt,
       }),
     ).toBe('DUE');
