@@ -21,9 +21,11 @@ export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProp
         {/*
           P19-T01. `pr-10` keeps the name clear of the collapse control that
           appears on hover, so nothing shifts when it does. On the icon rail
-          the kit zeroes the padding and the row shrinks to the 2rem mark;
+          the kit zeroes the padding and the row shrinks to the 2rem button;
           the text is clipped by the button's overflow, so neither locale can
-          push the row wider than the rail.
+          push the row wider than the rail. The mark's size is `!important`
+          because the kit's `[&>svg]:size-4` would otherwise render it at 16px,
+          and it drops back to 2rem on the rail so it fits the shrunken button.
         */}
         <SidebarMenuButton
           asChild
@@ -32,9 +34,9 @@ export function SidebarBrand({ homeHref = '/admin/dashboard' }: SidebarBrandProp
         >
           <Link href={homeHref}>
             <BrandMark
-              size={32}
+              size={50}
               label={t('logoAlt', { facilityName: FACILITY_CONFIG.name })}
-              className="aspect-square size-8 shrink-0"
+              className="aspect-square size-[50px]! shrink-0 group-data-[collapsible=icon]:size-8!"
             />
             <span className="grid flex-1 text-left leading-tight">
               <span className="truncate font-heading text-lg font-semibold">
