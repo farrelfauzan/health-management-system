@@ -44,6 +44,7 @@ Use a modular monolith for MVP (clear domain boundaries, single deployable backe
 
 - `apps/api`: NestJS API
 - `apps/web`: Next.js frontend
+- `apps/landing`: Next.js public marketing site (static, no API calls; dev server on :3002)
 - `packages/shared-types`: shared Zod schemas + inferred DTO/types for API and frontend forms
 - `packages/config`: shared lint/tsconfig/prettier presets
 - `infra/docker`: Dockerfiles + compose files
