@@ -33,6 +33,8 @@ export function DemoCtaSection(): ReactElement {
               </a>
               <a
                 href={SITE_CONTACT.whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex h-[52px] items-center justify-center gap-2.5 rounded-[14px] border-[1.5px] border-white/55 px-6 text-base font-bold text-white hover:border-white hover:bg-white/10 xl:h-14 xl:text-[17px]"
               >
                 <LineIcon name="chat" size={20} />

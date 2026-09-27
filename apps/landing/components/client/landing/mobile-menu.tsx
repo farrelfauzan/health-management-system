@@ -8,11 +8,10 @@ import type { NavLink } from '#lib/landing/nav-link';
 type MobileMenuProps = {
   links: readonly NavLink[];
   demoHref: string;
-  loginHref: string;
 };
 
 /** Phone-width header controls: the demo button and a menu that drops the section links. */
-export function MobileMenu({ links, demoHref, loginHref }: MobileMenuProps): ReactElement {
+export function MobileMenu({ links, demoHref }: MobileMenuProps): ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const closeMenu = (): void => setIsOpen(false);
   return (
@@ -49,13 +48,6 @@ export function MobileMenu({ links, demoHref, loginHref }: MobileMenuProps): Rea
               {link.label}
             </a>
           ))}
-          <a
-            href={loginHref}
-            onClick={closeMenu}
-            className="flex h-12 items-center text-base font-semibold text-brand"
-          >
-            Masuk
-          </a>
         </nav>
       )}
     </div>

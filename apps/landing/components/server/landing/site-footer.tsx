@@ -50,7 +50,14 @@ export function SiteFooter(): ReactElement {
           <address className="flex flex-col gap-2.5 text-[15px] not-italic xl:gap-3">
             <span className="text-sm font-extrabold">Kontak</span>
             <span className="text-ink-muted">{SITE_CONTACT.email}</span>
-            <span className="text-ink-muted">{SITE_CONTACT.whatsappLabel}</span>
+            <a
+              href={SITE_CONTACT.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-ink-muted hover:text-brand"
+            >
+              WhatsApp {SITE_CONTACT.whatsappLabel}
+            </a>
             <span className="leading-normal text-ink-muted">{SITE_CONTACT.address}</span>
           </address>
         </div>
