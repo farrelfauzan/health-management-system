@@ -37,7 +37,36 @@ jobs:
             --no-banner \
             --verbose
 
+  # Decides whether this is a marketing-site-only pull request (see the
+  # script for the exact rules, including the lockfile check). `quality` reads
+  # the answer; this job never gates anything on its own.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      landing_only: ${{ steps.detect.outputs.landing_only }}
+    steps:
+      - name: Checkout full history
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          # Needs the merge base of the PR, which a shallow clone lacks.
+          fetch-depth: 0
+
+      - name: Detect landing-only change
+        id: detect
+        if: github.event_name == 'pull_request'
+        run: >-
+          node .github/scripts/detect-landing-only.mjs
+          "${{ github.event.pull_request.base.sha }}"
+          "${{ github.event.pull_request.head.sha }}"
+
   quality:
+    needs: changes
+    # Runs even if `changes` failed: a missing output reads as "not landing
+    # only", so a broken detector costs a full run instead of skipping this
+    # job — a skipped required check counts as passing.
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     # A leaked async handle can keep Jest's process alive after the run
     # completes; fail the job instead of holding a runner for six hours.
@@ -59,11 +88,21 @@ jobs:
       # undefined, not on empty), which takes down AppModule for every
       # integration test rather than just the storage suite. It is scoped to
       # the one step that needs it instead.
+      #
+      # 'true' only for a pull request that touches nothing but apps/landing
+      # (plus docs, root Markdown, or a lockfile change that leaves every other
+      # importer's resolution unchanged). Then lint/typecheck/test/build are
+      # scoped to @hms/landing and everything below that needs Postgres or
+      # Docker is skipped. Pushes to main always run in full.
+      LANDING_ONLY: ${{ needs.changes.outputs.landing_only == 'true' }}
+      # Empty for a full run, so e.g. the Lint step is exactly `pnpm lint`.
+      WORKSPACE_FILTER: ${{ needs.changes.outputs.landing_only == 'true' && '--filter @hms/landing' || '' }}
     services:
       postgres:
         # pgvector build of Postgres 16 (P15-T09): migrate deploy runs the
         # CREATE EXTENSION vector migration, which plain 16-alpine lacks.
-        image: pgvector/pgvector:pg16
+        # An empty image skips the container for landing-only runs.
+        image: ${{ needs.changes.outputs.landing_only != 'true' && 'pgvector/pgvector:pg16' || '' }}
         env:
           POSTGRES_DB: hms_dev
           POSTGRES_USER: postgres
@@ -102,15 +141,16 @@ jobs:
         run: pnpm audit --audit-level high --ignore-registry-errors
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm ${{ env.WORKSPACE_FILTER }} lint
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: pnpm ${{ env.WORKSPACE_FILTER }} typecheck
 
       - name: Unit tests
-        run: pnpm test
+        run: pnpm ${{ env.WORKSPACE_FILTER }} test
 
       - name: Wait for postgres
+        if: env.LANDING_ONLY != 'true'
         run: |
           for i in {1..30}; do
             if nc -z localhost 5432; then
@@ -122,15 +162,19 @@ jobs:
           exit 1
 
       - name: Prisma validate
+        if: env.LANDING_ONLY != 'true'
         run: pnpm db:validate
 
       - name: Prisma migrate deploy
+        if: env.LANDING_ONLY != 'true'
         run: pnpm db:migrate:deploy
 
       - name: Prisma migration status
+        if: env.LANDING_ONLY != 'true'
         run: pnpm --filter @hms/api exec prisma migrate status
 
       - name: Prisma schema drift check
+        if: env.LANDING_ONLY != 'true'
         run: pnpm --filter @hms/api exec prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
 
       # Runs after migrate deploy: MRN allocation is proven against real
@@ -140,6 +184,7 @@ jobs:
       # end-to-end ingestion suite needs those plus an embedding host, and
       # skips without either.
       - name: Integration tests
+        if: env.LANDING_ONLY != 'true'
         run: pnpm integration:test
         env:
           # The storage round-trip is opt-in on S3_INTEGRATION_TEST_BUCKET:
@@ -165,12 +210,14 @@ jobs:
           EMBEDDING_INTEGRATION_TEST_BASE_URL: ${{ secrets.EMBEDDING_INTEGRATION_TEST_BASE_URL }}
 
       - name: Build
-        run: pnpm build
+        run: pnpm ${{ env.WORKSPACE_FILTER }} build
 
       - name: API docker build
+        if: env.LANDING_ONLY != 'true'
         run: docker build -f infra/docker/api/Dockerfile.dev .
 
       - name: Web docker build
+        if: env.LANDING_ONLY != 'true'
         run: docker build -f infra/docker/web/Dockerfile.dev .
 
       # SJ-1 — the proxy config is the only thing between a clinic workstation
@@ -190,6 +237,7 @@ jobs:
       # without binding a port or contacting an ACME server, so no real domain
       # or token is involved.
       - name: Proxy docker build
+        if: env.LANDING_ONLY != 'true'
         run: docker build -t hms-caddy:ci infra/docker/caddy
 
       # Two different checks, because the two configs can be checked to
@@ -208,6 +256,7 @@ jobs:
       # `adapt` still catches what actually goes wrong in this file: typos,
       # unknown directives, and a plugin that stopped existing.
       - name: Validate Caddy configuration
+        if: env.LANDING_ONLY != 'true'
         run: |
           docker run --rm -v "$PWD/infra/docker/caddy:/etc/caddy:ro" hms-caddy:ci \
             caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile.dev
