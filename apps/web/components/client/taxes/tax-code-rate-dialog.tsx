@@ -71,7 +71,7 @@ export function TaxCodeRateDialog({ taxCode, onClose }: TaxCodeRateDialogProps) 
 
   return (
     <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-heading">
             {t('rateDialogTitle', { code: taxCode.code })}
