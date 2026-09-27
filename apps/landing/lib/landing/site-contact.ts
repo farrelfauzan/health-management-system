@@ -10,6 +10,7 @@ const WHATSAPP_GREETING = 'Halo, saya ingin tahu lebih lanjut tentang MetaKlinik
 export const SITE_CONTACT = {
   email: 'farrelfauzan78@gmail.com',
   whatsappLabel: '0813-8103-5295',
+  phoneE164: '+6281381035295',
   whatsappHref: `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_GREETING)}`,
   demoHref: '#kontak',
 } as const;

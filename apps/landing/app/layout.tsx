@@ -1,6 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { JetBrains_Mono, Plus_Jakarta_Sans } from 'next/font/google';
 import type { ReactElement, ReactNode } from 'react';
+
+import { SITE_SEO } from '#lib/landing/site-seo';
+import { SITE_URL } from '#lib/landing/site-url';
 
 import './globals.css';
 
@@ -18,17 +21,39 @@ const jetbrains = JetBrains_Mono({
   variable: '--font-jetbrains',
 });
 
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
-  title: 'MetaKlinik — Sistem manajemen klinik yang terhubung SATUSEHAT',
-  description:
-    'Pendaftaran, pemeriksaan, apotek, kasir, pajak, sampai laporan SATUSEHAT dalam satu sistem. Pasien bisa daftar sendiri lewat WhatsApp bersama Miko.',
-  openGraph: {
-    title: 'MetaKlinik',
-    description:
-      'Lebih dari sekadar RME: satu sistem untuk seluruh perjalanan pasien di klinik Anda.',
-    locale: 'id_ID',
-    type: 'website',
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_SEO.title, template: '%s · MetaKlinik' },
+  description: SITE_SEO.description,
+  keywords: [...SITE_SEO.keywords],
+  applicationName: 'MetaKlinik',
+  category: 'health',
+  alternates: { canonical: '/' },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'MetaKlinik',
+    title: SITE_SEO.title,
+    description: SITE_SEO.socialDescription,
+    locale: 'id_ID',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_SEO.title,
+    description: SITE_SEO.socialDescription,
+  },
+  verification: googleSiteVerification ? { google: googleSiteVerification } : undefined,
+};
+
+export const viewport: Viewport = {
+  themeColor: '#F8F9FF',
 };
 
 type RootLayoutProps = {

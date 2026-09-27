@@ -8,6 +8,7 @@ import { ModulesSection } from '#components/server/landing/modules-section';
 import { ScreensSection } from '#components/server/landing/screens-section';
 import { SiteFooter } from '#components/server/landing/site-footer';
 import { SiteHeader } from '#components/server/landing/site-header';
+import { StructuredData } from '#components/server/landing/structured-data';
 import { SwitchAndSecuritySection } from '#components/server/landing/switch-and-security-section';
 import { BrandSvgDefs } from '#components/shared/brand-svg-defs';
 
@@ -15,6 +16,7 @@ import { BrandSvgDefs } from '#components/shared/brand-svg-defs';
 export default function LandingPage(): ReactElement {
   return (
     <>
+      <StructuredData />
       <BrandSvgDefs />
       <div className="progress" aria-hidden="true" />
       <SiteHeader />
