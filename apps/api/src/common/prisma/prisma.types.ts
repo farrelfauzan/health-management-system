@@ -46,3 +46,15 @@ export type DeleteWhere<TDelegate extends DeleteDelegate> = Prisma.Args<TDelegat
 }
   ? TWhere
   : never;
+
+/**
+ * The fields a database error may carry, however deeply the Prisma driver
+ * adapter has wrapped it. Read by `isStatementTimeoutError` only.
+ */
+export type DatabaseErrorLike = {
+  code?: unknown;
+  originalCode?: unknown;
+  message?: unknown;
+  meta?: { code?: unknown };
+  cause?: unknown;
+};

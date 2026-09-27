@@ -11,6 +11,7 @@ import { AuthRepository } from '../auth/repository/auth.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
 
 const OPERATIONS_PATH = '/api/v1/v1/analytics/operations';
+const SEPTEMBER_QUERY = { from: '2026-09-01', to: '2026-09-30' };
 const ADMIN_ANALYTICS_PERMISSIONS = [
   { action: 'read-operations', resource: 'Analytics', scope: 'ANY' as const },
   { action: 'read-finance', resource: 'Analytics', scope: 'ANY' as const },
@@ -20,8 +21,9 @@ const DOCTOR_ANALYTICS_PERMISSIONS = [
 ];
 
 /**
- * P29-T01 acceptance over the wired stack: permission guard and feature gate
- * in front of the operations dashboard, with the repositories replaced.
+ * P29-T01/T02 acceptance over the wired stack: permission guard, feature
+ * gate and the shared filter in front of the operations dashboard, with the
+ * repositories replaced.
  */
 describe('Analytics integration', () => {
   let app: INestApplication;
@@ -80,7 +82,53 @@ describe('Analytics integration', () => {
     featureAvailabilityCacheMock.isEnabled.mockResolvedValue(true);
   });
 
-  it('given ADMIN, when reading the operations dashboard, then answers 200 with asOf', async () => {
+  it('given ADMIN and September, then answers the envelope with the clinic-day meta', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .get(OPERATIONS_PATH)
+      .query(SEPTEMBER_QUERY)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toEqual({ totals: {}, series: [], breakdowns: {} });
+    expect(response.body.meta).toMatchObject({
+      from: '2026-09-01',
+      to: '2026-09-30',
+      timezone: 'Asia/Jakarta',
+      granularity: 'day',
+    });
+    expect(Number.isNaN(Date.parse(response.body.meta.generatedAt))).toBe(false);
+  });
+
+  it('given compare on for September, then the comparison period is all of August', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .get(OPERATIONS_PATH)
+      .query({ ...SEPTEMBER_QUERY, compare: 'true' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.comparison).toEqual({ from: '2026-08-01', to: '2026-08-31', totals: {} });
+  });
+
+  it('given 1 January 2024 to 30 September 2026, then answers 400', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .get(OPERATIONS_PATH)
+      .query({ from: '2024-01-01', to: '2026-09-30' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(JSON.stringify(response.body.error)).toContain('Choose a range of at most 24 months');
+  });
+
+  it('given no dates, then answers 400', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);
 
@@ -88,8 +136,7 @@ describe('Analytics integration', () => {
       .get(OPERATIONS_PATH)
       .set('Authorization', `Bearer ${token}`);
 
-    expect(response.status).toBe(200);
-    expect(Number.isNaN(Date.parse(response.body.data.asOf))).toBe(false);
+    expect(response.status).toBe(400);
   });
 
   it('given DOCTOR, when reading the operations dashboard, then answers 403', async () => {
@@ -98,6 +145,7 @@ describe('Analytics integration', () => {
 
     const response = await request(app.getHttpServer())
       .get(OPERATIONS_PATH)
+      .query(SEPTEMBER_QUERY)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(403);
@@ -112,6 +160,7 @@ describe('Analytics integration', () => {
 
     const response = await request(app.getHttpServer())
       .get(OPERATIONS_PATH)
+      .query(SEPTEMBER_QUERY)
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(403);

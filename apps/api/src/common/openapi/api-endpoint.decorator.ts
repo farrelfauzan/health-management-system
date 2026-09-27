@@ -94,14 +94,18 @@ function inferSchema(value: unknown): OpenApiSchema {
   }
   if (typeof value === 'object') {
     const entries = Object.entries(value as Record<string, unknown>);
+    const required = entries
+      .filter(([, propertyValue]) => !isOptionalExample(propertyValue))
+      .map(([key]) => key);
+    // OpenAPI forbids an empty `required` list, and Orval refuses the whole
+    // contract over one — an empty example object (P29-T02's not-yet-filled
+    // analytics totals) must leave the key out instead.
     return {
       type: 'object',
       properties: Object.fromEntries(
         entries.map(([key, propertyValue]) => [key, inferSchema(propertyValue)]),
       ),
-      required: entries
-        .filter(([, propertyValue]) => !isOptionalExample(propertyValue))
-        .map(([key]) => key),
+      ...(required.length > 0 ? { required } : {}),
     };
   }
   if (typeof value === 'number') {
