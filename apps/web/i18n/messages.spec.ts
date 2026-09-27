@@ -5,6 +5,7 @@ import enClinicalMessages from '../messages/en/clinical.json';
 import enMaternalCareMessages from '../messages/en/maternal-care.json';
 import enDashboardAiMessages from '../messages/en/dashboard-ai.json';
 import enMessages from '../messages/en.json';
+import enAnalyticsMessages from '../messages/en/analytics.json';
 import enOperationsMessages from '../messages/en/operations.json';
 import enPharmacyInventoryMessages from '../messages/en/pharmacy-inventory.json';
 import enSharedMessages from '../messages/en/shared.json';
@@ -19,6 +20,7 @@ import idClinicalMessages from '../messages/id/clinical.json';
 import idMaternalCareMessages from '../messages/id/maternal-care.json';
 import idDashboardAiMessages from '../messages/id/dashboard-ai.json';
 import idMessages from '../messages/id.json';
+import idAnalyticsMessages from '../messages/id/analytics.json';
 import idOperationsMessages from '../messages/id/operations.json';
 import idPharmacyInventoryMessages from '../messages/id/pharmacy-inventory.json';
 import idSharedMessages from '../messages/id/shared.json';
@@ -41,6 +43,7 @@ const CATALOG_PAIRS: ReadonlyArray<readonly [string, unknown, unknown]> = [
   ['pharmacy-inventory', enPharmacyInventoryMessages, idPharmacyInventoryMessages],
   ['shared', enSharedMessages, idSharedMessages],
   ['vault', enVaultMessages, idVaultMessages],
+  ['analytics', enAnalyticsMessages, idAnalyticsMessages],
 ];
 
 function collectLeafKeys(value: unknown, prefix = ''): string[] {

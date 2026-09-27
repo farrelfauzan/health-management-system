@@ -1,0 +1,35 @@
+{
+  "analytics": {
+    "breadcrumb": "Analytics",
+    "dashboards": {
+      "operations": {
+        "title": "Operations",
+        "subtitle": "Visits, patient flow and the clinic's busiest hours"
+      },
+      "finance": {
+        "title": "Finance",
+        "subtitle": "Revenue that matches the cashier drawer, by method, service, doctor and payer"
+      },
+      "case-mix": {
+        "title": "Case mix",
+        "subtitle": "What the clinic treats most often — summary figures only, no patient data"
+      },
+      "pharmacy": {
+        "title": "Pharmacy",
+        "subtitle": "Prescription flow, top medications and stock risk"
+      },
+      "laboratory": {
+        "title": "Laboratory",
+        "subtitle": "Order volume, turnaround and repeats"
+      },
+      "reporting": {
+        "title": "Reporting status",
+        "subtitle": "Whether the clinic's data has reached SATUSEHAT and BPJS"
+      }
+    },
+    "placeholder": {
+      "title": "This dashboard is being prepared",
+      "description": "The figures will appear here once they are ready. There is nothing to set up."
+    }
+  }
+}

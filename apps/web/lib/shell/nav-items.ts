@@ -1,5 +1,9 @@
 import type { AppAction, AppSubject } from '@hms/ui';
 
+import {
+  ANALYTICS_DASHBOARDS,
+  type AnalyticsNavigationKey,
+} from '#lib/analytics/analytics-dashboards';
 import { SETTINGS_HUB_CARDS } from '#lib/settings/settings-hub-cards';
 
 export type AdminNavAbility = {
@@ -34,7 +38,9 @@ export type ShellNavigationKey =
   | 'organization'
   | 'administration'
   | 'settings'
-  | 'today';
+  | 'today'
+  | 'analytics'
+  | AnalyticsNavigationKey;
 
 /**
  * Which live count, if any, a nav entry carries. Kept as a key rather than a
@@ -218,6 +224,20 @@ export const ADMIN_NAV_SECTIONS: AdminNavSection[] = [
         badgeKey: 'documentApprovals',
       },
     ],
+  },
+  {
+    // P29-T01 (D-050). Analytics lives in this portal as its own group rather
+    // than a separate BI portal. Each entry opens on its own dashboard key,
+    // and the whole group disappears with the `analytics` entitlement.
+    label: 'Analytics',
+    labelKey: 'analytics',
+    items: ANALYTICS_DASHBOARDS.map((dashboard) => ({
+      href: dashboard.href,
+      label: dashboard.label,
+      labelKey: dashboard.labelKey,
+      icon: dashboard.icon,
+      ability: { action: dashboard.action, subject: 'Analytics' },
+    })),
   },
   {
     label: 'Advanced',

@@ -190,6 +190,7 @@ export * from '#laboratory/contracts';
 export * from '#laboratory/types';
 export * from '#laboratory/compute-lab-flag';
 export * from '#laboratory/resolve-lab-reference-range';
+export * from '#analytics/contracts';
 export * from '#taxes/schemas';
 export * from '#taxes/tax-calendar';
 export * from '#taxes/resolve-crossed-turnover-fractions';

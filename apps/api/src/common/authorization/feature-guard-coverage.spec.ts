@@ -134,6 +134,8 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   TaxReportController: 'taxes',
   TaxReportCoretaxController: 'taxes',
   TaxReportCoretaxFakturController: 'taxes',
+  // P29-T01. Every analytics dashboard goes with the analytics feature.
+  AnalyticsOperationsController: 'analytics',
 };
 
 /**

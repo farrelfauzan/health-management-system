@@ -37,7 +37,11 @@ export type FeatureKey =
   // P27-T02: clinic taxes — the tax profile now, tax codes, invoice tax and
   // the monthly report drafts as P27 lands. Needs `billing`: every tax number
   // is computed from an invoice.
-  | 'taxes';
+  | 'taxes'
+  // P29-T01: clinic analytics — read-only dashboards over the tables the
+  // other modules already write (D-049). No prerequisite: each dashboard is
+  // gated by its own permission, and an empty one says so.
+  | 'analytics';
 
 /**
  * One optional product feature, as both the API and the web app know it.

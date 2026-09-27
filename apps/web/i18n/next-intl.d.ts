@@ -1,4 +1,5 @@
 import type idMessages from '../messages/id.json';
+import type idAnalyticsMessages from '../messages/id/analytics.json';
 import type idAuthShellMessages from '../messages/id/auth-shell.json';
 import type idClinicalMessages from '../messages/id/clinical.json';
 import type idDashboardAiMessages from '../messages/id/dashboard-ai.json';
@@ -34,6 +35,7 @@ declare module 'next-intl' {
       typeof idOperationsMessages &
       typeof idPharmacyInventoryMessages &
       typeof idVaultMessages &
+      typeof idAnalyticsMessages &
       SharedMessages;
   }
 }

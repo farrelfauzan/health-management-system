@@ -133,7 +133,14 @@
         "admissions": "Admissions",
         "organization": "Organization",
         "documents": "Documents",
-        "settings": "Settings"
+        "settings": "Settings",
+        "analytics": "Analytics",
+        "analyticsOperations": "Operations",
+        "analyticsFinance": "Finance",
+        "analyticsCaseMix": "Case mix",
+        "analyticsPharmacy": "Pharmacy",
+        "analyticsLaboratory": "Laboratory",
+        "analyticsReporting": "Reporting status"
       },
       "search": {
         "label": "Search",

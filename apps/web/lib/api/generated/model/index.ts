@@ -134,6 +134,8 @@ export * from './aiProviderControllerTestConnectionV1200Data';
 export * from './aiProviderControllerUpdateConfigV1200';
 export * from './aiProviderControllerUpdateConfigV1200Data';
 export * from './amendLabResultDto';
+export * from './analyticsOperationsControllerGetOperationsV1200';
+export * from './analyticsOperationsControllerGetOperationsV1200Data';
 export * from './antenatalExaminationControllerDismissReferralRuleV1200';
 export * from './antenatalExaminationControllerDismissReferralRuleV1200Data';
 export * from './antenatalExaminationControllerDismissReferralRuleV1200DataChecklistItem';
