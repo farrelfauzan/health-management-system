@@ -147,7 +147,7 @@ export function MedicationFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl">
         <form noValidate onSubmit={(event) => void handleSubmit(event)}>
           <DialogHeader>
             <DialogTitle>{medication ? t('editMedication') : t('addMedication')}</DialogTitle>

@@ -130,7 +130,7 @@ export function DocumentTypeFormDialog({ open, type, onOpenChange }: DocumentTyp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
             <DialogTitle>{isEditing ? t('form.editTitle') : t('form.createTitle')}</DialogTitle>
