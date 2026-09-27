@@ -1,3 +1,4 @@
+import { FAQ_ITEMS } from '#lib/landing/faq-items';
 import { LANDING_MODULES } from '#lib/landing/landing-modules';
 import { SCREEN_SLIDES } from '#lib/landing/screen-slides';
 import { SITE_CONTACT } from '#lib/landing/site-contact';
@@ -7,7 +8,7 @@ import type { StructuredDataGraph } from '#lib/landing/structured-data-graph';
 
 /**
  * The page's schema.org graph: the organisation behind MetaKlinik, the website, and the
- * product as a web SoftwareApplication. No price or rating is claimed; neither is public.
+ * product as a web SoftwareApplication, and the FAQ. No price or rating is claimed; neither is public.
  */
 export function buildStructuredData(): StructuredDataGraph {
   const organizationId = `${SITE_URL}/#organization`;
@@ -55,6 +56,16 @@ export function buildStructuredData(): StructuredDataGraph {
         featureList: LANDING_MODULES.map((module) => module.name),
         screenshot: screenshots,
         publisher: { '@id': organizationId },
+      },
+      {
+        '@type': 'FAQPage',
+        '@id': `${SITE_URL}/#faq`,
+        inLanguage: 'id-ID',
+        mainEntity: FAQ_ITEMS.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: { '@type': 'Answer', text: item.answer },
+        })),
       },
     ],
   };

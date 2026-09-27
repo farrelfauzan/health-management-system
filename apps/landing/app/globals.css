@@ -482,6 +482,39 @@
   background: var(--color-brand);
 }
 
+/* FAQ accordion. */
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-item summary:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+.faq-chevron {
+  transition:
+    rotate 0.25s ease,
+    background 0.2s;
+}
+.faq-item[open] .faq-chevron {
+  rotate: 180deg;
+  background: var(--color-brand);
+  color: #fff;
+}
+.faq-item[open] .faq-answer {
+  animation: faqIn 0.3s ease;
+}
+@keyframes faqIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Entrance and scroll-driven motion. Without scroll-timeline support the page simply renders still. */
 .in {
   animation: inUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;

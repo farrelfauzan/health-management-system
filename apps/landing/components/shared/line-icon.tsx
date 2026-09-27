@@ -25,6 +25,7 @@ const SHAPES: Readonly<Record<LineIconName, ReactElement>> = {
   ),
   chat: <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />,
   check: <path d="M5 12l4.5 4.5L19 7" />,
+  'chevron-down': <path d="M6 9l6 6 6-6" />,
   close: <path d="M6 6l12 12M18 6L6 18" />,
   cloud: (
     <>

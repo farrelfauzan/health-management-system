@@ -7,4 +7,5 @@ export const NAV_LINKS: readonly NavLink[] = [
   { href: '#tampilan', label: 'Tampilan' },
   { href: '#miko', label: 'Miko' },
   { href: '#pindah', label: 'Pindah ke MetaKlinik' },
+  { href: '#faq', label: 'FAQ' },
 ];
