@@ -2633,6 +2633,7 @@
         "previousYear": "Previous year",
         "nextYear": "Next year",
         "create": "Create draft",
+        "open": "Open",
         "back": "All tax reports",
         "recompute": "Recompute",
         "finalize": "Finalize",
@@ -2640,6 +2641,17 @@
         "downloadPdf": "Download PDF",
         "recomputed": "Report recomputed",
         "finalized": "Report finalized",
+        "columns": {
+          "period": "Month",
+          "taxDue": "Tax due",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "view": {
+          "label": "Report view",
+          "table": "Table view",
+          "cards": "Card view"
+        },
         "kind": {
           "PP55_OMZET": "PPh final PP 55 (0.5% of turnover)",
           "PPN_OUTPUT": "Output VAT (PPN keluaran)",
