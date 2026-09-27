@@ -49,7 +49,9 @@ export function SiteFooter(): ReactElement {
           </nav>
           <address className="flex flex-col gap-2.5 text-[15px] not-italic xl:gap-3">
             <span className="text-sm font-extrabold">Kontak</span>
-            <span className="text-ink-muted">{SITE_CONTACT.email}</span>
+            <a href={`mailto:${SITE_CONTACT.email}`} className="text-ink-muted hover:text-brand">
+              {SITE_CONTACT.email}
+            </a>
             <a
               href={SITE_CONTACT.whatsappHref}
               target="_blank"
@@ -58,7 +60,6 @@ export function SiteFooter(): ReactElement {
             >
               WhatsApp {SITE_CONTACT.whatsappLabel}
             </a>
-            <span className="leading-normal text-ink-muted">{SITE_CONTACT.address}</span>
           </address>
         </div>
         <div className="flex flex-col gap-1 border-t border-line pt-5 text-[13px] text-ink-muted xl:flex-row xl:justify-between xl:text-sm">
