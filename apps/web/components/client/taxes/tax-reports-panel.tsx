@@ -17,24 +17,37 @@ import { useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { TaxReportMonthCell } from '#components/client/taxes/tax-report-month-cell';
+import { TaxReportMonthsTable } from '#components/client/taxes/tax-report-months-table';
+import { TaxReportsViewToggle } from '#components/client/taxes/tax-reports-view-toggle';
+import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { buildTaxReportPeriods } from '#lib/taxes/build-tax-report-periods';
+import { TAX_REPORTS_VIEWS, type TaxReportsView } from '#lib/taxes/tax-reports-views';
 import { useTaxReports } from '#lib/taxes/use-tax-reports';
 
 type TaxReportsPanelProps = {
   /** The current year and month in the clinic timezone, from the server. */
   currentPeriod: string;
+  /** The `?view=` read on the server, so the first paint matches the URL. */
+  initialView?: TaxReportsView;
 };
 
 /**
- * A year of monthly tax report drafts (P27-T05): one row per report the tax
- * profile calls for, one cell per month. The product drafts; the clinic pays
- * and files in Coretax — the banner says so on every screen.
+ * A year of monthly tax report drafts (P27-T05): one table per report the tax
+ * profile calls for, one row per month — or, toggled, one card per month. The
+ * product drafts; the clinic pays and files in Coretax — the banner says so on
+ * every screen.
  */
-export function TaxReportsPanel({ currentPeriod }: TaxReportsPanelProps) {
+export function TaxReportsPanel({ currentPeriod, initialView }: TaxReportsPanelProps) {
   const t = useTranslations('operations.taxes.reports');
   const ability = useAbility();
   const canWrite = ability.can('write', 'TaxReport');
   const [year, setYear] = useState<number>(Number(currentPeriod.slice(0, 4)));
+  const { tab: view, setTab: setView } = useTabSearchParam<TaxReportsView>({
+    key: 'view',
+    allowed: TAX_REPORTS_VIEWS,
+    fallback: 'table',
+    initialTab: initialView,
+  });
   const { reports, meta, isPending, isError } = useTaxReports(year);
   const periods = buildTaxReportPeriods(year);
   const kinds = TAX_REPORT_KINDS.filter((kind) => meta?.applicableKinds.includes(kind));
@@ -48,6 +61,7 @@ export function TaxReportsPanel({ currentPeriod }: TaxReportsPanelProps) {
             <CardDescription>{t('description')}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
+            <TaxReportsViewToggle value={view} onChange={setView} />
             <Button
               type="button"
               variant="outline"
@@ -82,18 +96,28 @@ export function TaxReportsPanel({ currentPeriod }: TaxReportsPanelProps) {
             <h3 className="font-heading text-sm font-semibold text-slate-900">
               {t(`kind.${kind}`)}
             </h3>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-              {periods.map((period) => (
-                <TaxReportMonthCell
-                  key={period}
-                  period={period}
-                  kind={kind}
-                  report={reports.find((item) => item.period === period && item.kind === kind)}
-                  canWrite={canWrite}
-                  isFuture={period > currentPeriod}
-                />
-              ))}
-            </div>
+            {view === 'table' ? (
+              <TaxReportMonthsTable
+                kind={kind}
+                periods={periods}
+                reports={reports}
+                currentPeriod={currentPeriod}
+                canWrite={canWrite}
+              />
+            ) : (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+                {periods.map((period) => (
+                  <TaxReportMonthCell
+                    key={period}
+                    period={period}
+                    kind={kind}
+                    report={reports.find((item) => item.period === period && item.kind === kind)}
+                    canWrite={canWrite}
+                    isFuture={period > currentPeriod}
+                  />
+                ))}
+              </div>
+            )}
           </section>
         ))}
       </CardContent>
