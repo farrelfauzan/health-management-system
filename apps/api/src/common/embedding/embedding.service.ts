@@ -4,7 +4,7 @@ import { EmbedTextsRequest, EmbedTextsResult } from './embedding.types';
  * Provider-neutral text-embedding contract. Feature modules inject this and
  * never reach an embedding vendor's HTTP surface directly.
  *
- * Two backends satisfy it (D-EMB-01, `PCS-T12`): hosted Together AI by
+ * Two backends satisfy it (D-EMB-01, `PCS-T12`): hosted Sumopod by
  * default, and local Ollama for a deployment that will not add a third-party
  * processor to its UU PDP account. Both are configured to a **1024-wide
  * multilingual model**, and that is not a coincidence to be relied on loosely

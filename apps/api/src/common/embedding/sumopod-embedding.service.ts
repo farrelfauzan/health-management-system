@@ -7,13 +7,14 @@ import {
   EmbedAttemptOutcome,
   EmbedTextsRequest,
   EmbedTextsResult,
-  TogetherEmbeddingConfig,
+  SumopodEmbeddingConfig,
 } from './embedding.types';
 
-const EMBED_PATH = '/v1/embeddings';
+/** Appended to a base URL that already ends in `/v1`. */
+const EMBED_PATH = '/embeddings';
 
-/** Together's suggested wait, in seconds, on a rate-limited response. */
-const RATE_LIMIT_RESET_HEADER = 'x-ratelimit-reset';
+/** The provider's suggested wait, in seconds, on a rate-limited response. */
+const RETRY_AFTER_HEADER = 'retry-after';
 
 const TOO_MANY_REQUESTS = 429;
 const SERVER_ERROR_FLOOR = 500;
@@ -22,10 +23,16 @@ const SERVER_ERROR_FLOOR = 500;
 const BASE_RETRY_DELAY_MS = 500;
 
 /**
- * Together AI-backed embeddings over the OpenAI-compatible `/v1/embeddings`
+ * Sumopod-backed embeddings over the OpenAI-compatible `/v1/embeddings`
  * endpoint, which accepts an array `input` and answers with one object per
  * element — so a document's chunks go up in batches rather than one request
  * each (`PCS-T12`).
+ *
+ * Every request also carries `dimensions`, set to the configured width. The
+ * `text-embedding-3` models answer wider than the `vector(1024)` column unless
+ * asked, and asking is what keeps a provider switch from being a migration. A
+ * gateway that ignored the field is still caught: the width is asserted on
+ * every response.
  *
  * **This adapter is a data processor, and the local one was not** (D-EMB-01).
  * Every chunk of every ingested document and every retrieval query crosses to
@@ -52,13 +59,13 @@ const BASE_RETRY_DELAY_MS = 500;
  * an error message an admin can read for a file they could not open.
  */
 @Injectable()
-export class TogetherEmbeddingService extends EmbeddingService {
-  private readonly logger = new Logger(TogetherEmbeddingService.name);
-  private readonly embeddingConfig: TogetherEmbeddingConfig;
+export class SumopodEmbeddingService extends EmbeddingService {
+  private readonly logger = new Logger(SumopodEmbeddingService.name);
+  private readonly embeddingConfig: SumopodEmbeddingConfig;
 
   constructor(configService: ConfigService) {
     super();
-    this.embeddingConfig = resolveEmbeddingConfig(configService).together;
+    this.embeddingConfig = resolveEmbeddingConfig(configService).sumopod;
   }
 
   get model(): string {
@@ -95,7 +102,7 @@ export class TogetherEmbeddingService extends EmbeddingService {
   private assertConfigured(): void {
     if (this.embeddingConfig.apiKey === '') {
       throw new ServiceUnavailableException(
-        'Embedding provider is not configured: TOGETHER_API_KEY is empty while EMBEDDING_PROVIDER is TOGETHER',
+        'Embedding provider is not configured: SUMOPOD_API_KEY is empty while EMBEDDING_PROVIDER is SUMOPOD',
       );
     }
   }
@@ -144,7 +151,11 @@ export class TogetherEmbeddingService extends EmbeddingService {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.embeddingConfig.apiKey}`,
         },
-        body: JSON.stringify({ model: this.embeddingConfig.model, input: [...texts] }),
+        body: JSON.stringify({
+          model: this.embeddingConfig.model,
+          input: [...texts],
+          dimensions: this.embeddingConfig.dimension,
+        }),
         signal: abortController.signal,
       });
       if (!response.ok) {
@@ -191,13 +202,14 @@ export class TogetherEmbeddingService extends EmbeddingService {
   }
 
   /**
-   * Together answers a rate limit with the seconds until the window resets.
+   * An OpenAI-compatible gateway answers a rate limit with `Retry-After` in
+   * seconds.
    * Honouring it beats guessing — an exponential backoff that undershoots is
    * just a second 429 — but it is still clamped, because a header asking for a
    * five-minute wait would hold an ingestion worker open for five minutes.
    */
   private readRetryAfterMs(headers?: { get(name: string): string | null }): number | undefined {
-    const rawValue = headers?.get(RATE_LIMIT_RESET_HEADER);
+    const rawValue = headers?.get(RETRY_AFTER_HEADER);
     if (rawValue === null || rawValue === undefined || rawValue.trim() === '') {
       return undefined;
     }
@@ -288,7 +300,7 @@ export class TogetherEmbeddingService extends EmbeddingService {
   private assertDimension(embedding: number[]): void {
     if (embedding.length !== this.embeddingConfig.dimension) {
       throw new ServiceUnavailableException(
-        `Embedding provider returned ${embedding.length} dimensions, expected ${this.embeddingConfig.dimension} — check TOGETHER_EMBEDDING_MODEL against the vector column width`,
+        `Embedding provider returned ${embedding.length} dimensions, expected ${this.embeddingConfig.dimension} — check SUMOPOD_EMBEDDING_MODEL supports the dimensions field and matches the vector column width`,
       );
     }
   }

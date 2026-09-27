@@ -34,8 +34,8 @@ In `apps/api/.env`:
 Leave `AI_CHAT_CONTEXT_ENRICHMENT_ENABLED` off unless you specifically want to
 attack surface 2 (see §6).
 
-**Embeddings.** `EMBEDDING_PROVIDER` defaults to `TOGETHER`, which needs
-`TOGETHER_API_KEY` and sends your test corpus to a hosted service — fine for
+**Embeddings.** `EMBEDDING_PROVIDER` defaults to `SUMOPOD`, which needs
+`SUMOPOD_API_KEY` and sends your test corpus to a hosted service — fine for
 invented clinic text, not for anything real. For a local run set
 `EMBEDDING_PROVIDER=OLLAMA` and have `bge-m3` available on
 `OLLAMA_EMBEDDING_BASE_URL`:

@@ -1,18 +1,18 @@
 import { ConfigService } from '@nestjs/config';
 import { ServiceUnavailableException } from '@nestjs/common';
 
-import { TogetherEmbeddingService } from './together-embedding.service';
+import { SumopodEmbeddingService } from './sumopod-embedding.service';
 
 function buildConfigService(overrides: Record<string, string> = {}): ConfigService {
   const values: Record<string, string> = {
-    EMBEDDING_PROVIDER: 'TOGETHER',
-    TOGETHER_API_KEY: 'test-key',
-    TOGETHER_EMBEDDING_BASE_URL: 'https://together.test',
-    TOGETHER_EMBEDDING_MODEL: 'intfloat/multilingual-e5-large-instruct',
-    TOGETHER_EMBEDDING_VERSION: '1',
-    TOGETHER_EMBEDDING_DIMENSION: '3',
-    TOGETHER_EMBEDDING_BATCH_SIZE: '2',
-    TOGETHER_EMBEDDING_MAX_RETRIES: '0',
+    EMBEDDING_PROVIDER: 'SUMOPOD',
+    SUMOPOD_API_KEY: 'test-key',
+    SUMOPOD_EMBEDDING_BASE_URL: 'https://sumopod.test/v1',
+    SUMOPOD_EMBEDDING_MODEL: 'text-embedding-3-large',
+    SUMOPOD_EMBEDDING_VERSION: '1',
+    SUMOPOD_EMBEDDING_DIMENSION: '3',
+    SUMOPOD_EMBEDDING_BATCH_SIZE: '2',
+    SUMOPOD_EMBEDDING_MAX_RETRIES: '0',
     ...overrides,
   };
   return { get: (key: string) => values[key] } as unknown as ConfigService;
@@ -26,7 +26,7 @@ function buildEntry(index: number, seed: number): Record<string, unknown> {
   return { index, object: 'embedding', embedding: buildVector(seed) };
 }
 
-describe('TogetherEmbeddingService', () => {
+describe('SumopodEmbeddingService', () => {
   const originalFetch = global.fetch;
   let fetchMock: jest.Mock;
 
@@ -44,22 +44,23 @@ describe('TogetherEmbeddingService', () => {
       ok,
       status,
       headers: {
-        get: (name: string) => (name === 'x-ratelimit-reset' ? (resetSeconds ?? null) : null),
+        get: (name: string) => (name === 'retry-after' ? (resetSeconds ?? null) : null),
       },
-      json: () => Promise.resolve({ data, model: 'intfloat/multilingual-e5-large-instruct' }),
+      json: () => Promise.resolve({ data, model: 'text-embedding-3-large' }),
     });
   }
 
-  it('posts to the OpenAI-compatible endpoint with the configured model and a bearer key', async () => {
+  it('posts to the OpenAI-compatible endpoint with the configured model, width, and a bearer key', async () => {
     respondWith([buildEntry(0, 0.1)]);
 
-    await new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] });
+    await new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] });
 
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe('https://together.test/v1/embeddings');
+    expect(url).toBe('https://sumopod.test/v1/embeddings');
     expect(JSON.parse(String(init.body))).toEqual({
-      model: 'intfloat/multilingual-e5-large-instruct',
+      model: 'text-embedding-3-large',
       input: ['satu'],
+      dimensions: 3,
     });
     expect((init.headers as Record<string, string>).Authorization).toBe('Bearer test-key');
   });
@@ -67,22 +68,22 @@ describe('TogetherEmbeddingService', () => {
   it('strips a trailing slash from the base URL rather than producing a double slash', async () => {
     respondWith([buildEntry(0, 0.1)]);
 
-    await new TogetherEmbeddingService(
-      buildConfigService({ TOGETHER_EMBEDDING_BASE_URL: 'https://together.test/' }),
+    await new SumopodEmbeddingService(
+      buildConfigService({ SUMOPOD_EMBEDDING_BASE_URL: 'https://sumopod.test/v1/' }),
     ).embedTexts({ texts: ['satu'] });
 
-    expect(fetchMock.mock.calls[0]?.[0]).toBe('https://together.test/v1/embeddings');
+    expect(fetchMock.mock.calls[0]?.[0]).toBe('https://sumopod.test/v1/embeddings');
   });
 
   it('names the missing variable instead of letting the provider answer 401', async () => {
-    const service = new TogetherEmbeddingService(buildConfigService({ TOGETHER_API_KEY: '' }));
+    const service = new SumopodEmbeddingService(buildConfigService({ SUMOPOD_API_KEY: '' }));
 
-    await expect(service.embedTexts({ texts: ['satu'] })).rejects.toThrow(/TOGETHER_API_KEY/);
+    await expect(service.embedTexts({ texts: ['satu'] })).rejects.toThrow(/SUMOPOD_API_KEY/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('asks nothing of the provider for an empty input, key or no key', async () => {
-    const service = new TogetherEmbeddingService(buildConfigService({ TOGETHER_API_KEY: '' }));
+    const service = new SumopodEmbeddingService(buildConfigService({ SUMOPOD_API_KEY: '' }));
 
     const actual = await service.embedTexts({ texts: [] });
 
@@ -105,7 +106,7 @@ describe('TogetherEmbeddingService', () => {
         json: () => Promise.resolve({ data: [buildEntry(0, 0.3)] }),
       });
 
-    const actual = await new TogetherEmbeddingService(buildConfigService()).embedTexts({
+    const actual = await new SumopodEmbeddingService(buildConfigService()).embedTexts({
       texts: ['satu', 'dua', 'tiga'],
     });
 
@@ -122,7 +123,7 @@ describe('TogetherEmbeddingService', () => {
   it('re-sorts vectors by their index rather than trusting arrival order', async () => {
     respondWith([buildEntry(1, 0.7), buildEntry(0, 0.1)]);
 
-    const actual = await new TogetherEmbeddingService(buildConfigService()).embedTexts({
+    const actual = await new SumopodEmbeddingService(buildConfigService()).embedTexts({
       texts: ['satu', 'dua'],
     });
 
@@ -133,7 +134,7 @@ describe('TogetherEmbeddingService', () => {
   it('falls back to arrival order when the provider omits the index', async () => {
     respondWith([{ embedding: buildVector(0.1) }, { embedding: buildVector(0.7) }]);
 
-    const actual = await new TogetherEmbeddingService(buildConfigService()).embedTexts({
+    const actual = await new SumopodEmbeddingService(buildConfigService()).embedTexts({
       texts: ['satu', 'dua'],
     });
 
@@ -145,7 +146,7 @@ describe('TogetherEmbeddingService', () => {
     respondWith([buildEntry(0, 0.1), buildEntry(0, 0.7)]);
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu', 'dua'] }),
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu', 'dua'] }),
     ).rejects.toThrow(ServiceUnavailableException);
   });
 
@@ -153,7 +154,7 @@ describe('TogetherEmbeddingService', () => {
     respondWith([buildEntry(5, 0.1)]);
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
     ).rejects.toThrow(/out-of-range/);
   });
 
@@ -161,7 +162,7 @@ describe('TogetherEmbeddingService', () => {
     respondWith([buildEntry(0, 0.1)]);
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu', 'dua'] }),
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu', 'dua'] }),
     ).rejects.toThrow(/1 vectors for 2 inputs/);
   });
 
@@ -169,15 +170,15 @@ describe('TogetherEmbeddingService', () => {
     respondWith([{ index: 0, embedding: [0.1, 0.2] }]);
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
-    ).rejects.toThrow(/TOGETHER_EMBEDDING_MODEL/);
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
+    ).rejects.toThrow(/SUMOPOD_EMBEDDING_MODEL/);
   });
 
   it('refuses a non-numeric vector', async () => {
     respondWith([{ index: 0, embedding: ['a', 'b', 'c'] }]);
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
     ).rejects.toThrow(/non-numeric/);
   });
 
@@ -190,7 +191,7 @@ describe('TogetherEmbeddingService', () => {
     });
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['satu'] }),
     ).rejects.toThrow('Embedding provider responded with status 400');
   });
 
@@ -203,8 +204,8 @@ describe('TogetherEmbeddingService', () => {
     });
 
     await expect(
-      new TogetherEmbeddingService(
-        buildConfigService({ TOGETHER_EMBEDDING_MAX_RETRIES: '3' }),
+      new SumopodEmbeddingService(
+        buildConfigService({ SUMOPOD_EMBEDDING_MAX_RETRIES: '3' }),
       ).embedTexts({ texts: ['satu'] }),
     ).rejects.toThrow(ServiceUnavailableException);
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -215,7 +216,7 @@ describe('TogetherEmbeddingService', () => {
       .mockResolvedValueOnce({
         ok: false,
         status: 429,
-        headers: { get: (name: string) => (name === 'x-ratelimit-reset' ? '0' : null) },
+        headers: { get: (name: string) => (name === 'retry-after' ? '0' : null) },
         json: () => Promise.resolve({}),
       })
       .mockResolvedValueOnce({
@@ -225,8 +226,8 @@ describe('TogetherEmbeddingService', () => {
         json: () => Promise.resolve({ data: [buildEntry(0, 0.1)] }),
       });
 
-    const actual = await new TogetherEmbeddingService(
-      buildConfigService({ TOGETHER_EMBEDDING_MAX_RETRIES: '2' }),
+    const actual = await new SumopodEmbeddingService(
+      buildConfigService({ SUMOPOD_EMBEDDING_MAX_RETRIES: '2' }),
     ).embedTexts({ texts: ['satu'] });
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -237,13 +238,13 @@ describe('TogetherEmbeddingService', () => {
     fetchMock.mockResolvedValue({
       ok: false,
       status: 503,
-      headers: { get: (name: string) => (name === 'x-ratelimit-reset' ? '0' : null) },
+      headers: { get: (name: string) => (name === 'retry-after' ? '0' : null) },
       json: () => Promise.resolve({}),
     });
 
     await expect(
-      new TogetherEmbeddingService(
-        buildConfigService({ TOGETHER_EMBEDDING_MAX_RETRIES: '2' }),
+      new SumopodEmbeddingService(
+        buildConfigService({ SUMOPOD_EMBEDDING_MAX_RETRIES: '2' }),
       ).embedTexts({ texts: ['satu'] }),
     ).rejects.toThrow('Embedding provider responded with status 503');
     // The first attempt plus two retries.
@@ -259,8 +260,8 @@ describe('TogetherEmbeddingService', () => {
     });
 
     await expect(
-      new TogetherEmbeddingService(
-        buildConfigService({ TOGETHER_EMBEDDING_MAX_RETRIES: '0' }),
+      new SumopodEmbeddingService(
+        buildConfigService({ SUMOPOD_EMBEDDING_MAX_RETRIES: '0' }),
       ).embedTexts({ texts: ['satu'] }),
     ).rejects.toThrow(ServiceUnavailableException);
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -270,18 +271,18 @@ describe('TogetherEmbeddingService', () => {
     fetchMock.mockRejectedValue(new Error('connect ECONNREFUSED'));
 
     await expect(
-      new TogetherEmbeddingService(buildConfigService()).embedTexts({ texts: ['rahasia'] }),
+      new SumopodEmbeddingService(buildConfigService()).embedTexts({ texts: ['rahasia'] }),
     ).rejects.toThrow('Embedding provider is unreachable');
   });
 
   it('stamps the model, version, and dimension it was configured with', async () => {
     respondWith([buildEntry(0, 0.1)]);
 
-    const actual = await new TogetherEmbeddingService(buildConfigService()).embedTexts({
+    const actual = await new SumopodEmbeddingService(buildConfigService()).embedTexts({
       texts: ['satu'],
     });
 
-    expect(actual.model).toBe('intfloat/multilingual-e5-large-instruct');
+    expect(actual.model).toBe('text-embedding-3-large');
     expect(actual.version).toBe('1');
     expect(actual.dimension).toBe(3);
   });
