@@ -6,6 +6,7 @@ export type LineIconName =
   | 'calendar'
   | 'chat'
   | 'check'
+  | 'chevron-down'
   | 'cloud'
   | 'coins'
   | 'file'

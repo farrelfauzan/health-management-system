@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 
 import { DemoCtaSection } from '#components/server/landing/demo-cta-section';
+import { FaqSection } from '#components/server/landing/faq-section';
 import { HeroSection } from '#components/server/landing/hero-section';
 import { MetaSection } from '#components/server/landing/meta-section';
 import { MikoSection } from '#components/server/landing/miko-section';
@@ -27,6 +28,7 @@ export default function LandingPage(): ReactElement {
         <ScreensSection />
         <MikoSection />
         <SwitchAndSecuritySection />
+        <FaqSection />
         <DemoCtaSection />
       </main>
       <SiteFooter />

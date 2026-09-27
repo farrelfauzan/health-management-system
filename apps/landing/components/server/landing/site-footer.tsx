@@ -34,6 +34,9 @@ export function SiteFooter(): ReactElement {
             <a href="#miko" className="text-ink-muted hover:text-brand">
               Miko
             </a>
+            <a href="#faq" className="text-ink-muted hover:text-brand">
+              FAQ
+            </a>
           </nav>
           <nav aria-label="Perusahaan" className="flex flex-col gap-2.5 text-[15px] xl:gap-3">
             <span className="text-sm font-extrabold">Perusahaan</span>
