@@ -29,6 +29,8 @@ export function ShkWorklistRow({
   const t = useTranslations('maternalCare.shk');
   const format = useFormatter();
   const nextAction = resolveShkNextAction(screening);
+  // P25-T18: only a sample nobody pricked can be closed without one.
+  const canCloseNotScreened = canWrite && nextAction === 'sample';
   const babyLabel = screening.newbornName ?? t('babyOf', { motherName: screening.motherName });
   const formatInstant = (value: string): string =>
     format.dateTime(new Date(value), { dateStyle: 'medium', timeStyle: 'short' });
@@ -68,16 +70,28 @@ export function ShkWorklistRow({
       </TableCell>
       <TableCell className="text-sm text-slate-700">{screening.attendantName}</TableCell>
       <TableCell className="text-right">
-        {canWrite && nextAction !== null ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            onClick={() => onAction(nextAction, screening)}
-          >
-            {t(`actions.${nextAction}`)}
-          </Button>
-        ) : null}
+        <div className="flex flex-wrap justify-end gap-2">
+          {canWrite && nextAction !== null ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => onAction(nextAction, screening)}
+            >
+              {t(`actions.${nextAction}`)}
+            </Button>
+          ) : null}
+          {canCloseNotScreened ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => onAction('notScreened', screening)}
+            >
+              {t('actions.notScreened')}
+            </Button>
+          ) : null}
+        </div>
       </TableCell>
     </TableRow>
   );

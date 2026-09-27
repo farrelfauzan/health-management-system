@@ -1722,7 +1722,8 @@ export type FamilyPlanningService = Prisma.FamilyPlanningServiceModel
  * hours after birth as absolute offsets. A RECALL or INVALID_SAMPLE result
  * creates the next sequence, due at once. The status (DUE, OVERDUE, TAKEN…)
  * is derived on read and never stored: the clock alone moves a sample from
- * DUE to OVERDUE.
+ * DUE to OVERDUE. An untaken sample can be closed as not screened (P25-T18),
+ * which takes it off every open list.
  */
 export type ShkScreening = Prisma.ShkScreeningModel
 /**

@@ -18,6 +18,7 @@ const STATUS_CLASS_NAMES: Record<ShkScreeningStatusValue, string> = {
   TAKEN: 'bg-warning-tint text-warning-strong',
   SENT: 'bg-warning-tint text-warning-strong',
   RESULTED: 'bg-success-tint text-success-emphasis',
+  NOT_SCREENED: 'bg-slate-100 text-slate-600',
 };
 
 /**

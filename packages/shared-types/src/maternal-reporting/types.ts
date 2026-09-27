@@ -86,6 +86,8 @@ export type MaternalReportNewbornSource = {
   readonly hb0GivenAt: Date | null;
   readonly shkSampleTakenAt: Date | null;
   readonly shkResult: ShkResultValue | null;
+  /** Her newest sample was closed without a heel prick (P25-T18). */
+  readonly shkNotScreened: boolean;
 };
 
 export type MaternalReportDeliverySource = {

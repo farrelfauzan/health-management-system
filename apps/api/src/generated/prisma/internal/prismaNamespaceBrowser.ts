@@ -2616,6 +2616,9 @@ export const ShkScreeningScalarFieldEnum = {
   laboratoryName: 'laboratoryName',
   resultReceivedAt: 'resultReceivedAt',
   result: 'result',
+  notScreenedAt: 'notScreenedAt',
+  notScreenedReason: 'notScreenedReason',
+  notScreenedById: 'notScreenedById',
   notes: 'notes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

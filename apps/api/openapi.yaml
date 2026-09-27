@@ -44197,6 +44197,12 @@ paths:
                           nullable: true
                         result:
                           nullable: true
+                        notScreenedAt:
+                          nullable: true
+                        notScreenedReason:
+                          nullable: true
+                        notScreenedByName:
+                          nullable: true
                         notes:
                           nullable: true
                         birthAt:
@@ -44227,6 +44233,9 @@ paths:
                         - laboratoryName
                         - resultReceivedAt
                         - result
+                        - notScreenedAt
+                        - notScreenedReason
+                        - notScreenedByName
                         - notes
                         - birthAt
                         - motherPatientId
@@ -44252,6 +44261,9 @@ paths:
                       laboratoryName: null
                       resultReceivedAt: null
                       result: null
+                      notScreenedAt: null
+                      notScreenedReason: null
+                      notScreenedByName: null
                       notes: null
                       birthAt: 2026-09-30T20:00:00.000Z
                       motherPatientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
@@ -44342,6 +44354,12 @@ paths:
                         nullable: true
                       result:
                         nullable: true
+                      notScreenedAt:
+                        nullable: true
+                      notScreenedReason:
+                        nullable: true
+                      notScreenedByName:
+                        nullable: true
                       notes:
                         nullable: true
                       birthAt:
@@ -44372,6 +44390,9 @@ paths:
                       - laboratoryName
                       - resultReceivedAt
                       - result
+                      - notScreenedAt
+                      - notScreenedReason
+                      - notScreenedByName
                       - notes
                       - birthAt
                       - motherPatientId
@@ -44400,6 +44421,9 @@ paths:
                     laboratoryName: null
                     resultReceivedAt: null
                     result: null
+                    notScreenedAt: null
+                    notScreenedReason: null
+                    notScreenedByName: null
                     notes: null
                     birthAt: 2026-09-30T20:00:00.000Z
                     motherPatientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
@@ -44508,6 +44532,12 @@ paths:
                         nullable: true
                       result:
                         nullable: true
+                      notScreenedAt:
+                        nullable: true
+                      notScreenedReason:
+                        nullable: true
+                      notScreenedByName:
+                        nullable: true
                       notes:
                         nullable: true
                       birthAt:
@@ -44538,6 +44568,9 @@ paths:
                       - laboratoryName
                       - resultReceivedAt
                       - result
+                      - notScreenedAt
+                      - notScreenedReason
+                      - notScreenedByName
                       - notes
                       - birthAt
                       - motherPatientId
@@ -44566,6 +44599,9 @@ paths:
                     laboratoryName: Labkesda Provinsi
                     resultReceivedAt: null
                     result: null
+                    notScreenedAt: null
+                    notScreenedReason: null
+                    notScreenedByName: null
                     notes: null
                     birthAt: 2026-09-30T20:00:00.000Z
                     motherPatientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
@@ -44677,6 +44713,12 @@ paths:
                         type: string
                       result:
                         type: string
+                      notScreenedAt:
+                        nullable: true
+                      notScreenedReason:
+                        nullable: true
+                      notScreenedByName:
+                        nullable: true
                       notes:
                         type: string
                       birthAt:
@@ -44707,6 +44749,9 @@ paths:
                       - laboratoryName
                       - resultReceivedAt
                       - result
+                      - notScreenedAt
+                      - notScreenedReason
+                      - notScreenedByName
                       - notes
                       - birthAt
                       - motherPatientId
@@ -44735,6 +44780,9 @@ paths:
                     laboratoryName: null
                     resultReceivedAt: 2026-10-10T02:00:00.000Z
                     result: RECALL
+                    notScreenedAt: null
+                    notScreenedReason: null
+                    notScreenedByName: null
                     notes: TSH 25 mU/L, ambil sampel konfirmasi
                     birthAt: 2026-09-30T20:00:00.000Z
                     motherPatientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
@@ -44783,6 +44831,186 @@ paths:
       security:
         - bearer: []
       summary: Record the laboratory's answer
+      tags: *a63
+  /api/v1/shk-screenings/{id}/not-screened:
+    post:
+      operationId: ShkScreeningController_recordNotScreened_v1
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordShkNotScreenedDto"
+            examples:
+              default:
+                summary: Valid request
+                value:
+                  reason: SCREENED_ELSEWHERE
+                  notes: Diskrining di RSUD saat rawat inap neonatus
+      responses:
+        "200":
+          description: Closes a sample nobody pricked, with a reason, and takes it off
+            every worklist filter. OTHER needs notes (400). 409
+            SHK_SAMPLE_ALREADY_TAKEN once the heel prick is recorded; 409
+            SHK_SAMPLE_CLOSED when it was already closed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      newbornCareRecordId:
+                        type: string
+                      sequence:
+                        type: integer
+                      status:
+                        type: string
+                      dueFrom:
+                        type: string
+                      dueUntil:
+                        type: string
+                      sampleTakenAt:
+                        nullable: true
+                      isEarly:
+                        type: boolean
+                      sampleTakenByName:
+                        nullable: true
+                      sentAt:
+                        nullable: true
+                      laboratoryName:
+                        nullable: true
+                      resultReceivedAt:
+                        nullable: true
+                      result:
+                        nullable: true
+                      notScreenedAt:
+                        type: string
+                      notScreenedReason:
+                        type: string
+                      notScreenedByName:
+                        type: string
+                      notes:
+                        type: string
+                      birthAt:
+                        type: string
+                      motherPatientId:
+                        type: string
+                      motherName:
+                        type: string
+                      newbornPatientId:
+                        nullable: true
+                      newbornName:
+                        nullable: true
+                      sex:
+                        type: string
+                      attendantName:
+                        type: string
+                    required:
+                      - id
+                      - newbornCareRecordId
+                      - sequence
+                      - status
+                      - dueFrom
+                      - dueUntil
+                      - sampleTakenAt
+                      - isEarly
+                      - sampleTakenByName
+                      - sentAt
+                      - laboratoryName
+                      - resultReceivedAt
+                      - result
+                      - notScreenedAt
+                      - notScreenedReason
+                      - notScreenedByName
+                      - notes
+                      - birthAt
+                      - motherPatientId
+                      - motherName
+                      - newbornPatientId
+                      - newbornName
+                      - sex
+                      - attendantName
+                  message:
+                    type: string
+                required:
+                  - data
+                  - message
+                example:
+                  data:
+                    id: 3f4a5b6c-7d8e-4f9a-8b0c-1d2e3f4a5b6c
+                    newbornCareRecordId: e9f0a1b2-c3d4-4e5f-8a9b-0c1d2e3f4a5b
+                    sequence: 1
+                    status: NOT_SCREENED
+                    dueFrom: 2026-10-02T20:00:00.000Z
+                    dueUntil: 2026-10-03T20:00:00.000Z
+                    sampleTakenAt: null
+                    isEarly: false
+                    sampleTakenByName: null
+                    sentAt: null
+                    laboratoryName: null
+                    resultReceivedAt: null
+                    result: null
+                    notScreenedAt: 2026-10-05T02:00:00.000Z
+                    notScreenedReason: SCREENED_ELSEWHERE
+                    notScreenedByName: Bidan Siti Rahma, S.Tr.Keb.
+                    notes: Diskrining di RSUD saat rawat inap neonatus
+                    birthAt: 2026-09-30T20:00:00.000Z
+                    motherPatientId: 4a9b2c71-8e35-4d02-a6f7-3b0c9d18e5a4
+                    motherName: Rina Wulandari
+                    newbornPatientId: null
+                    newbornName: null
+                    sex: FEMALE
+                    attendantName: Bidan Siti Rahma, S.Tr.Keb.
+                  message: SHK sample closed as not screened
+        "400":
+          description: Request validation failed.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: BAD_REQUEST
+                    message: Request validation failed
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+        "404":
+          description: SHK screening not found.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: NOT_FOUND
+                    message: SHK screening not found.
+      security:
+        - bearer: []
+      summary: Close the sample as not screened
       tags: *a63
   /api/v1/encounters:
     get:
@@ -66490,6 +66718,24 @@ components:
       required:
         - receivedAt
         - result
+    RecordShkNotScreenedDto:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum:
+            - PARENT_DECLINED
+            - SCREENED_ELSEWHERE
+            - INFANT_DIED
+            - LOST_TO_FOLLOW_UP
+            - RECORDED_BEFORE_TRACKING
+            - OTHER
+        notes:
+          type: string
+          maxLength: 2000
+          nullable: true
+      required:
+        - reason
     OpenEncounterDto:
       type: object
       properties:

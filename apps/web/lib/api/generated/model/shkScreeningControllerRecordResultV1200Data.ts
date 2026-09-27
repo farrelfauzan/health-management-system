@@ -20,6 +20,9 @@ export type ShkScreeningControllerRecordResultV1200Data = {
   laboratoryName: unknown | null;
   resultReceivedAt: string;
   result: string;
+  notScreenedAt: unknown | null;
+  notScreenedReason: unknown | null;
+  notScreenedByName: unknown | null;
   notes: string;
   birthAt: string;
   motherPatientId: string;

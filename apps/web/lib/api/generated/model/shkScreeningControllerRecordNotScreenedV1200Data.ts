@@ -6,24 +6,24 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type ShkScreeningControllerRecordSampleV1200Data = {
+export type ShkScreeningControllerRecordNotScreenedV1200Data = {
   id: string;
   newbornCareRecordId: string;
   sequence: number;
   status: string;
   dueFrom: string;
   dueUntil: string;
-  sampleTakenAt: string;
+  sampleTakenAt: unknown | null;
   isEarly: boolean;
-  sampleTakenByName: string;
+  sampleTakenByName: unknown | null;
   sentAt: unknown | null;
   laboratoryName: unknown | null;
   resultReceivedAt: unknown | null;
   result: unknown | null;
-  notScreenedAt: unknown | null;
-  notScreenedReason: unknown | null;
-  notScreenedByName: unknown | null;
-  notes: unknown | null;
+  notScreenedAt: string;
+  notScreenedReason: string;
+  notScreenedByName: string;
+  notes: string;
   birthAt: string;
   motherPatientId: string;
   motherName: string;

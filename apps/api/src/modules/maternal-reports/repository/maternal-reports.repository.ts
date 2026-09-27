@@ -403,6 +403,7 @@ export class MaternalReportsRepository {
       hb0GivenAt: hb0 === null || hb0.deletedAt !== null ? null : hb0.occurredAt,
       shkSampleTakenAt: shk?.sampleTakenAt ?? null,
       shkResult: shk?.result ?? null,
+      shkNotScreened: (shk?.notScreenedAt ?? null) !== null,
     };
   }
 

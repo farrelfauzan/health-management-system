@@ -360,4 +360,52 @@ describe('SHK screening against Postgres', () => {
     expect(view.isEarly).toBe(true);
     expect(view.status).toBe('TAKEN');
   });
+
+  it('closes an untaken sample as not screened and takes it off the worklist (P25-T18)', async () => {
+    // Given a baby born before SHK was tracked, whose backfilled sample nobody took
+    const { newbornId } = await createDeliveryWithBaby('LIVE_BIRTH');
+    const first = await readFirstScreening(newbornId);
+    const actor = { sub: recorderId } as never;
+
+    // When it is closed as not screened
+    const view = await service.recordNotScreened(
+      first.id,
+      { reason: 'RECORDED_BEFORE_TRACKING', notes: null },
+      actor,
+    );
+
+    // Then it reads NOT_SCREENED, is gone from every open list, and takes no heel prick
+    expect(view).toMatchObject({
+      status: 'NOT_SCREENED',
+      notScreenedReason: 'RECORDED_BEFORE_TRACKING',
+    });
+    expect(view.notScreenedAt).not.toBeNull();
+    const openIds = (await service.listWorklist({}, actor)).map((row) => row.id);
+    expect(openIds).not.toContain(first.id);
+    await expect(
+      service.recordSample(first.id, { takenAt: '2026-10-03T01:00:00.000Z' }, actor),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('refuses a not-screened close on a taken sample, in the database too', async () => {
+    const { newbornId } = await createDeliveryWithBaby('LIVE_BIRTH');
+    const first = await readFirstScreening(newbornId);
+    await service.recordSample(
+      first.id,
+      { takenAt: '2026-10-03T01:00:00.000Z' },
+      { sub: recorderId } as never,
+    );
+
+    await expect(
+      prisma.shkScreening.update({
+        where: { id: first.id },
+        data: {
+          notScreenedAt: new Date(),
+          notScreenedReason: 'PARENT_DECLINED',
+          notScreenedById: recorderId,
+        },
+      }),
+    ).rejects.toThrow();
+  });
 });
+

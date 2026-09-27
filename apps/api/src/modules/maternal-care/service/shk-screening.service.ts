@@ -1,6 +1,7 @@
 import {
   ListShkScreeningsQuery,
   MaternalDueReach,
+  RecordShkNotScreenedInput,
   RecordShkResultInput,
   RecordShkSampleInput,
   RecordShkSentInput,
@@ -40,7 +41,9 @@ const REPEAT_SAMPLE_RESULTS: readonly string[] = ['RECALL', 'INVALID_SAMPLE'];
  * people's babies is not something a patient may read.
  *
  * Nothing here refuses a late sample. An overdue heel prick is still the
- * right thing to do and to record; the worklist is how lateness is seen.
+ * right thing to do and to record; the worklist is how lateness is seen. A
+ * sample that will never be taken is closed as not screened instead (P25-T18),
+ * with a reason, and leaves every open list.
  */
 @Injectable()
 export class ShkScreeningService {
@@ -93,6 +96,7 @@ export class ShkScreeningService {
     currentUser: CurrentUser,
   ): Promise<ShkScreeningView> {
     const screening = await this.findWritableOrThrow(id, currentUser);
+    this.assertNotClosed(screening);
     const takenAt = new Date(payload.takenAt);
     this.assertNotBefore(takenAt, screening.newbornCareRecord.deliveryRecord.birthAt, 'takenAt');
     const isRecorded = await this.shkScreeningRepository.recordSample({
@@ -171,6 +175,44 @@ export class ShkScreeningService {
     return this.readView(id);
   }
 
+  /**
+   * Closes a sample nobody pricked, and will not (P25-T18): the parents
+   * declined, the baby was screened at a hospital, she died, or she was born
+   * before SHK was tracked here. The reason is kept on the row and audited.
+   */
+  async recordNotScreened(
+    id: string,
+    payload: RecordShkNotScreenedInput,
+    currentUser: CurrentUser,
+  ): Promise<ShkScreeningView> {
+    const screening = await this.findWritableOrThrow(id, currentUser);
+    this.assertNotClosed(screening);
+    if (screening.sampleTakenAt !== null) {
+      throw new ConflictException({
+        code: 'SHK_SAMPLE_ALREADY_TAKEN',
+        message: 'This SHK sample was taken; record its result instead',
+      });
+    }
+    const isRecorded = await this.shkScreeningRepository.recordNotScreened({
+      id,
+      closedAt: new Date(),
+      reason: payload.reason,
+      closedById: currentUser.sub,
+      notes: payload.notes ?? null,
+    });
+    if (!isRecorded) {
+      throw new ConflictException({
+        code: 'SHK_SAMPLE_CLOSED',
+        message: 'This SHK sample was taken or closed a moment ago',
+      });
+    }
+    await this.recordAudit('SHK_NOT_SCREENED', screening, currentUser, {
+      sequence: String(screening.sequence),
+      reason: payload.reason,
+    });
+    return this.readView(id);
+  }
+
   private async announceRecall(screening: ShkScreeningRecord): Promise<void> {
     const delivery = screening.newbornCareRecord.deliveryRecord;
     await this.shkRecallNotificationService.notifyRecall({
@@ -221,6 +263,16 @@ export class ShkScreeningService {
     return screening;
   }
 
+  private assertNotClosed(screening: ShkScreeningRecord): void {
+    if (screening.notScreenedAt === null) {
+      return;
+    }
+    throw new ConflictException({
+      code: 'SHK_SAMPLE_CLOSED',
+      message: 'This SHK sample was closed as not screened',
+    });
+  }
+
   private requireSampleTaken(screening: ShkScreeningRecord): Date {
     if (screening.sampleTakenAt !== null) {
       return screening.sampleTakenAt;
@@ -251,7 +303,7 @@ export class ShkScreeningService {
   }
 
   private async recordAudit(
-    action: 'SHK_SAMPLE_TAKEN' | 'SHK_RESULT_RECORDED',
+    action: 'SHK_SAMPLE_TAKEN' | 'SHK_RESULT_RECORDED' | 'SHK_NOT_SCREENED',
     screening: ShkScreeningRecord,
     currentUser: CurrentUser,
     metadata: Record<string, string>,

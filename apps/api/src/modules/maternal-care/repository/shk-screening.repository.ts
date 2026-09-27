@@ -1,4 +1,9 @@
-import { ShkResultPayload, ShkWorklistFilterValue, ShkWorklistQuery } from '@hms/shared-types';
+import {
+  ShkNotScreenedPayload,
+  ShkResultPayload,
+  ShkWorklistFilterValue,
+  ShkWorklistQuery,
+} from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../../../common/prisma/prisma.service';
@@ -7,11 +12,15 @@ import { Prisma } from '../../../generated/prisma/client';
 /** A clinic's open worklist is short; this caps a runaway backlog, not a page. */
 const SHK_WORKLIST_LIMIT = 200;
 
+/** Who took a sample, or closed it as not screened. */
+const SHK_ACTOR_SELECT = {
+  select: { fullName: true, email: true, doctorProfile: { select: { fullName: true } } },
+} as const;
+
 /** Everything a worklist row is read back with, in one shape. */
 const SHK_SCREENING_INCLUDE = {
-  sampleTakenBy: {
-    select: { fullName: true, email: true, doctorProfile: { select: { fullName: true } } },
-  },
+  sampleTakenBy: SHK_ACTOR_SELECT,
+  notScreenedBy: SHK_ACTOR_SELECT,
   newbornCareRecord: {
     select: {
       id: true,
@@ -79,7 +88,7 @@ export class ShkScreeningRepository {
 
   async recordSample(params: { id: string; takenAt: Date; takenById: string }): Promise<boolean> {
     const updated = await this.prisma.shkScreening.updateMany({
-      where: { id: params.id, sampleTakenAt: null },
+      where: { id: params.id, sampleTakenAt: null, notScreenedAt: null },
       data: { sampleTakenAt: params.takenAt, sampleTakenById: params.takenById },
     });
     return updated.count === 1;
@@ -89,6 +98,23 @@ export class ShkScreeningRepository {
     const updated = await this.prisma.shkScreening.updateMany({
       where: { id: params.id, sentAt: null, sampleTakenAt: { not: null }, result: null },
       data: { sentAt: params.sentAt, laboratoryName: params.laboratoryName },
+    });
+    return updated.count === 1;
+  }
+
+  /**
+   * Closes a sample nobody pricked (P25-T18). Conditional like every other
+   * step: a heel prick recorded a moment earlier, or a second close, wins.
+   */
+  async recordNotScreened(payload: ShkNotScreenedPayload): Promise<boolean> {
+    const updated = await this.prisma.shkScreening.updateMany({
+      where: { id: payload.id, sampleTakenAt: null, notScreenedAt: null },
+      data: {
+        notScreenedAt: payload.closedAt,
+        notScreenedReason: payload.reason,
+        notScreenedById: payload.closedById,
+        notes: payload.notes,
+      },
     });
     return updated.count === 1;
   }
@@ -126,7 +152,15 @@ export class ShkScreeningRepository {
     });
   }
 
+  /** Every filter lists open samples only: one closed as not screened is done. */
   private buildFilterWhere(
+    filter: ShkWorklistFilterValue | null,
+    now: Date,
+  ): Prisma.ShkScreeningWhereInput {
+    return { notScreenedAt: null, ...this.buildStepWhere(filter, now) };
+  }
+
+  private buildStepWhere(
     filter: ShkWorklistFilterValue | null,
     now: Date,
   ): Prisma.ShkScreeningWhereInput {

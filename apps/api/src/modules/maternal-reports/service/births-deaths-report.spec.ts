@@ -85,6 +85,7 @@ describe('Births and deaths report (P25-T15, FR-RPT-03)', () => {
               hb0GivenAt: null,
               shkSampleTakenAt: null,
               shkResult: null,
+              shkNotScreened: false,
             },
             {
               id: 'baby-still',
@@ -100,6 +101,7 @@ describe('Births and deaths report (P25-T15, FR-RPT-03)', () => {
               hb0GivenAt: null,
               shkSampleTakenAt: null,
               shkResult: null,
+              shkNotScreened: false,
             },
           ],
         },

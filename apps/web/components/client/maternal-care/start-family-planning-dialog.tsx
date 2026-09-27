@@ -41,6 +41,8 @@ type StartFamilyPlanningDialogProps = {
   providerDoctorId: string;
   /** Set for KB pasca salin: the birth the course is linked to. */
   deliveryRecordId?: string | null;
+  /** The visit the course is started in, when started from one (P25-T18). */
+  startEncounterId?: string | null;
 };
 
 const ACCEPTOR_TYPES: readonly AcceptorTypeValue[] = ['NEW', 'CONTINUING'];
@@ -59,6 +61,7 @@ export function StartFamilyPlanningDialog({
   patientId,
   providerDoctorId,
   deliveryRecordId = null,
+  startEncounterId = null,
 }: StartFamilyPlanningDialogProps) {
   const t = useTranslations();
   const queryClient = useQueryClient();
@@ -81,6 +84,7 @@ export function StartFamilyPlanningDialog({
         startedOn,
         providerDoctorId,
         ...(deliveryRecordId === null ? {} : { deliveryRecordId }),
+        ...(startEncounterId === null ? {} : { startEncounterId }),
         ...(isCondom || nextDueOn.length === 0 ? {} : { nextDueOn }),
         ...(sideEffects.trim().length > 0 ? { sideEffects: sideEffects.trim() } : {}),
       }),

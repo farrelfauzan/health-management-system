@@ -313,6 +313,10 @@
         "empty": "Tidak ada jadwal KB dalam 7 hari ke depan.",
         "inDays": "{count, plural, =0 {Jatuh tempo hari ini} other {Jatuh tempo # hari lagi}}",
         "overdueDays": "{count, plural, other {Terlambat # hari}}"
+      },
+      "postnatalAction": {
+        "liveCourse": "KB aktif: {method}, mulai {date}.",
+        "prompt": "Ibu belum memakai KB pasca salin setelah persalinan ini."
       }
     },
     "postnatal": {
@@ -405,7 +409,8 @@
         "OVERDUE": "Terlambat",
         "TAKEN": "Sampel diambil",
         "SENT": "Dikirim ke lab",
-        "RESULTED": "Ada hasil"
+        "RESULTED": "Ada hasil",
+        "NOT_SCREENED": "Tidak diskrining"
       },
       "results": {
         "NORMAL": "Normal",
@@ -428,7 +433,8 @@
       "actions": {
         "sample": "Catat pengambilan sampel",
         "sent": "Catat pengiriman",
-        "result": "Catat hasil"
+        "result": "Catat hasil",
+        "notScreened": "Tandai tidak diskrining"
       },
       "fields": {
         "sampleAt": "Waktu pengambilan",
@@ -436,13 +442,24 @@
         "resultAt": "Waktu hasil diterima",
         "laboratoryName": "Laboratorium rujukan",
         "result": "Hasil",
-        "notes": "Catatan"
+        "notes": "Catatan",
+        "notScreenedReason": "Alasan"
       },
       "repeatHint": "Hasil ini membuka pengambilan sampel berikutnya dan memberi tahu tenaga klinis.",
+      "notScreenedHint": "Sampel ini tidak akan diambil. Setelah ditutup, bayi keluar dari daftar jatuh tempo dan terlambat. Jika alasan \"Lainnya\", jelaskan di catatan.",
+      "notScreenedReasons": {
+        "PARENT_DECLINED": "Orang tua menolak",
+        "SCREENED_ELSEWHERE": "Sudah diskrining di fasilitas lain",
+        "INFANT_DIED": "Bayi meninggal",
+        "LOST_TO_FOLLOW_UP": "Tidak dapat dihubungi",
+        "RECORDED_BEFORE_TRACKING": "Lahir sebelum SHK dicatat di sistem",
+        "OTHER": "Lainnya"
+      },
       "saved": {
         "sample": "Pengambilan sampel SHK dicatat",
         "sent": "Pengiriman sampel SHK dicatat",
-        "result": "Hasil SHK dicatat"
+        "result": "Hasil SHK dicatat",
+        "notScreened": "Sampel SHK ditutup sebagai tidak diskrining"
       },
       "save": "Simpan",
       "cancel": "Batal",

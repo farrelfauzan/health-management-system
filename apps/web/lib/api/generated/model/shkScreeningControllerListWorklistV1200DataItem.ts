@@ -20,6 +20,9 @@ export type ShkScreeningControllerListWorklistV1200DataItem = {
   laboratoryName: unknown | null;
   resultReceivedAt: unknown | null;
   result: unknown | null;
+  notScreenedAt: unknown | null;
+  notScreenedReason: unknown | null;
+  notScreenedByName: unknown | null;
   notes: unknown | null;
   birthAt: string;
   motherPatientId: string;

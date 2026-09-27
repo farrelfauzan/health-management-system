@@ -25,6 +25,7 @@ describe('ShkScreeningService (P25-T10)', () => {
     recordSample: jest.fn(),
     recordSent: jest.fn(),
     recordResult: jest.fn(),
+    recordNotScreened: jest.fn(),
   };
   const encounterAccessMock = { resolveScopeOrThrow: jest.fn() };
   const notifierMock = { notifyRecall: jest.fn() };
@@ -49,8 +50,11 @@ describe('ShkScreeningService (P25-T10)', () => {
       laboratoryName: null,
       resultReceivedAt: null,
       result: null,
+      notScreenedAt: null,
+      notScreenedReason: null,
       notes: null,
       sampleTakenBy: null,
+      notScreenedBy: null,
       newbornCareRecord: {
         id: 'newborn-1',
         sex: 'FEMALE',
@@ -208,5 +212,70 @@ describe('ShkScreeningService (P25-T10)', () => {
     await expect(
       service.recordSample(SCREENING_ID, { takenAt: '2026-10-03T01:00:00.000Z' }, currentUser),
     ).rejects.toBeInstanceOf(ForbiddenException);
+  });
+
+  describe('closing a sample as not screened (P25-T18)', () => {
+    beforeEach(() => {
+      repositoryMock.findById.mockResolvedValue(buildStoredScreening({ sampleTakenAt: null }));
+      repositoryMock.recordNotScreened.mockResolvedValue(true);
+    });
+
+    it('closes an untaken sample with its reason and audits it', async () => {
+      await service.recordNotScreened(
+        SCREENING_ID,
+        { reason: 'RECORDED_BEFORE_TRACKING', notes: null },
+        currentUser,
+      );
+
+      expect(repositoryMock.recordNotScreened).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: SCREENING_ID,
+          reason: 'RECORDED_BEFORE_TRACKING',
+          closedById: 'user-1',
+          notes: null,
+        }),
+      );
+      expect(auditMock.record).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'SHK_NOT_SCREENED',
+          resourceId: SCREENING_ID,
+          patientId: 'mother-1',
+          metadata: expect.objectContaining({ reason: 'RECORDED_BEFORE_TRACKING' }),
+        }),
+      );
+    });
+
+    it('refuses a sample whose heel prick is already recorded', async () => {
+      repositoryMock.findById.mockResolvedValue(buildStoredScreening());
+
+      await expect(
+        service.recordNotScreened(SCREENING_ID, { reason: 'PARENT_DECLINED' }, currentUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(repositoryMock.recordNotScreened).not.toHaveBeenCalled();
+    });
+
+    it('answers a second close with a conflict and audits nothing', async () => {
+      repositoryMock.recordNotScreened.mockResolvedValue(false);
+
+      await expect(
+        service.recordNotScreened(SCREENING_ID, { reason: 'PARENT_DECLINED' }, currentUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(auditMock.record).not.toHaveBeenCalled();
+    });
+
+    it('refuses a heel prick on a sample already closed', async () => {
+      repositoryMock.findById.mockResolvedValue(
+        buildStoredScreening({
+          sampleTakenAt: null,
+          notScreenedAt: new Date('2026-10-05T02:00:00.000Z'),
+          notScreenedReason: 'PARENT_DECLINED',
+        }),
+      );
+
+      await expect(
+        service.recordSample(SCREENING_ID, { takenAt: '2026-10-06T08:00:00.000Z' }, currentUser),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(repositoryMock.recordSample).not.toHaveBeenCalled();
+    });
   });
 });

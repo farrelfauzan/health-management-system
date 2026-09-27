@@ -174,6 +174,7 @@ export const AuditAction = {
   FAMILY_PLANNING_DISCONTINUED: 'FAMILY_PLANNING_DISCONTINUED',
   SHK_SAMPLE_TAKEN: 'SHK_SAMPLE_TAKEN',
   SHK_RESULT_RECORDED: 'SHK_RESULT_RECORDED',
+  SHK_NOT_SCREENED: 'SHK_NOT_SCREENED',
   TAX_SETTINGS_UPDATED: 'TAX_SETTINGS_UPDATED',
   TAX_CODE_CHANGED: 'TAX_CODE_CHANGED',
   TAX_ASSIGNMENT_CHANGED: 'TAX_ASSIGNMENT_CHANGED',
@@ -1461,6 +1462,18 @@ export const ShkResult = {
 } as const
 
 export type ShkResult = (typeof ShkResult)[keyof typeof ShkResult]
+
+
+export const ShkNotScreenedReason = {
+  PARENT_DECLINED: 'PARENT_DECLINED',
+  SCREENED_ELSEWHERE: 'SCREENED_ELSEWHERE',
+  INFANT_DIED: 'INFANT_DIED',
+  LOST_TO_FOLLOW_UP: 'LOST_TO_FOLLOW_UP',
+  RECORDED_BEFORE_TRACKING: 'RECORDED_BEFORE_TRACKING',
+  OTHER: 'OTHER'
+} as const
+
+export type ShkNotScreenedReason = (typeof ShkNotScreenedReason)[keyof typeof ShkNotScreenedReason]
 
 
 export const FetalPresentation = {

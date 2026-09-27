@@ -1,4 +1,8 @@
-import type { ShkResultValue, ShkWorklistFilterValue } from '#shk-screening/schemas';
+import type {
+  ShkNotScreenedReasonValue,
+  ShkResultValue,
+  ShkWorklistFilterValue,
+} from '#shk-screening/schemas';
 
 /** The inputs the SHK status is derived from (P25-T10). */
 export type ShkStatusInput = {
@@ -7,6 +11,8 @@ export type ShkStatusInput = {
   sampleTakenAt: Date | null;
   sentAt: Date | null;
   resultReceivedAt: Date | null;
+  /** Set when the sample was closed without a heel prick (P25-T18). */
+  notScreenedAt: Date | null;
   now: Date;
 };
 
@@ -44,6 +50,8 @@ export type ShkScreeningCoreRecord = {
   sentAt: Date | null;
   resultReceivedAt: Date | null;
   result: ShkResultValue | null;
+  notScreenedAt: Date | null;
+  notScreenedReason: ShkNotScreenedReasonValue | null;
 };
 
 /** Repository projection of one worklist row, with the baby and her birth. */
@@ -52,6 +60,11 @@ export type ShkScreeningRecord = ShkScreeningCoreRecord & {
   laboratoryName: string | null;
   notes: string | null;
   sampleTakenBy: {
+    fullName: string | null;
+    email: string;
+    doctorProfile: { fullName: string } | null;
+  } | null;
+  notScreenedBy: {
     fullName: string | null;
     email: string;
     doctorProfile: { fullName: string } | null;
@@ -68,6 +81,15 @@ export type ShkScreeningRecord = ShkScreeningCoreRecord & {
       pregnancyEpisode: { patientId: string; patient: { fullName: string } };
     };
   };
+};
+
+/** What the repository writes when a sample is closed as not screened. */
+export type ShkNotScreenedPayload = {
+  id: string;
+  closedAt: Date;
+  reason: ShkNotScreenedReasonValue;
+  closedById: string;
+  notes: string | null;
 };
 
 /** What a recall notification is raised from. */

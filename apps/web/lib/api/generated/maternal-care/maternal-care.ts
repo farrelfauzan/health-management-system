@@ -62,11 +62,13 @@ import type {
   RecordExternalDoctorVisitDto,
   RecordFamilyPlanningServiceDto,
   RecordNewbornCareDto,
+  RecordShkNotScreenedDto,
   RecordShkResultDto,
   RecordShkSampleDto,
   RecordShkSentDto,
   ShkScreeningControllerListWorklistV1200,
   ShkScreeningControllerListWorklistV1Params,
+  ShkScreeningControllerRecordNotScreenedV1200,
   ShkScreeningControllerRecordResultV1200,
   ShkScreeningControllerRecordSampleV1200,
   ShkScreeningControllerRecordSentV1200,
@@ -3204,6 +3206,107 @@ export function useShkScreeningControllerRecordResultV1<TData = Awaited<ReturnTy
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getShkScreeningControllerRecordResultV1QueryOptions(id,recordShkResultDto,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Close the sample as not screened
+ */
+export const shkScreeningControllerRecordNotScreenedV1 = (
+    id: string,
+    recordShkNotScreenedDto: RecordShkNotScreenedDto,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<ShkScreeningControllerRecordNotScreenedV1200>(
+      {url: `/api/v1/shk-screenings/${id}/not-screened`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: recordShkNotScreenedDto, signal
+    },
+      );
+    }
+
+
+
+
+export const getShkScreeningControllerRecordNotScreenedV1QueryKey = (id: string,
+    recordShkNotScreenedDto?: RecordShkNotScreenedDto,) => {
+    return [
+    'POST', `/api/v1/shk-screenings/${id}/not-screened`, recordShkNotScreenedDto
+    ] as const;
+    }
+
+
+export const getShkScreeningControllerRecordNotScreenedV1QueryOptions = <TData = Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError = unknown>(id: string,
+    recordShkNotScreenedDto: RecordShkNotScreenedDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getShkScreeningControllerRecordNotScreenedV1QueryKey(id,recordShkNotScreenedDto);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>> = ({ signal }) => shkScreeningControllerRecordNotScreenedV1(id,recordShkNotScreenedDto, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ShkScreeningControllerRecordNotScreenedV1QueryResult = NonNullable<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>>
+export type ShkScreeningControllerRecordNotScreenedV1QueryError = unknown
+
+
+export function useShkScreeningControllerRecordNotScreenedV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError = unknown>(
+ id: string,
+    recordShkNotScreenedDto: RecordShkNotScreenedDto, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordNotScreenedV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError = unknown>(
+ id: string,
+    recordShkNotScreenedDto: RecordShkNotScreenedDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>,
+          TError,
+          Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useShkScreeningControllerRecordNotScreenedV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError = unknown>(
+ id: string,
+    recordShkNotScreenedDto: RecordShkNotScreenedDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Close the sample as not screened
+ */
+
+export function useShkScreeningControllerRecordNotScreenedV1<TData = Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError = unknown>(
+ id: string,
+    recordShkNotScreenedDto: RecordShkNotScreenedDto, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof shkScreeningControllerRecordNotScreenedV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getShkScreeningControllerRecordNotScreenedV1QueryOptions(id,recordShkNotScreenedDto,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

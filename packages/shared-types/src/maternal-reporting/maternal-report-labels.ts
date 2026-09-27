@@ -29,6 +29,7 @@ export const MATERNAL_REPORT_LABELS = {
   birthOutcome: { LIVE_BIRTH: 'Hidup', STILLBIRTH: 'Lahir mati' },
   sex: { MALE: 'L', FEMALE: 'P' },
   shkResult: { NORMAL: 'Normal', RECALL: 'Recall', INVALID_SAMPLE: 'Sampel tidak valid' },
+  shkNotScreened: 'Tidak diskrining',
   deathPatientKind: { MOTHER: 'Ibu', NEWBORN: 'Bayi baru lahir', OTHER: 'Lainnya' },
   payer: { JKN: 'JKN', GENERAL: 'Umum' },
   yes: 'Ya',

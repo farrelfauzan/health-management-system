@@ -21,7 +21,8 @@ import type * as Prisma from "../internal/prismaNamespace"
  * hours after birth as absolute offsets. A RECALL or INVALID_SAMPLE result
  * creates the next sequence, due at once. The status (DUE, OVERDUE, TAKEN…)
  * is derived on read and never stored: the clock alone moves a sample from
- * DUE to OVERDUE.
+ * DUE to OVERDUE. An untaken sample can be closed as not screened (P25-T18),
+ * which takes it off every open list.
  */
 export type ShkScreeningModel = runtime.Types.Result.DefaultSelection<Prisma.$ShkScreeningPayload>
 
@@ -53,6 +54,9 @@ export type ShkScreeningMinAggregateOutputType = {
   laboratoryName: string | null
   resultReceivedAt: Date | null
   result: $Enums.ShkResult | null
+  notScreenedAt: Date | null
+  notScreenedReason: $Enums.ShkNotScreenedReason | null
+  notScreenedById: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -70,6 +74,9 @@ export type ShkScreeningMaxAggregateOutputType = {
   laboratoryName: string | null
   resultReceivedAt: Date | null
   result: $Enums.ShkResult | null
+  notScreenedAt: Date | null
+  notScreenedReason: $Enums.ShkNotScreenedReason | null
+  notScreenedById: string | null
   notes: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -87,6 +94,9 @@ export type ShkScreeningCountAggregateOutputType = {
   laboratoryName: number
   resultReceivedAt: number
   result: number
+  notScreenedAt: number
+  notScreenedReason: number
+  notScreenedById: number
   notes: number
   createdAt: number
   updatedAt: number
@@ -114,6 +124,9 @@ export type ShkScreeningMinAggregateInputType = {
   laboratoryName?: true
   resultReceivedAt?: true
   result?: true
+  notScreenedAt?: true
+  notScreenedReason?: true
+  notScreenedById?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -131,6 +144,9 @@ export type ShkScreeningMaxAggregateInputType = {
   laboratoryName?: true
   resultReceivedAt?: true
   result?: true
+  notScreenedAt?: true
+  notScreenedReason?: true
+  notScreenedById?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -148,6 +164,9 @@ export type ShkScreeningCountAggregateInputType = {
   laboratoryName?: true
   resultReceivedAt?: true
   result?: true
+  notScreenedAt?: true
+  notScreenedReason?: true
+  notScreenedById?: true
   notes?: true
   createdAt?: true
   updatedAt?: true
@@ -252,6 +271,9 @@ export type ShkScreeningGroupByOutputType = {
   laboratoryName: string | null
   resultReceivedAt: Date | null
   result: $Enums.ShkResult | null
+  notScreenedAt: Date | null
+  notScreenedReason: $Enums.ShkNotScreenedReason | null
+  notScreenedById: string | null
   notes: string | null
   createdAt: Date
   updatedAt: Date
@@ -292,11 +314,15 @@ export type ShkScreeningWhereInput = {
   laboratoryName?: Prisma.StringNullableFilter<"ShkScreening"> | string | null
   resultReceivedAt?: Prisma.DateTimeNullableFilter<"ShkScreening"> | Date | string | null
   result?: Prisma.EnumShkResultNullableFilter<"ShkScreening"> | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.DateTimeNullableFilter<"ShkScreening"> | Date | string | null
+  notScreenedReason?: Prisma.EnumShkNotScreenedReasonNullableFilter<"ShkScreening"> | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.UuidNullableFilter<"ShkScreening"> | string | null
   notes?: Prisma.StringNullableFilter<"ShkScreening"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ShkScreening"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShkScreening"> | Date | string
   newbornCareRecord?: Prisma.XOR<Prisma.NewbornCareRecordScalarRelationFilter, Prisma.NewbornCareRecordWhereInput>
   sampleTakenBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  notScreenedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ShkScreeningOrderByWithRelationInput = {
@@ -311,11 +337,15 @@ export type ShkScreeningOrderByWithRelationInput = {
   laboratoryName?: Prisma.SortOrderInput | Prisma.SortOrder
   resultReceivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   result?: Prisma.SortOrderInput | Prisma.SortOrder
+  notScreenedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  notScreenedReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  notScreenedById?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   newbornCareRecord?: Prisma.NewbornCareRecordOrderByWithRelationInput
   sampleTakenBy?: Prisma.UserOrderByWithRelationInput
+  notScreenedBy?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ShkScreeningWhereUniqueInput = Prisma.AtLeast<{
@@ -334,11 +364,15 @@ export type ShkScreeningWhereUniqueInput = Prisma.AtLeast<{
   laboratoryName?: Prisma.StringNullableFilter<"ShkScreening"> | string | null
   resultReceivedAt?: Prisma.DateTimeNullableFilter<"ShkScreening"> | Date | string | null
   result?: Prisma.EnumShkResultNullableFilter<"ShkScreening"> | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.DateTimeNullableFilter<"ShkScreening"> | Date | string | null
+  notScreenedReason?: Prisma.EnumShkNotScreenedReasonNullableFilter<"ShkScreening"> | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.UuidNullableFilter<"ShkScreening"> | string | null
   notes?: Prisma.StringNullableFilter<"ShkScreening"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ShkScreening"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShkScreening"> | Date | string
   newbornCareRecord?: Prisma.XOR<Prisma.NewbornCareRecordScalarRelationFilter, Prisma.NewbornCareRecordWhereInput>
   sampleTakenBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  notScreenedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "newbornCareRecordId_sequence">
 
 export type ShkScreeningOrderByWithAggregationInput = {
@@ -353,6 +387,9 @@ export type ShkScreeningOrderByWithAggregationInput = {
   laboratoryName?: Prisma.SortOrderInput | Prisma.SortOrder
   resultReceivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   result?: Prisma.SortOrderInput | Prisma.SortOrder
+  notScreenedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  notScreenedReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  notScreenedById?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -378,6 +415,9 @@ export type ShkScreeningScalarWhereWithAggregatesInput = {
   laboratoryName?: Prisma.StringNullableWithAggregatesFilter<"ShkScreening"> | string | null
   resultReceivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ShkScreening"> | Date | string | null
   result?: Prisma.EnumShkResultNullableWithAggregatesFilter<"ShkScreening"> | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ShkScreening"> | Date | string | null
+  notScreenedReason?: Prisma.EnumShkNotScreenedReasonNullableWithAggregatesFilter<"ShkScreening"> | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.UuidNullableWithAggregatesFilter<"ShkScreening"> | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"ShkScreening"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ShkScreening"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ShkScreening"> | Date | string
@@ -393,11 +433,14 @@ export type ShkScreeningCreateInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecord: Prisma.NewbornCareRecordCreateNestedOneWithoutShkScreeningsInput
   sampleTakenBy?: Prisma.UserCreateNestedOneWithoutShkSamplesTakenInput
+  notScreenedBy?: Prisma.UserCreateNestedOneWithoutShkSamplesNotScreenedInput
 }
 
 export type ShkScreeningUncheckedCreateInput = {
@@ -412,6 +455,9 @@ export type ShkScreeningUncheckedCreateInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notScreenedById?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -427,11 +473,14 @@ export type ShkScreeningUpdateInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneRequiredWithoutShkScreeningsNestedInput
   sampleTakenBy?: Prisma.UserUpdateOneWithoutShkSamplesTakenNestedInput
+  notScreenedBy?: Prisma.UserUpdateOneWithoutShkSamplesNotScreenedNestedInput
 }
 
 export type ShkScreeningUncheckedUpdateInput = {
@@ -446,6 +495,9 @@ export type ShkScreeningUncheckedUpdateInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -463,6 +515,9 @@ export type ShkScreeningCreateManyInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notScreenedById?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -478,6 +533,8 @@ export type ShkScreeningUpdateManyMutationInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -495,6 +552,9 @@ export type ShkScreeningUncheckedUpdateManyInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -527,6 +587,9 @@ export type ShkScreeningCountOrderByAggregateInput = {
   laboratoryName?: Prisma.SortOrder
   resultReceivedAt?: Prisma.SortOrder
   result?: Prisma.SortOrder
+  notScreenedAt?: Prisma.SortOrder
+  notScreenedReason?: Prisma.SortOrder
+  notScreenedById?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -548,6 +611,9 @@ export type ShkScreeningMaxOrderByAggregateInput = {
   laboratoryName?: Prisma.SortOrder
   resultReceivedAt?: Prisma.SortOrder
   result?: Prisma.SortOrder
+  notScreenedAt?: Prisma.SortOrder
+  notScreenedReason?: Prisma.SortOrder
+  notScreenedById?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -565,6 +631,9 @@ export type ShkScreeningMinOrderByAggregateInput = {
   laboratoryName?: Prisma.SortOrder
   resultReceivedAt?: Prisma.SortOrder
   result?: Prisma.SortOrder
+  notScreenedAt?: Prisma.SortOrder
+  notScreenedReason?: Prisma.SortOrder
+  notScreenedById?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -581,10 +650,24 @@ export type ShkScreeningCreateNestedManyWithoutSampleTakenByInput = {
   connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
 }
 
+export type ShkScreeningCreateNestedManyWithoutNotScreenedByInput = {
+  create?: Prisma.XOR<Prisma.ShkScreeningCreateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput> | Prisma.ShkScreeningCreateWithoutNotScreenedByInput[] | Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput[]
+  connectOrCreate?: Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput | Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput[]
+  createMany?: Prisma.ShkScreeningCreateManyNotScreenedByInputEnvelope
+  connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+}
+
 export type ShkScreeningUncheckedCreateNestedManyWithoutSampleTakenByInput = {
   create?: Prisma.XOR<Prisma.ShkScreeningCreateWithoutSampleTakenByInput, Prisma.ShkScreeningUncheckedCreateWithoutSampleTakenByInput> | Prisma.ShkScreeningCreateWithoutSampleTakenByInput[] | Prisma.ShkScreeningUncheckedCreateWithoutSampleTakenByInput[]
   connectOrCreate?: Prisma.ShkScreeningCreateOrConnectWithoutSampleTakenByInput | Prisma.ShkScreeningCreateOrConnectWithoutSampleTakenByInput[]
   createMany?: Prisma.ShkScreeningCreateManySampleTakenByInputEnvelope
+  connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+}
+
+export type ShkScreeningUncheckedCreateNestedManyWithoutNotScreenedByInput = {
+  create?: Prisma.XOR<Prisma.ShkScreeningCreateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput> | Prisma.ShkScreeningCreateWithoutNotScreenedByInput[] | Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput[]
+  connectOrCreate?: Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput | Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput[]
+  createMany?: Prisma.ShkScreeningCreateManyNotScreenedByInputEnvelope
   connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
 }
 
@@ -602,6 +685,20 @@ export type ShkScreeningUpdateManyWithoutSampleTakenByNestedInput = {
   deleteMany?: Prisma.ShkScreeningScalarWhereInput | Prisma.ShkScreeningScalarWhereInput[]
 }
 
+export type ShkScreeningUpdateManyWithoutNotScreenedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ShkScreeningCreateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput> | Prisma.ShkScreeningCreateWithoutNotScreenedByInput[] | Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput[]
+  connectOrCreate?: Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput | Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput[]
+  upsert?: Prisma.ShkScreeningUpsertWithWhereUniqueWithoutNotScreenedByInput | Prisma.ShkScreeningUpsertWithWhereUniqueWithoutNotScreenedByInput[]
+  createMany?: Prisma.ShkScreeningCreateManyNotScreenedByInputEnvelope
+  set?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  disconnect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  delete?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  update?: Prisma.ShkScreeningUpdateWithWhereUniqueWithoutNotScreenedByInput | Prisma.ShkScreeningUpdateWithWhereUniqueWithoutNotScreenedByInput[]
+  updateMany?: Prisma.ShkScreeningUpdateManyWithWhereWithoutNotScreenedByInput | Prisma.ShkScreeningUpdateManyWithWhereWithoutNotScreenedByInput[]
+  deleteMany?: Prisma.ShkScreeningScalarWhereInput | Prisma.ShkScreeningScalarWhereInput[]
+}
+
 export type ShkScreeningUncheckedUpdateManyWithoutSampleTakenByNestedInput = {
   create?: Prisma.XOR<Prisma.ShkScreeningCreateWithoutSampleTakenByInput, Prisma.ShkScreeningUncheckedCreateWithoutSampleTakenByInput> | Prisma.ShkScreeningCreateWithoutSampleTakenByInput[] | Prisma.ShkScreeningUncheckedCreateWithoutSampleTakenByInput[]
   connectOrCreate?: Prisma.ShkScreeningCreateOrConnectWithoutSampleTakenByInput | Prisma.ShkScreeningCreateOrConnectWithoutSampleTakenByInput[]
@@ -613,6 +710,20 @@ export type ShkScreeningUncheckedUpdateManyWithoutSampleTakenByNestedInput = {
   connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
   update?: Prisma.ShkScreeningUpdateWithWhereUniqueWithoutSampleTakenByInput | Prisma.ShkScreeningUpdateWithWhereUniqueWithoutSampleTakenByInput[]
   updateMany?: Prisma.ShkScreeningUpdateManyWithWhereWithoutSampleTakenByInput | Prisma.ShkScreeningUpdateManyWithWhereWithoutSampleTakenByInput[]
+  deleteMany?: Prisma.ShkScreeningScalarWhereInput | Prisma.ShkScreeningScalarWhereInput[]
+}
+
+export type ShkScreeningUncheckedUpdateManyWithoutNotScreenedByNestedInput = {
+  create?: Prisma.XOR<Prisma.ShkScreeningCreateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput> | Prisma.ShkScreeningCreateWithoutNotScreenedByInput[] | Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput[]
+  connectOrCreate?: Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput | Prisma.ShkScreeningCreateOrConnectWithoutNotScreenedByInput[]
+  upsert?: Prisma.ShkScreeningUpsertWithWhereUniqueWithoutNotScreenedByInput | Prisma.ShkScreeningUpsertWithWhereUniqueWithoutNotScreenedByInput[]
+  createMany?: Prisma.ShkScreeningCreateManyNotScreenedByInputEnvelope
+  set?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  disconnect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  delete?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  connect?: Prisma.ShkScreeningWhereUniqueInput | Prisma.ShkScreeningWhereUniqueInput[]
+  update?: Prisma.ShkScreeningUpdateWithWhereUniqueWithoutNotScreenedByInput | Prisma.ShkScreeningUpdateWithWhereUniqueWithoutNotScreenedByInput[]
+  updateMany?: Prisma.ShkScreeningUpdateManyWithWhereWithoutNotScreenedByInput | Prisma.ShkScreeningUpdateManyWithWhereWithoutNotScreenedByInput[]
   deleteMany?: Prisma.ShkScreeningScalarWhereInput | Prisma.ShkScreeningScalarWhereInput[]
 }
 
@@ -662,6 +773,10 @@ export type NullableEnumShkResultFieldUpdateOperationsInput = {
   set?: $Enums.ShkResult | null
 }
 
+export type NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput = {
+  set?: $Enums.ShkNotScreenedReason | null
+}
+
 export type ShkScreeningCreateWithoutSampleTakenByInput = {
   id?: string
   sequence: number
@@ -672,10 +787,13 @@ export type ShkScreeningCreateWithoutSampleTakenByInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   newbornCareRecord: Prisma.NewbornCareRecordCreateNestedOneWithoutShkScreeningsInput
+  notScreenedBy?: Prisma.UserCreateNestedOneWithoutShkSamplesNotScreenedInput
 }
 
 export type ShkScreeningUncheckedCreateWithoutSampleTakenByInput = {
@@ -689,6 +807,9 @@ export type ShkScreeningUncheckedCreateWithoutSampleTakenByInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notScreenedById?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -701,6 +822,54 @@ export type ShkScreeningCreateOrConnectWithoutSampleTakenByInput = {
 
 export type ShkScreeningCreateManySampleTakenByInputEnvelope = {
   data: Prisma.ShkScreeningCreateManySampleTakenByInput | Prisma.ShkScreeningCreateManySampleTakenByInput[]
+  skipDuplicates?: boolean
+}
+
+export type ShkScreeningCreateWithoutNotScreenedByInput = {
+  id?: string
+  sequence: number
+  dueFrom: Date | string
+  dueUntil: Date | string
+  sampleTakenAt?: Date | string | null
+  sentAt?: Date | string | null
+  laboratoryName?: string | null
+  resultReceivedAt?: Date | string | null
+  result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  newbornCareRecord: Prisma.NewbornCareRecordCreateNestedOneWithoutShkScreeningsInput
+  sampleTakenBy?: Prisma.UserCreateNestedOneWithoutShkSamplesTakenInput
+}
+
+export type ShkScreeningUncheckedCreateWithoutNotScreenedByInput = {
+  id?: string
+  newbornCareRecordId: string
+  sequence: number
+  dueFrom: Date | string
+  dueUntil: Date | string
+  sampleTakenAt?: Date | string | null
+  sampleTakenById?: string | null
+  sentAt?: Date | string | null
+  laboratoryName?: string | null
+  resultReceivedAt?: Date | string | null
+  result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ShkScreeningCreateOrConnectWithoutNotScreenedByInput = {
+  where: Prisma.ShkScreeningWhereUniqueInput
+  create: Prisma.XOR<Prisma.ShkScreeningCreateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput>
+}
+
+export type ShkScreeningCreateManyNotScreenedByInputEnvelope = {
+  data: Prisma.ShkScreeningCreateManyNotScreenedByInput | Prisma.ShkScreeningCreateManyNotScreenedByInput[]
   skipDuplicates?: boolean
 }
 
@@ -735,9 +904,28 @@ export type ShkScreeningScalarWhereInput = {
   laboratoryName?: Prisma.StringNullableFilter<"ShkScreening"> | string | null
   resultReceivedAt?: Prisma.DateTimeNullableFilter<"ShkScreening"> | Date | string | null
   result?: Prisma.EnumShkResultNullableFilter<"ShkScreening"> | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.DateTimeNullableFilter<"ShkScreening"> | Date | string | null
+  notScreenedReason?: Prisma.EnumShkNotScreenedReasonNullableFilter<"ShkScreening"> | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.UuidNullableFilter<"ShkScreening"> | string | null
   notes?: Prisma.StringNullableFilter<"ShkScreening"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ShkScreening"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ShkScreening"> | Date | string
+}
+
+export type ShkScreeningUpsertWithWhereUniqueWithoutNotScreenedByInput = {
+  where: Prisma.ShkScreeningWhereUniqueInput
+  update: Prisma.XOR<Prisma.ShkScreeningUpdateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedUpdateWithoutNotScreenedByInput>
+  create: Prisma.XOR<Prisma.ShkScreeningCreateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedCreateWithoutNotScreenedByInput>
+}
+
+export type ShkScreeningUpdateWithWhereUniqueWithoutNotScreenedByInput = {
+  where: Prisma.ShkScreeningWhereUniqueInput
+  data: Prisma.XOR<Prisma.ShkScreeningUpdateWithoutNotScreenedByInput, Prisma.ShkScreeningUncheckedUpdateWithoutNotScreenedByInput>
+}
+
+export type ShkScreeningUpdateManyWithWhereWithoutNotScreenedByInput = {
+  where: Prisma.ShkScreeningScalarWhereInput
+  data: Prisma.XOR<Prisma.ShkScreeningUpdateManyMutationInput, Prisma.ShkScreeningUncheckedUpdateManyWithoutNotScreenedByInput>
 }
 
 export type ShkScreeningCreateWithoutNewbornCareRecordInput = {
@@ -750,10 +938,13 @@ export type ShkScreeningCreateWithoutNewbornCareRecordInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sampleTakenBy?: Prisma.UserCreateNestedOneWithoutShkSamplesTakenInput
+  notScreenedBy?: Prisma.UserCreateNestedOneWithoutShkSamplesNotScreenedInput
 }
 
 export type ShkScreeningUncheckedCreateWithoutNewbornCareRecordInput = {
@@ -767,6 +958,9 @@ export type ShkScreeningUncheckedCreateWithoutNewbornCareRecordInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notScreenedById?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -809,6 +1003,28 @@ export type ShkScreeningCreateManySampleTakenByInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notScreenedById?: string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ShkScreeningCreateManyNotScreenedByInput = {
+  id?: string
+  newbornCareRecordId: string
+  sequence: number
+  dueFrom: Date | string
+  dueUntil: Date | string
+  sampleTakenAt?: Date | string | null
+  sampleTakenById?: string | null
+  sentAt?: Date | string | null
+  laboratoryName?: string | null
+  resultReceivedAt?: Date | string | null
+  result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -824,10 +1040,13 @@ export type ShkScreeningUpdateWithoutSampleTakenByInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneRequiredWithoutShkScreeningsNestedInput
+  notScreenedBy?: Prisma.UserUpdateOneWithoutShkSamplesNotScreenedNestedInput
 }
 
 export type ShkScreeningUncheckedUpdateWithoutSampleTakenByInput = {
@@ -841,6 +1060,9 @@ export type ShkScreeningUncheckedUpdateWithoutSampleTakenByInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -857,6 +1079,66 @@ export type ShkScreeningUncheckedUpdateManyWithoutSampleTakenByInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ShkScreeningUpdateWithoutNotScreenedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  dueFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sampleTakenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  newbornCareRecord?: Prisma.NewbornCareRecordUpdateOneRequiredWithoutShkScreeningsNestedInput
+  sampleTakenBy?: Prisma.UserUpdateOneWithoutShkSamplesTakenNestedInput
+}
+
+export type ShkScreeningUncheckedUpdateWithoutNotScreenedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  newbornCareRecordId?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  dueFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sampleTakenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sampleTakenById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ShkScreeningUncheckedUpdateManyWithoutNotScreenedByInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  newbornCareRecordId?: Prisma.StringFieldUpdateOperationsInput | string
+  sequence?: Prisma.IntFieldUpdateOperationsInput | number
+  dueFrom?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  dueUntil?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sampleTakenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sampleTakenById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -873,6 +1155,9 @@ export type ShkScreeningCreateManyNewbornCareRecordInput = {
   laboratoryName?: string | null
   resultReceivedAt?: Date | string | null
   result?: $Enums.ShkResult | null
+  notScreenedAt?: Date | string | null
+  notScreenedReason?: $Enums.ShkNotScreenedReason | null
+  notScreenedById?: string | null
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -888,10 +1173,13 @@ export type ShkScreeningUpdateWithoutNewbornCareRecordInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sampleTakenBy?: Prisma.UserUpdateOneWithoutShkSamplesTakenNestedInput
+  notScreenedBy?: Prisma.UserUpdateOneWithoutShkSamplesNotScreenedNestedInput
 }
 
 export type ShkScreeningUncheckedUpdateWithoutNewbornCareRecordInput = {
@@ -905,6 +1193,9 @@ export type ShkScreeningUncheckedUpdateWithoutNewbornCareRecordInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -921,6 +1212,9 @@ export type ShkScreeningUncheckedUpdateManyWithoutNewbornCareRecordInput = {
   laboratoryName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultReceivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   result?: Prisma.NullableEnumShkResultFieldUpdateOperationsInput | $Enums.ShkResult | null
+  notScreenedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notScreenedReason?: Prisma.NullableEnumShkNotScreenedReasonFieldUpdateOperationsInput | $Enums.ShkNotScreenedReason | null
+  notScreenedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -940,11 +1234,15 @@ export type ShkScreeningSelect<ExtArgs extends runtime.Types.Extensions.Internal
   laboratoryName?: boolean
   resultReceivedAt?: boolean
   result?: boolean
+  notScreenedAt?: boolean
+  notScreenedReason?: boolean
+  notScreenedById?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   newbornCareRecord?: boolean | Prisma.NewbornCareRecordDefaultArgs<ExtArgs>
   sampleTakenBy?: boolean | Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>
+  notScreenedBy?: boolean | Prisma.ShkScreening$notScreenedByArgs<ExtArgs>
 }, ExtArgs["result"]["shkScreening"]>
 
 export type ShkScreeningSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -959,11 +1257,15 @@ export type ShkScreeningSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   laboratoryName?: boolean
   resultReceivedAt?: boolean
   result?: boolean
+  notScreenedAt?: boolean
+  notScreenedReason?: boolean
+  notScreenedById?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   newbornCareRecord?: boolean | Prisma.NewbornCareRecordDefaultArgs<ExtArgs>
   sampleTakenBy?: boolean | Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>
+  notScreenedBy?: boolean | Prisma.ShkScreening$notScreenedByArgs<ExtArgs>
 }, ExtArgs["result"]["shkScreening"]>
 
 export type ShkScreeningSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -978,11 +1280,15 @@ export type ShkScreeningSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   laboratoryName?: boolean
   resultReceivedAt?: boolean
   result?: boolean
+  notScreenedAt?: boolean
+  notScreenedReason?: boolean
+  notScreenedById?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   newbornCareRecord?: boolean | Prisma.NewbornCareRecordDefaultArgs<ExtArgs>
   sampleTakenBy?: boolean | Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>
+  notScreenedBy?: boolean | Prisma.ShkScreening$notScreenedByArgs<ExtArgs>
 }, ExtArgs["result"]["shkScreening"]>
 
 export type ShkScreeningSelectScalar = {
@@ -997,23 +1303,29 @@ export type ShkScreeningSelectScalar = {
   laboratoryName?: boolean
   resultReceivedAt?: boolean
   result?: boolean
+  notScreenedAt?: boolean
+  notScreenedReason?: boolean
+  notScreenedById?: boolean
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ShkScreeningOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "newbornCareRecordId" | "sequence" | "dueFrom" | "dueUntil" | "sampleTakenAt" | "sampleTakenById" | "sentAt" | "laboratoryName" | "resultReceivedAt" | "result" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["shkScreening"]>
+export type ShkScreeningOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "newbornCareRecordId" | "sequence" | "dueFrom" | "dueUntil" | "sampleTakenAt" | "sampleTakenById" | "sentAt" | "laboratoryName" | "resultReceivedAt" | "result" | "notScreenedAt" | "notScreenedReason" | "notScreenedById" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["shkScreening"]>
 export type ShkScreeningInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   newbornCareRecord?: boolean | Prisma.NewbornCareRecordDefaultArgs<ExtArgs>
   sampleTakenBy?: boolean | Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>
+  notScreenedBy?: boolean | Prisma.ShkScreening$notScreenedByArgs<ExtArgs>
 }
 export type ShkScreeningIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   newbornCareRecord?: boolean | Prisma.NewbornCareRecordDefaultArgs<ExtArgs>
   sampleTakenBy?: boolean | Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>
+  notScreenedBy?: boolean | Prisma.ShkScreening$notScreenedByArgs<ExtArgs>
 }
 export type ShkScreeningIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   newbornCareRecord?: boolean | Prisma.NewbornCareRecordDefaultArgs<ExtArgs>
   sampleTakenBy?: boolean | Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>
+  notScreenedBy?: boolean | Prisma.ShkScreening$notScreenedByArgs<ExtArgs>
 }
 
 export type $ShkScreeningPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1021,6 +1333,7 @@ export type $ShkScreeningPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     newbornCareRecord: Prisma.$NewbornCareRecordPayload<ExtArgs>
     sampleTakenBy: Prisma.$UserPayload<ExtArgs> | null
+    notScreenedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1034,6 +1347,9 @@ export type $ShkScreeningPayload<ExtArgs extends runtime.Types.Extensions.Intern
     laboratoryName: string | null
     resultReceivedAt: Date | null
     result: $Enums.ShkResult | null
+    notScreenedAt: Date | null
+    notScreenedReason: $Enums.ShkNotScreenedReason | null
+    notScreenedById: string | null
     notes: string | null
     createdAt: Date
     updatedAt: Date
@@ -1433,6 +1749,7 @@ export interface Prisma__ShkScreeningClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   newbornCareRecord<T extends Prisma.NewbornCareRecordDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.NewbornCareRecordDefaultArgs<ExtArgs>>): Prisma.Prisma__NewbornCareRecordClient<runtime.Types.Result.GetResult<Prisma.$NewbornCareRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   sampleTakenBy<T extends Prisma.ShkScreening$sampleTakenByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShkScreening$sampleTakenByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  notScreenedBy<T extends Prisma.ShkScreening$notScreenedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ShkScreening$notScreenedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1473,6 +1790,9 @@ export interface ShkScreeningFieldRefs {
   readonly laboratoryName: Prisma.FieldRef<"ShkScreening", 'String'>
   readonly resultReceivedAt: Prisma.FieldRef<"ShkScreening", 'DateTime'>
   readonly result: Prisma.FieldRef<"ShkScreening", 'ShkResult'>
+  readonly notScreenedAt: Prisma.FieldRef<"ShkScreening", 'DateTime'>
+  readonly notScreenedReason: Prisma.FieldRef<"ShkScreening", 'ShkNotScreenedReason'>
+  readonly notScreenedById: Prisma.FieldRef<"ShkScreening", 'String'>
   readonly notes: Prisma.FieldRef<"ShkScreening", 'String'>
   readonly createdAt: Prisma.FieldRef<"ShkScreening", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ShkScreening", 'DateTime'>
@@ -1880,6 +2200,25 @@ export type ShkScreeningDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
  * ShkScreening.sampleTakenBy
  */
 export type ShkScreening$sampleTakenByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
+ * ShkScreening.notScreenedBy
+ */
+export type ShkScreening$notScreenedByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the User
    */
