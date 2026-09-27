@@ -31,6 +31,11 @@ export type AnalyticsDashboard = {
  * page reads with the operations key, since it is about the clinic's
  * day-to-day rather than money or patients. The hrefs match the `analytics`
  * entry's `navHrefs` in the feature catalog.
+ *
+ * Pharmacy and laboratory read "Kinerja …" in the sidebar, not the bare
+ * "Farmasi" and "Laboratorium" their pages are titled: the operational
+ * menus already carry those names, and in the collapsed icon rail, where the
+ * group heading is hidden, two identical tooltips would be a guess.
  */
 export const ANALYTICS_DASHBOARDS: readonly AnalyticsDashboard[] = [
   {
@@ -60,7 +65,7 @@ export const ANALYTICS_DASHBOARDS: readonly AnalyticsDashboard[] = [
   {
     slug: 'pharmacy',
     href: '/admin/analytics/pharmacy',
-    label: 'Pharmacy',
+    label: 'Pharmacy performance',
     labelKey: 'analyticsPharmacy',
     icon: 'medication',
     action: 'read-pharmacy',
@@ -68,7 +73,7 @@ export const ANALYTICS_DASHBOARDS: readonly AnalyticsDashboard[] = [
   {
     slug: 'laboratory',
     href: '/admin/analytics/laboratory',
-    label: 'Laboratory',
+    label: 'Lab performance',
     labelKey: 'analyticsLaboratory',
     icon: 'science',
     action: 'read-lab',

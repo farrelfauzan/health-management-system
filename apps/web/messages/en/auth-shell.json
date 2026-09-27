@@ -138,8 +138,8 @@
         "analyticsOperations": "Operations",
         "analyticsFinance": "Finance",
         "analyticsCaseMix": "Case mix",
-        "analyticsPharmacy": "Pharmacy",
-        "analyticsLaboratory": "Laboratory",
+        "analyticsPharmacy": "Pharmacy performance",
+        "analyticsLaboratory": "Lab performance",
         "analyticsReporting": "Reporting status"
       },
       "search": {

@@ -1,3 +1,5 @@
+import { PERMISSION_HINT_ACTION_ABBREVIATIONS } from '#auth/permission-hint-action-abbreviations';
+
 /**
  * Packs a permission set into the compact form carried by the session-hint
  * cookie.
@@ -19,6 +21,8 @@
  *    with their scope intact, because `proxy.ts` matches them exactly.
  * 2. Keys are grouped by resource, so the resource name is written once
  *    instead of once per action: `patient:read,create,update`.
+ * 3. The six commonest actions are one letter
+ *    (`PERMISSION_HINT_ACTION_ABBREVIATIONS`): `patient:c,r,u`.
  *
  * The wire format is `resource:action,action;resource:action`. None of `;`,
  * `:` or `,` occur inside a resource or an action name, so decoding is three
@@ -39,7 +43,7 @@ export function packPermissionHint(permissionKeys: readonly string[]): string {
     const resource = scopeless.slice(0, separatorIndex);
     const action = scopeless.slice(separatorIndex + 1);
     const actions = actionsByResource.get(resource) ?? new Set<string>();
-    actions.add(action);
+    actions.add(PERMISSION_HINT_ACTION_ABBREVIATIONS[action] ?? action);
     actionsByResource.set(resource, actions);
   }
   return [...actionsByResource.entries()]

@@ -138,8 +138,8 @@
         "analyticsOperations": "Operasional",
         "analyticsFinance": "Keuangan",
         "analyticsCaseMix": "Pola penyakit",
-        "analyticsPharmacy": "Farmasi",
-        "analyticsLaboratory": "Laboratorium",
+        "analyticsPharmacy": "Kinerja farmasi",
+        "analyticsLaboratory": "Kinerja lab",
         "analyticsReporting": "Status pelaporan"
       },
       "search": {

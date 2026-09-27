@@ -81,6 +81,36 @@ describe('packPermissionHint / unpackPermissionHint', () => {
     expect(unpackPermissionHint('patient:read;garbage')).toEqual(['patient.read']);
   });
 
+  it('writes the six commonest actions as one letter and reads them back', () => {
+    // P29-T01. What made room for the analytics keys under the budget.
+    const inputKeys = ['patient.read:any', 'patient.update:any', 'invoice.deliver:any'];
+
+    const actualPacked = packPermissionHint(inputKeys);
+
+    expect(actualPacked).toBe('invoice:deliver;patient:r,u');
+    expect(unpackPermissionHint(actualPacked).sort()).toEqual([
+      'invoice.deliver',
+      'patient.read',
+      'patient.update',
+    ]);
+  });
+
+  it('still reads a hint written before the abbreviations, with full words', () => {
+    // A browser keeps its cookie across a deploy; the old spelling must decode.
+    expect(unpackPermissionHint('patient:create,read').sort()).toEqual([
+      'patient.create',
+      'patient.read',
+    ]);
+  });
+
+  it('has no seeded action a single letter could be mistaken for', () => {
+    const seededActions = readSeededPermissionKeys().map((key) =>
+      key.replace(/:(any|own)$/, '').split('.').pop(),
+    );
+
+    expect(seededActions.filter((action) => action !== undefined && action.length === 1)).toEqual([]);
+  });
+
   it('drops keys with no resource segment', () => {
     expect(packPermissionHint(['notaresource', '.leading', 'trailing.'])).toEqual('');
   });
