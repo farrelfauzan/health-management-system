@@ -87,7 +87,7 @@ export function SocialImageCard(): ReactElement {
           </span>
         </div>
         <div style={{ display: 'flex', fontSize: 28, fontWeight: 500, color: '#424656' }}>
-          Aplikasi klinik terhubung SATUSEHAT
+          Bertenaga AI, terhubung SATUSEHAT
         </div>
         <div style={{ display: 'flex', fontSize: 24, fontWeight: 500, color: '#006A61' }}>
           metaklinik.renovix.id

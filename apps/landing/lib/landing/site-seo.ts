@@ -1,24 +1,26 @@
 /**
- * Search-facing copy. The title and description lead with what clinics search for
- * ("aplikasi klinik", "rekam medis elektronik", "SATUSEHAT"), and the description
- * stays under ~155 characters so Google shows it whole.
+ * Search-facing copy. The title leads with the AI angle and keeps "RME" and "SATUSEHAT"
+ * within the ~60 characters Google shows; the description carries "aplikasi klinik" and
+ * stays under ~155 characters so it shows whole.
  */
 export const SITE_SEO = {
-  title: 'MetaKlinik — Aplikasi Klinik & RME Terhubung SATUSEHAT',
+  title: 'MetaKlinik — RME Klinik Bertenaga AI, Terhubung SATUSEHAT',
   description:
-    'Aplikasi klinik dan rekam medis elektronik (RME) terhubung SATUSEHAT. Pendaftaran, pemeriksaan, apotek, lab, kasir, dan pajak dalam satu sistem.',
+    'Aplikasi klinik dan RME bertenaga AI, terhubung SATUSEHAT. Asisten WhatsApp untuk pasien, AI Assistant untuk staf, dari pendaftaran sampai kasir.',
   socialDescription:
-    'Lebih dari sekadar RME: satu sistem untuk seluruh perjalanan pasien, dengan Miko sebagai asisten WhatsApp klinik.',
+    'Lebih dari sekadar RME: aplikasi klinik bertenaga AI, dengan Miko sebagai asisten WhatsApp dan laporan SATUSEHAT otomatis.',
   keywords: [
+    'aplikasi klinik AI',
+    'RME bertenaga AI',
     'aplikasi klinik',
     'software klinik',
     'rekam medis elektronik',
     'RME klinik',
+    'asisten WhatsApp klinik',
     'sistem informasi manajemen klinik',
     'aplikasi SATUSEHAT',
     'integrasi SATUSEHAT',
     'aplikasi praktik bidan',
     'aplikasi kasir klinik',
-    'aplikasi apotek klinik',
   ],
 } as const;
