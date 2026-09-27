@@ -11,7 +11,7 @@ export function HeroChatCard(): ReactElement {
           <BrandMark className="size-[22px] xl:size-[26px]" />
         </span>
         <span className="flex flex-col gap-0.5">
-          <span className="text-[13px] font-bold xl:text-sm">Miko · [NAMA KLINIK]</span>
+          <span className="text-[13px] font-bold xl:text-sm">Miko · Meta Klinik</span>
           <span className="hidden text-xs font-semibold text-teal-deep xl:block">
             Asisten WhatsApp klinik
           </span>
