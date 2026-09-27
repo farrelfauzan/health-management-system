@@ -84,7 +84,7 @@ export function SpecialtyFormDialog({ open, specialty, onOpenChange }: Specialty
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading">
             {t(specialty ? 'editTitle' : 'createTitle')}

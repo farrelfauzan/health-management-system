@@ -232,7 +232,7 @@ export function LabTestFormDialog({ open, labTest, onOpenChange }: LabTestFormDi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl">
         <form noValidate onSubmit={(event) => void handleSubmit(event)}>
           <DialogHeader>
             <DialogTitle className="font-heading">

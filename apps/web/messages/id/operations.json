@@ -2633,6 +2633,7 @@
         "previousYear": "Tahun sebelumnya",
         "nextYear": "Tahun berikutnya",
         "create": "Buat draft",
+        "open": "Buka",
         "back": "Semua laporan pajak",
         "recompute": "Hitung ulang",
         "finalize": "Finalkan",
@@ -2640,6 +2641,17 @@
         "downloadPdf": "Unduh PDF",
         "recomputed": "Laporan dihitung ulang",
         "finalized": "Laporan difinalkan",
+        "columns": {
+          "period": "Bulan",
+          "taxDue": "Pajak terutang",
+          "status": "Status",
+          "actions": "Aksi"
+        },
+        "view": {
+          "label": "Tampilan laporan",
+          "table": "Tampilan tabel",
+          "cards": "Tampilan kartu"
+        },
         "kind": {
           "PP55_OMZET": "PPh final PP 55 (0,5% omzet)",
           "PPN_OUTPUT": "PPN keluaran",

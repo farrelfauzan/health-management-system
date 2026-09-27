@@ -144,6 +144,10 @@ jobs:
         run: pnpm ${{ env.WORKSPACE_FILTER }} lint
 
       - name: Typecheck
+        # apps/api's tsc needs ~2.5 GB; Node's default heap on the 7 GB
+        # private-repo runner is ~2 GB, so it dies with exit 134 without this.
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
         run: pnpm ${{ env.WORKSPACE_FILTER }} typecheck
 
       - name: Unit tests
