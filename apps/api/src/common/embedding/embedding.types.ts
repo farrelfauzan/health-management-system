@@ -1,13 +1,13 @@
 /**
  * Which embedding backend is bound at startup (D-EMB-01).
  *
- * `TOGETHER` is the hosted default (`PCS-T12`) and `OLLAMA` the local
+ * `SUMOPOD` is the hosted default (`PCS-T12`) and `OLLAMA` the local
  * deployment, kept because a clinic that does not want a second data processor
  * must still be able to run this feature. Both are real, supported
  * configurations rather than a primary and a dead fallback — which is why the
  * choice is a value here instead of a comment on a constructor.
  */
-export const EMBEDDING_PROVIDER_KINDS = ['TOGETHER', 'OLLAMA'] as const;
+export const EMBEDDING_PROVIDER_KINDS = ['SUMOPOD', 'OLLAMA'] as const;
 
 export type EmbeddingProviderKind = (typeof EMBEDDING_PROVIDER_KINDS)[number];
 
@@ -22,9 +22,9 @@ export type EmbeddingConfig = {
    */
   readonly version: string;
   /**
-   * Fixed by the model (1024 for both `bge-m3` and
-   * `intfloat/multilingual-e5-large-instruct`) and by the `vector(1024)`
-   * column type. Asserted on every response: a model that returns a different
+   * Fixed by the `vector(1024)` column type: `bge-m3` answers 1024 natively,
+   * and the hosted adapter asks `text-embedding-3-large` for 1024 through the
+   * `dimensions` request field. Asserted on every response: a model that returns a different
    * width is refused rather than written, because Postgres would accept the
    * row and retrieval would simply get worse with no error at all.
    */
@@ -40,7 +40,7 @@ export type EmbeddingConfig = {
  * embedder is now across a network someone else operates: a credential, and a
  * retry budget for the rate limit that comes with a shared API.
  */
-export type TogetherEmbeddingConfig = EmbeddingConfig & {
+export type SumopodEmbeddingConfig = EmbeddingConfig & {
   readonly apiKey: string;
   /**
    * Retries **after** the first attempt, so `2` means at most three requests.
@@ -59,13 +59,13 @@ export type TogetherEmbeddingConfig = EmbeddingConfig & {
  * Both branches are resolved on every boot rather than only the selected one,
  * mirroring `resolveChannelGatewayConfig`. It costs nothing — neither opens a
  * connection — and it means a malformed `OLLAMA_EMBEDDING_BASE_URL` is a
- * startup error on a Together deployment too, instead of a surprise on the day
+ * startup error on a Sumopod deployment too, instead of a surprise on the day
  * somebody falls back to local.
  */
 export type EmbeddingProviderConfig = {
   readonly kind: EmbeddingProviderKind;
   readonly ollama: EmbeddingConfig;
-  readonly together: TogetherEmbeddingConfig;
+  readonly sumopod: SumopodEmbeddingConfig;
 };
 
 export type EmbedTextsRequest = {

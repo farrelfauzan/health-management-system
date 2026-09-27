@@ -13,7 +13,7 @@ import { buildRedactedBugReport } from '../bug-report/service/bug-report-triage.
 import { AuditService } from '../../common/audit/audit.service';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
 import { CurrentUser } from '../../common/auth/current-user.type';
-import { TogetherEmbeddingService } from '../../common/embedding/together-embedding.service';
+import { SumopodEmbeddingService } from '../../common/embedding/sumopod-embedding.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { AiChatbotError } from './ai-chatbot.error';
 import { AiProviderHttpClient } from './infrastructure/ai-provider-http.client';
@@ -460,20 +460,20 @@ describe('external AI processor egress contract (SJ-17)', () => {
       global.fetch = originalFetch;
     });
 
-    function buildEmbeddingService(): TogetherEmbeddingService {
+    function buildEmbeddingService(): SumopodEmbeddingService {
       const values: Record<string, string> = {
-        EMBEDDING_PROVIDER: 'TOGETHER',
-        TOGETHER_API_KEY: 'test-key',
-        TOGETHER_EMBEDDING_BASE_URL: 'https://together.test',
-        TOGETHER_EMBEDDING_DIMENSION: '3',
-        TOGETHER_EMBEDDING_MAX_RETRIES: '0',
+        EMBEDDING_PROVIDER: 'SUMOPOD',
+        SUMOPOD_API_KEY: 'test-key',
+        SUMOPOD_EMBEDDING_BASE_URL: 'https://sumopod.test/v1',
+        SUMOPOD_EMBEDDING_DIMENSION: '3',
+        SUMOPOD_EMBEDDING_MAX_RETRIES: '0',
       };
-      return new TogetherEmbeddingService({
+      return new SumopodEmbeddingService({
         get: (key: string) => values[key],
       } as unknown as ConfigService);
     }
 
-    it('transmits exactly model and input — the text itself, verbatim', async () => {
+    it('transmits exactly model, width, and input — the text itself, verbatim', async () => {
       await buildEmbeddingService().embedTexts({ texts: ['Apakah saya alergi penisilin?'] });
 
       const actualBody = JSON.parse(
@@ -483,7 +483,7 @@ describe('external AI processor egress contract (SJ-17)', () => {
       // No redaction is applied on this path and none can be — a redacted
       // question retrieves the wrong passages (§4). The inventory records the
       // question as crossing verbatim; this is what makes that checkable.
-      expect(Object.keys(actualBody).sort()).toEqual(['input', 'model']);
+      expect(Object.keys(actualBody).sort()).toEqual(['dimensions', 'input', 'model']);
       expect(actualBody.input).toEqual(['Apakah saya alergi penisilin?']);
     });
   });

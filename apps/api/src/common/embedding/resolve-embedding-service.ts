@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { resolveEmbeddingConfig } from './embedding.config';
 import { EmbeddingService } from './embedding.service';
 import { OllamaEmbeddingService } from './ollama-embedding.service';
-import { TogetherEmbeddingService } from './together-embedding.service';
+import { SumopodEmbeddingService } from './sumopod-embedding.service';
 
 /**
  * Picks the embedding backend from `EMBEDDING_PROVIDER` (`PCS-T12`, D-EMB-01).
@@ -27,9 +27,9 @@ import { TogetherEmbeddingService } from './together-embedding.service';
  */
 export function resolveEmbeddingService(
   configService: ConfigService,
-  togetherService: TogetherEmbeddingService,
+  sumopodService: SumopodEmbeddingService,
   ollamaService: OllamaEmbeddingService,
 ): EmbeddingService {
   const { kind } = resolveEmbeddingConfig(configService);
-  return kind === 'OLLAMA' ? ollamaService : togetherService;
+  return kind === 'OLLAMA' ? ollamaService : sumopodService;
 }

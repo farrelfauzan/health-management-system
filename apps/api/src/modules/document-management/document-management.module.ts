@@ -49,7 +49,7 @@ import { UploadedDocumentGuardService } from './service/uploaded-document-guard.
  * consumer of `ObjectStorageService`. The third completed `P15-T10` with the
  * extract → chunk → embed pipeline: a background worker claims `PENDING`
  * documents, `EmbeddingService` turns their passages into vectors on whichever
- * backend `EMBEDDING_PROVIDER` names — hosted Together AI by default, local
+ * backend `EMBEDDING_PROVIDER` names — hosted Sumopod by default, local
  * Ollama on request, which is the difference between having a second data
  * processor and not (D-EMB-01, inventoried in `docs/security/ai-vendor-dpa.md`)
  * — and `DocumentChunkRepository` writes them through raw SQL, which is

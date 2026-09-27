@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { OllamaEmbeddingService } from './ollama-embedding.service';
 import { resolveEmbeddingService } from './resolve-embedding-service';
-import { TogetherEmbeddingService } from './together-embedding.service';
+import { SumopodEmbeddingService } from './sumopod-embedding.service';
 
 function buildConfigService(overrides: Record<string, string> = {}): ConfigService {
   const values: Record<string, string> = { ...overrides };
@@ -15,29 +15,29 @@ function buildConfigService(overrides: Record<string, string> = {}): ConfigServi
  * hosted and a local embedder is configuration — stays honest.
  */
 describe('resolveEmbeddingService', () => {
-  const togetherService = {} as TogetherEmbeddingService;
+  const sumopodService = {} as SumopodEmbeddingService;
   const ollamaService = {} as OllamaEmbeddingService;
 
   it('binds the hosted provider by default', () => {
-    const actual = resolveEmbeddingService(buildConfigService(), togetherService, ollamaService);
+    const actual = resolveEmbeddingService(buildConfigService(), sumopodService, ollamaService);
 
-    expect(actual).toBe(togetherService);
+    expect(actual).toBe(sumopodService);
   });
 
   it('binds the hosted provider when named', () => {
     const actual = resolveEmbeddingService(
-      buildConfigService({ EMBEDDING_PROVIDER: 'TOGETHER' }),
-      togetherService,
+      buildConfigService({ EMBEDDING_PROVIDER: 'SUMOPOD' }),
+      sumopodService,
       ollamaService,
     );
 
-    expect(actual).toBe(togetherService);
+    expect(actual).toBe(sumopodService);
   });
 
   it('binds the local provider when named', () => {
     const actual = resolveEmbeddingService(
       buildConfigService({ EMBEDDING_PROVIDER: 'OLLAMA' }),
-      togetherService,
+      sumopodService,
       ollamaService,
     );
 
@@ -47,7 +47,7 @@ describe('resolveEmbeddingService', () => {
   it('accepts the value in any case', () => {
     const actual = resolveEmbeddingService(
       buildConfigService({ EMBEDDING_PROVIDER: 'ollama' }),
-      togetherService,
+      sumopodService,
       ollamaService,
     );
 
@@ -64,7 +64,7 @@ describe('resolveEmbeddingService', () => {
     expect(() =>
       resolveEmbeddingService(
         buildConfigService({ EMBEDDING_PROVIDER: 'OPENAI' }),
-        togetherService,
+        sumopodService,
         ollamaService,
       ),
     ).toThrow(/EMBEDDING_PROVIDER must be one of/);

@@ -4,11 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { EmbeddingService } from './embedding.service';
 import { OllamaEmbeddingService } from './ollama-embedding.service';
 import { resolveEmbeddingService } from './resolve-embedding-service';
-import { TogetherEmbeddingService } from './together-embedding.service';
+import { SumopodEmbeddingService } from './sumopod-embedding.service';
 
 /**
  * Registers the provider-neutral embedding contract backed by whichever
- * adapter `EMBEDDING_PROVIDER` names — hosted Together AI by default,
+ * adapter `EMBEDDING_PROVIDER` names — hosted Sumopod by default,
  * local Ollama on request (`PCS-T12`, D-EMB-01). Feature modules import this
  * module and inject {@link EmbeddingService}; they never call an embedding
  * endpoint directly, and nothing downstream knows which vendor answered.
@@ -22,11 +22,11 @@ import { TogetherEmbeddingService } from './together-embedding.service';
  */
 @Module({
   providers: [
-    TogetherEmbeddingService,
+    SumopodEmbeddingService,
     OllamaEmbeddingService,
     {
       provide: EmbeddingService,
-      inject: [ConfigService, TogetherEmbeddingService, OllamaEmbeddingService],
+      inject: [ConfigService, SumopodEmbeddingService, OllamaEmbeddingService],
       useFactory: resolveEmbeddingService,
     },
   ],

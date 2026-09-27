@@ -6,24 +6,31 @@ import {
   EmbeddingProviderKind,
 } from './embedding.types';
 
-const DEFAULT_PROVIDER_KIND: EmbeddingProviderKind = 'TOGETHER';
+const DEFAULT_PROVIDER_KIND: EmbeddingProviderKind = 'SUMOPOD';
 
 const DEFAULT_OLLAMA_BASE_URL = 'http://127.0.0.1:11434';
 const DEFAULT_OLLAMA_MODEL = 'bge-m3';
 
-const DEFAULT_TOGETHER_BASE_URL = 'https://api.together.xyz';
 /**
- * 1024 dimensions and genuinely multilingual, which is the pair that matters.
+ * Includes `/v1`, the OpenAI SDK convention the chat provider's
+ * `OPENAI_COMPATIBLE` base URL follows too; the adapter appends `/embeddings`.
+ */
+const DEFAULT_SUMOPOD_BASE_URL = 'https://ai.sumopod.com/v1';
+/**
+ * Multilingual, and shortened to 1024 dimensions on request — the pair that
+ * matters.
  *
  * The width is what keeps this a config change rather than a migration — the
  * corpus column is `vector(1024)`, the same width `bge-m3` produces. The
+ * `text-embedding-3` family natively answers wider (3072 for `-large`) but
+ * honours the `dimensions` request field, which the adapter always sends. The
  * multilinguality is what keeps `PCS-T02`'s cross-lingual property: an
  * Indonesian question finding an English passage is the behaviour that chose
- * the local model in the first place, and Together's English-only embedders
- * (`BAAI/bge-large-en-v1.5` and friends) would have given it up silently while
- * still fitting the column.
+ * the local model in the first place. `-large` over `-small` because that
+ * property is where the two differ most, and a clinic corpus is small enough
+ * that the price gap is noise.
  */
-const DEFAULT_TOGETHER_MODEL = 'intfloat/multilingual-e5-large-instruct';
+const DEFAULT_SUMOPOD_MODEL = 'text-embedding-3-large';
 
 const DEFAULT_VERSION = '1';
 const DEFAULT_DIMENSION = 1024;
@@ -147,38 +154,38 @@ export function resolveEmbeddingConfig(configService: ConfigService): EmbeddingP
         DEFAULT_MAX_BATCH_SIZE,
       ),
     },
-    together: {
-      baseUrl: readBaseUrl(configService, 'TOGETHER_EMBEDDING_BASE_URL', DEFAULT_TOGETHER_BASE_URL),
+    sumopod: {
+      baseUrl: readBaseUrl(configService, 'SUMOPOD_EMBEDDING_BASE_URL', DEFAULT_SUMOPOD_BASE_URL),
       // Read but never validated for shape, and never logged. An empty key is
       // refused by the adapter at call time rather than here, so an API whose
       // operator has not finished configuring embeddings still boots and still
       // serves every route that does not need one.
-      apiKey: readNonEmptyString(configService, 'TOGETHER_API_KEY', ''),
-      model: readNonEmptyString(configService, 'TOGETHER_EMBEDDING_MODEL', DEFAULT_TOGETHER_MODEL),
-      version: readNonEmptyString(configService, 'TOGETHER_EMBEDDING_VERSION', DEFAULT_VERSION),
+      apiKey: readNonEmptyString(configService, 'SUMOPOD_API_KEY', ''),
+      model: readNonEmptyString(configService, 'SUMOPOD_EMBEDDING_MODEL', DEFAULT_SUMOPOD_MODEL),
+      version: readNonEmptyString(configService, 'SUMOPOD_EMBEDDING_VERSION', DEFAULT_VERSION),
       dimension: readPositiveInteger(
         configService,
-        'TOGETHER_EMBEDDING_DIMENSION',
+        'SUMOPOD_EMBEDDING_DIMENSION',
         DEFAULT_DIMENSION,
       ),
       timeoutMs: readPositiveInteger(
         configService,
-        'TOGETHER_EMBEDDING_TIMEOUT_MS',
+        'SUMOPOD_EMBEDDING_TIMEOUT_MS',
         DEFAULT_TIMEOUT_MS,
       ),
       maxBatchSize: readPositiveInteger(
         configService,
-        'TOGETHER_EMBEDDING_BATCH_SIZE',
+        'SUMOPOD_EMBEDDING_BATCH_SIZE',
         DEFAULT_MAX_BATCH_SIZE,
       ),
       maxRetries: readNonNegativeInteger(
         configService,
-        'TOGETHER_EMBEDDING_MAX_RETRIES',
+        'SUMOPOD_EMBEDDING_MAX_RETRIES',
         DEFAULT_MAX_RETRIES,
       ),
       maxRetryDelayMs: readPositiveInteger(
         configService,
-        'TOGETHER_EMBEDDING_MAX_RETRY_DELAY_MS',
+        'SUMOPOD_EMBEDDING_MAX_RETRY_DELAY_MS',
         DEFAULT_MAX_RETRY_DELAY_MS,
       ),
     },

@@ -20,7 +20,7 @@ Taken from the repository as it stands, not from a generic SaaS template.
 | **SATUSEHAT/BPJS outbox worker** | `satusehat-submission.worker.ts` | **Singleton poller** | An in-process `setInterval` gated by `SATUSEHAT_WORKER_ENABLED`. That flag is the architecture: run API replicas with it **off**, and exactly one worker task with it **on**. |
 | **GOWA (WhatsApp gateway)** | `infra/docker`, `channel-gateway` | **Stateful, pinned** | Holds live WhatsApp Web sessions on a persistent volume (`hms-gowa-session`). Cannot be replicated, cannot be freely rescheduled, cannot scale to zero. |
 | **Telegram gateway** | `channel-gateway` | Stateless webhook | No special handling. |
-| **LLM / embeddings** | Together AI, per-clinic providers | External API | Egress only. Not hosted. |
+| **LLM / embeddings** | Sumopod, per-clinic providers | External API | Egress only. Not hosted. |
 
 ---
 
@@ -333,7 +333,7 @@ Confirm before committing to either cloud. None are exotic; all are cheap to che
 3. **GCS S3-compatible XML API** with `@aws-sdk/client-s3` — specifically **presigned PUT/GET URLs**, which `s3-request-presigner` generates today. Decides whether a `gcs-storage.service.ts` is needed.
 4. **Service availability in Jakarta regions** — Cloud Run, Serverless VPC Access, Cloud SQL HA (GCP); Fargate, RDS Multi-AZ (AWS). Regional gaps are common outside the big regions.
 5. **Actual prices** in each vendor's calculator. Every figure in §6 is an estimate.
-6. **Egress cost to Together AI / SATUSEHAT / BPJS** — small, but unmodelled here.
+6. **Egress cost to Sumopod / SATUSEHAT / BPJS** — small, but unmodelled here.
 7. **PgBouncer transaction pooling against Prisma 7 driver adapters** with prepared statements disabled — verify against the existing integration suite before it carries tenant traffic.
 
 ---

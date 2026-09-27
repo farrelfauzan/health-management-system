@@ -25,14 +25,14 @@ The ticket's Prerequisites state:
 > embedding path truly never leaves.
 
 **Confirmed false as of this commit.** `EMBEDDING_PROVIDER` defaults to
-`TOGETHER` ([embedding.config.ts:9](../../apps/api/src/common/embedding/embedding.config.ts:9)),
+`SUMOPOD` ([embedding.config.ts:9](../../apps/api/src/common/embedding/embedding.config.ts:9)),
 and `.env.example` ships that default ([`.env.example:372`](../../apps/api/.env.example:372)).
 The local Ollama adapter is still fully supported, but it is the opt-in branch,
 not the default one.
 
 So there are **two external processors in scope**, not one, and the second was
 not on the ticket's list. The code says so plainly —
-[together-embedding.service.ts:30](../../apps/api/src/common/embedding/together-embedding.service.ts:30):
+[sumopod-embedding.service.ts:37](../../apps/api/src/common/embedding/sumopod-embedding.service.ts:37):
 
 > This adapter is a data processor, and the local one was not (D-EMB-01).
 
@@ -52,7 +52,7 @@ back — so which company sees the corpus is decided by one variable, provably.
                     │                                         │     (DB-configured)
                     │  DocumentIngestionService ──┐           │
                     │  DocumentRetrievalService ──┴──▶ Embed ─┼──▶ ❷ EMBEDDING VENDOR
-                    │                                         │     (Together AI,
+                    │                                         │     (Sumopod,    
                     │  tool dispatch ──▶ results ─────────────┼─┐   by default)
                     └─────────────────────────────────────────┘ │
                                                                 │
@@ -93,8 +93,11 @@ against the boundary it had already drawn.
 the vector width is a column type, so swapping the embedder is a migration and a
 re-ingest rather than a settings screen
 ([embedding.config.ts:112](../../apps/api/src/common/embedding/embedding.config.ts:112)).
-Default `https://api.together.xyz`, model
-`intfloat/multilingual-e5-large-instruct`.
+Default `https://ai.sumopod.com/v1`, model `text-embedding-3-large` asked for
+1024 dimensions. Sumopod is an Indonesian gateway that relays to the model's
+owner (OpenAI for this model), so the chain has **two** processors, not one.
+(Together AI, `intfloat/multilingual-e5-large-instruct`, was the default until
+2026-09-27.)
 
 ## 3. Field-level inventory — ❶ chat vendor
 
@@ -181,8 +184,9 @@ Two call sites, both unconditional once retrieval/ingestion is used:
 | 1 | every chunk of every ingested document | **whatever the corpus contains** | on ingest | [document-ingestion.service.ts:86](../../apps/api/src/modules/document-management/service/document-ingestion.service.ts:86) |
 | 2 | the user's raw question, verbatim | **yes — free text, assume PHI** | every retrieval | [document-retrieval.service.ts:80](../../apps/api/src/modules/document-management/service/document-retrieval.service.ts:80) |
 
-Sent as `{model, input: [...texts]}` in batches of 16 to `/v1/embeddings`
-([together-embedding.service.ts:147](../../apps/api/src/common/embedding/together-embedding.service.ts:147)).
+Sent as `{model, input: [...texts], dimensions}` in batches of 16 to `/v1/embeddings`
+([sumopod-embedding.service.ts:154](../../apps/api/src/common/embedding/sumopod-embedding.service.ts:154)).
+`dimensions` is the configured vector width, a constant — not data.
 Vectors come back; nothing is logged; the credential never appears in an error
 line.
 
@@ -196,7 +200,7 @@ Two documentation inconsistencies found while tracing this, both worth fixing
 whether or not SJ-17 proceeds:
 
 1. `.env.example:251` says retrieval "Needs an ingested corpus and a reachable
-   `OLLAMA_EMBEDDING_BASE_URL`" — stale since `TOGETHER` became the default.
+   `OLLAMA_EMBEDDING_BASE_URL`" — stale since a hosted embedder became the default.
 2. [document-management.module.ts:28](../../apps/api/src/modules/document-management/document-management.module.ts:28)
    describes `EmbeddingService` as turning passages into vectors "on a local"
    embedder. Same staleness, in a comment a future reader would trust.
@@ -212,7 +216,7 @@ To close this section, someone with access to the target deployment supplies:
 
 | Question | ❶ chat vendor | ❷ embedding vendor |
 |---|---|---|
-| Which vendor, which model | from the active `AiProviderConfig` row | Together AI unless `EMBEDDING_PROVIDER=OLLAMA` |
+| Which vendor, which model | from the active `AiProviderConfig` row | Sumopod (relaying to OpenAI) unless `EMBEDDING_PROVIDER=OLLAMA` |
 | API data used for training? | | |
 | Retention period for prompts | | |
 | Sub-processors | | |
@@ -384,10 +388,12 @@ cannot assign:
 - **G1 — no DPA with ❶.** Controller obligation under UU PDP; vendor is a
   processor. Unknown whether any instrument exists for the target deployment.
 - **G2 — no DPA with ❷, and the processor was unlisted.** Strictly worse than G1
-  because the ticket did not know this processor existed. `TOGETHER` is the
+  because the ticket did not know this processor existed. `SUMOPOD` is the
   shipped default, so a clinic reaches it by doing nothing.
 - **G3 — cross-border transfer mechanism (Art. 55–56).** Every non-`OLLAMA`
-  default base URL in §2 is hosted outside Indonesia; `api.together.xyz` is too.
+  default base URL in §2 is hosted outside Indonesia. `ai.sumopod.com` is an
+  Indonesian company, but it relays `text-embedding-3-large` to OpenAI, so the
+  text still leaves the country one hop later.
 - **G4 — patient-facing disclosure.** A disclaimer mechanism exists and is
   structural — every assistant turn persists `disclaimerShown: true` and the
   text rides in the response `meta`, never in the content
@@ -477,7 +483,7 @@ payload is added beside it. What it holds:
 | §3.3 — **no tool result ever crosses** | a canary field in tool output, asserted absent from every request; plus no `"role":"tool"` |
 | §3.3 — stored `SYSTEM` turns are not replayed | canary in an earlier turn, asserted absent |
 | §3.1 row 7 — the title call carries only the two excerpts | exact argument equality |
-| §4 — the embedding body is exactly `model` and `input`, question verbatim | complete key-set equality |
+| §4 — the embedding body is exactly `model`, `input` and `dimensions`, question verbatim | complete key-set equality |
 | §3.2 — the redaction denylist still strips every identifier class | one payload per forbidden fragment |
 | §5c — the ❺ triage payload is exactly the seven fields named above | complete key-set equality, plus per-field absence assertions for the reporter id, reference, request ids and app version |
 | §5c — redaction runs before anything leaves | a NIK and a phone number in one description, asserted replaced by markers and absent verbatim |
