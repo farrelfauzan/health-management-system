@@ -6,7 +6,7 @@ import { BrandWordmark } from '#components/shared/brand-wordmark';
 import { NAV_LINKS } from '#lib/landing/nav-links';
 import { SITE_CONTACT } from '#lib/landing/site-contact';
 
-/** Sticky top bar: logo, section links, login and the demo button. */
+/** Sticky top bar: logo, section links and the demo button. */
 export function SiteHeader(): ReactElement {
   return (
     <header className="nav-bar border-b border-line bg-canvas">
@@ -32,23 +32,13 @@ export function SiteHeader(): ReactElement {
         </nav>
         <div className="hidden items-center gap-6 xl:flex">
           <a
-            href={SITE_CONTACT.loginHref}
-            className="text-[15px] font-semibold text-navy hover:text-brand"
-          >
-            Masuk
-          </a>
-          <a
             href={SITE_CONTACT.demoHref}
             className="flex h-12 items-center rounded-xl bg-brand px-[22px] text-[15px] font-bold text-white hover:bg-brand-dark"
           >
             Jadwalkan demo
           </a>
         </div>
-        <MobileMenu
-          links={NAV_LINKS}
-          demoHref={SITE_CONTACT.demoHref}
-          loginHref={SITE_CONTACT.loginHref}
-        />
+        <MobileMenu links={NAV_LINKS} demoHref={SITE_CONTACT.demoHref} />
       </div>
     </header>
   );
