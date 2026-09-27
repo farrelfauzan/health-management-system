@@ -1,0 +1,41 @@
+{
+  "name": "@hms/landing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#components/*": "./components/*.tsx",
+    "#hooks/*": "./hooks/*.ts",
+    "#lib/*": "./lib/*.ts"
+  },
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "build": "next build",
+    "start": "next start --port 3002",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "format": "prettier --check ."
+  },
+  "dependencies": {
+    "next": "^16.3.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@hms/config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.13",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.11",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^6.0.3",
+    "eslint": "^9.34.0",
+    "jsdom": "^29.1.1",
+    "postcss": "^8.5.23",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  }
+}
