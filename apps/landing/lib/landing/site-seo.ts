@@ -1,10 +1,10 @@
 /**
- * Search-facing copy. The title leads with the AI angle and keeps "RME" and "SATUSEHAT"
+ * Search-facing copy. The title leads with the AI angle and keeps "RME" and "klinik"
  * within the ~60 characters Google shows; the description carries "aplikasi klinik" and
  * stays under ~155 characters so it shows whole.
  */
 export const SITE_SEO = {
-  title: 'MetaKlinik — RME Klinik Bertenaga AI, Terhubung SATUSEHAT',
+  title: 'MetaKlinik — AI-Powered RME untuk Klinik Indonesia',
   description:
     'Aplikasi klinik dan RME bertenaga AI, terhubung SATUSEHAT. Asisten WhatsApp untuk pasien, AI Assistant untuk staf, dari pendaftaran sampai kasir.',
   socialDescription:
