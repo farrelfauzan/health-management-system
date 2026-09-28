@@ -21,7 +21,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AnalyticsOperationsControllerGetOperationsV1200
+  AnalyticsOperationsControllerGetOperationsV1200,
+  AnalyticsOperationsControllerGetOperationsV1Params
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -48,13 +49,14 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
  * @summary Read the operations dashboard
  */
 export const analyticsOperationsControllerGetOperationsV1 = (
-
+    params: AnalyticsOperationsControllerGetOperationsV1Params,
  signal?: AbortSignal
 ) => {
 
 
       return orvalAxiosMutator<AnalyticsOperationsControllerGetOperationsV1200>(
-      {url: `/api/v1/analytics/operations`, method: 'GET', signal
+      {url: `/api/v1/analytics/operations`, method: 'GET',
+        params, signal
     },
       );
     }
@@ -62,23 +64,23 @@ export const analyticsOperationsControllerGetOperationsV1 = (
 
 
 
-export const getAnalyticsOperationsControllerGetOperationsV1QueryKey = () => {
+export const getAnalyticsOperationsControllerGetOperationsV1QueryKey = (params?: AnalyticsOperationsControllerGetOperationsV1Params,) => {
     return [
-    `/api/v1/analytics/operations`
+    `/api/v1/analytics/operations`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getAnalyticsOperationsControllerGetOperationsV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>>, }
+export const getAnalyticsOperationsControllerGetOperationsV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError = unknown>(params: AnalyticsOperationsControllerGetOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getAnalyticsOperationsControllerGetOperationsV1QueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsOperationsControllerGetOperationsV1QueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>> = ({ signal }) => analyticsOperationsControllerGetOperationsV1(signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>> = ({ signal }) => analyticsOperationsControllerGetOperationsV1(params, signal);
 
 
 
@@ -92,7 +94,7 @@ export type AnalyticsOperationsControllerGetOperationsV1QueryError = unknown
 
 
 export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>> & Pick<
+ params: AnalyticsOperationsControllerGetOperationsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>,
           TError,
@@ -102,7 +104,7 @@ export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>> & Pick<
+ params: AnalyticsOperationsControllerGetOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>,
           TError,
@@ -112,7 +114,7 @@ export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>>, }
+ params: AnalyticsOperationsControllerGetOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -120,11 +122,11 @@ export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<
  */
 
 export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>>, }
+ params: AnalyticsOperationsControllerGetOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetOperationsV1>>, TError, TData>>, }
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getAnalyticsOperationsControllerGetOperationsV1QueryOptions(options)
+  const queryOptions = getAnalyticsOperationsControllerGetOperationsV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

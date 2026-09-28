@@ -62088,12 +62088,56 @@ paths:
   /api/v1/analytics/operations:
     get:
       operationId: AnalyticsOperationsController_getOperations_v1
-      parameters: []
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
       responses:
         "200":
-          description: "`asOf` is the instant the figures were read. Visits, poli and
-            doctor, appointment outcomes and booking channel join this response
-            in P29-T04."
+          description: "`from` and `to` are the clinic's local dates, both included, at
+            most 24 months apart. `compare=true` adds the comparison period: the
+            previous calendar month for a whole month, otherwise the same number
+            of days just before. `meta.generatedAt` is when the figures were
+            read; answers are cached for five minutes. A query that runs past
+            ten seconds answers 503 `ANALYTICS_QUERY_TIMEOUT`. Totals, series
+            and breakdowns are filled in P29-T04."
           content:
             application/json:
               schema:
@@ -62102,15 +62146,70 @@ paths:
                   data:
                     type: object
                     properties:
-                      asOf:
+                      totals:
+                        type: object
+                        properties: {}
+                      series:
+                        type: array
+                        items: {}
+                      breakdowns:
+                        type: object
+                        properties: {}
+                      comparison:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                          totals:
+                            type: object
+                            properties: {}
+                        required:
+                          - from
+                          - to
+                          - totals
+                    required:
+                      - totals
+                      - series
+                      - breakdowns
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
                         type: string
                     required:
-                      - asOf
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
                 required:
                   - data
+                  - meta
                 example:
                   data:
-                    asOf: 2026-09-28T02:00:00.000Z
+                    totals: {}
+                    series: []
+                    breakdowns: {}
+                    comparison:
+                      from: 2026-08-01
+                      to: 2026-08-31
+                      totals: {}
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-28T02:00:00.000Z
         "401":
           description: Authentication is required.
           content:

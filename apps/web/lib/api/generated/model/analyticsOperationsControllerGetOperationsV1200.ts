@@ -6,7 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { AnalyticsOperationsControllerGetOperationsV1200Data } from './analyticsOperationsControllerGetOperationsV1200Data';
+import type { AnalyticsOperationsControllerGetOperationsV1200Meta } from './analyticsOperationsControllerGetOperationsV1200Meta';
 
 export type AnalyticsOperationsControllerGetOperationsV1200 = {
   data: AnalyticsOperationsControllerGetOperationsV1200Data;
+  meta: AnalyticsOperationsControllerGetOperationsV1200Meta;
 };
