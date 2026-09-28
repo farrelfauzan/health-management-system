@@ -31,7 +31,9 @@ export class AnalyticsQueryRepository {
       return await this.prisma.$transaction(
         async (tx) => {
           await tx.$executeRawUnsafe('SET TRANSACTION READ ONLY');
-          await tx.$executeRawUnsafe(`SET LOCAL statement_timeout = ${Math.trunc(statementTimeoutMs)}`);
+          await tx.$executeRawUnsafe(
+            `SET LOCAL statement_timeout = ${Math.trunc(statementTimeoutMs)}`,
+          );
           return work(tx);
         },
         // Prisma's own interactive-transaction limit is 5 s; left at the

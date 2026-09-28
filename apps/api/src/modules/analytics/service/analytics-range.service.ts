@@ -7,8 +7,11 @@ import {
   type AnalyticsFilterInput,
   type AnalyticsRange,
   type AnalyticsResponseMeta,
+  type AnalyticsSqlScope,
   type ResolvedAnalyticsRanges,
 } from '@hms/shared-types';
+
+const SQL_TIMESTAMP_LENGTH = 23;
 
 /**
  * Turns a dashboard filter into the UTC ranges its queries use, in the
@@ -32,7 +35,26 @@ export class AnalyticsRangeService {
     const comparisonPeriod = resolveAnalyticsComparisonPeriod(filter);
     return {
       range,
-      comparisonRange: resolveAnalyticsRange({ ...comparisonPeriod, timeZone: this.clinicTimeZone }),
+      comparisonRange: resolveAnalyticsRange({
+        ...comparisonPeriod,
+        timeZone: this.clinicTimeZone,
+      }),
+    };
+  }
+
+  /**
+   * What a repository query binds: the range as UTC `timestamp` text, so the
+   * comparison with Postgres's `timestamp` columns never passes through a
+   * session time zone, and the narrowing filters.
+   */
+  buildSqlScope(range: AnalyticsRange, filter: AnalyticsFilterInput): AnalyticsSqlScope {
+    return {
+      startUtc: range.start.toISOString().replace('T', ' ').slice(0, SQL_TIMESTAMP_LENGTH),
+      endUtc: range.end.toISOString().replace('T', ' ').slice(0, SQL_TIMESTAMP_LENGTH),
+      granularity: range.granularity,
+      timeZone: range.timeZone,
+      doctorId: filter.doctorId,
+      specialtyId: filter.specialtyId,
     };
   }
 

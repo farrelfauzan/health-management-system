@@ -9,6 +9,7 @@ import { AuditService } from '../../common/audit/audit.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { AuthRepository } from '../auth/repository/auth.repository';
 import { FeatureAvailabilityCacheService } from '../feature-entitlement/service/feature-availability-cache.service';
+import { AnalyticsOperationsRepository } from './repository/analytics-operations.repository';
 
 const OPERATIONS_PATH = '/api/v1/v1/analytics/operations';
 const SEPTEMBER_QUERY = { from: '2026-09-01', to: '2026-09-30' };
@@ -35,6 +36,17 @@ describe('Analytics integration', () => {
   };
   const auditServiceMock = { record: jest.fn(), recordOrThrow: jest.fn() };
   const prismaServiceMock = { $connect: jest.fn(), $disconnect: jest.fn() };
+  const analyticsOperationsRepositoryMock = {
+    readSnapshot: jest.fn(async () => ({
+      visitBuckets: [],
+      newAndReturning: { newPatients: 0, returningPatients: 0 },
+      poli: [],
+      doctors: [],
+      outcomes: [],
+      channels: [],
+      walkIns: 0,
+    })),
+  };
 
   function buildToken(sub: string, email: string): Promise<string> {
     return jwtService.signAsync({ sub, email }, { secret: 'dev-access-secret' });
@@ -64,6 +76,8 @@ describe('Analytics integration', () => {
       .useValue(auditServiceMock)
       .overrideProvider(PrismaService)
       .useValue(prismaServiceMock)
+      .overrideProvider(AnalyticsOperationsRepository)
+      .useValue(analyticsOperationsRepositoryMock)
       .compile();
     app = moduleRef.createNestApplication();
     app.enableVersioning({ defaultVersion: '1', prefix: 'v', type: VersioningType.URI });
@@ -92,7 +106,8 @@ describe('Analytics integration', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.data).toEqual({ totals: {}, series: [], breakdowns: {} });
+    expect(response.body.data.totals).toMatchObject({ visits: 0, noShowRatePercent: null });
+    expect(response.body.data.series).toHaveLength(30);
     expect(response.body.meta).toMatchObject({
       from: '2026-09-01',
       to: '2026-09-30',
@@ -112,7 +127,8 @@ describe('Analytics integration', () => {
       .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(response.body.data.comparison).toEqual({ from: '2026-08-01', to: '2026-08-31', totals: {} });
+    expect(response.body.data.comparison).toMatchObject({ from: '2026-08-01', to: '2026-08-31' });
+    expect(response.body.data.comparison.series).toHaveLength(31);
   });
 
   it('given 1 January 2024 to 30 September 2026, then answers 400', async () => {
@@ -126,6 +142,19 @@ describe('Analytics integration', () => {
 
     expect(response.status).toBe(400);
     expect(JSON.stringify(response.body.error)).toContain('Choose a range of at most 24 months');
+  });
+
+  it('given a payer filter, then answers 400 until visits record the payer', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);
+
+    const response = await request(app.getHttpServer())
+      .get(OPERATIONS_PATH)
+      .query({ ...SEPTEMBER_QUERY, payerType: 'BPJS' })
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe('ANALYTICS_PAYER_FILTER_UNAVAILABLE');
   });
 
   it('given no dates, then answers 400', async () => {

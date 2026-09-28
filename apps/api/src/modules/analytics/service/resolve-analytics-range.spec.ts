@@ -8,7 +8,11 @@ describe('resolveAnalyticsRange', () => {
   it('keeps a payment at 23:30 WIB on 31 August inside 1–31 August', () => {
     const inputPaidAt = new Date('2026-08-31T23:30:00+07:00');
 
-    const actual = resolveAnalyticsRange({ from: '2026-08-01', to: '2026-08-31', timeZone: 'Asia/Jakarta' });
+    const actual = resolveAnalyticsRange({
+      from: '2026-08-01',
+      to: '2026-08-31',
+      timeZone: 'Asia/Jakarta',
+    });
 
     expect(actual.start.toISOString()).toBe('2026-07-31T17:00:00.000Z');
     expect(actual.end.toISOString()).toBe('2026-08-31T17:00:00.000Z');
@@ -18,13 +22,21 @@ describe('resolveAnalyticsRange', () => {
   it('leaves a payment at 00:10 WIB on 1 September outside 1–31 August', () => {
     const inputPaidAt = new Date('2026-09-01T00:10:00+07:00');
 
-    const actual = resolveAnalyticsRange({ from: '2026-08-01', to: '2026-08-31', timeZone: 'Asia/Jakarta' });
+    const actual = resolveAnalyticsRange({
+      from: '2026-08-01',
+      to: '2026-08-31',
+      timeZone: 'Asia/Jakarta',
+    });
 
     expect(inputPaidAt < actual.end).toBe(false);
   });
 
   it('cuts days in the configured zone, not Jakarta', () => {
-    const actual = resolveAnalyticsRange({ from: '2026-08-01', to: '2026-08-01', timeZone: 'Asia/Jayapura' });
+    const actual = resolveAnalyticsRange({
+      from: '2026-08-01',
+      to: '2026-08-01',
+      timeZone: 'Asia/Jayapura',
+    });
 
     expect(actual.start.toISOString()).toBe('2026-07-31T15:00:00.000Z');
     expect(actual.dayCount).toBe(1);

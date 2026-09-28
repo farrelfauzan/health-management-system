@@ -6,4 +6,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotals = { [key: string]: unknown };
+export type AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotals = {
+  visits: number;
+  newPatients: number;
+  returningPatients: number;
+  walkIns: number;
+  appointments: number;
+  completedAppointments: number;
+  noShowAppointments: number;
+  noShowRatePercent: number;
+};

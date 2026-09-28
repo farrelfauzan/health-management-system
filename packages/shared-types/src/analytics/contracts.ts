@@ -12,11 +12,16 @@ export type AnalyticsSuppressedCount = {
 
 export type AnalyticsCount = number | AnalyticsSuppressedCount;
 
-/** The filter's comparison period and its totals. */
-export type AnalyticsComparison<TTotals> = {
+/**
+ * The filter's comparison period: its totals, and its series so a chart can
+ * draw last month's line under this month's. Its buckets start at the
+ * comparison period's own dates; a chart pairs them by position.
+ */
+export type AnalyticsComparison<TTotals, TSeries> = {
   from: string;
   to: string;
   totals: TTotals;
+  series: TSeries;
 };
 
 /**
@@ -28,7 +33,7 @@ export type AnalyticsDashboardData<TTotals, TSeries, TBreakdowns> = {
   totals: TTotals;
   series: TSeries;
   breakdowns: TBreakdowns;
-  comparison?: AnalyticsComparison<TTotals>;
+  comparison?: AnalyticsComparison<TTotals, TSeries>;
 };
 
 /**
@@ -48,12 +53,98 @@ export type AnalyticsResponse<TData> = {
   meta: AnalyticsResponseMeta;
 };
 
+/** `Registration.type`, the three kinds of visit (PRD FR-OPS-01). */
+export type AnalyticsVisitType = 'CONSULTATION' | 'LAB_ONLY' | 'ADMISSION';
+
 /**
- * The operations dashboard. Empty until P29-T04 fills its totals, series
- * and breakdowns; the envelope and meta are already the final shape.
+ * Where a visit came from (PRD FR-OPS-05): booked by staff, over WhatsApp or
+ * Telegram, through Mobile JKN, or a walk-in with no appointment at all.
+ */
+export type AnalyticsBookingChannel = 'WALK_IN' | 'STAFF' | 'WHATSAPP' | 'TELEGRAM' | 'MOBILE_JKN';
+
+/**
+ * The operations headline (P29-T04). A visit is a registration checked in or
+ * completed; a new patient is one whose first visit ever falls in the
+ * period. The no-show rate is NO_SHOW / (COMPLETED + NO_SHOW), `null` when
+ * neither happened.
+ */
+export type AnalyticsOperationsTotals = {
+  visits: number;
+  newPatients: number;
+  returningPatients: number;
+  walkIns: number;
+  appointments: number;
+  completedAppointments: number;
+  noShowAppointments: number;
+  noShowRatePercent: number | null;
+};
+
+/** One bucket of the visit trend; `bucket` is its first local date. */
+export type AnalyticsVisitSeriesPoint = {
+  bucket: string;
+  visits: number;
+  consultation: number;
+  labOnly: number;
+  admission: number;
+};
+
+export type AnalyticsVisitsByType = {
+  type: AnalyticsVisitType;
+  visits: number;
+};
+
+/**
+ * Visits at one poli. `specialtyId` is null for a visit registered without
+ * one. `previousVisits` is the comparison period's count, present only when
+ * `compare` is on.
+ */
+export type AnalyticsVisitsByPoli = {
+  specialtyId: string | null;
+  specialtyName: string | null;
+  visits: number;
+  previousVisits?: number;
+};
+
+/** Visits seen by one clinician, through `Encounter.doctorId`. */
+export type AnalyticsVisitsByDoctor = {
+  doctorId: string;
+  doctorName: string;
+  visits: number;
+  previousVisits?: number;
+};
+
+export type AnalyticsAppointmentOutcome = {
+  status: string;
+  appointments: number;
+};
+
+/**
+ * One booking channel. For walk-ins `bookings` and `completed` both count
+ * the visits themselves and the no-show rate is `null`: nobody fails to turn
+ * up for a visit they are already at.
+ */
+export type AnalyticsBookingChannelRow = {
+  channel: AnalyticsBookingChannel;
+  bookings: number;
+  completed: number;
+  noShows: number;
+  noShowRatePercent: number | null;
+};
+
+export type AnalyticsOperationsBreakdowns = {
+  visitsByType: AnalyticsVisitsByType[];
+  visitsByPoli: AnalyticsVisitsByPoli[];
+  visitsByDoctor: AnalyticsVisitsByDoctor[];
+  appointmentOutcomes: AnalyticsAppointmentOutcome[];
+  bookingChannels: AnalyticsBookingChannelRow[];
+};
+
+/**
+ * The operations dashboard (P29-T04, PRD FR-OPS-01 to 05). Counts only: no
+ * patient appears in it, by identifier or otherwise.
  */
 export type AnalyticsOperationsData = AnalyticsDashboardData<
-  Record<string, never>,
-  readonly never[],
-  Record<string, never>
+  AnalyticsOperationsTotals,
+  AnalyticsVisitSeriesPoint[],
+  AnalyticsOperationsBreakdowns
 >;

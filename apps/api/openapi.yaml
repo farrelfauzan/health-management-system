@@ -62131,13 +62131,20 @@ paths:
               - INSURANCE
       responses:
         "200":
-          description: "`from` and `to` are the clinic's local dates, both included, at
-            most 24 months apart. `compare=true` adds the comparison period: the
-            previous calendar month for a whole month, otherwise the same number
-            of days just before. `meta.generatedAt` is when the figures were
-            read; answers are cached for five minutes. A query that runs past
-            ten seconds answers 503 `ANALYTICS_QUERY_TIMEOUT`. Totals, series
-            and breakdowns are filled in P29-T04."
+          description: "Visits (registrations checked in or completed) by clinic day or
+            week or month and by type; new patients (first visit ever in the
+            range) against returning; visits per poli and per clinician;
+            appointment outcomes; and booking channel with its no-show rate
+            (NO_SHOW / (COMPLETED + NO_SHOW)). `from` and `to` are the clinic's
+            local dates, both included, at most 24 months apart. `specialtyId`
+            and `doctorId` narrow every block; `payerType` answers 400
+            `ANALYTICS_PAYER_FILTER_UNAVAILABLE` until visits record the payer.
+            `compare=true` adds `comparison` (previous calendar month for a
+            whole month, otherwise the same number of days just before) and
+            `previousVisits` on each poli and clinician. Counts only: no patient
+            appears in the payload. `meta.generatedAt` is when the figures were
+            read; answers are cached for five minutes. A query past ten seconds
+            answers 503 `ANALYTICS_QUERY_TIMEOUT`."
           content:
             application/json:
               schema:
@@ -62148,13 +62155,141 @@ paths:
                     properties:
                       totals:
                         type: object
-                        properties: {}
+                        properties:
+                          visits:
+                            type: integer
+                          newPatients:
+                            type: integer
+                          returningPatients:
+                            type: integer
+                          walkIns:
+                            type: integer
+                          appointments:
+                            type: integer
+                          completedAppointments:
+                            type: integer
+                          noShowAppointments:
+                            type: integer
+                          noShowRatePercent:
+                            type: number
+                        required:
+                          - visits
+                          - newPatients
+                          - returningPatients
+                          - walkIns
+                          - appointments
+                          - completedAppointments
+                          - noShowAppointments
+                          - noShowRatePercent
                       series:
                         type: array
-                        items: {}
+                        items:
+                          type: object
+                          properties:
+                            bucket:
+                              type: string
+                            visits:
+                              type: integer
+                            consultation:
+                              type: integer
+                            labOnly:
+                              type: integer
+                            admission:
+                              type: integer
+                          required:
+                            - bucket
+                            - visits
+                            - consultation
+                            - labOnly
+                            - admission
                       breakdowns:
                         type: object
-                        properties: {}
+                        properties:
+                          visitsByType:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                type:
+                                  type: string
+                                visits:
+                                  type: integer
+                              required:
+                                - type
+                                - visits
+                          visitsByPoli:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                specialtyId:
+                                  type: string
+                                specialtyName:
+                                  type: string
+                                visits:
+                                  type: integer
+                                previousVisits:
+                                  type: integer
+                              required:
+                                - specialtyId
+                                - specialtyName
+                                - visits
+                          visitsByDoctor:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                doctorId:
+                                  type: string
+                                doctorName:
+                                  type: string
+                                visits:
+                                  type: integer
+                                previousVisits:
+                                  type: integer
+                              required:
+                                - doctorId
+                                - doctorName
+                                - visits
+                          appointmentOutcomes:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                status:
+                                  type: string
+                                appointments:
+                                  type: integer
+                              required:
+                                - status
+                                - appointments
+                          bookingChannels:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                channel:
+                                  type: string
+                                bookings:
+                                  type: integer
+                                completed:
+                                  type: integer
+                                noShows:
+                                  type: integer
+                                noShowRatePercent:
+                                  type: number
+                              required:
+                                - channel
+                                - bookings
+                                - completed
+                                - noShows
+                                - noShowRatePercent
+                        required:
+                          - visitsByType
+                          - visitsByPoli
+                          - visitsByDoctor
+                          - appointmentOutcomes
+                          - bookingChannels
                       comparison:
                         type: object
                         properties:
@@ -62164,11 +62299,58 @@ paths:
                             type: string
                           totals:
                             type: object
-                            properties: {}
+                            properties:
+                              visits:
+                                type: integer
+                              newPatients:
+                                type: integer
+                              returningPatients:
+                                type: integer
+                              walkIns:
+                                type: integer
+                              appointments:
+                                type: integer
+                              completedAppointments:
+                                type: integer
+                              noShowAppointments:
+                                type: integer
+                              noShowRatePercent:
+                                type: number
+                            required:
+                              - visits
+                              - newPatients
+                              - returningPatients
+                              - walkIns
+                              - appointments
+                              - completedAppointments
+                              - noShowAppointments
+                              - noShowRatePercent
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                bucket:
+                                  type: string
+                                visits:
+                                  type: integer
+                                consultation:
+                                  type: integer
+                                labOnly:
+                                  type: integer
+                                admission:
+                                  type: integer
+                              required:
+                                - bucket
+                                - visits
+                                - consultation
+                                - labOnly
+                                - admission
                         required:
                           - from
                           - to
                           - totals
+                          - series
                     required:
                       - totals
                       - series
@@ -62197,13 +62379,83 @@ paths:
                   - meta
                 example:
                   data:
-                    totals: {}
-                    series: []
-                    breakdowns: {}
+                    totals:
+                      visits: 1248
+                      newPatients: 312
+                      returningPatients: 936
+                      walkIns: 574
+                      appointments: 729
+                      completedAppointments: 610
+                      noShowAppointments: 65
+                      noShowRatePercent: 9.6
+                    series:
+                      - bucket: 2026-09-01
+                        visits: 44
+                        consultation: 40
+                        labOnly: 3
+                        admission: 1
+                      - bucket: 2026-09-02
+                        visits: 51
+                        consultation: 46
+                        labOnly: 3
+                        admission: 2
+                    breakdowns:
+                      visitsByType:
+                        - type: CONSULTATION
+                          visits: 1121
+                        - type: LAB_ONLY
+                          visits: 70
+                        - type: ADMISSION
+                          visits: 57
+                      visitsByPoli:
+                        - specialtyId: 5b0c9f1e-2a3d-4c6b-8e7f-9a0b1c2d3e4f
+                          specialtyName: Poli Umum
+                          visits: 640
+                          previousVisits: 604
+                      visitsByDoctor:
+                        - doctorId: 6c1d0a2f-3b4e-4d7c-9f8a-0b1c2d3e4f5a
+                          doctorName: dr. Sari Wulandari
+                          visits: 402
+                          previousVisits: 377
+                      appointmentOutcomes:
+                        - status: COMPLETED
+                          appointments: 610
+                        - status: NO_SHOW
+                          appointments: 65
+                      bookingChannels:
+                        - channel: WHATSAPP
+                          bookings: 168
+                          completed: 144
+                          noShows: 24
+                          noShowRatePercent: 14.3
+                        - channel: WALK_IN
+                          bookings: 574
+                          completed: 574
+                          noShows: 0
+                          noShowRatePercent: null
                     comparison:
                       from: 2026-08-01
                       to: 2026-08-31
-                      totals: {}
+                      totals:
+                        visits: 1151
+                        newPatients: 312
+                        returningPatients: 936
+                        walkIns: 574
+                        appointments: 729
+                        completedAppointments: 610
+                        noShowAppointments: 65
+                        noShowRatePercent: 9.6
+                      series:
+                        - bucket: 2026-09-01
+                          visits: 44
+                          consultation: 40
+                          labOnly: 3
+                          admission: 1
+                        - bucket: 2026-09-02
+                          visits: 51
+                          consultation: 46
+                          labOnly: 3
+                          admission: 2
                   meta:
                     from: 2026-09-01
                     to: 2026-09-30
