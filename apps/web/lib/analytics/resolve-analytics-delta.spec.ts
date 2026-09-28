@@ -37,6 +37,17 @@ describe('resolveAnalyticsDelta', () => {
     expect(actual).toMatchObject({ direction: 'down', tone: 'bad', value: -25 });
   });
 
+  it('shows a wait of 18 against 15 minutes as +3 minutes, and bad news', () => {
+    const actual = resolveAnalyticsDelta({
+      current: 18,
+      previous: 15,
+      kind: 'minutes',
+      higherIsBetter: false,
+    });
+
+    expect(actual).toEqual({ kind: 'minutes', direction: 'up', tone: 'bad', value: 3 });
+  });
+
   it('calls no change neutral', () => {
     const actual = resolveAnalyticsDelta({
       current: 40,

@@ -5,7 +5,8 @@ import { useFormatter, type DateTimeFormatOptions } from 'next-intl';
 
 import { AnalyticsAppointmentOutcomesCard } from '#components/client/analytics/analytics-appointment-outcomes-card';
 import { AnalyticsBookingChannelCard } from '#components/client/analytics/analytics-booking-channel-card';
-import { AnalyticsBusiestHoursPlaceholder } from '#components/client/analytics/analytics-busiest-hours-placeholder';
+import { AnalyticsBusiestHoursCard } from '#components/client/analytics/analytics-busiest-hours-card';
+import { AnalyticsInpatientCard } from '#components/client/analytics/analytics-inpatient-card';
 import { AnalyticsOperationsKpis } from '#components/client/analytics/analytics-operations-kpis';
 import { AnalyticsReportingSummaryCard } from '#components/client/analytics/analytics-reporting-summary-card';
 import { AnalyticsVisitsByPoliCard } from '#components/client/analytics/analytics-visits-by-poli-card';
@@ -48,13 +49,25 @@ export function AnalyticsOperationsContent({
       </div>
       <div className="flex flex-col gap-5 xl:flex-row">
         <AnalyticsBookingChannelCard channels={operations.breakdowns.bookingChannels} />
-        <AnalyticsAppointmentOutcomesCard outcomes={operations.breakdowns.appointmentOutcomes} />
-        <AnalyticsBusiestHoursPlaceholder />
+        <AnalyticsAppointmentOutcomesCard
+          outcomes={operations.breakdowns.appointmentOutcomes}
+          sessionUtilisationPercent={operations.totals.sessionUtilisationPercent}
+        />
+        <AnalyticsBusiestHoursCard cells={operations.breakdowns.busiestHours} />
       </div>
-      <AnalyticsReportingSummaryCard
-        range={{ from: meta.from, to: meta.to }}
-        href={reportingHref}
-      />
+      <div className="flex flex-col gap-5 xl:flex-row">
+        {operations.totals.inpatient ? (
+          <AnalyticsInpatientCard
+            inpatient={operations.totals.inpatient}
+            previous={operations.comparison?.totals.inpatient}
+            dispositions={operations.breakdowns.inpatientDispositions ?? []}
+          />
+        ) : null}
+        <AnalyticsReportingSummaryCard
+          range={{ from: meta.from, to: meta.to }}
+          href={reportingHref}
+        />
+      </div>
     </div>
   );
 }

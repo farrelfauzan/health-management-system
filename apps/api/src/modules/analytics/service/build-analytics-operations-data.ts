@@ -4,6 +4,7 @@ import {
   type AnalyticsAppointmentOutcome,
   type AnalyticsBookingChannel,
   type AnalyticsBookingChannelRow,
+  type AnalyticsInpatientTotals,
   type AnalyticsOperationsData,
   type AnalyticsOperationsPeriodSnapshot,
   type AnalyticsOperationsTotals,
@@ -30,6 +31,46 @@ const SERIES_FIELD_BY_TYPE: Readonly<
   ADMISSION: 'admission',
 };
 
+const PERCENT = 100;
+const ONE_DECIMAL = 10;
+
+function roundToOneDecimal(value: number): number {
+  return Math.round(value * ONE_DECIMAL) / ONE_DECIMAL;
+}
+
+function roundMinutes(value: number | null): number | null {
+  return value === null ? null : Math.round(value);
+}
+
+function toPercent(part: number, whole: number): number | null {
+  return whole > 0 ? roundToOneDecimal((part / whole) * PERCENT) : null;
+}
+
+/**
+ * Inpatient for the period. Occupancy divides the occupied bed-days by every
+ * bed times the range's days: 10 beds and 64 occupied bed-days over 10 days
+ * is 64%.
+ */
+function buildInpatientTotals(
+  period: AnalyticsOperationsPeriodSnapshot,
+): AnalyticsInpatientTotals | null {
+  const inpatient = period.snapshot.inpatient;
+  if (inpatient === null) {
+    return null;
+  }
+  const averageLengthOfStay = inpatient.averageLengthOfStayDays;
+  return {
+    admissions: inpatient.admissions,
+    discharges: inpatient.discharges,
+    averageLengthOfStayDays:
+      averageLengthOfStay === null ? null : roundToOneDecimal(averageLengthOfStay),
+    bedOccupancyPercent: toPercent(
+      inpatient.occupiedBedDays,
+      inpatient.bedCount * period.range.dayCount,
+    ),
+  };
+}
+
 function sumVisits(period: AnalyticsOperationsPeriodSnapshot): number {
   return period.snapshot.visitBuckets.reduce((total, row) => total + row.visits, 0);
 }
@@ -50,6 +91,17 @@ function buildTotals(period: AnalyticsOperationsPeriodSnapshot): AnalyticsOperat
     completedAppointments: completed,
     noShowAppointments: noShows,
     noShowRatePercent: computeNoShowRatePercent({ completed, noShows }),
+    medianWaitMinutes: roundMinutes(period.snapshot.timings.medianWaitMinutes),
+    p90WaitMinutes: roundMinutes(period.snapshot.timings.p90WaitMinutes),
+    excludedWaitIntervals: period.snapshot.timings.excludedWaitIntervals,
+    medianConsultMinutes: roundMinutes(period.snapshot.timings.medianConsultMinutes),
+    p90ConsultMinutes: roundMinutes(period.snapshot.timings.p90ConsultMinutes),
+    excludedConsultIntervals: period.snapshot.timings.excludedConsultIntervals,
+    sessionUtilisationPercent: toPercent(
+      period.snapshot.sessions.bookedAppointments,
+      period.snapshot.sessions.capacity,
+    ),
+    inpatient: buildInpatientTotals(period),
   };
 }
 
@@ -181,6 +233,11 @@ export function buildAnalyticsOperationsData({
       visitsByDoctor: buildVisitsByDoctor(current, comparison),
       appointmentOutcomes: buildAppointmentOutcomes(current),
       bookingChannels: buildBookingChannels(current),
+      busiestHours: [...current.snapshot.busiestHours].sort(
+        (left, right) => left.weekday - right.weekday || left.hour - right.hour,
+      ),
+      sessions: current.snapshot.sessions,
+      inpatientDispositions: current.snapshot.inpatientDispositions,
     },
   };
   if (!comparison) {

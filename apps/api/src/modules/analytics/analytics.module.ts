@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { AnalyticsOperationsController } from './controller/analytics-operations.controller';
 import { AnalyticsReportingHealthController } from './controller/analytics-reporting-health.controller';
+import { AnalyticsOperationsDepthRepository } from './repository/analytics-operations-depth.repository';
 import { AnalyticsOperationsRepository } from './repository/analytics-operations.repository';
 import { AnalyticsQueryRepository } from './repository/analytics-query.repository';
 import { AnalyticsReportingHealthRepository } from './repository/analytics-reporting-health.repository';
@@ -26,6 +27,7 @@ import { AnalyticsReportingHealthService } from './service/analytics-reporting-h
     AnalyticsCacheService,
     AnalyticsQueryRepository,
     AnalyticsOperationsRepository,
+    AnalyticsOperationsDepthRepository,
     AnalyticsReportingHealthService,
     AnalyticsReportingHealthRepository,
   ],

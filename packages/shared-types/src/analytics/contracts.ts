@@ -77,6 +77,57 @@ export type AnalyticsOperationsTotals = {
   completedAppointments: number;
   noShowAppointments: number;
   noShowRatePercent: number | null;
+  /**
+   * Check-in to the start of the examination, and the examination itself,
+   * in whole minutes (PRD FR-OPS-07). Intervals outside 0–8 hours are
+   * clock mistakes, not waits: they are left out of the median and p90 and
+   * counted in `excluded…`. `null` when no interval qualifies.
+   */
+  medianWaitMinutes: number | null;
+  p90WaitMinutes: number | null;
+  excludedWaitIntervals: number;
+  medianConsultMinutes: number | null;
+  p90ConsultMinutes: number | null;
+  excludedConsultIntervals: number;
+  /** Booked appointments over capacity, across sessions with a cap (PRD FR-OPS-06). */
+  sessionUtilisationPercent: number | null;
+  /** `null` when the rooms and inpatient feature is off (PRD FR-OPS-09). */
+  inpatient: AnalyticsInpatientTotals | null;
+};
+
+/**
+ * Inpatient in the range. Length of stay is over the admissions discharged
+ * in the range; occupancy is occupied bed-days over every bed times the
+ * range's days, clinic-wide even when a clinician is chosen, because beds
+ * are shared.
+ */
+export type AnalyticsInpatientTotals = {
+  admissions: number;
+  discharges: number;
+  averageLengthOfStayDays: number | null;
+  bedOccupancyPercent: number | null;
+};
+
+/** Check-ins on one local weekday (1 Monday … 7 Sunday) and hour (PRD FR-OPS-08). */
+export type AnalyticsBusiestHourCell = {
+  weekday: number;
+  hour: number;
+  checkIns: number;
+};
+
+/** Practice sessions in the range with a patient cap, and sessions moved or cancelled. */
+export type AnalyticsSessionUtilisation = {
+  cappedSessions: number;
+  capacity: number;
+  bookedAppointments: number;
+  movedSessions: number;
+  cancelledSessions: number;
+};
+
+/** Discharges in the range by how the patient left. */
+export type AnalyticsInpatientDisposition = {
+  disposition: string;
+  discharges: number;
 };
 
 /** One bucket of the visit trend; `bucket` is its first local date. */
@@ -137,6 +188,10 @@ export type AnalyticsOperationsBreakdowns = {
   visitsByDoctor: AnalyticsVisitsByDoctor[];
   appointmentOutcomes: AnalyticsAppointmentOutcome[];
   bookingChannels: AnalyticsBookingChannelRow[];
+  busiestHours: AnalyticsBusiestHourCell[];
+  sessions: AnalyticsSessionUtilisation;
+  /** `null` when the rooms and inpatient feature is off. */
+  inpatientDispositions: AnalyticsInpatientDisposition[] | null;
 };
 
 /**

@@ -9,10 +9,12 @@ import type {
   AnalyticsSqlScope,
   AnalyticsVisitBucketRow,
   AnalyticsWalkInRow,
+  ReadOperationsSnapshotParams,
 } from '@hms/shared-types';
 
 import { Prisma } from '../../../generated/prisma/client';
 import type { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import { AnalyticsOperationsDepthRepository } from './analytics-operations-depth.repository';
 import { AnalyticsQueryRepository } from './analytics-query.repository';
 
 /**
@@ -25,10 +27,16 @@ import { AnalyticsQueryRepository } from './analytics-query.repository';
  */
 @Injectable()
 export class AnalyticsOperationsRepository {
-  constructor(private readonly analyticsQueryRepository: AnalyticsQueryRepository) {}
+  constructor(
+    private readonly analyticsQueryRepository: AnalyticsQueryRepository,
+    private readonly depthRepository: AnalyticsOperationsDepthRepository,
+  ) {}
 
   /** Every operations figure for one period, in one read-only transaction. */
-  readSnapshot(scope: AnalyticsSqlScope): Promise<AnalyticsOperationsSnapshot> {
+  readSnapshot({
+    scope,
+    includeInpatient,
+  }: ReadOperationsSnapshotParams): Promise<AnalyticsOperationsSnapshot> {
     return this.analyticsQueryRepository.runReadOnly(async (tx) => ({
       visitBuckets: await this.listVisitBuckets(tx, scope),
       newAndReturning: await this.countNewAndReturning(tx, scope),
@@ -37,28 +45,17 @@ export class AnalyticsOperationsRepository {
       outcomes: await this.listAppointmentOutcomes(tx, scope),
       channels: await this.listBookingChannels(tx, scope),
       walkIns: await this.countWalkIns(tx, scope),
+      timings: await this.depthRepository.readTimings(tx, scope),
+      busiestHours: await this.depthRepository.listBusiestHours(tx, scope),
+      sessions: {
+        ...(await this.depthRepository.readSessions(tx, scope)),
+        ...(await this.depthRepository.readSessionChanges(tx, scope)),
+      },
+      inpatient: includeInpatient ? await this.depthRepository.readInpatient(tx, scope) : null,
+      inpatientDispositions: includeInpatient
+        ? await this.depthRepository.listInpatientDispositions(tx, scope)
+        : null,
     }));
-  }
-
-  /**
-   * A visit: a registration checked in or completed, registered in the range,
-   * narrowed by poli and — through its encounter — by doctor.
-   */
-  private buildVisitFilter(scope: AnalyticsSqlScope): Prisma.Sql {
-    const doctorFilter = scope.doctorId
-      ? Prisma.sql`AND EXISTS (
-          SELECT 1 FROM "encounters" e
-          WHERE e."registration_id" = r."id" AND e."doctor_id" = ${scope.doctorId}::uuid
-            AND e."deleted_at" IS NULL)`
-      : Prisma.empty;
-    const poliFilter = scope.specialtyId
-      ? Prisma.sql`AND r."specialty_id" = ${scope.specialtyId}::uuid`
-      : Prisma.empty;
-    return Prisma.sql`r."deleted_at" IS NULL
-      AND r."status" IN ('CHECKED_IN', 'COMPLETED')
-      AND r."registered_at" >= ${scope.startUtc}::timestamp
-      AND r."registered_at" < ${scope.endUtc}::timestamp
-      ${doctorFilter} ${poliFilter}`;
   }
 
   /** An appointment scheduled in the range, narrowed by doctor and by the doctor's poli. */
@@ -87,7 +84,7 @@ export class AnalyticsOperationsRepository {
              r."type"::text AS "type",
              count(*)::int AS "visits"
       FROM "registrations" r
-      WHERE ${this.buildVisitFilter(scope)}
+      WHERE ${this.depthRepository.buildVisitFilter(scope)}
       GROUP BY 1, 2`;
   }
 
@@ -98,7 +95,7 @@ export class AnalyticsOperationsRepository {
   ): Promise<AnalyticsNewAndReturningRow> {
     const rows = await tx.$queryRaw<AnalyticsNewAndReturningRow[]>`
       WITH period_patients AS (
-        SELECT DISTINCT r."patient_id" FROM "registrations" r WHERE ${this.buildVisitFilter(scope)}
+        SELECT DISTINCT r."patient_id" FROM "registrations" r WHERE ${this.depthRepository.buildVisitFilter(scope)}
       ),
       first_visit AS (
         SELECT v."patient_id", min(v."registered_at") AS first_at
@@ -122,7 +119,7 @@ export class AnalyticsOperationsRepository {
              count(*)::int AS "visits"
       FROM "registrations" r
       LEFT JOIN "specialties" s ON s."id" = r."specialty_id"
-      WHERE ${this.buildVisitFilter(scope)}
+      WHERE ${this.depthRepository.buildVisitFilter(scope)}
       GROUP BY r."specialty_id", s."name"
       ORDER BY "visits" DESC`;
   }
@@ -137,7 +134,7 @@ export class AnalyticsOperationsRepository {
       FROM "registrations" r
       JOIN "encounters" e ON e."registration_id" = r."id" AND e."deleted_at" IS NULL
       JOIN "doctor_profiles" d ON d."id" = e."doctor_id"
-      WHERE ${this.buildVisitFilter(scope)}
+      WHERE ${this.depthRepository.buildVisitFilter(scope)}
       GROUP BY e."doctor_id", d."full_name"
       ORDER BY "visits" DESC`;
   }
@@ -179,7 +176,7 @@ export class AnalyticsOperationsRepository {
     const rows = await tx.$queryRaw<AnalyticsWalkInRow[]>`
       SELECT count(*)::int AS "walkIns"
       FROM "registrations" r
-      WHERE ${this.buildVisitFilter(scope)} AND r."appointment_id" IS NULL`;
+      WHERE ${this.depthRepository.buildVisitFilter(scope)} AND r."appointment_id" IS NULL`;
     return rows[0]?.walkIns ?? 0;
   }
 }

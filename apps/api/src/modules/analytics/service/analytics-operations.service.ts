@@ -3,10 +3,11 @@ import type {
   AnalyticsFilterInput,
   AnalyticsOperationsData,
   AnalyticsOperationsPeriodSnapshot,
-  AnalyticsRange,
   AnalyticsResponse,
+  ReadOperationsPeriodParams,
 } from '@hms/shared-types';
 
+import { FeatureAvailabilityCacheService } from '../../feature-entitlement/service/feature-availability-cache.service';
 import { AnalyticsOperationsRepository } from '../repository/analytics-operations.repository';
 import { AnalyticsCacheService } from './analytics-cache.service';
 import { AnalyticsRangeService } from './analytics-range.service';
@@ -24,14 +25,20 @@ export class AnalyticsOperationsService {
     private readonly analyticsRangeService: AnalyticsRangeService,
     private readonly analyticsCacheService: AnalyticsCacheService,
     private readonly analyticsOperationsRepository: AnalyticsOperationsRepository,
+    private readonly featureAvailabilityCache: FeatureAvailabilityCacheService,
   ) {}
 
   /** Reads the operations dashboard for a filter, from cache when fresh. */
-  getOperations(filter: AnalyticsFilterInput): Promise<AnalyticsResponse<AnalyticsOperationsData>> {
+  async getOperations(
+    filter: AnalyticsFilterInput,
+  ): Promise<AnalyticsResponse<AnalyticsOperationsData>> {
     this.assertPayerFilterUnused(filter);
+    // The inpatient block exists only with the rooms and inpatient feature
+    // (PRD FR-OPS-09); it is part of the cache key so a toggle shows at once.
+    const includeInpatient = await this.featureAvailabilityCache.isEnabled('room-management');
     return this.analyticsCacheService.getOrLoad({
-      key: { dashboard: 'operations', filter },
-      load: () => this.loadOperations(filter),
+      key: { dashboard: 'operations', filter: { ...filter, includeInpatient } },
+      load: () => this.loadOperations(filter, includeInpatient),
     });
   }
 
@@ -51,24 +58,29 @@ export class AnalyticsOperationsService {
 
   private async loadOperations(
     filter: AnalyticsFilterInput,
+    includeInpatient: boolean,
   ): Promise<AnalyticsResponse<AnalyticsOperationsData>> {
     const generatedAt = new Date();
     const { range, comparisonRange } = this.analyticsRangeService.resolveRanges(filter);
-    const current = await this.readPeriod(range, filter);
-    const comparison = comparisonRange ? await this.readPeriod(comparisonRange, filter) : undefined;
+    const current = await this.readPeriod({ range, filter, includeInpatient });
+    const comparison = comparisonRange
+      ? await this.readPeriod({ range: comparisonRange, filter, includeInpatient })
+      : undefined;
     return {
       data: buildAnalyticsOperationsData({ current, comparison }),
       meta: this.analyticsRangeService.buildMeta(range, generatedAt),
     };
   }
 
-  private async readPeriod(
-    range: AnalyticsRange,
-    filter: AnalyticsFilterInput,
-  ): Promise<AnalyticsOperationsPeriodSnapshot> {
-    const snapshot = await this.analyticsOperationsRepository.readSnapshot(
-      this.analyticsRangeService.buildSqlScope(range, filter),
-    );
+  private async readPeriod({
+    range,
+    filter,
+    includeInpatient,
+  }: ReadOperationsPeriodParams): Promise<AnalyticsOperationsPeriodSnapshot> {
+    const snapshot = await this.analyticsOperationsRepository.readSnapshot({
+      scope: this.analyticsRangeService.buildSqlScope(range, filter),
+      includeInpatient,
+    });
     return { range, snapshot };
   }
 }

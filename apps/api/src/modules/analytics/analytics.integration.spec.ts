@@ -45,6 +45,24 @@ describe('Analytics integration', () => {
       outcomes: [],
       channels: [],
       walkIns: 0,
+      timings: {
+        medianWaitMinutes: null,
+        p90WaitMinutes: null,
+        excludedWaitIntervals: 0,
+        medianConsultMinutes: null,
+        p90ConsultMinutes: null,
+        excludedConsultIntervals: 0,
+      },
+      busiestHours: [],
+      sessions: {
+        cappedSessions: 0,
+        capacity: 0,
+        bookedAppointments: 0,
+        movedSessions: 0,
+        cancelledSessions: 0,
+      },
+      inpatient: null,
+      inpatientDispositions: null,
     })),
   };
 

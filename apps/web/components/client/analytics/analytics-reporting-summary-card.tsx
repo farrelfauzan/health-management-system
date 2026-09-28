@@ -56,7 +56,7 @@ export function AnalyticsReportingSummaryCard({ range, href }: AnalyticsReportin
     <AnalyticsCard
       title={t('summary.title')}
       subtitle={t('summary.subtitle')}
-      className="flex-1 xl:max-w-[calc(50%-10px)]"
+      className="flex-[2_1_0] xl:max-w-[40%]"
     >
       <ul className="flex flex-col gap-3">
         {lines.map((line) => (
