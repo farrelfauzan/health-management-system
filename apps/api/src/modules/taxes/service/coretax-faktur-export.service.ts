@@ -23,13 +23,13 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { CoretaxFakturSourceRepository } from '../repository/coretax-faktur-source.repository';
 import { TaxReportRepository } from '../repository/tax-report.repository';
 import { CORETAX_FAKTUR_XML_SERIALIZERS } from './coretax-faktur-xml-serializers';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_REPORT_AUDIT_RESOURCE = 'tax-report';
 const EXPORT_FORMAT = 'CORETAX_FAKTUR_KELUARAN';
 
@@ -54,7 +54,7 @@ export class CoretaxFakturExportService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async validateExport(id: string): Promise<CoretaxFakturValidationView> {

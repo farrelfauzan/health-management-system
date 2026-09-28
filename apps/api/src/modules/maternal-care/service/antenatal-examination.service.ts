@@ -17,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { DoctorOwnProfileService } from '../../doctor-management/service/doctor-own-profile.service';
@@ -27,8 +28,6 @@ import { toMaternalDate } from '../to-maternal-date';
 import { buildMaternalLetterValues } from './build-maternal-letter-values';
 
 const AUDIT_RESOURCE = 'AntenatalVisit';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The integrated 10T examination of an antenatal visit, the sourced referral
@@ -54,7 +53,7 @@ export class AntenatalExaminationService {
     private readonly doctorOwnProfileService: DoctorOwnProfileService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async getExamination(
@@ -250,9 +249,7 @@ export class AntenatalExaminationService {
     visit: PregnancyEpisodeVisitRow;
     episode: PregnancyEpisodeRecord;
   }): Promise<AntenatalExaminationResponse> {
-    const examination = await this.maternalCareRepository.findExaminationByVisitId(
-      params.visit.id,
-    );
+    const examination = await this.maternalCareRepository.findExaminationByVisitId(params.visit.id);
     const sources = await this.maternalCareRepository.findChecklistSources(params.encounterId);
 
     return {
@@ -282,9 +279,7 @@ export class AntenatalExaminationService {
     visit: PregnancyEpisodeVisitRow;
     episode: PregnancyEpisodeRecord;
   }): Promise<TriggeredAntenatalReferralRule[]> {
-    const examination = await this.maternalCareRepository.findExaminationByVisitId(
-      params.visit.id,
-    );
+    const examination = await this.maternalCareRepository.findExaminationByVisitId(params.visit.id);
     const vitals = await this.maternalCareRepository.findLatestVitalsForRules(params.encounterId);
     const dismissedReasonsByRuleCode = await this.maternalCareRepository.listReferralDismissals(
       params.visit.id,

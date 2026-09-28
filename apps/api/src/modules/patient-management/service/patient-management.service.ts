@@ -31,6 +31,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { PatientAssignmentNotificationService } from '../../doctor-patient/service/patient-assignment-notification.service';
 import { RegionsService } from '../../regions/service/regions.service';
@@ -90,9 +91,6 @@ function parseDateOnly(value: string): Date {
  */
 const NEWBORN_GUARDIAN_RELATION = 'Ibu';
 
-/** Matches every other clinic-local date in the API (`CLINIC_TIMEZONE`). */
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
-
 @Injectable()
 export class PatientManagementService {
   private readonly clinicTimeZone: string;
@@ -107,8 +105,7 @@ export class PatientManagementService {
     private readonly patientAssignmentNotificationService: PatientAssignmentNotificationService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async listPatients(query: ListPatientsQueryDto, currentUser: CurrentUser) {
@@ -232,11 +229,7 @@ export class PatientManagementService {
    * female. And a newborn cannot herself be a mother: a record with a mother
    * is a baby, and registering a baby's baby is a misclick, not a pregnancy.
    */
-  async registerNewborn(
-    motherId: string,
-    payload: RegisterNewbornInput,
-    currentUser: CurrentUser,
-  ) {
+  async registerNewborn(motherId: string, payload: RegisterNewbornInput, currentUser: CurrentUser) {
     const actor = await this.getActorOrThrow(currentUser);
 
     if (!this.resolveScope(actor, 'Patient', 'create-newborn').hasAny) {
@@ -394,7 +387,9 @@ export class PatientManagementService {
     this.assertPrivacyNoticeActorRules(payload.privacyNotice, false, actor.isSystem === true);
 
     if (payload.ownerUserId) {
-      const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
+      const ownerUser = await this.patientManagementRepository.findActiveUserById(
+        payload.ownerUserId,
+      );
 
       if (!ownerUser) {
         throw new BadRequestException('Owner user not found');
@@ -461,7 +456,9 @@ export class PatientManagementService {
     }
 
     if (payload.ownerUserId) {
-      const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
+      const ownerUser = await this.patientManagementRepository.findActiveUserById(
+        payload.ownerUserId,
+      );
 
       if (!ownerUser) {
         throw new BadRequestException('Owner user not found');
@@ -567,17 +564,16 @@ export class PatientManagementService {
     }
 
     if (payload.ownerUserId) {
-      const ownerUser = await this.patientManagementRepository.findActiveUserById(payload.ownerUserId);
+      const ownerUser = await this.patientManagementRepository.findActiveUserById(
+        payload.ownerUserId,
+      );
 
       if (!ownerUser) {
         throw new BadRequestException('Owner user not found');
       }
     }
 
-    await this.assertIdentifiersAvailable(
-      { nik: payload.nik, bpjsNumber: payload.bpjsNumber },
-      id,
-    );
+    await this.assertIdentifiersAvailable({ nik: payload.nik, bpjsNumber: payload.bpjsNumber }, id);
     // The schema has already refused a partial chain and a prefix mismatch;
     // this is the master-data check the schema cannot make.
     await this.regionsService.assertOptionalAddressChain(payload);
@@ -944,11 +940,15 @@ export class PatientManagementService {
 
     const hasAny = permissions.some(
       (permission) =>
-        permission.resource === resource && permission.action === action && permission.scope === 'ANY',
+        permission.resource === resource &&
+        permission.action === action &&
+        permission.scope === 'ANY',
     );
     const hasOwn = permissions.some(
       (permission) =>
-        permission.resource === resource && permission.action === action && permission.scope === 'OWN',
+        permission.resource === resource &&
+        permission.action === action &&
+        permission.scope === 'OWN',
     );
 
     return {

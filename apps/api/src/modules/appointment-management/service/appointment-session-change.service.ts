@@ -23,6 +23,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { NotificationService } from '../../notification/service/notification.service';
@@ -33,7 +34,6 @@ import { AppointmentManagementRepository } from '../repository/appointment-manag
 import { AppointmentSessionChangeRepository } from '../repository/appointment-session-change.repository';
 import { resolveAppointmentSubject } from './resolve-appointment-subject';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const LIVE_SESSION_STATUSES = ['OPEN', 'CLOSED'];
 const ADMIN_ACTOR_SCOPE = { userId: 'session-change-admin', scope: 'ANY' } as const;
 
@@ -58,7 +58,7 @@ export class AppointmentSessionChangeService {
     private readonly notificationService: NotificationService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

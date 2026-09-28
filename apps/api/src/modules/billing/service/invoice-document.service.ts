@@ -20,6 +20,7 @@ import {
   TemplateVariableWarning,
 } from '@hms/shared-types';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { PdfRenderOptions } from '../../../common/pdf/pdf.types';
 import { PdfRendererService } from '../../../common/pdf/pdf-renderer.service';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
@@ -37,8 +38,6 @@ import { resolveInvoiceDocumentSlot } from './resolve-invoice-document-slot';
 import { resolveInvoiceVariables } from './resolve-invoice-variables';
 import { shouldShowMateraiArea } from './should-show-materai-area';
 import { shouldShowTaxInclusiveNote } from './should-show-tax-inclusive-note';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
 
@@ -98,7 +97,7 @@ export class InvoiceDocumentService {
     private readonly invoiceDocumentMapper: InvoiceDocumentMapper,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
     this.materaiThresholdIdr = resolveMateraiThresholdIdr(configService);
   }
 

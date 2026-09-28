@@ -15,10 +15,10 @@ import {
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { ChannelArrivalRepository } from '../repository/channel-arrival.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MS_PER_DAY = 86_400_000;
 
 /**
@@ -60,8 +60,7 @@ export class ChannelArrivalService {
     configService: ConfigService,
     private readonly arrivalRepository: ChannelArrivalRepository,
   ) {
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

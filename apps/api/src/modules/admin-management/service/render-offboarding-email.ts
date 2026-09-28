@@ -1,4 +1,4 @@
-import { OffboardingEmailPayload } from '@hms/shared-types';
+import { OffboardingEmailPayload, DEFAULT_CLINIC_TIME_ZONE } from '@hms/shared-types';
 
 import { RenderedMail } from '../../../common/mail/mail.types';
 
@@ -64,7 +64,7 @@ export function renderOffboardingEmail(payload: OffboardingEmailPayload): Render
 function formatDeadline(deadline: Date): string {
   return new Intl.DateTimeFormat('id-ID', {
     dateStyle: 'long',
-    timeZone: 'Asia/Jakarta',
+    timeZone: DEFAULT_CLINIC_TIME_ZONE,
   }).format(deadline);
 }
 

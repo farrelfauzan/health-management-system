@@ -31,10 +31,10 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { TaxCodeConflictError } from '../repository/tax-code-conflict.error';
 import { TaxCodeRepository } from '../repository/tax-code.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_CODE_AUDIT_RESOURCE = 'tax-code';
 const EFFECTIVE_RATE_DECIMALS = 10_000;
 
@@ -56,7 +56,7 @@ export class TaxCodeService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async listTaxCodeViews(): Promise<TaxCodeView[]> {

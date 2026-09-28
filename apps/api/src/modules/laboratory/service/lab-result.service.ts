@@ -30,6 +30,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
@@ -41,8 +42,6 @@ import { LabReportService } from './lab-report.service';
 import { LabResultMapper } from './lab-result.mapper';
 import { LaboratorySettingsService } from './laboratory-settings.service';
 import { toLabWorklistPatient } from './to-lab-worklist-patient';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const DAY_IN_MILLISECONDS = 86_400_000;
 
@@ -106,7 +105,7 @@ export class LabResultService {
     private readonly labReportService: LabReportService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

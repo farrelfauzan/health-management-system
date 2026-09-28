@@ -22,6 +22,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
 import { DoctorAuthorityRepository } from '../repository/doctor-authority.repository';
@@ -30,7 +31,6 @@ import { buildDoctorMandateInstructionKeyPrefix } from './build-doctor-mandate-i
 import { isDoctorMandateInstructionStorageKey } from './is-doctor-mandate-instruction-storage-key';
 import { toDoctorMandateView } from './to-doctor-mandate-view';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const INSTRUCTION_FILE_EXTENSION_BY_MIME_TYPE: Readonly<Record<string, string>> = {
   'application/pdf': 'pdf',
   'image/jpeg': 'jpg',
@@ -66,7 +66,7 @@ export class DoctorMandateService {
     private readonly objectStorageService: ObjectStorageService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**
@@ -211,7 +211,9 @@ export class DoctorMandateService {
     const stored = await this.headInstructionObject(storageKey);
     const mimeType = stored.contentType?.split(';')[0]?.trim() ?? '';
     if (!DOCTOR_AUTHORITY_GRANT_DOCUMENT_MIME_TYPES.some((allowed) => allowed === mimeType)) {
-      throw this.buildInstructionRequiredException('The written instruction is not a PDF or an image');
+      throw this.buildInstructionRequiredException(
+        'The written instruction is not a PDF or an image',
+      );
     }
     if (
       stored.sizeBytes <= 0 ||
@@ -255,10 +257,7 @@ export class DoctorMandateService {
     return clinician;
   }
 
-  private async requireMandate(
-    midwifeDoctorId: string,
-    id: string,
-  ): Promise<DoctorMandateRecord> {
+  private async requireMandate(midwifeDoctorId: string, id: string): Promise<DoctorMandateRecord> {
     const record = await this.doctorMandateRepository.findById(midwifeDoctorId, id);
     if (record === null) {
       throw new NotFoundException('Mandate not found');

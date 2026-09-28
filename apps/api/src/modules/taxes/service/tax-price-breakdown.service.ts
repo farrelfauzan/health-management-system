@@ -11,11 +11,10 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { TaxAssignmentRepository } from '../../tax-core/repository/tax-assignment.repository';
 import { TaxCodeService } from '../../tax-core/service/tax-code.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The price before PPN and the PPN inside it, for the tariffs or medicines on
@@ -33,7 +32,7 @@ export class TaxPriceBreakdownService {
     private readonly taxProfileService: TaxProfileService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async listPriceBreakdowns(query: ListTaxPriceBreakdownsQuery): Promise<TaxPriceBreakdownView[]> {

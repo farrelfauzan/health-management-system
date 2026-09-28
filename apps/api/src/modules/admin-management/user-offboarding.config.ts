@@ -1,8 +1,9 @@
 import { UserOffboardingConfig } from '@hms/shared-types';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../common/clinic-time-zone/read-clinic-time-zone';
+
 const DEFAULT_WEB_APP_BASE_URL = 'http://localhost:3000';
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const DEFAULT_SWEEP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 function normaliseBaseUrl(value: string): string {
@@ -41,7 +42,7 @@ export function resolveUserOffboardingConfig(configService: ConfigService): User
     webAppBaseUrl: normaliseBaseUrl(
       configuredBaseUrl === '' ? DEFAULT_WEB_APP_BASE_URL : configuredBaseUrl,
     ),
-    clinicTimeZone: configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE,
+    clinicTimeZone: readClinicTimeZone(configService),
     isSweepEnabled: configService.get<string>('OFFBOARDING_SWEEP_ENABLED') !== 'false',
     sweepIntervalMs: readSweepIntervalMs(configService),
   };

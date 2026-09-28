@@ -1,9 +1,9 @@
+import { DEFAULT_CLINIC_TIME_ZONE } from '@hms/shared-types';
+
 import { RenderedMail } from '../../../common/mail/mail.types';
 import { DocumentApprovalMailKind } from './build-document-approval-copy';
 
 const DISPLAY_LOCALE = 'id-ID';
-
-const CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /** One document in a digest: what its own mail would have named, and its own link. */
 export type DocumentApprovalDigestItem = {
@@ -133,7 +133,7 @@ function formatDeadline(value: Date): string {
   return new Intl.DateTimeFormat(DISPLAY_LOCALE, {
     dateStyle: 'long',
     timeStyle: 'short',
-    timeZone: CLINIC_TIME_ZONE,
+    timeZone: DEFAULT_CLINIC_TIME_ZONE,
   }).format(value);
 }
 

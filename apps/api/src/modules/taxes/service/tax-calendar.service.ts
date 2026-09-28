@@ -13,11 +13,11 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicianFeeStatementService } from '../../clinician-fee/service/clinician-fee-statement.service';
 import { TaxReminderRepository } from '../repository/tax-reminder.repository';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MILLISECONDS_PER_DAY = 86_400_000;
 /**
  * How many months back a sweep looks for an unmet obligation. Two: a reminder
@@ -47,7 +47,7 @@ export class TaxCalendarService {
     private readonly clinicianFeeStatementService: ClinicianFeeStatementService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

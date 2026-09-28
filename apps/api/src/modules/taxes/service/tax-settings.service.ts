@@ -18,11 +18,11 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { TaxSettingsRepository } from '../../tax-core/repository/tax-settings.repository';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_SETTINGS_AUDIT_RESOURCE = 'tax-settings';
 const CALENDAR_YEAR_LENGTH = 4;
 
@@ -56,7 +56,7 @@ export class TaxSettingsService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async getTaxSettings(): Promise<TaxSettingsRecord> {

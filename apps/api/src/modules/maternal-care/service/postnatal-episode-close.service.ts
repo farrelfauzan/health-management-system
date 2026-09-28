@@ -2,9 +2,8 @@ import { buildPostnatalVisitWindows } from '@hms/shared-types';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { PostnatalVisitRepository } from '../repository/postnatal-visit.repository';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * Enqueues the close of a birth's SATUSEHAT PNC episode once nifas is over
@@ -24,7 +23,7 @@ export class PostnatalEpisodeCloseService {
     private readonly postnatalVisitRepository: PostnatalVisitRepository,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /** Enqueues every close that is due at `asOf` and returns how many it wrote. */

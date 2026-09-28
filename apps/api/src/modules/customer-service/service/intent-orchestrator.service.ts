@@ -7,6 +7,7 @@ import {
   getCalendarDateInTimeZone,
 } from '@hms/shared-types';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import {
   ChatCompletionMessage,
@@ -22,8 +23,6 @@ import { buildCsSystemPrompt } from './build-cs-system-prompt';
 
 /** §6's bound: at most three tool calls answer one inbound message. */
 const MAX_TOOL_CALLS_PER_MESSAGE = 3;
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * How many times the provider may be asked in one turn.
@@ -126,8 +125,7 @@ export class IntentOrchestratorService {
     private readonly toolRegistry: CsToolRegistry,
   ) {
     this.serviceConfig = resolveCustomerServiceConfig(configService);
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   get config(): CustomerServiceConfig {
@@ -275,9 +273,7 @@ export class IntentOrchestratorService {
         ...(outcome.pausesConversation === undefined
           ? {}
           : { pausesConversation: outcome.pausesConversation }),
-        ...(outcome.requestContact === undefined
-          ? {}
-          : { requestContact: outcome.requestContact }),
+        ...(outcome.requestContact === undefined ? {} : { requestContact: outcome.requestContact }),
       };
     } catch (caughtError) {
       const errorCode =

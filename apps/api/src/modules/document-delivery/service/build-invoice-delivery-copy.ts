@@ -1,10 +1,9 @@
-import { InvoiceDeliveryMessageContext } from '@hms/shared-types';
+import { InvoiceDeliveryMessageContext, DEFAULT_CLINIC_TIME_ZONE } from '@hms/shared-types';
 
 import { RenderedMail } from '../../../common/mail/mail.types';
 
 const CURRENCY_PREFIX = 'Rp ';
 const DISPLAY_LOCALE = 'id-ID';
-const CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The message that carries an invoice (`P16-T26`, FR-E4-15): the clinic, the
@@ -60,7 +59,7 @@ function formatMoney(amount: number): string {
 function formatDate(value: Date): string {
   return new Intl.DateTimeFormat(DISPLAY_LOCALE, {
     dateStyle: 'long',
-    timeZone: CLINIC_TIME_ZONE,
+    timeZone: DEFAULT_CLINIC_TIME_ZONE,
   }).format(value);
 }
 

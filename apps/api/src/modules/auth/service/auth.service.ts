@@ -20,6 +20,7 @@ import {
 } from '@hms/shared-types';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { PasswordHasherService } from '../../../common/crypto/password-hasher.service';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { JwtSecretsService } from '../../../common/config/jwt-secrets.service';
@@ -37,9 +38,6 @@ import { MfaTicketService } from './mfa-ticket.service';
 
 /** 256 bits, per SJ-6. */
 const REFRESH_TOKEN_BYTES = 32;
-
-/** Offboarding deadlines are clinic calendar days (P16-T41). */
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The shape of a user row as the login and refresh paths see it, narrowed to
@@ -683,7 +681,7 @@ export class AuthService {
   }
 
   private resolveClinicTimeZone(): string {
-    return this.configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    return readClinicTimeZone(this.configService);
   }
 
   /**

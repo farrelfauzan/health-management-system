@@ -8,9 +8,9 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { DoctorLicenseExpiryRepository } from '../repository/doctor-license-expiry.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 /**
@@ -32,8 +32,7 @@ export class DoctorLicenseExpiryService {
     private readonly doctorLicenseExpiryRepository: DoctorLicenseExpiryRepository,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

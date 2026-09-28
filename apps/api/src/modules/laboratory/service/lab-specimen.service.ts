@@ -17,14 +17,13 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { LabOrderRepository } from '../repository/lab-order.repository';
 import { LabSpecimenRepository } from '../repository/lab-specimen.repository';
 import { LabOrderMapper } from './lab-order.mapper';
 import { LabPaymentGateService } from './lab-payment-gate.service';
 import { WORKLIST_STATUSES_BY_BUCKET } from './lab-worklist-buckets';
 import { toLabWorklistPatient } from './to-lab-worklist-patient';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const DAY_IN_MILLISECONDS = 86_400_000;
 
@@ -51,7 +50,7 @@ export class LabSpecimenService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async collectLabSpecimens(
@@ -147,9 +146,7 @@ export class LabSpecimenService {
     const records = await this.labOrderRepository.listWorklist({
       statuses: WORKLIST_STATUSES_BY_BUCKET[query.bucket],
       orderedFrom,
-      orderedTo: orderedFrom
-        ? new Date(orderedFrom.getTime() + DAY_IN_MILLISECONDS)
-        : undefined,
+      orderedTo: orderedFrom ? new Date(orderedFrom.getTime() + DAY_IN_MILLISECONDS) : undefined,
     });
     const awaitingPaymentOrderIds =
       await this.labPaymentGateService.findOrderIdsAwaitingPayment(records);
@@ -203,7 +200,10 @@ export class LabSpecimenService {
     }));
   }
 
-  private toWorklistItem(record: LabWorklistOrderRecord, isAwaitingPayment: boolean): LabWorklistItem {
+  private toWorklistItem(
+    record: LabWorklistOrderRecord,
+    isAwaitingPayment: boolean,
+  ): LabWorklistItem {
     return {
       id: record.id,
       orderNumber: record.orderNumber,

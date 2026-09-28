@@ -8,15 +8,12 @@ import {
   UpdateDeliveryInput,
   UpdateNewbornCareInput,
 } from '@hms/shared-types';
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
 import { EncounterAccessService } from '../../emr/service/encounter-access.service';
@@ -28,8 +25,6 @@ import { toNewbornShkSummary } from './to-newborn-shk-summary';
 export const MIDWIFE_DELIVERY_MODE_OUT_OF_AUTHORITY_ERROR_CODE =
   'MIDWIFE_DELIVERY_MODE_OUT_OF_AUTHORITY';
 export const DELIVERY_REFERRAL_REQUIRED_ERROR_CODE = 'DELIVERY_REFERRAL_REQUIRED';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /** The tear grades a clinic may not simply record and move on from. */
 const TEAR_GRADES_REQUIRING_REFERRAL: readonly string[] = ['GRADE_3', 'GRADE_4'];
@@ -64,7 +59,7 @@ export class DeliveryRecordService {
     private readonly clinicProfileService: ClinicProfileService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async getDelivery(
@@ -183,10 +178,7 @@ export class DeliveryRecordService {
     if (existing === null) {
       throw new NotFoundException('Newborn care record not found');
     }
-    const newborn = await this.deliveryRecordRepository.updateNewborn(
-      newbornCareRecordId,
-      payload,
-    );
+    const newborn = await this.deliveryRecordRepository.updateNewborn(newbornCareRecordId, payload);
     await this.auditService.record({
       action: 'DELIVERY_UPDATED',
       resource: 'NewbornCareRecord',

@@ -10,13 +10,13 @@ import {
 } from '@hms/shared-types';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { PatientManagementService } from '../../patient-management/service/patient-management.service';
 import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 import { redactChatContext } from './redact-chat-context';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const DAY_IN_MS = 86_400_000;
 /**
  * How far ahead "next appointment" looks. Appointment lists come back newest
@@ -65,8 +65,7 @@ export class ChatContextEnrichmentService {
     private readonly registrationFlowService: RegistrationFlowService,
     private readonly configService: ConfigService,
   ) {
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async buildContext(
@@ -123,10 +122,7 @@ export class ChatContextEnrichmentService {
   /** The patient's own name; a doctor account resolves to no patient row. */
   private async readOwnDisplayName(actor: CurrentUser): Promise<string | undefined> {
     return this.readSafely('display_name', async () => {
-      const result = await this.patientManagementService.listPatients(
-        { page: 1, limit: 1 },
-        actor,
-      );
+      const result = await this.patientManagementService.listPatients({ page: 1, limit: 1 }, actor);
       return result.items[0]?.fullName;
     });
   }
@@ -184,10 +180,7 @@ export class ChatContextEnrichmentService {
    */
   private async readAssignedPatientCount(actor: CurrentUser): Promise<number | undefined> {
     return this.readSafely('assigned_patient_count', async () => {
-      const result = await this.patientManagementService.listPatients(
-        { page: 1, limit: 1 },
-        actor,
-      );
+      const result = await this.patientManagementService.listPatients({ page: 1, limit: 1 }, actor);
       return result.meta.total;
     });
   }

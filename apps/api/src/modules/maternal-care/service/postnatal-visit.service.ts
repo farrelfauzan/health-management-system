@@ -30,11 +30,11 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { EncounterAccessService } from '../../emr/service/encounter-access.service';
 import { MaternalCareRepository } from '../repository/maternal-care.repository';
 import { PostnatalVisitRepository } from '../repository/postnatal-visit.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const FINISHED_ENCOUNTER_STATUS = 'FINISHED';
 const CANCELLED_ENCOUNTER_STATUS = 'CANCELLED';
 const MILLISECONDS_PER_DAY = 86_400_000;
@@ -63,7 +63,7 @@ export class PostnatalVisitService {
     private readonly encounterAccessService: EncounterAccessService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /** The seven windows of the birth that ended this pregnancy. */
@@ -71,16 +71,14 @@ export class PostnatalVisitService {
     pregnancyEpisodeId: string,
     currentUser: CurrentUser,
   ): Promise<PostnatalScheduleResponse> {
-    const birth = await this.postnatalVisitRepository.findBirthByPregnancyEpisodeId(
-      pregnancyEpisodeId,
-    );
+    const birth =
+      await this.postnatalVisitRepository.findBirthByPregnancyEpisodeId(pregnancyEpisodeId);
     if (birth === null) {
       throw new NotFoundException('No birth is recorded for this pregnancy episode');
     }
     await this.assertCanReadMother(birth.patientId, currentUser);
-    const visits = await this.postnatalVisitRepository.listVisitsByPregnancyEpisodeId(
-      pregnancyEpisodeId,
-    );
+    const visits =
+      await this.postnatalVisitRepository.listVisitsByPregnancyEpisodeId(pregnancyEpisodeId);
     return {
       pregnancyEpisodeId,
       birthAt: birth.birthAt.toISOString(),
@@ -99,7 +97,9 @@ export class PostnatalVisitService {
   ): Promise<MaternalDueRecord[]> {
     const rangeStart = getStartOfCalendarDateInTimeZone(range.from, this.clinicTimeZone);
     const births = await this.postnatalVisitRepository.listBirthsForDue({
-      bornOnOrAfter: new Date(rangeStart.getTime() - POSTNATAL_DUE_LOOKBACK_DAYS * MILLISECONDS_PER_DAY),
+      bornOnOrAfter: new Date(
+        rangeStart.getTime() - POSTNATAL_DUE_LOOKBACK_DAYS * MILLISECONDS_PER_DAY,
+      ),
       reach,
     });
     const asOf = new Date();
@@ -344,7 +344,10 @@ export class PostnatalVisitService {
     visit: PostnatalVisitRecord,
     birthAt: Date,
   ): PostnatalVisitCodeValue | null {
-    if (visit.encounterStatus === FINISHED_ENCOUNTER_STATUS || visit.encounterStatus === CANCELLED_ENCOUNTER_STATUS) {
+    if (
+      visit.encounterStatus === FINISHED_ENCOUNTER_STATUS ||
+      visit.encounterStatus === CANCELLED_ENCOUNTER_STATUS
+    ) {
       return visit.visitCode;
     }
     return this.deriveCode(visit.subject, birthAt, visit.encounterStartedAt);
@@ -384,9 +387,8 @@ export class PostnatalVisitService {
   }
 
   private async requireBirth(pregnancyEpisodeId: string): Promise<PostnatalBirthRecord> {
-    const birth = await this.postnatalVisitRepository.findBirthByPregnancyEpisodeId(
-      pregnancyEpisodeId,
-    );
+    const birth =
+      await this.postnatalVisitRepository.findBirthByPregnancyEpisodeId(pregnancyEpisodeId);
     if (birth === null) {
       throw new UnprocessableEntityException({
         code: 'POSTNATAL_BIRTH_NOT_FOUND',

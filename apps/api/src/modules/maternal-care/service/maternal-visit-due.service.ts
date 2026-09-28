@@ -13,12 +13,12 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { FamilyPlanningService } from './family-planning.service';
 import { MaternalCareService } from './maternal-care.service';
 import { PostnatalVisitService } from './postnatal-visit.service';
 import { ShkScreeningService } from './shk-screening.service';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const CLINIC_WIDE_REACH: MaternalDueReach = { hasAny: true };
 
 /**
@@ -42,7 +42,7 @@ export class MaternalVisitDueService {
     private readonly shkScreeningService: ShkScreeningService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /** The range a request asks for, defaulting to the week starting today on the clinic's clock. */

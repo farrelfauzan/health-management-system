@@ -26,6 +26,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AuditAction } from '../../../generated/prisma/client';
 import { EncounterAccessService } from '../../emr/service/encounter-access.service';
 import { FamilyPlanningCourseConflictError } from '../repository/family-planning-course-conflict.error';
@@ -36,7 +37,6 @@ import { FamilyPlanningAuthorityService } from './family-planning-authority.serv
 import { toFamilyPlanningCourseView } from './to-family-planning-course-view';
 
 const AUDIT_RESOURCE = 'FamilyPlanningRecord';
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const ONE_DAY_IN_MILLISECONDS = 86_400_000;
 /**
  * How long after a birth the KB tab still offers KB pasca salin: the 42-day
@@ -66,7 +66,7 @@ export class FamilyPlanningService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /** The KB tab: the live course, every course, and a pasca salin prompt. */
@@ -162,7 +162,11 @@ export class FamilyPlanningService {
     currentUser: CurrentUser,
   ): Promise<FamilyPlanningCourseView> {
     const course = await this.getLiveCourseOrThrow(id, currentUser);
-    this.assertNotBeforeStart(payload.discontinuedOn, toDateOnly(course.startedOn), 'discontinuedOn');
+    this.assertNotBeforeStart(
+      payload.discontinuedOn,
+      toDateOnly(course.startedOn),
+      'discontinuedOn',
+    );
     const discontinued = await this.familyPlanningRepository.discontinueCourse({
       id,
       discontinuedOn: toMaternalDate(payload.discontinuedOn) as Date,
@@ -214,7 +218,9 @@ export class FamilyPlanningService {
       medicalRecordNumber: row.patient.mrn,
       method: row.method,
       nextDueOn: toDateOnly(row.nextDueOn),
-      daysUntilDue: Math.round((row.nextDueOn.getTime() - today.getTime()) / ONE_DAY_IN_MILLISECONDS),
+      daysUntilDue: Math.round(
+        (row.nextDueOn.getTime() - today.getTime()) / ONE_DAY_IN_MILLISECONDS,
+      ),
     }));
   }
 
@@ -232,7 +238,9 @@ export class FamilyPlanningService {
     return {
       hasAny: false,
       ownerUserId: currentUser.sub,
-      doctorId: await this.familyPlanningRepository.findActiveDoctorIdByOwnerUserId(currentUser.sub),
+      doctorId: await this.familyPlanningRepository.findActiveDoctorIdByOwnerUserId(
+        currentUser.sub,
+      ),
     };
   }
 

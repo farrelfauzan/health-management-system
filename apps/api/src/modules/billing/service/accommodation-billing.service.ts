@@ -11,11 +11,10 @@ import {
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { InvoiceTaxService } from '../../tax-core/service/invoice-tax.service';
 import { BillingRepository } from '../repository/billing.repository';
 import { ServiceTariffRepository } from '../repository/service-tariff.repository';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const CENTS_PER_RUPIAH_UNIT = 100;
 
@@ -45,7 +44,7 @@ export class AccommodationBillingService {
     private readonly invoiceTaxService: InvoiceTaxService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async generateRoomCharges(params: {

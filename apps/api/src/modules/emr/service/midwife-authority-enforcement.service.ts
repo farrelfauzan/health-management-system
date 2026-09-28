@@ -15,12 +15,11 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AuditAction } from '../../../generated/prisma/client';
 import { buildMidwifeAuthorityRequiredException } from '../../doctor-management/service/build-midwife-authority-required-exception';
 import { DoctorAuthorityService } from '../../doctor-management/service/doctor-authority.service';
 import { DoctorMandateService } from '../../doctor-management/service/doctor-mandate.service';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * Acts on the authorities P25-T02 records (P25-T03). Two decisions, both
@@ -46,7 +45,7 @@ export class MidwifeAuthorityEnforcementService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**
@@ -78,7 +77,10 @@ export class MidwifeAuthorityEnforcementService {
       code: params.code,
       contraceptiveImplantAction: params.contraceptiveImplantAction,
     });
-    if (kind !== null && (await this.doctorAuthorityService.hasActiveAuthority({ doctorId, kind, onDate }))) {
+    if (
+      kind !== null &&
+      (await this.doctorAuthorityService.hasActiveAuthority({ doctorId, kind, onDate }))
+    ) {
       // Her own authority. A mandate she also happens to hold does not take
       // the action away from her, so nothing is stamped.
       return null;
@@ -170,7 +172,11 @@ export class MidwifeAuthorityEnforcementService {
     const kind: DoctorAuthorityKindValue = 'MTBS';
     const doctorId = params.clinician.id;
     if (
-      await this.doctorAuthorityService.hasActiveAuthority({ doctorId, kind, onDate: params.onDate })
+      await this.doctorAuthorityService.hasActiveAuthority({
+        doctorId,
+        kind,
+        onDate: params.onDate,
+      })
     ) {
       return;
     }

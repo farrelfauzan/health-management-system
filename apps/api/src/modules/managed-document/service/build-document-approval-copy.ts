@@ -1,8 +1,8 @@
+import { DEFAULT_CLINIC_TIME_ZONE } from '@hms/shared-types';
+
 import { RenderedMail } from '../../../common/mail/mail.types';
 
 const DISPLAY_LOCALE = 'id-ID';
-
-const CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * Which of the six approval mails to render (`P16-T30`, FR-E5-25/26). Kept
@@ -114,7 +114,7 @@ function formatDeadline(value: Date): string {
   return new Intl.DateTimeFormat(DISPLAY_LOCALE, {
     dateStyle: 'long',
     timeStyle: 'short',
-    timeZone: CLINIC_TIME_ZONE,
+    timeZone: DEFAULT_CLINIC_TIME_ZONE,
   }).format(value);
 }
 

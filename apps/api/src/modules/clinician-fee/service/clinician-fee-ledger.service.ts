@@ -9,11 +9,10 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
 import { ClinicianFeeEntryRepository } from '../repository/clinician-fee-entry.repository';
 import { ClinicianFeeRuleRepository } from '../repository/clinician-fee-rule.repository';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const PERIOD_LENGTH = 7;
 
@@ -35,7 +34,7 @@ export class ClinicianFeeLedgerService {
     private readonly clinicianFeeRuleRepository: ClinicianFeeRuleRepository,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

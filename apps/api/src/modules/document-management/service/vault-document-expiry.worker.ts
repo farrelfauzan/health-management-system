@@ -2,13 +2,13 @@ import { VAULT_DOCUMENT_EXPIRY_THRESHOLD_DAYS, getCalendarDateInTimeZone } from 
 import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { Document } from '../../../generated/prisma/client';
 import { NotificationHrefService } from '../../notification/service/notification-href.service';
 import { NotificationService } from '../../notification/service/notification.service';
 import { VaultDocumentRepository } from '../repository/vault-document.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const DEFAULT_SWEEP_INTERVAL_MS = 6 * 60 * 60 * 1000;
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -49,7 +49,7 @@ export class VaultDocumentExpiryWorker implements OnApplicationBootstrap, OnAppl
     private readonly notificationHrefService: NotificationHrefService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
     this.isEnabled = configService.get<string>('VAULT_EXPIRY_REMINDERS_ENABLED') !== 'false';
     this.sweepIntervalMs = this.readSweepIntervalMs(configService);
   }

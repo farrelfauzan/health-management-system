@@ -23,11 +23,11 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { BpjsNonCapitationRecapRepository } from '../repository/bpjs-non-capitation-recap.repository';
 import { BpjsNonCapitationSettingsService } from './bpjs-non-capitation-settings.service';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const RECAP_AUDIT_RESOURCE = 'bpjs-non-capitation-recap';
 const CLAIM_AUDIT_RESOURCE = 'bpjs-non-capitation-claim';
 
@@ -61,7 +61,7 @@ export class BpjsNonCapitationRecapService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   get timeZone(): string {

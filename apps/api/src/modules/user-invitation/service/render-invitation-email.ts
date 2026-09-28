@@ -1,4 +1,4 @@
-import { InvitationEmailPayload } from '@hms/shared-types';
+import { InvitationEmailPayload, DEFAULT_CLINIC_TIME_ZONE } from '@hms/shared-types';
 
 import { RenderedMail } from '../../../common/mail/mail.types';
 
@@ -64,7 +64,7 @@ function formatExpiry(expiresAt: Date): string {
   return new Intl.DateTimeFormat('id-ID', {
     dateStyle: 'long',
     timeStyle: 'short',
-    timeZone: 'Asia/Jakarta',
+    timeZone: DEFAULT_CLINIC_TIME_ZONE,
   }).format(expiresAt);
 }
 

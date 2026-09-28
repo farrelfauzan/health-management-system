@@ -26,6 +26,7 @@ export type ApiErrorFieldIssue = {
 export * from '#shared/phone-number';
 export * from '#shared/phone-number-schema';
 export * from '#shared/format-phone-number';
+export * from '#shared/clinic-time-zone';
 export * from '#admin-management/schemas';
 export * from '#admin-management/contracts';
 export * from '#admin-management/resolve-user-full-name';

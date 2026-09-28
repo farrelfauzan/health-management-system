@@ -10,6 +10,7 @@ import { AuthorizationModule } from './common/authorization/authorization.module
 import { BpjsPcareModule } from './common/bpjs-pcare/bpjs-pcare.module';
 import { CryptoModule } from './common/crypto/crypto.module';
 import { MailModule } from './common/mail/mail.module';
+import { ClinicTimeZoneModule } from './common/clinic-time-zone/clinic-time-zone.module';
 import { MrnModule } from './common/mrn/mrn.module';
 import { NotionModule } from './common/notion/notion.module';
 import { ObservabilityModule } from './common/observability/observability.module';
@@ -79,6 +80,7 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     CryptoModule,
     MailModule,
     MrnModule,
+    ClinicTimeZoneModule,
     RetentionModule,
     AuthorizationModule,
     StorageModule,

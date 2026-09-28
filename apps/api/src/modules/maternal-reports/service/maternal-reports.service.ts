@@ -28,10 +28,10 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { MaternalReportsRepository } from '../repository/maternal-reports.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MATERNAL_REPORT_AUDIT_RESOURCE = 'maternal-report';
 
 /** What Permenkes 28/2017 Pasal 28(h) asks for and what this clinic can see. */
@@ -62,7 +62,7 @@ export class MaternalReportsService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   get timeZone(): string {

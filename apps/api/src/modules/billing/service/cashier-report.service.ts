@@ -13,10 +13,9 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { CashierDailyReportQueryDto } from '../dto/cashier-daily-report-query.dto';
 import { BillingRepository } from '../repository/billing.repository';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const CENTS_PER_RUPIAH_UNIT = 100;
 
@@ -50,7 +49,7 @@ export class CashierReportService {
     private readonly billingRepository: BillingRepository,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async getDailyReport(query: CashierDailyReportQueryDto): Promise<CashierDailyReport> {

@@ -24,11 +24,11 @@ import { BpjsPcareError } from '../../../common/bpjs-pcare/bpjs-pcare.error';
 import { BpjsPcarePesertaSummary } from '../../../common/bpjs-pcare/bpjs-pcare-peserta.types';
 import { BpjsPcareConnection } from '../../../common/bpjs-pcare/bpjs-pcare.types';
 import { parseBpjsPcarePeserta } from '../../../common/bpjs-pcare/parse-bpjs-pcare-peserta';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { BpjsEligibilityRepository } from '../repository/bpjs-eligibility.repository';
 import { BpjsPcareConfigRepository } from '../repository/bpjs-pcare-config.repository';
 
 const BPJS_ELIGIBILITY_AUDIT_RESOURCE = 'PatientProfile';
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * Checks a patient's BPJS membership (peserta) at registration check-in
@@ -50,7 +50,7 @@ export class BpjsEligibilityService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async checkEligibility(
@@ -193,9 +193,7 @@ export class BpjsEligibilityService {
       providerCode: summary.providerCode,
       providerName: summary.providerName,
       isRegisteredHere:
-        summary.providerCode === null
-          ? null
-          : summary.providerCode === configRecord.kdProviderPpk,
+        summary.providerCode === null ? null : summary.providerCode === configRecord.kdProviderPpk,
       isProlanis: summary.isProlanis,
       isPrb: summary.isPrb,
       statusReason: summary.statusReason,

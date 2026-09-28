@@ -40,6 +40,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ClinicianFeeStatementService } from '../../clinician-fee/service/clinician-fee-statement.service';
 import { TaxProfileService } from '../../tax-core/service/tax-profile.service';
 import { ClinicianTaxIdentityRepository } from '../repository/clinician-tax-identity.repository';
@@ -47,7 +48,6 @@ import { Pph21TaxBracketRepository } from '../repository/pph21-tax-bracket.repos
 import { TaxReportRepository } from '../repository/tax-report.repository';
 import { buildTaxReportCsv } from './build-tax-report-csv';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_REPORT_AUDIT_RESOURCE = 'tax-report';
 const PERIOD_LENGTH = 7;
 const DECEMBER = 12;
@@ -102,7 +102,7 @@ export class TaxReportService {
     private readonly clinicianFeeStatementService: ClinicianFeeStatementService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async listReports(

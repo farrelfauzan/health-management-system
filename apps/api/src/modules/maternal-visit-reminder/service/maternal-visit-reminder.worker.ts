@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 
 import { isWithinVisitReminderSendWindow } from '@hms/shared-types';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { MaternalVisitReminderService } from './maternal-visit-reminder.service';
 
 const DEFAULT_SWEEP_INTERVAL_MS = 15 * 60 * 1000;
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The maternal visit reminder sweep (P25-T17), in the `unref`'d-interval
@@ -34,7 +34,7 @@ export class MaternalVisitReminderWorker implements OnApplicationBootstrap, OnAp
   ) {
     this.isEnabled = configService.get<string>('MATERNAL_REMINDERS_ENABLED') === 'true';
     this.sweepIntervalMs = this.readSweepIntervalMs(configService);
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   onApplicationBootstrap(): void {

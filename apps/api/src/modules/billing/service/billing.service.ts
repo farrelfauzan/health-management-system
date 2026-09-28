@@ -33,6 +33,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AddInvoiceItemDto } from '../dto/add-invoice-item.dto';
 import { GenerateInvoiceDto } from '../dto/generate-invoice.dto';
 import { GenerateLabOnlyInvoiceDto } from '../dto/generate-lab-only-invoice.dto';
@@ -46,8 +47,6 @@ import { ServiceTariffRepository } from '../repository/service-tariff.repository
 import { BillingMapper } from './billing.mapper';
 import { describeConsultationAudience } from './describe-consultation-audience';
 import { InvoiceDocumentService } from './invoice-document.service';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const CENTS_PER_RUPIAH_UNIT = 100;
 
@@ -108,7 +107,7 @@ export class BillingService {
     private readonly clinicianFeeLedgerService: ClinicianFeeLedgerService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async generateInvoice(

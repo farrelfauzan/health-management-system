@@ -29,6 +29,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
 import { HeadObjectResult } from '../../../common/storage/storage.types';
@@ -38,7 +39,6 @@ import { buildDoctorAuthorityGrantDocumentKeyPrefix } from './build-doctor-autho
 import { isDoctorAuthorityGrantDocumentStorageKey } from './is-doctor-authority-grant-document-storage-key';
 import { toDoctorAuthorityView } from './to-doctor-authority-view';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 const GRANT_DOCUMENT_FILE_EXTENSION_BY_MIME_TYPE: Readonly<Record<string, string>> = {
   'application/pdf': 'pdf',
@@ -69,7 +69,7 @@ export class DoctorAuthorityService {
     private readonly objectStorageService: ObjectStorageService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**

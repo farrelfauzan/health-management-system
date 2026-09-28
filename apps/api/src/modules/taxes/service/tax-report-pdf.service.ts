@@ -20,6 +20,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { PdfRendererService } from '../../../common/pdf/pdf-renderer.service';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
@@ -31,7 +32,6 @@ import { buildTaxReportPdfFooterHtml } from './build-tax-report-pdf-footer-html'
 import { buildTaxReportPdfHtml } from './build-tax-report-pdf-html';
 import { createTaxReportPdfFormatter } from './create-tax-report-pdf-formatter';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const TAX_REPORT_AUDIT_RESOURCE = 'tax-report';
 const TAX_REPORT_DOCUMENT_STORAGE_KEY_PREFIX = 'tax-report/document';
 const PDF_CONTENT_TYPE = 'application/pdf';
@@ -64,7 +64,7 @@ export class TaxReportPdfService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /** The PDF bytes: a fresh watermarked render for a DRAFT, the stored file once final. */

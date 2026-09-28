@@ -13,6 +13,7 @@ import {
   BpjsAntreanReferenceEntry,
   parseBpjsAntreanReferenceList,
 } from '../../../common/bpjs-antrean/parse-bpjs-antrean-reference-list';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { BpjsAntreanConfigRepository } from '../repository/bpjs-antrean-config.repository';
 import {
   BpjsAntreanReconciliationRepository,
@@ -26,7 +27,6 @@ const POLI_CODE_FIELD = 'kodepoli';
 const POLI_DISPLAY_FIELD = 'namapoli';
 const DOCTOR_CODE_FIELD = 'kodedokter';
 const DOCTOR_DISPLAY_FIELD = 'namadokter';
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const DEFAULT_WINDOW_DAYS = 7;
 const DAY_IN_MS = 86_400_000;
 
@@ -57,7 +57,7 @@ export class BpjsAntreanReconciliationService {
     private readonly httpClient: BpjsAntreanHttpClient,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async buildReport(): Promise<BpjsAntreanReconciliationReport> {
@@ -116,8 +116,7 @@ export class BpjsAntreanReconciliationService {
         })),
       ...specialties
         .filter(
-          (specialty) =>
-            specialty.bpjsPoliCode !== null && !hfisCodes.has(specialty.bpjsPoliCode),
+          (specialty) => specialty.bpjsPoliCode !== null && !hfisCodes.has(specialty.bpjsPoliCode),
         )
         .map((specialty) => ({
           kind: 'POLI_ONLY_IN_HMS' as const,
@@ -157,9 +156,7 @@ export class BpjsAntreanReconciliationService {
             'This practitioner has no BPJS kdDokter, so their sessions cannot be published to Antrean Online',
         })),
       ...doctors
-        .filter(
-          (doctor) => doctor.bpjsDoctorCode !== null && !hfisCodes.has(doctor.bpjsDoctorCode),
-        )
+        .filter((doctor) => doctor.bpjsDoctorCode !== null && !hfisCodes.has(doctor.bpjsDoctorCode))
         .map((doctor) => ({
           kind: 'DOCTOR_ONLY_IN_HMS' as const,
           code: doctor.bpjsDoctorCode,

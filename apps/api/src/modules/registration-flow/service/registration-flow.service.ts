@@ -32,6 +32,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AppointmentManagementService } from '../../appointment-management/service/appointment-management.service';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { buildOutsideSessionMessage } from './build-outside-session-message';
@@ -44,7 +45,6 @@ import { RegistrationCheckInNotificationService } from './registration-check-in-
 import { CurrentPrivacyNoticeEvidenceRequiredError } from '../../../common/privacy-notice/privacy-notice.repository';
 
 const REGISTRABLE_APPOINTMENT_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 /**
  * How early a patient may arrive and still be checked in (P19-T16). Five
  * hours, because the desk work that has to happen before the doctor arrives —
@@ -123,7 +123,7 @@ export class RegistrationFlowService {
     private readonly registrationCheckInNotificationService: RegistrationCheckInNotificationService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
     this.checkInEarlyGraceMinutes = resolveGraceMinutes(
       configService.get<string>('REGISTRATION_CHECKIN_GRACE_MINUTES'),
       DEFAULT_CHECKIN_EARLY_GRACE_MINUTES,
@@ -295,7 +295,10 @@ export class RegistrationFlowService {
     }
   }
 
-  async getQueueBoard(query: QueueBoardQueryDto, currentUser: CurrentUser): Promise<QueueBoardResponse> {
+  async getQueueBoard(
+    query: QueueBoardQueryDto,
+    currentUser: CurrentUser,
+  ): Promise<QueueBoardResponse> {
     const actor = await this.getActorOrThrow(currentUser);
     const readScope = this.resolveScope(actor, 'Registration', 'read');
     // The board lists every patient in the day's queue by name, so OWN-scoped
@@ -304,7 +307,9 @@ export class RegistrationFlowService {
     if (!readScope.hasAny) {
       throw new ForbiddenException('You are not allowed to read the queue board');
     }
-    const queueDate = query.date ? parseRegistrationDateOnly(query.date) : this.resolveClinicToday();
+    const queueDate = query.date
+      ? parseRegistrationDateOnly(query.date)
+      : this.resolveClinicToday();
     const registrations = await this.registrationFlowRepository.listQueueBoard({
       queueDate,
       specialtyId: query.specialtyId,
@@ -690,9 +695,7 @@ export class RegistrationFlowService {
     const { registration, payload } = params;
 
     if (registration.status !== 'PENDING') {
-      throw new ConflictException(
-        `Appointment link can only change while registration is PENDING`,
-      );
+      throw new ConflictException(`Appointment link can only change while registration is PENDING`);
     }
 
     if (payload.appointmentId) {
@@ -759,10 +762,7 @@ export class RegistrationFlowService {
    * scope cannot reach are then the repository's business, never a post-fetch
    * check here (SJ-2).
    */
-  private buildScopeActor(
-    currentUser: CurrentUser,
-    hasAnyScope: boolean,
-  ): RegistrationScopeActor {
+  private buildScopeActor(currentUser: CurrentUser, hasAnyScope: boolean): RegistrationScopeActor {
     return {
       userId: currentUser.sub,
       scope: hasAnyScope ? 'ANY' : 'OWN',

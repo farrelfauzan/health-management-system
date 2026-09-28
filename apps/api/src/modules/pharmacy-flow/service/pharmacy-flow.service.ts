@@ -32,6 +32,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AuditAction } from '../../../generated/prisma/client';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
@@ -64,7 +65,7 @@ export class PharmacyFlowService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? 'Asia/Jakarta';
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async listMedications(query: ListMedicationsQueryDto, currentUser: CurrentUser) {
@@ -234,7 +235,11 @@ export class PharmacyFlowService {
     await this.assertMedicationsExist(prescribedMedicationIds);
     if (clinician.profession === 'MIDWIFE') {
       await this.assertMidwifePrescribable(prescribedMedicationIds);
-      await this.assertMidwifeAuthorityForMedications(doctorId, prescribedMedicationIds, currentUser);
+      await this.assertMidwifeAuthorityForMedications(
+        doctorId,
+        prescribedMedicationIds,
+        currentUser,
+      );
     }
 
     if (payload.encounterId) {

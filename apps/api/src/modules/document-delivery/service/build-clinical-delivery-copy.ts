@@ -1,9 +1,12 @@
-import { ClinicalDeliveryMessageContext, DocumentCategoryValue } from '@hms/shared-types';
+import {
+  ClinicalDeliveryMessageContext,
+  DocumentCategoryValue,
+  DEFAULT_CLINIC_TIME_ZONE,
+} from '@hms/shared-types';
 
 import { RenderedMail } from '../../../common/mail/mail.types';
 
 const DISPLAY_LOCALE = 'id-ID';
-const CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 /**
  * The document type, in the two languages the channel speaks. Fixed strings
@@ -68,7 +71,7 @@ function formatDateSuffix(documentDate: Date | null, label: string): string {
 function formatDate(value: Date): string {
   return new Intl.DateTimeFormat(DISPLAY_LOCALE, {
     dateStyle: 'long',
-    timeZone: CLINIC_TIME_ZONE,
+    timeZone: DEFAULT_CLINIC_TIME_ZONE,
   }).format(value);
 }
 

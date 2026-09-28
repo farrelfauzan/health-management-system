@@ -25,6 +25,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { resolveSatusehatDischargeDisposition } from '../../../common/satusehat/resolve-satusehat-discharge-disposition';
 import { resolveSatusehatEncounterLocation } from '../../../common/satusehat/resolve-satusehat-encounter-location';
 import { resolveSatusehatRootLocationId } from '../../../common/satusehat/resolve-satusehat-root-location-id';
@@ -101,7 +102,6 @@ const PERMANENT_ERROR_CODES: readonly string[] = [
   'SATUSEHAT_REQUEST_REJECTED',
 ];
 const MAX_STORED_ERROR_LENGTH = 2000;
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const SECOND_TRIMESTER_FIRST_WEEK = 13;
 const THIRD_TRIMESTER_FIRST_WEEK = 28;
@@ -174,7 +174,7 @@ export class SatusehatSubmissionService {
     private readonly postnatalRepository: SatusehatPostnatalRepository,
   ) {
     this.satusehatConfig = resolveSatusehatConfig(configService);
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async processSubmission(submission: SatusehatSubmissionRecord): Promise<void> {
@@ -295,8 +295,7 @@ export class SatusehatSubmissionService {
     const encounterLocation = resolveSatusehatEncounterLocation({
       ...bundleData.encounterLocation,
       configuredLocationId: this.satusehatConfig.locationId,
-      bedLocationIds:
-        bundleData.admission?.beds.map((bed) => bed.satusehatLocationId) ?? [],
+      bedLocationIds: bundleData.admission?.beds.map((bed) => bed.satusehatLocationId) ?? [],
     });
     const bundle = this.buildTransactionBundle(
       episodeBundleData,
@@ -723,9 +722,7 @@ export class SatusehatSubmissionService {
     releasedAt: Date,
   ): Date {
     const collectedTimes = bundleData.specimens.map((specimen) => specimen.collectedAt.getTime());
-    return collectedTimes.length === 0
-      ? releasedAt
-      : new Date(Math.min(...collectedTimes));
+    return collectedTimes.length === 0 ? releasedAt : new Date(Math.min(...collectedTimes));
   }
 
   /**
@@ -1036,9 +1033,7 @@ export class SatusehatSubmissionService {
                 ...(examination.fetalHeartRateBpm === null
                   ? {}
                   : { fetalHeartRateBpm: examination.fetalHeartRateBpm }),
-                ...(examination.fetalCount === null
-                  ? {}
-                  : { fetalCount: examination.fetalCount }),
+                ...(examination.fetalCount === null ? {} : { fetalCount: examination.fetalCount }),
                 ...(examination.estimatedFetalWeightGrams === null
                   ? {}
                   : { estimatedFetalWeightGrams: examination.estimatedFetalWeightGrams }),
@@ -1134,13 +1129,15 @@ export class SatusehatSubmissionService {
     // reach the Composition's "Pemeriksaan" section the same way. Weight and
     // blood pressure are not repeated here — the vital signs above already
     // carry them, and the platform asks for no ANC-specific copy (P25-T08).
-    observationEntries.push(...this.buildAntenatalObservationEntries(
-      bundleData,
-      encounterFullUrl,
-      patientIhsNumber,
-      practitionerIhsNumber,
-      endedAt,
-    ));
+    observationEntries.push(
+      ...this.buildAntenatalObservationEntries(
+        bundleData,
+        encounterFullUrl,
+        patientIhsNumber,
+        practitionerIhsNumber,
+        endedAt,
+      ),
+    );
     // The nifas findings join them the same way (P25-T12). Blood pressure,
     // pulse, temperature and respiration are the vital signs above.
     observationEntries.push(
@@ -1211,7 +1208,11 @@ export class SatusehatSubmissionService {
       resourceType: 'Bundle',
       type: 'transaction',
       entry: [
-        { fullUrl: encounterFullUrl, resource: encounterResource, request: { method: 'POST', url: 'Encounter' } },
+        {
+          fullUrl: encounterFullUrl,
+          resource: encounterResource,
+          request: { method: 'POST', url: 'Encounter' },
+        },
         ...conditionEntries,
         ...procedureEntries,
         ...allergyEntries,
@@ -1427,9 +1428,7 @@ export class SatusehatSubmissionService {
       });
   }
 
-  private reportProcedureGaps(
-    skippedProcedures: readonly SatusehatSubmissionProcedure[],
-  ): void {
+  private reportProcedureGaps(skippedProcedures: readonly SatusehatSubmissionProcedure[]): void {
     if (skippedProcedures.length === 0) {
       return;
     }
@@ -1782,9 +1781,7 @@ export class SatusehatSubmissionService {
             frequency: item.frequency,
             instructions: item.instructions ?? undefined,
             quantity: item.quantity,
-            unit: item.compound
-              ? undefined
-              : (item.medication?.unit ?? undefined),
+            unit: item.compound ? undefined : (item.medication?.unit ?? undefined),
             authoredOn: prescription.issuedAt ?? undefined,
           }),
           request: { method: 'POST', url: 'MedicationRequest' },
@@ -1824,11 +1821,7 @@ export class SatusehatSubmissionService {
     this.reportCompoundGaps(skippedCompounds);
     this.reportMedicationGaps(skippedMedications);
     resourceList.recordSkipped('Medication', 'NO_KFA_CODE', skippedMedications.size);
-    resourceList.recordSkipped(
-      'Medication',
-      'UNCODED_COMPOUND_COMPONENT',
-      skippedCompounds.length,
-    );
+    resourceList.recordSkipped('Medication', 'UNCODED_COMPOUND_COMPONENT', skippedCompounds.length);
     return [...medicationEntries, ...requestEntries, ...dispenseEntries];
   }
 
@@ -2146,9 +2139,7 @@ export class SatusehatSubmissionService {
         attempts: attemptNumber,
         lastError: message,
       });
-      this.logger.warn(
-        `SATUSEHAT submission failed permanently after attempt ${attemptNumber}`,
-      );
+      this.logger.warn(`SATUSEHAT submission failed permanently after attempt ${attemptNumber}`);
       return;
     }
     const delayMs = this.satusehatConfig.submissionRetryBaseDelayMs * 2 ** (attemptNumber - 1);
@@ -2158,9 +2149,7 @@ export class SatusehatSubmissionService {
       nextAttemptAt: new Date(Date.now() + delayMs),
       lastError: message,
     });
-    this.logger.warn(
-      `SATUSEHAT submission attempt ${attemptNumber} failed transiently`,
-    );
+    this.logger.warn(`SATUSEHAT submission attempt ${attemptNumber} failed transiently`);
   }
 
   /**

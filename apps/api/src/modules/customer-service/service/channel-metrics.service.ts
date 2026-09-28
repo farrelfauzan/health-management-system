@@ -7,9 +7,9 @@ import {
   getCalendarDateInTimeZone,
 } from '@hms/shared-types';
 
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { ChannelMetricsRepository } from '../repository/channel-metrics.repository';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MS_PER_DAY = 86_400_000;
 
 /**
@@ -33,28 +33,32 @@ export class ChannelMetricsService {
     configService: ConfigService,
     private readonly metricsRepository: ChannelMetricsRepository,
   ) {
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async readMetrics(query: ChannelMetricsQueryInput): Promise<ChannelMetricsView> {
     const now = new Date();
     const since = new Date(now.getTime() - query.days * MS_PER_DAY);
-    const [inboundMessages, conversationsStarted, bookingsConfirmed, blockedConversations, safetyTags, tools] =
-      await Promise.all([
-        this.metricsRepository.countInboundMessages(since),
-        this.metricsRepository.countConversationsStarted(since),
-        this.metricsRepository.countChannelBookings(since),
-        this.metricsRepository.countBlockedConversations(),
-        this.metricsRepository.countSafetyTags(since),
-        this.metricsRepository.countToolInvocations(since),
-      ]);
+    const [
+      inboundMessages,
+      conversationsStarted,
+      bookingsConfirmed,
+      blockedConversations,
+      safetyTags,
+      tools,
+    ] = await Promise.all([
+      this.metricsRepository.countInboundMessages(since),
+      this.metricsRepository.countConversationsStarted(since),
+      this.metricsRepository.countChannelBookings(since),
+      this.metricsRepository.countBlockedConversations(),
+      this.metricsRepository.countSafetyTags(since),
+      this.metricsRepository.countToolInvocations(since),
+    ]);
     // Handoffs are counted from the safety tag rather than from conversations
     // currently in NEEDS_HUMAN: a state is a snapshot and would report zero
     // for a fortnight in which every handoff was worked and closed, which is
     // exactly the fortnight the gate is asking about.
-    const handoffs =
-      (safetyTags.handoff_requested ?? 0) + (safetyTags.emergency_escalation ?? 0);
+    const handoffs = (safetyTags.handoff_requested ?? 0) + (safetyTags.emergency_escalation ?? 0);
     return {
       from: getCalendarDateInTimeZone(since, this.clinicTimeZone),
       to: getCalendarDateInTimeZone(now, this.clinicTimeZone),

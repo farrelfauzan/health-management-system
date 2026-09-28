@@ -35,6 +35,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { AuthRepository } from '../../auth/repository/auth.repository';
 import { DoctorLicenseExpiryService } from '../../doctor-management/service/doctor-license-expiry.service';
@@ -57,7 +58,6 @@ const RESCHEDULABLE_STATUSES = ['SCHEDULED', 'CONFIRMED'] as const;
  * and the user id is never consulted.
  */
 const SYSTEM_READBACK_ACTOR: AppointmentScopeActor = { userId: 'system-readback', scope: 'ANY' };
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const MAX_SESSION_RANGE_DAYS = 92;
 const DAY_IN_MS = 86_400_000;
 
@@ -74,7 +74,7 @@ export class AppointmentManagementService {
     private readonly notificationService: NotificationService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   /**
@@ -246,11 +246,7 @@ export class AppointmentManagementService {
     return this.createSpecialRequest(payload, actor, currentUser);
   }
 
-  async approveAppointment(
-    id: string,
-    payload: ApproveAppointmentDto,
-    currentUser: CurrentUser,
-  ) {
+  async approveAppointment(id: string, payload: ApproveAppointmentDto, currentUser: CurrentUser) {
     const appointment = await this.getRequestedAppointmentForReview(id, currentUser);
     const scheduledAt = payload.scheduledAt
       ? new Date(payload.scheduledAt)
@@ -388,13 +384,11 @@ export class AppointmentManagementService {
       throw new NotFoundException('Doctor not found or inactive');
     }
 
-    const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
-      {
-        doctorId,
-        fromDate: query.from,
-        toDate: query.to,
-      },
-    );
+    const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts({
+      doctorId,
+      fromDate: query.from,
+      toDate: query.to,
+    });
 
     const sessions = this.buildDoctorSessionItems({
       doctorId,
@@ -423,12 +417,10 @@ export class AppointmentManagementService {
     const doctors = await this.appointmentManagementRepository.listActiveDoctorsWithSchedules(
       this.buildScopeActor(currentUser, readScope.hasAny),
     );
-    const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts(
-      {
-        fromDate: query.from,
-        toDate: query.to,
-      },
-    );
+    const materializedSessions = await this.appointmentManagementRepository.listSessionsWithCounts({
+      fromDate: query.from,
+      toDate: query.to,
+    });
     const sessionsByDoctor = new Map<string, typeof materializedSessions>();
     for (const session of materializedSessions) {
       const doctorSessions = sessionsByDoctor.get(session.doctorId) ?? [];
@@ -851,8 +843,7 @@ export class AppointmentManagementService {
       // a BPJS code is supplied, and this path supplies none — so the three
       // remaining outcomes are the whole set.
       return {
-        outcome:
-          result.outcome === 'DUPLICATE_BOOKING_CODE' ? 'SESSION_NOT_OPEN' : result.outcome,
+        outcome: result.outcome === 'DUPLICATE_BOOKING_CODE' ? 'SESSION_NOT_OPEN' : result.outcome,
       };
     }
     const appointment = await this.resolveBookedAppointment(result);
@@ -1039,7 +1030,10 @@ export class AppointmentManagementService {
 
     const canApprove = this.resolveScope(actor, 'Appointment', 'approve').hasAny;
 
-    if (!canApprove && requestedAt.getTime() - Date.now() < SPECIAL_REQUEST_MIN_LEAD_DAYS * DAY_IN_MS) {
+    if (
+      !canApprove &&
+      requestedAt.getTime() - Date.now() < SPECIAL_REQUEST_MIN_LEAD_DAYS * DAY_IN_MS
+    ) {
       throw new BadRequestException(
         `Special requests must be made at least ${SPECIAL_REQUEST_MIN_LEAD_DAYS} days in advance`,
       );
@@ -1184,9 +1178,7 @@ export class AppointmentManagementService {
     const fromMs = new Date(`${from}T00:00:00.000Z`).getTime();
     const toMs = new Date(`${to}T00:00:00.000Z`).getTime();
     if ((toMs - fromMs) / DAY_IN_MS > MAX_SESSION_RANGE_DAYS) {
-      throw new BadRequestException(
-        `Date range can not exceed ${MAX_SESSION_RANGE_DAYS} days`,
-      );
+      throw new BadRequestException(`Date range can not exceed ${MAX_SESSION_RANGE_DAYS} days`);
     }
   }
 
@@ -1264,10 +1256,7 @@ export class AppointmentManagementService {
    * scope cannot reach are then the repository's business, never a post-fetch
    * check here (SJ-2).
    */
-  private buildScopeActor(
-    currentUser: CurrentUser,
-    hasAnyScope: boolean,
-  ): AppointmentScopeActor {
+  private buildScopeActor(currentUser: CurrentUser, hasAnyScope: boolean): AppointmentScopeActor {
     return {
       userId: currentUser.sub,
       scope: hasAnyScope ? 'ANY' : 'OWN',

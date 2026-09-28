@@ -16,11 +16,11 @@ import {
 
 import { CurrentUser } from '../../../../common/auth/current-user.type';
 import { ActorPermissionScope } from '../../../../common/authorization/actor.types';
+import { readClinicTimeZone } from '../../../../common/clinic-time-zone/read-clinic-time-zone';
 import { AppointmentManagementService } from '../../../appointment-management/service/appointment-management.service';
 import { ChatTool } from '../chat-tool.interface';
 import { projectToolResult } from '../project-tool-result';
 
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 const DAY_IN_MS = 86_400_000;
 
 /**
@@ -64,8 +64,7 @@ export class ListMyAppointmentsTool implements ChatTool {
     private readonly appointmentManagementService: AppointmentManagementService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone =
-      configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async execute(

@@ -23,6 +23,7 @@ import { PDFParse } from 'pdf-parse';
 
 import { AuditService } from '../../../common/audit/audit.service';
 import { CurrentUser } from '../../../common/auth/current-user.type';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { buildSafeErrorLog } from '../../../common/observability/safe-logging';
 import { PdfRenderOptions, PdfRendererService } from '../../../common/pdf';
 import { ObjectStorageService } from '../../../common/storage/object-storage.service';
@@ -39,8 +40,6 @@ import { BUILT_IN_LAB_REPORT_TEMPLATE } from './built-in-lab-report-template';
 import { LabOrderAccessService } from './lab-order-access.service';
 import { LabReportConfigurationError } from './lab-report-configuration.error';
 import { LabReportMapper } from './lab-report.mapper';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const PDF_CONTENT_TYPE = 'application/pdf';
 
@@ -101,7 +100,7 @@ export class LabReportService {
     private readonly auditService: AuditService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
     this.workerConfig = resolveLabReportWorkerConfig(configService);
   }
 

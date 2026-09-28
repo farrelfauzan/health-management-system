@@ -25,6 +25,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 import { AuditService } from '../../../common/audit/audit.service';
+import { readClinicTimeZone } from '../../../common/clinic-time-zone/read-clinic-time-zone';
 import { BillingService } from '../../billing/service/billing.service';
 import { ClinicProfileService } from '../../billing/service/clinic-profile.service';
 import { ClinicalRequestDocumentService } from '../../clinical-request-document/service/clinical-request-document.service';
@@ -39,8 +40,6 @@ import { LabOrderNotificationService } from './lab-order-notification.service';
 import { RegistrationFlowService } from '../../registration-flow/service/registration-flow.service';
 import { LabOrderMapper } from './lab-order.mapper';
 import { resolveLabRequesterLabel } from './resolve-lab-requester-label';
-
-const DEFAULT_CLINIC_TIME_ZONE = 'Asia/Jakarta';
 
 const DEFAULT_PAGE = 1;
 
@@ -77,7 +76,7 @@ export class LabOrderService {
     private readonly labOrderNotificationService: LabOrderNotificationService,
     configService: ConfigService,
   ) {
-    this.clinicTimeZone = configService.get<string>('CLINIC_TIMEZONE') ?? DEFAULT_CLINIC_TIME_ZONE;
+    this.clinicTimeZone = readClinicTimeZone(configService);
   }
 
   async createLabOrder(
@@ -369,9 +368,7 @@ export class LabOrderService {
     }
     const foundIds = new Set(found.map((row) => row.id));
     const missing = requestedIds.filter((id) => !foundIds.has(id));
-    throw new NotFoundException(
-      `No active laboratory ${label} exists for: ${missing.join(', ')}`,
-    );
+    throw new NotFoundException(`No active laboratory ${label} exists for: ${missing.join(', ')}`);
   }
 
   /**
