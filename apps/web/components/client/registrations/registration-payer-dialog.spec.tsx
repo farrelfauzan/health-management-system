@@ -56,8 +56,9 @@ describe('RegistrationPayerDialog', () => {
     const onOpenChange = vi.fn();
     updateRequestMock.mockResolvedValue({
       status: 200,
-      data: { data: { ...REGISTRATION, payerType: 'INSURANCE' } },
-    } as Awaited<ReturnType<typeof registrationFlowControllerUpdateRegistrationV1>>);
+      headers: {},
+      data: { data: { ...REGISTRATION, payerType: 'INSURANCE' }, message: 'Registration updated' },
+    } as never);
     renderDialog(onOpenChange);
 
     await user.click(screen.getByRole('combobox'));
