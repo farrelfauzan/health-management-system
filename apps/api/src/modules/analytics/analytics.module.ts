@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
 import { AnalyticsOperationsController } from './controller/analytics-operations.controller';
+import { AnalyticsOperationsRepository } from './repository/analytics-operations.repository';
 import { AnalyticsQueryRepository } from './repository/analytics-query.repository';
 import { AnalyticsCacheService } from './service/analytics-cache.service';
 import { AnalyticsOperationsService } from './service/analytics-operations.service';
@@ -21,6 +22,7 @@ import { AnalyticsRangeService } from './service/analytics-range.service';
     AnalyticsRangeService,
     AnalyticsCacheService,
     AnalyticsQueryRepository,
+    AnalyticsOperationsRepository,
   ],
 })
 export class AnalyticsModule {}

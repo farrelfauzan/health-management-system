@@ -22,7 +22,9 @@ describe('Analytics query runner against PostgreSQL', () => {
   });
 
   it('answers a query that finishes in time', async () => {
-    const actual = await repository.runReadOnly((tx) => tx.$queryRawUnsafe<Array<{ one: number }>>('SELECT 1 AS one'));
+    const actual = await repository.runReadOnly((tx) =>
+      tx.$queryRawUnsafe<Array<{ one: number }>>('SELECT 1 AS one'),
+    );
 
     expect(actual).toEqual([{ one: 1 }]);
   });

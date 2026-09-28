@@ -27,7 +27,10 @@ describe('AnalyticsCacheService', () => {
     const mockLoad = jest.fn(async () => 'figures');
 
     await cache.getOrLoad({
-      key: { dashboard: 'finance', filter: { from: '2026-09-01', to: '2026-09-30', doctorId: undefined } },
+      key: {
+        dashboard: 'finance',
+        filter: { from: '2026-09-01', to: '2026-09-30', doctorId: undefined },
+      },
       load: mockLoad,
     });
     await cache.getOrLoad({
@@ -43,10 +46,19 @@ describe('AnalyticsCacheService', () => {
     const mockLoad = jest.fn(async () => 'figures');
     const inputFilter = { from: '2026-09-01', to: '2026-09-30' };
 
-    await cache.getOrLoad({ key: { dashboard: 'operations', filter: inputFilter }, load: mockLoad });
+    await cache.getOrLoad({
+      key: { dashboard: 'operations', filter: inputFilter },
+      load: mockLoad,
+    });
     await cache.getOrLoad({ key: { dashboard: 'finance', filter: inputFilter }, load: mockLoad });
-    await cache.getOrLoad({ key: { dashboard: 'practice', filter: inputFilter, viewerId: 'a' }, load: mockLoad });
-    await cache.getOrLoad({ key: { dashboard: 'practice', filter: inputFilter, viewerId: 'b' }, load: mockLoad });
+    await cache.getOrLoad({
+      key: { dashboard: 'practice', filter: inputFilter, viewerId: 'a' },
+      load: mockLoad,
+    });
+    await cache.getOrLoad({
+      key: { dashboard: 'practice', filter: inputFilter, viewerId: 'b' },
+      load: mockLoad,
+    });
 
     expect(mockLoad).toHaveBeenCalledTimes(4);
   });

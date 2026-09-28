@@ -5,10 +5,12 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AnalyticsOperationsControllerGetOperationsV1200DataComparisonSeriesItem } from './analyticsOperationsControllerGetOperationsV1200DataComparisonSeriesItem';
 import type { AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotals } from './analyticsOperationsControllerGetOperationsV1200DataComparisonTotals';
 
 export type AnalyticsOperationsControllerGetOperationsV1200DataComparison = {
   from: string;
   to: string;
   totals: AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotals;
+  series: AnalyticsOperationsControllerGetOperationsV1200DataComparisonSeriesItem[];
 };

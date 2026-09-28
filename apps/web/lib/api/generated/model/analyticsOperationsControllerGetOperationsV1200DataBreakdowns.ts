@@ -5,5 +5,16 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsAppointmentOutcomesItem } from './analyticsOperationsControllerGetOperationsV1200DataBreakdownsAppointmentOutcomesItem';
+import type { AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsBookingChannelsItem } from './analyticsOperationsControllerGetOperationsV1200DataBreakdownsBookingChannelsItem';
+import type { AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByDoctorItem } from './analyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByDoctorItem';
+import type { AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByPoliItem } from './analyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByPoliItem';
+import type { AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByTypeItem } from './analyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByTypeItem';
 
-export type AnalyticsOperationsControllerGetOperationsV1200DataBreakdowns = { [key: string]: unknown };
+export type AnalyticsOperationsControllerGetOperationsV1200DataBreakdowns = {
+  visitsByType: AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByTypeItem[];
+  visitsByPoli: AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByPoliItem[];
+  visitsByDoctor: AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsVisitsByDoctorItem[];
+  appointmentOutcomes: AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsAppointmentOutcomesItem[];
+  bookingChannels: AnalyticsOperationsControllerGetOperationsV1200DataBreakdownsBookingChannelsItem[];
+};

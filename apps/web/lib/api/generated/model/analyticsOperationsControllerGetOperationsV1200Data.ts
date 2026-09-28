@@ -7,11 +7,12 @@
  */
 import type { AnalyticsOperationsControllerGetOperationsV1200DataBreakdowns } from './analyticsOperationsControllerGetOperationsV1200DataBreakdowns';
 import type { AnalyticsOperationsControllerGetOperationsV1200DataComparison } from './analyticsOperationsControllerGetOperationsV1200DataComparison';
+import type { AnalyticsOperationsControllerGetOperationsV1200DataSeriesItem } from './analyticsOperationsControllerGetOperationsV1200DataSeriesItem';
 import type { AnalyticsOperationsControllerGetOperationsV1200DataTotals } from './analyticsOperationsControllerGetOperationsV1200DataTotals';
 
 export type AnalyticsOperationsControllerGetOperationsV1200Data = {
   totals: AnalyticsOperationsControllerGetOperationsV1200DataTotals;
-  series: unknown[];
+  series: AnalyticsOperationsControllerGetOperationsV1200DataSeriesItem[];
   breakdowns: AnalyticsOperationsControllerGetOperationsV1200DataBreakdowns;
   comparison?: AnalyticsOperationsControllerGetOperationsV1200DataComparison;
 };
