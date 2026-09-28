@@ -116,6 +116,14 @@ export const ADMIN_PORTAL_ADMIN_RULES: AppRule[] = [
   // P27-T05. `seed.sql` grants ADMIN both tax-report keys.
   { action: 'read', subject: 'TaxReport' },
   { action: 'write', subject: 'TaxReport' },
+  // P29-T01. `seed.sql` grants ADMIN every analytics key except a clinician's
+  // own practice.
+  { action: 'read-operations', subject: 'Analytics' },
+  { action: 'read-finance', subject: 'Analytics' },
+  { action: 'read-clinical', subject: 'Analytics' },
+  { action: 'read-pharmacy', subject: 'Analytics' },
+  { action: 'read-lab', subject: 'Analytics' },
+  { action: 'export', subject: 'Analytics' },
   // P27-T06. `seed.sql` grants ADMIN both clinician-fee keys.
   { action: 'read', subject: 'ClinicianFee' },
   { action: 'write', subject: 'ClinicianFee' },

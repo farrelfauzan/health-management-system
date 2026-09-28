@@ -1,3 +1,9 @@
+import { PERMISSION_HINT_ACTION_ABBREVIATIONS } from '#auth/permission-hint-action-abbreviations';
+
+const ACTION_BY_ABBREVIATION: ReadonlyMap<string, string> = new Map(
+  Object.entries(PERMISSION_HINT_ACTION_ABBREVIATIONS).map(([action, letter]) => [letter, action]),
+);
+
 /**
  * Reverses {@link packPermissionHint}, returning scope-less permission keys
  * (`patient.read`, `appointment.session.update`).
@@ -26,6 +32,6 @@ export function unpackPermissionHint(packed: string): string[] {
       .slice(separatorIndex + 1)
       .split(',')
       .filter((action) => action.length > 0)
-      .map((action) => `${resource}.${action}`);
+      .map((action) => `${resource}.${ACTION_BY_ABBREVIATION.get(action) ?? action}`);
   });
 }

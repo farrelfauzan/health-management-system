@@ -65,7 +65,17 @@ export type AppAction =
   | 'record-vitals'
   // P22-T05. Billing and the front desk see a visit's summary — patient,
   // clinician, times, status — without the record `read` opens.
-  | 'read-summary';
+  | 'read-summary'
+  // P29-T01. One read verb per analytics dashboard, so a pharmacist can hold
+  // the pharmacy dashboard without holding revenue. `read-practice` is the
+  // clinician's own practice; `export` is the CSV download.
+  | 'read-operations'
+  | 'read-finance'
+  | 'read-clinical'
+  | 'read-pharmacy'
+  | 'read-lab'
+  | 'read-practice'
+  | 'export';
 export type AppSubject =
   | 'User'
   | 'Role'
@@ -130,6 +140,8 @@ export type AppSubject =
   | 'TaxCode'
   // P27-T05. Monthly tax report drafts.
   | 'TaxReport'
+  // P29-T01. The analytics dashboards; the action names the dashboard.
+  | 'Analytics'
   // P27-T06. Jasa medis rules and the monthly clinician fee statements.
   | 'ClinicianFee'
   // P25-T15. The kohort registers and monthly KIA reports; clinicians only (D-033).

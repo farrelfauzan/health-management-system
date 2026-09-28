@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { getRequestConfig } from 'next-intl/server';
 
 import enMessages from '../messages/en.json';
+import enAnalyticsMessages from '../messages/en/analytics.json';
 import enAuthShellMessages from '../messages/en/auth-shell.json';
 import enClinicalMessages from '../messages/en/clinical.json';
 import enDashboardAiMessages from '../messages/en/dashboard-ai.json';
@@ -16,6 +17,7 @@ import enSharedMessages from '../messages/en/shared.json';
 // exact confusion the epic exists to prevent.
 import enVaultMessages from '../messages/en/vault.json';
 import idMessages from '../messages/id.json';
+import idAnalyticsMessages from '../messages/id/analytics.json';
 import idAuthShellMessages from '../messages/id/auth-shell.json';
 import idClinicalMessages from '../messages/id/clinical.json';
 import idDashboardAiMessages from '../messages/id/dashboard-ai.json';
@@ -37,6 +39,7 @@ const messages = {
     ...enDashboardAiMessages,
     ...enSharedMessages,
     ...enVaultMessages,
+    ...enAnalyticsMessages,
   },
   id: {
     ...idMessages,
@@ -48,6 +51,7 @@ const messages = {
     ...idDashboardAiMessages,
     ...idSharedMessages,
     ...idVaultMessages,
+    ...idAnalyticsMessages,
   },
 };
 

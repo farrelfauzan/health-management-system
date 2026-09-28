@@ -62085,6 +62085,55 @@ paths:
       summary: List maternal visits due in a date range
       tags:
         - Maternal Care
+  /api/v1/analytics/operations:
+    get:
+      operationId: AnalyticsOperationsController_getOperations_v1
+      parameters: []
+      responses:
+        "200":
+          description: "`asOf` is the instant the figures were read. Visits, poli and
+            doctor, appointment outcomes and booking channel join this response
+            in P29-T04."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      asOf:
+                        type: string
+                    required:
+                      - asOf
+                required:
+                  - data
+                example:
+                  data:
+                    asOf: 2026-09-28T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the operations dashboard
+      tags:
+        - Analytics
 info:
   title: HMS API
   description: Health Management System API

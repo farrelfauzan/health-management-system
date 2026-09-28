@@ -68,6 +68,15 @@ const SUPPORTED_ACTIONS: AppAction[] = [
   // P22-T05. `encounter.read-summary:any` opens the Encounters menu and the
   // visit page for billing; dropped here, a cashier cannot reach "Buat tagihan".
   'read-summary',
+  // P29-T01. `analytics.read-operations:any` and its siblings: one verb per
+  // dashboard. Dropped here, the "Analitik" group never renders for anyone.
+  'read-operations',
+  'read-finance',
+  'read-clinical',
+  'read-pharmacy',
+  'read-lab',
+  'read-practice',
+  'export',
 ];
 const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   user: 'User',
@@ -133,6 +142,9 @@ const SUBJECT_BY_RESOURCE: Record<string, AppSubject> = {
   'tax-code': 'TaxCode',
   // P27-T05. `tax-report.write:any` → resource `tax-report`, action `write`.
   'tax-report': 'TaxReport',
+  // P29-T01. `analytics.read-finance:any` → resource `analytics`, action
+  // `read-finance`.
+  analytics: 'Analytics',
   // P27-T06. `clinician-fee.read:any` → resource `clinician-fee`, action `read`.
   'clinician-fee': 'ClinicianFee',
   // P25-T15. `maternal-report.read:any` → resource `maternal-report`, action `read`.

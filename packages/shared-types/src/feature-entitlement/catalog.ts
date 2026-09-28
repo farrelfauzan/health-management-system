@@ -170,6 +170,23 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
     description: 'Tax profile, tax codes on tariffs, tax on invoices and monthly tax report drafts.',
     navHrefs: ['/admin/settings/taxes', '/admin/taxes'],
   },
+  {
+    // P29-T01. The "Analitik" sidebar group inside the HMS portal (D-050):
+    // operations, finance, case mix, pharmacy, laboratory and reporting
+    // status. Aggregates only; nothing here writes.
+    key: 'analytics',
+    name: 'Analytics',
+    description:
+      'Dashboards for visits, revenue, case mix, pharmacy, laboratory and reporting status.',
+    navHrefs: [
+      '/admin/analytics/operations',
+      '/admin/analytics/finance',
+      '/admin/analytics/case-mix',
+      '/admin/analytics/pharmacy',
+      '/admin/analytics/laboratory',
+      '/admin/analytics/reporting',
+    ],
+  },
 ];
 
 /**

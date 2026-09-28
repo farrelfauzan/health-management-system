@@ -1,4 +1,4 @@
-import { buildAppAbility } from '@hms/ui';
+import { buildAppAbility, type AppAction } from '@hms/ui';
 import { describe, expect, it } from 'vitest';
 
 import { resolveAppAbilityRules } from './app-ability.server';
@@ -100,6 +100,35 @@ describe('resolveAppAbilityRules integration permissions', () => {
 
     expect(ability.can('read', 'TaxCode')).toBe(true);
     expect(ability.can('write', 'TaxCode')).toBe(false);
+  });
+
+  it('maps every analytics key to its own action on the Analytics subject', () => {
+    // P29-T01. Allowlist trap: without the seven verbs in SUPPORTED_ACTIONS
+    // the "Analitik" group resolves to nothing and never renders.
+    const ability = buildAppAbility(
+      resolveAppAbilityRules({
+        permissions: [
+          'analytics.read-operations:any',
+          'analytics.read-finance:any',
+          'analytics.read-clinical:any',
+          'analytics.read-pharmacy:any',
+          'analytics.read-lab:any',
+          'analytics.read-practice:own',
+          'analytics.export:any',
+        ],
+      }),
+    );
+
+    [
+      'read-operations',
+      'read-finance',
+      'read-clinical',
+      'read-pharmacy',
+      'read-lab',
+      'read-practice',
+      'export',
+    ].forEach((action) => expect(ability.can(action as AppAction, 'Analytics')).toBe(true));
+    expect(ability.can('read', 'Analytics')).toBe(false);
   });
 
   it('maps pharmacy inventory permissions independently from medication catalog permissions', () => {

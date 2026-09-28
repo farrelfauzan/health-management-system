@@ -43,6 +43,7 @@ import { FeatureEntitlementModule } from './modules/feature-entitlement/feature-
 import { BillingModule } from './modules/billing/billing.module';
 import { LaboratoryModule } from './modules/laboratory/laboratory.module';
 import { TaxesModule } from './modules/taxes/taxes.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { MaternalReportsModule } from './modules/maternal-reports/maternal-reports.module';
 import { BpjsNonCapitationModule } from './modules/bpjs-non-capitation/bpjs-non-capitation.module';
 import { MaternalVisitReminderModule } from './modules/maternal-visit-reminder/maternal-visit-reminder.module';
@@ -131,6 +132,8 @@ import { UserInvitationModule } from './modules/user-invitation/user-invitation.
     BpjsNonCapitationModule,
     VisitReminderConsentModule,
     MaternalVisitReminderModule,
+    // P29-T01. Appended, like the modules above it.
+    AnalyticsModule,
   ],
 })
 export class AppModule {}

@@ -133,7 +133,14 @@
         "admissions": "Rawat Inap",
         "organization": "Organisasi",
         "documents": "Dokumen",
-        "settings": "Pengaturan"
+        "settings": "Pengaturan",
+        "analytics": "Analitik",
+        "analyticsOperations": "Operasional",
+        "analyticsFinance": "Keuangan",
+        "analyticsCaseMix": "Pola penyakit",
+        "analyticsPharmacy": "Kinerja farmasi",
+        "analyticsLaboratory": "Kinerja lab",
+        "analyticsReporting": "Status pelaporan"
       },
       "search": {
         "label": "Cari",

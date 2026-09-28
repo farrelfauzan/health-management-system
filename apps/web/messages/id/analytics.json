@@ -1,0 +1,35 @@
+{
+  "analytics": {
+    "breadcrumb": "Analitik",
+    "dashboards": {
+      "operations": {
+        "title": "Operasional",
+        "subtitle": "Kunjungan, alur pasien, dan jam sibuk klinik"
+      },
+      "finance": {
+        "title": "Keuangan",
+        "subtitle": "Pendapatan yang cocok dengan laci kasir, dirinci per metode, layanan, dokter, dan penjamin"
+      },
+      "case-mix": {
+        "title": "Pola penyakit",
+        "subtitle": "Apa yang paling sering ditangani klinik — hanya angka ringkasan, tanpa data pasien"
+      },
+      "pharmacy": {
+        "title": "Farmasi",
+        "subtitle": "Arus resep, obat terlaris, dan risiko stok"
+      },
+      "laboratory": {
+        "title": "Laboratorium",
+        "subtitle": "Volume order, kecepatan hasil, dan pengulangan"
+      },
+      "reporting": {
+        "title": "Status pelaporan",
+        "subtitle": "Apakah data klinik sudah sampai ke SATUSEHAT dan BPJS"
+      }
+    },
+    "placeholder": {
+      "title": "Dasbor ini sedang disiapkan",
+      "description": "Angkanya akan tampil di sini setelah siap. Tidak ada yang perlu diatur."
+    }
+  }
+}

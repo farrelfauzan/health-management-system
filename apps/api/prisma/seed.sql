@@ -130,6 +130,19 @@ WITH seed_permissions(permission_key, resource, action, scope, description) AS (
     -- read and export, and create, recompute and finalize. Administrators only.
     ('tax-report.read:any', 'TaxReport', 'read', 'ANY', 'Read and export monthly tax report drafts'),
     ('tax-report.write:any', 'TaxReport', 'write', 'ANY', 'Create, recompute and finalize monthly tax report drafts'),
+    -- P29-T01. Clinic analytics (D-049, D-050): aggregates over the existing
+    -- tables, one key per dashboard so a pharmacist sees stock and a lab
+    -- technician sees turnaround without either seeing revenue. Clinical
+    -- analytics is aggregates only, never a record, and SUPER_ADMIN still
+    -- stops short of it, of a clinician's own practice and of CSV export —
+    -- see `super_admin_withheld_keys` below.
+    ('analytics.read-operations:any', 'Analytics', 'read-operations', 'ANY', 'Read clinic operations analytics'),
+    ('analytics.read-finance:any', 'Analytics', 'read-finance', 'ANY', 'Read clinic finance analytics'),
+    ('analytics.read-clinical:any', 'Analytics', 'read-clinical', 'ANY', 'Read aggregate case-mix analytics'),
+    ('analytics.read-pharmacy:any', 'Analytics', 'read-pharmacy', 'ANY', 'Read pharmacy analytics'),
+    ('analytics.read-lab:any', 'Analytics', 'read-lab', 'ANY', 'Read laboratory analytics'),
+    ('analytics.read-practice:own', 'Analytics', 'read-practice', 'OWN', 'Read analytics about your own practice'),
+    ('analytics.export:any', 'Analytics', 'export', 'ANY', 'Export analytics as CSV'),
     -- P27-T06. Jasa medis: the fee rules and the monthly statement per
     -- clinician. Administrators only, like the billing keys; a clinician
     -- reading their own statement is a follow-up (`:own`).
@@ -1153,7 +1166,31 @@ WITH explicit_role_permissions(role_code, permission_key) AS (
     ('MIDWIFE', 'notification.read:own'),
     ('MIDWIFE', 'notification.manage:own'),
     ('MIDWIFE', 'bug-report.create:own'),
-    ('MIDWIFE', 'maternal-report.read:any')
+    ('MIDWIFE', 'maternal-report.read:any'),
+    -- P29-T01. ADMIN runs the clinic, so it reads every dashboard and exports
+    -- them. The pharmacist and the lab technician each read the one about their
+    -- own bench. Clinicians read their own practice only (`:own`).
+    ('ADMIN', 'analytics.read-operations:any'),
+    ('ADMIN', 'analytics.read-finance:any'),
+    ('ADMIN', 'analytics.read-clinical:any'),
+    ('ADMIN', 'analytics.read-pharmacy:any'),
+    ('ADMIN', 'analytics.read-lab:any'),
+    ('ADMIN', 'analytics.export:any'),
+    ('PHARMACIST', 'analytics.read-pharmacy:any'),
+    ('LAB_TECHNICIAN', 'analytics.read-lab:any'),
+    ('DOCTOR', 'analytics.read-practice:own'),
+    ('MIDWIFE', 'analytics.read-practice:own')
+),
+-- P29-T01. Not clinical record content, so not in the D-033 list below, but kept
+-- from SUPER_ADMIN all the same. Case mix is still about patients, a
+-- platform role has no practice of its own (and an `:own` key reaching it
+-- shadows `:any`, PR #424), and exporting the clinic's figures is the
+-- clinic's call, not the platform operator's.
+super_admin_withheld_keys(permission_key) AS (
+  VALUES
+    ('analytics.read-clinical:any'),
+    ('analytics.read-practice:own'),
+    ('analytics.export:any')
 ),
 -- P22-T02 enforcing D-033: the keys that reach clinical record *content*.
 -- SUPER_ADMIN is a platform and IT role and receives none of them — the
@@ -1190,6 +1227,10 @@ combined_role_permissions AS (
   WHERE p."permission_key" NOT IN (
     SELECT "permission_key"
     FROM clinical_content_keys
+  )
+  AND p."permission_key" NOT IN (
+    SELECT "permission_key"
+    FROM super_admin_withheld_keys
   )
   UNION
   SELECT role_code, permission_key
@@ -1501,7 +1542,10 @@ FROM (
     -- switched on deliberately. This is the "genuinely new, nobody is using
     -- it yet" case the rule above allows.
     ('maternal-care', FALSE),
-    ('taxes', TRUE)
+    ('taxes', TRUE),
+    -- P29-T01. On by default, like `taxes`: no screen edits entitlements yet,
+    -- and whether analytics is an add-on is still open (PRD Q-5).
+    ('analytics', TRUE)
 ) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;
 
