@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type {
   AnalyticsFilterInput,
   AnalyticsOperationsData,
@@ -32,7 +32,6 @@ export class AnalyticsOperationsService {
   async getOperations(
     filter: AnalyticsFilterInput,
   ): Promise<AnalyticsResponse<AnalyticsOperationsData>> {
-    this.assertPayerFilterUnused(filter);
     // The inpatient block exists only with the rooms and inpatient feature
     // (PRD FR-OPS-09); it is part of the cache key so a toggle shows at once.
     const includeInpatient = await this.featureAvailabilityCache.isEnabled('room-management');
@@ -40,20 +39,6 @@ export class AnalyticsOperationsService {
       key: { dashboard: 'operations', filter: { ...filter, includeInpatient } },
       load: () => this.loadOperations(filter, includeInpatient),
     });
-  }
-
-  /**
-   * Visits do not record who pays yet; P29-T07 adds the field. Until then a
-   * payer filter is refused rather than silently ignored, because a number
-   * labelled "BPJS only" that counts everyone is worse than no number.
-   */
-  private assertPayerFilterUnused(filter: AnalyticsFilterInput): void {
-    if (filter.payerType !== undefined) {
-      throw new BadRequestException({
-        code: 'ANALYTICS_PAYER_FILTER_UNAVAILABLE',
-        message: 'Filtering by payer is not available yet.',
-      });
-    }
   }
 
   private async loadOperations(

@@ -590,6 +590,15 @@ export const RegistrationType = {
 export type RegistrationType = (typeof RegistrationType)[keyof typeof RegistrationType]
 
 
+export const PayerType = {
+  GENERAL: 'GENERAL',
+  BPJS: 'BPJS',
+  INSURANCE: 'INSURANCE'
+} as const
+
+export type PayerType = (typeof PayerType)[keyof typeof PayerType]
+
+
 export const SatusehatSubmissionKind = {
   ENCOUNTER: 'ENCOUNTER',
   LAB_REPORT: 'LAB_REPORT',

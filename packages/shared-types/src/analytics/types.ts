@@ -1,4 +1,4 @@
-import type { AnalyticsFilterInput } from '#analytics/schemas';
+import type { AnalyticsFilterInput, AnalyticsPayerTypeValue } from '#analytics/schemas';
 import type {
   AnalyticsBpjsTypeRow,
   AnalyticsBusiestHourCell,
@@ -92,6 +92,11 @@ export type AnalyticsSqlScope = {
   timeZone: string;
   doctorId?: string;
   specialtyId?: string;
+  /**
+   * Narrows the visit figures to one payer (P29-T07). Appointments, sessions
+   * and admissions record no payer, so those blocks ignore it.
+   */
+  payerType?: AnalyticsPayerTypeValue;
 };
 
 export type AnalyticsVisitBucketRow = {

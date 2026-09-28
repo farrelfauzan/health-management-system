@@ -11,6 +11,7 @@ import {
   QueueBoardCounts,
   QueueBoardEntry,
   QueueBoardPoliSummary,
+  PayerTypeValue,
   PrivacyNoticeEvidenceInput,
   QueueBoardResponse,
   RegistrationListItem,
@@ -242,6 +243,7 @@ export class RegistrationFlowService {
         actorUserId: currentUser.sub,
         queueDate: this.resolveClinicToday(),
         privacyNotice: payload.privacyNotice,
+        payerType: payload.payerType,
       });
     } catch (error) {
       if (error instanceof CurrentPrivacyNoticeEvidenceRequiredError) {
@@ -265,6 +267,7 @@ export class RegistrationFlowService {
   async createLabOnlyRegistration(params: {
     patientId: string;
     privacyNotice?: PrivacyNoticeEvidenceInput;
+    payerType?: PayerTypeValue;
     currentUser: CurrentUser;
   }): Promise<{ registrationId: string; patientId: string }> {
     const patient = await this.registrationFlowRepository.findActivePatientById(params.patientId);
@@ -285,6 +288,7 @@ export class RegistrationFlowService {
         actorUserId: params.currentUser.sub,
         queueDate: this.resolveClinicToday(),
         privacyNotice: params.privacyNotice,
+        payerType: params.payerType,
       });
       return { registrationId: created.id, patientId: params.patientId };
     } catch (error) {
@@ -422,6 +426,10 @@ export class RegistrationFlowService {
 
     if (isPatientLimited && payload.appointmentId !== undefined) {
       throw new ForbiddenException('Patients may not change the appointment link');
+    }
+
+    if (isPatientLimited && payload.payerType !== undefined) {
+      throw new ForbiddenException('Patients may not change who pays for a visit');
     }
 
     if (isPatientLimited && payload.status !== undefined && payload.status !== 'CANCELLED') {
@@ -680,6 +688,7 @@ export class RegistrationFlowService {
       appointmentId: payload.appointmentId,
       checkedInAt: payload.status === 'CHECKED_IN' ? new Date() : undefined,
       completedAt: payload.status === 'COMPLETED' ? new Date() : undefined,
+      payerType: payload.payerType,
     };
   }
 
@@ -819,6 +828,7 @@ export class RegistrationFlowService {
       poli: registration.specialty
         ? { id: registration.specialty.id, name: registration.specialty.name }
         : undefined,
+      payerType: registration.payerType ?? undefined,
       registeredAt: registration.registeredAt.toISOString(),
       checkedInAt: registration.checkedInAt?.toISOString(),
       completedAt: registration.completedAt?.toISOString(),

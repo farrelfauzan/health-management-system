@@ -248,6 +248,18 @@ describe('AnalyticsOperationsPanel', () => {
     expect(screen.queryByText('Rawat inap')).not.toBeInTheDocument();
   });
 
+  it('asks for one payer and says the filter narrows visits only (P29-T07)', async () => {
+    getOperationsMock.mockReturnValue(new Promise(() => undefined));
+
+    renderPanel({ payer: 'BPJS' });
+
+    expect(getOperationsMock).toHaveBeenCalledWith(
+      expect.objectContaining({ payerType: 'BPJS' }),
+      expect.anything(),
+    );
+    expect(screen.getByText(/Filter penjamin hanya berlaku untuk kunjungan/)).toBeInTheDocument();
+  });
+
   it('writes a preset change into the URL', async () => {
     getOperationsMock.mockReturnValue(new Promise(() => undefined));
     renderPanel();

@@ -57,6 +57,7 @@ export class AnalyticsRangeService {
       timeZone: range.timeZone,
       doctorId: filter.doctorId,
       specialtyId: filter.specialtyId,
+      payerType: filter.payerType,
     };
   }
 

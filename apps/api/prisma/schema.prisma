@@ -890,6 +890,18 @@ enum RegistrationType {
   @@map("registration_type")
 }
 
+/// Who pays for a visit (P29-T07, Q-2 answered 2026-09-28): general (the
+/// patient pays), BPJS, or private insurance. Company contracts have no value
+/// of their own yet. A null payer on a registration means "not recorded" and
+/// is never read as GENERAL.
+enum PayerType {
+  GENERAL
+  BPJS
+  INSURANCE
+
+  @@map("payer_type")
+}
+
 enum SatusehatSubmissionKind {
   ENCOUNTER
   LAB_REPORT
@@ -2550,6 +2562,9 @@ model Registration {
   /// alongside `queueNumber` (P14-T01). Set exactly when `specialtyId` is,
   /// and governed by the same never-renumbered, never-reissued rule.
   poliQueueNumber Int?               @map("poli_queue_number")
+  /// Who pays for the visit (P29-T07). Null on rows from before it was asked
+  /// that carry no BPJS trace: analytics shows them as "Tidak tercatat".
+  payerType       PayerType?         @map("payer_type")
   registeredAt    DateTime           @default(now()) @map("registered_at")
   checkedInAt     DateTime?          @map("checked_in_at")
   completedAt     DateTime?          @map("completed_at")
@@ -2571,6 +2586,7 @@ model Registration {
   @@unique([queueDate, specialtyId, poliQueueNumber])
   @@index([patientId, status])
   @@index([status, registeredAt])
+  @@index([payerType, registeredAt])
   @@index([queueDate, specialtyId])
   @@index([deletedAt])
   @@map("registrations")

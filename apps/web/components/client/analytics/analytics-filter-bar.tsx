@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { AnalyticsCompareToggle } from '#components/client/analytics/analytics-compare-toggle';
 import { AnalyticsCustomRange } from '#components/client/analytics/analytics-custom-range';
 import { AnalyticsDoctorSelect } from '#components/client/analytics/analytics-doctor-select';
+import { AnalyticsPayerSelect } from '#components/client/analytics/analytics-payer-select';
 import { AnalyticsPeriodPresets } from '#components/client/analytics/analytics-period-presets';
 import { AnalyticsPeriodRangeChip } from '#components/client/analytics/analytics-period-range-chip';
 import { AnalyticsPoliSelect } from '#components/client/analytics/analytics-poli-select';
@@ -21,16 +22,15 @@ type AnalyticsFilterBarProps = {
   today: string;
   rangeProblem: AnalyticsRangeProblem | null;
   onChange: (next: AnalyticsFilterState) => void;
-  /** Off for a page the filter cannot narrow by poli or clinician, such as reporting status. */
+  /** Off for a page the filter cannot narrow by poli, clinician or payer, such as reporting status. */
   showNarrowing?: boolean;
   /** Off for a page with nothing to compare, such as reporting status. */
   showCompare?: boolean;
 };
 
 /**
- * The filter every analytics dashboard shares: period, comparison, poli and
- * clinician. The payer filter joins it with P29-T07, when visits record who
- * pays; until then it is not shown rather than shown and ignored.
+ * The filter every analytics dashboard shares: period, comparison, poli,
+ * clinician and payer.
  */
 export function AnalyticsFilterBar({
   state,
@@ -82,6 +82,10 @@ export function AnalyticsFilterBar({
                 value={state.doctorId}
                 specialtyId={state.specialtyId}
                 onChange={(doctorId) => onChange({ ...state, doctorId })}
+              />
+              <AnalyticsPayerSelect
+                value={state.payerType}
+                onChange={(payerType) => onChange({ ...state, payerType })}
               />
             </>
           ) : null}

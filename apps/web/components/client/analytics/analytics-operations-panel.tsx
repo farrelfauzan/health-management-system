@@ -10,6 +10,7 @@ import { AnalyticsFilterBar } from '#components/client/analytics/analytics-filte
 import { AnalyticsLoadingState } from '#components/client/analytics/analytics-loading-state';
 import { AnalyticsOperationsContent } from '#components/client/analytics/analytics-operations-content';
 import { AnalyticsSlowState } from '#components/client/analytics/analytics-slow-state';
+import { InlineNotice } from '#components/client/shared/inline-notice';
 import { PageHeader } from '#components/shared/page-header';
 import type { AnalyticsFilterState } from '#lib/analytics/analytics-filter-state';
 import { resolveAnalyticsPresetRange } from '#lib/analytics/resolve-analytics-preset-range';
@@ -119,6 +120,7 @@ export function AnalyticsOperationsPanel({
         rangeProblem={rangeProblem}
         onChange={navigate}
       />
+      {filter.payerType ? <InlineNotice tone="info">{t('filter.payerScope')}</InlineNotice> : null}
       {renderBody()}
     </div>
   );

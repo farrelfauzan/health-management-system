@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { RegistrationListItem } from '@hms/shared-types';
+import type { PayerTypeValue, RegistrationListItem } from '@hms/shared-types';
 import { createRegistrationSchema } from '@hms/shared-types';
 import {
   Button,
@@ -23,6 +23,7 @@ import {
 import { useFormatter, useTranslations } from 'next-intl';
 
 import { PrivacyNoticeCapture } from '#components/client/patients/privacy-notice-capture';
+import { PayerTypeSelect } from '#components/client/registrations/payer-type-select';
 import { FormLabel } from '#components/client/shared/form-label';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import { RequiredLegend } from '#components/client/shared/required-legend';
@@ -67,11 +68,16 @@ export function RegistrationCreateDialog({
       patientId: '',
       appointmentId: NO_APPOINTMENT_VALUE,
       privacyNotice: undefined as CreateRegistrationDtoPrivacyNotice | undefined,
+      payerType: undefined as PayerTypeValue | undefined,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
       if (!value.patientId) {
         setFormError(t('registrations.selectPatientError'));
+        return;
+      }
+      if (!value.payerType) {
+        setFormError(t('registrations.payer.required'));
         return;
       }
       if (!value.privacyNotice) {
@@ -91,6 +97,7 @@ export function RegistrationCreateDialog({
         appointmentId:
           value.appointmentId === NO_APPOINTMENT_VALUE ? undefined : value.appointmentId,
         privacyNotice: value.privacyNotice,
+        payerType: value.payerType,
       });
       if (!parsed.success) {
         setFormError(parsed.error.issues[0]?.message ?? t('registrations.createError'));
@@ -211,6 +218,26 @@ export function RegistrationCreateDialog({
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-slate-500">{t('registrations.appointmentHelp')}</p>
+              </div>
+            )}
+          </form.Field>
+
+          <form.Field name="payerType">
+            {(field) => (
+              <div className="space-y-1.5">
+                <FormLabel
+                  htmlFor="registration-payer-select"
+                  className="font-heading text-xs text-slate-600"
+                  required
+                >
+                  {t('registrations.payer.label')}
+                </FormLabel>
+                <PayerTypeSelect
+                  id="registration-payer-select"
+                  value={field.state.value}
+                  onChange={field.handleChange}
+                />
+                <p className="text-xs text-slate-500">{t('registrations.payer.help')}</p>
               </div>
             )}
           </form.Field>

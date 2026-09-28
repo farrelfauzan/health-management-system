@@ -68,6 +68,7 @@ describe('RegistrationFlow integration', () => {
     queueDate: new Date('2026-07-18T00:00:00.000Z'),
     specialtyId: null,
     poliQueueNumber: null,
+    payerType: null,
     registeredAt: new Date('2026-07-18T08:00:00.000Z'),
     checkedInAt: null,
     completedAt: null,
@@ -391,6 +392,39 @@ describe('RegistrationFlow integration', () => {
     );
   });
 
+  it('records who pays for a new walk-in and returns it (P29-T07)', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Registration', scope: 'ANY' }]);
+    registrationRepositoryMock.createRegistration.mockResolvedValue({
+      ...registrationRecord,
+      payerType: 'INSURANCE',
+    });
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/registrations')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ patientId, payerType: 'INSURANCE' });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.payerType).toBe('INSURANCE');
+    expect(registrationRepositoryMock.createRegistration).toHaveBeenCalledWith(
+      expect.objectContaining({ payerType: 'INSURANCE' }),
+    );
+  });
+
+  it('returns 400 for a payer outside general, BPJS and insurance', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'create', resource: 'Registration', scope: 'ANY' }]);
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/v1/registrations')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ patientId, payerType: 'COMPANY' });
+
+    expect(response.status).toBe(400);
+    expect(registrationRepositoryMock.createRegistration).not.toHaveBeenCalled();
+  });
+
   it('returns 403 for registration creation without create permission', async () => {
     const token = await buildToken('reader-user', 'reader@hms.local');
     mockActorWithPermissions([{ action: 'read', resource: 'Registration', scope: 'ANY' }]);
@@ -541,6 +575,44 @@ describe('RegistrationFlow integration', () => {
       .send({
         status: 'CHECKED_IN',
       });
+
+    expect(response.status).toBe(403);
+    expect(registrationRepositoryMock.updateRegistration).not.toHaveBeenCalled();
+  });
+
+  it('lets the front desk correct who pays for a visit (P29-T07)', async () => {
+    const token = await buildToken('admin-user', 'admin@hms.local');
+    mockActorWithPermissions([{ action: 'update', resource: 'Registration', scope: 'ANY' }]);
+    registrationRepositoryMock.findRegistrationDetailById.mockResolvedValue(registrationRecord);
+    registrationRepositoryMock.updateRegistration.mockResolvedValue({
+      ...registrationRecord,
+      payerType: 'GENERAL',
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/registrations/${registrationId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ payerType: 'GENERAL' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.payerType).toBe('GENERAL');
+    expect(registrationRepositoryMock.updateRegistration).toHaveBeenCalledWith(
+      expect.objectContaining({ id: registrationId, payerType: 'GENERAL' }),
+    );
+  });
+
+  it('returns 403 when an owning patient tries to change who pays', async () => {
+    const token = await buildToken('own-user', 'own@hms.local');
+    mockActorWithPermissions([{ action: 'update', resource: 'Registration', scope: 'OWN' }]);
+    registrationRepositoryMock.findRegistrationDetailById.mockResolvedValue({
+      ...registrationRecord,
+      patient: { ...registrationRecord.patient, ownerUserId: 'own-user' },
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(`/api/v1/v1/registrations/${registrationId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ payerType: 'BPJS' });
 
     expect(response.status).toBe(403);
     expect(registrationRepositoryMock.updateRegistration).not.toHaveBeenCalled();

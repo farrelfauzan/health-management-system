@@ -56,6 +56,14 @@
       "allPoli": "All poli",
       "doctor": "Clinician",
       "allDoctors": "All clinicians",
+      "payer": "Payer",
+      "allPayers": "All payers",
+      "payerTypes": {
+        "GENERAL": "General",
+        "BPJS": "BPJS",
+        "INSURANCE": "Insurance"
+      },
+      "payerScope": "The payer filter narrows visits only. Appointments, practice sessions and admissions record no payer, so their figures cover every payer. A visit whose payer was never recorded counts under no payer.",
       "rangeTooLong": "The range can be at most 24 months. Move the start or end date closer.",
       "endBeforeStart": "The end date cannot be before the start date."
     },

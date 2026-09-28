@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { AnalyticsOperationsSnapshot } from '@hms/shared-types';
 
@@ -118,17 +117,18 @@ describe('AnalyticsOperationsService', () => {
     );
   });
 
-  it('refuses a payer filter until visits record the payer', async () => {
+  it('binds a payer filter into the visit scope', async () => {
     const { service, mockRepository } = buildService();
 
-    const actual = service.getOperations({
+    await service.getOperations({
       from: '2026-09-01',
       to: '2026-09-30',
       compare: false,
       payerType: 'BPJS',
     });
 
-    await expect(actual).rejects.toBeInstanceOf(BadRequestException);
-    expect(mockRepository.readSnapshot).not.toHaveBeenCalled();
+    expect(mockRepository.readSnapshot).toHaveBeenCalledWith(
+      expect.objectContaining({ scope: expect.objectContaining({ payerType: 'BPJS' }) }),
+    );
   });
 });

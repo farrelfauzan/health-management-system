@@ -5,10 +5,12 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateRegistrationDtoPayerType } from './createRegistrationDtoPayerType';
 import type { CreateRegistrationDtoPrivacyNotice } from './createRegistrationDtoPrivacyNotice';
 
 export interface CreateRegistrationDto {
   patientId: string;
   appointmentId?: string;
   privacyNotice?: CreateRegistrationDtoPrivacyNotice;
+  payerType?: CreateRegistrationDtoPayerType;
 }

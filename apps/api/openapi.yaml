@@ -31119,6 +31119,8 @@ paths:
                           required:
                             - id
                             - name
+                        payerType:
+                          type: string
                         registeredAt:
                           type: string
                         createdById:
@@ -31230,6 +31232,7 @@ paths:
                       poli:
                         id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                         name: Internal Medicine
+                      payerType: BPJS
                       registeredAt: 2026-07-20T08:00:00.000Z
                       createdById: 33333333-3333-4333-8333-333333333333
                       createdAt: 2026-07-20T08:00:00.000Z
@@ -31294,6 +31297,8 @@ paths:
                 value:
                   patientId: 11111111-1111-4111-8111-111111111111
                   appointmentId: 44444444-4444-4444-8444-444444444444
+                  payerType:
+                    value: BPJS
       responses:
         "201":
           description: The registration was created.
@@ -31329,6 +31334,8 @@ paths:
                         required:
                           - id
                           - name
+                      payerType:
+                        type: string
                       registeredAt:
                         type: string
                       createdById:
@@ -31384,6 +31391,7 @@ paths:
                     poli:
                       id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                       name: Internal Medicine
+                    payerType: BPJS
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -31685,6 +31693,8 @@ paths:
                         required:
                           - id
                           - name
+                      payerType:
+                        type: string
                       registeredAt:
                         type: string
                       createdById:
@@ -31737,6 +31747,7 @@ paths:
                     poli:
                       id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                       name: Internal Medicine
+                    payerType: BPJS
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -31796,6 +31807,8 @@ paths:
                 summary: Valid request
                 value:
                   status: CHECKED_IN
+                  payerType:
+                    value: BPJS
       responses:
         "200":
           description: The registration was updated after transition validation.
@@ -31831,6 +31844,8 @@ paths:
                         required:
                           - id
                           - name
+                      payerType:
+                        type: string
                       registeredAt:
                         type: string
                       createdById:
@@ -31889,6 +31904,7 @@ paths:
                     poli:
                       id: eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee
                       name: Internal Medicine
+                    payerType: BPJS
                     registeredAt: 2026-07-20T08:00:00.000Z
                     createdById: 33333333-3333-4333-8333-333333333333
                     createdAt: 2026-07-20T08:00:00.000Z
@@ -62137,10 +62153,11 @@ paths:
             appointment outcomes; and booking channel with its no-show rate
             (NO_SHOW / (COMPLETED + NO_SHOW)). `from` and `to` are the clinic's
             local dates, both included, at most 24 months apart. `specialtyId`
-            and `doctorId` narrow every block; `payerType` answers 400
-            `ANALYTICS_PAYER_FILTER_UNAVAILABLE` until visits record the payer.
-            `compare=true` adds `comparison` (previous calendar month for a
-            whole month, otherwise the same number of days just before) and
+            and `doctorId` narrow every block; `payerType` narrows the visit
+            figures only: appointments, practice sessions and admissions record
+            no payer, and a visit whose payer was never recorded matches no
+            payer. `compare=true` adds `comparison` (previous calendar month for
+            a whole month, otherwise the same number of days just before) and
             `previousVisits` on each poli and clinician. Counts only: no patient
             appears in the payload. `meta.generatedAt` is when the figures were
             read; answers are cached for five minutes. A query past ten seconds
@@ -65925,6 +65942,12 @@ components:
             - subjectType
             - provenance
           x-nestjs_zod-self-required: false
+        payerType:
+          type: string
+          enum:
+            - GENERAL
+            - BPJS
+            - INSURANCE
       required:
         - patientId
     UpdateRegistrationDto:
@@ -65942,6 +65965,12 @@ components:
           nullable: true
         force:
           type: boolean
+        payerType:
+          type: string
+          enum:
+            - GENERAL
+            - BPJS
+            - INSURANCE
     ApplyMidwifeFormularyDto:
       type: object
       properties:
@@ -68083,6 +68112,12 @@ components:
             - subjectType
             - provenance
           x-nestjs_zod-self-required: false
+        payerType:
+          type: string
+          enum:
+            - GENERAL
+            - BPJS
+            - INSURANCE
       required:
         - patientId
         - source

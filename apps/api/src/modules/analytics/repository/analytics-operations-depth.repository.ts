@@ -37,11 +37,15 @@ export class AnalyticsOperationsDepthRepository {
     const poliFilter = scope.specialtyId
       ? Prisma.sql`AND r."specialty_id" = ${scope.specialtyId}::uuid`
       : Prisma.empty;
+    // A visit whose payer was never recorded matches no payer (P29-T07).
+    const payerFilter = scope.payerType
+      ? Prisma.sql`AND r."payer_type" = ${scope.payerType}::payer_type`
+      : Prisma.empty;
     return Prisma.sql`r."deleted_at" IS NULL
       AND r."status" IN ('CHECKED_IN', 'COMPLETED')
       AND r."registered_at" >= ${scope.startUtc}::timestamp
       AND r."registered_at" < ${scope.endUtc}::timestamp
-      ${doctorFilter} ${poliFilter}`;
+      ${doctorFilter} ${poliFilter} ${payerFilter}`;
   }
 
   /** Narrows by a doctor column, directly or through the doctor's poli. */

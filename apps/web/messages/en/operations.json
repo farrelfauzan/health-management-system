@@ -243,6 +243,25 @@
         "statusReason": "Status reason",
         "registered": "Registered",
         "linkedAppointment": "Linked Appointment"
+      },
+      "payer": {
+        "label": "Payer",
+        "placeholder": "Choose the payer",
+        "required": "Choose who pays for this visit.",
+        "help": "Patients who booked through Mobile JKN are recorded as BPJS.",
+        "types": {
+          "GENERAL": "General",
+          "BPJS": "BPJS",
+          "INSURANCE": "Insurance"
+        },
+        "notRecorded": "Payer not recorded",
+        "change": "Change payer",
+        "changeDescription": "Who pays for {name}'s visit. Used in the payer figures under Analytics.",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…",
+        "changeError": "The payer could not be saved.",
+        "changeSuccess": "Payer saved."
       }
     },
     "pharmacy": {

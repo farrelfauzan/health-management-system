@@ -56,6 +56,14 @@
       "allPoli": "Semua poli",
       "doctor": "Dokter",
       "allDoctors": "Semua dokter",
+      "payer": "Penjamin",
+      "allPayers": "Semua penjamin",
+      "payerTypes": {
+        "GENERAL": "Umum",
+        "BPJS": "BPJS",
+        "INSURANCE": "Asuransi"
+      },
+      "payerScope": "Filter penjamin hanya berlaku untuk kunjungan. Janji temu, sesi praktik, dan rawat inap tidak mencatat penjamin, jadi angkanya tetap untuk semua penjamin. Kunjungan yang penjaminnya belum dicatat tidak masuk ke penjamin mana pun.",
       "rangeTooLong": "Rentang paling panjang 24 bulan. Perpendek tanggal mulai atau akhir.",
       "endBeforeStart": "Tanggal akhir tidak boleh sebelum tanggal mulai."
     },

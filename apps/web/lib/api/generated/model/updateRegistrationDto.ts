@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { UpdateRegistrationDtoPayerType } from './updateRegistrationDtoPayerType';
 import type { UpdateRegistrationDtoStatus } from './updateRegistrationDtoStatus';
 
 export interface UpdateRegistrationDto {
@@ -12,4 +13,5 @@ export interface UpdateRegistrationDto {
   /** @nullable */
   appointmentId?: string | null;
   force?: boolean;
+  payerType?: UpdateRegistrationDtoPayerType;
 }

@@ -1,4 +1,8 @@
-import { parseCalendarDate } from '@hms/shared-types';
+import {
+  ANALYTICS_PAYER_TYPES,
+  parseCalendarDate,
+  type AnalyticsPayerTypeValue,
+} from '@hms/shared-types';
 
 import {
   ANALYTICS_PERIOD_PRESETS,
@@ -23,6 +27,10 @@ function readParam(
 
 function readPreset(value: string | undefined): AnalyticsPeriodPreset {
   return ANALYTICS_PERIOD_PRESETS.find((preset) => preset === value) ?? DEFAULT_ANALYTICS_PRESET;
+}
+
+function readPayerType(value: string | undefined): AnalyticsPayerTypeValue | undefined {
+  return ANALYTICS_PAYER_TYPES.find((payerType) => payerType === value);
 }
 
 function readUuid(value: string | undefined): string | undefined {
@@ -55,5 +63,6 @@ export function parseAnalyticsFilterParams(
     compare: readParam(params, 'compare') !== 'false',
     specialtyId: readUuid(readParam(params, 'poli')),
     doctorId: readUuid(readParam(params, 'doctor')),
+    payerType: readPayerType(readParam(params, 'payer')),
   };
 }

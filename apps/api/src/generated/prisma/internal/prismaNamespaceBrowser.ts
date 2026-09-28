@@ -771,6 +771,7 @@ export const RegistrationScalarFieldEnum = {
   queueDate: 'queueDate',
   specialtyId: 'specialtyId',
   poliQueueNumber: 'poliQueueNumber',
+  payerType: 'payerType',
   registeredAt: 'registeredAt',
   checkedInAt: 'checkedInAt',
   completedAt: 'completedAt',

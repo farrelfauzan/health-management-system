@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { CreateWalkInLabOrderDtoPayerType } from './createWalkInLabOrderDtoPayerType';
 import type { CreateWalkInLabOrderDtoPriority } from './createWalkInLabOrderDtoPriority';
 import type { CreateWalkInLabOrderDtoPrivacyNotice } from './createWalkInLabOrderDtoPrivacyNotice';
 import type { CreateWalkInLabOrderDtoSource } from './createWalkInLabOrderDtoSource';
@@ -35,4 +36,5 @@ export interface CreateWalkInLabOrderDto {
   externalRequesterFacility?: string;
   requestLetterDocumentId?: string;
   privacyNotice?: CreateWalkInLabOrderDtoPrivacyNotice;
+  payerType?: CreateWalkInLabOrderDtoPayerType;
 }

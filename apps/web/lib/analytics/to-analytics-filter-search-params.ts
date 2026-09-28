@@ -25,5 +25,8 @@ export function toAnalyticsFilterSearchParams(state: AnalyticsFilterState): stri
   if (state.doctorId) {
     params.set('doctor', state.doctorId);
   }
+  if (state.payerType) {
+    params.set('payer', state.payerType);
+  }
   return params.toString();
 }

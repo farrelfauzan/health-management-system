@@ -35,6 +35,7 @@ function buildRegistration(
   status: RegistrationStatusValue,
   appointment?: RegistrationListItem['appointment'],
   todaySession?: RegistrationListItem['todaySession'],
+  payerType?: RegistrationListItem['payerType'],
 ): RegistrationListItem {
   return {
     id: 'registration-1',
@@ -46,6 +47,7 @@ function buildRegistration(
     patient: { id: 'patient-1', mrn: 'MRN-0001', fullName: 'John Doe', dateOfBirth: '1990-01-01' },
     appointment,
     todaySession,
+    payerType,
   };
 }
 
@@ -61,6 +63,8 @@ function renderRow(params: {
     isForced?: boolean,
   ) => void;
   onOpenEncounter?: (registration: RegistrationListItem) => void;
+  onChangePayer?: (registration: RegistrationListItem) => void;
+  payerType?: RegistrationListItem['payerType'];
 }): void {
   render(
     <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Jakarta">
@@ -72,10 +76,12 @@ function renderRow(params: {
                 params.status,
                 params.appointment,
                 params.todaySession,
+                params.payerType,
               )}
               variant={params.variant}
               onTransition={params.onTransition ?? vi.fn()}
               onOpenEncounter={params.onOpenEncounter ?? vi.fn()}
+              onChangePayer={params.onChangePayer ?? vi.fn()}
             />
           </TableBody>
         </Table>
@@ -135,10 +141,53 @@ describe('RegistrationsTableRow', () => {
     expect(screen.queryByRole('menuitem', { name: /Check In/ })).not.toBeInTheDocument();
   });
 
-  it('renders no actions for terminal statuses', () => {
+  it('offers only the payer correction for a completed registration', async () => {
+    const user = userEvent.setup();
     renderRow({ status: 'COMPLETED', rules: FULL_ACCESS_RULES, variant: 'admin' });
 
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual([
+      expect.stringContaining('Change payer'),
+    ]);
+  });
+
+  it('renders no actions for a cancelled registration', () => {
+    renderRow({ status: 'CANCELLED', rules: FULL_ACCESS_RULES, variant: 'admin' });
+
     expect(screen.queryByRole('button', { name: 'Actions for John Doe' })).not.toBeInTheDocument();
+  });
+
+  it('shows who pays under the patient, or that it was never recorded (P29-T07)', () => {
+    renderRow({ status: 'PENDING', rules: FULL_ACCESS_RULES, variant: 'admin', payerType: 'BPJS' });
+
+    expect(screen.getByText('BPJS')).toBeInTheDocument();
+  });
+
+  it('says the payer was not recorded for an old visit', () => {
+    renderRow({ status: 'COMPLETED', rules: FULL_ACCESS_RULES, variant: 'admin' });
+
+    expect(screen.getByText('Payer not recorded')).toBeInTheDocument();
+  });
+
+  it('hands the registration to the payer dialog', async () => {
+    const user = userEvent.setup();
+    const onChangePayer = vi.fn();
+    renderRow({ status: 'COMPLETED', rules: FULL_ACCESS_RULES, variant: 'admin', onChangePayer });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+    await user.click(screen.getByRole('menuitem', { name: /Change payer/ }));
+
+    expect(onChangePayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'registration-1' }));
+  });
+
+  it('never offers a patient the payer correction', async () => {
+    const user = userEvent.setup();
+    renderRow({ status: 'PENDING', rules: FULL_ACCESS_RULES, variant: 'patient' });
+
+    await user.click(screen.getByRole('button', { name: 'Actions for John Doe' }));
+
+    expect(screen.queryByRole('menuitem', { name: /Change payer/ })).not.toBeInTheDocument();
   });
 
   it('hides all actions without the update capability', () => {

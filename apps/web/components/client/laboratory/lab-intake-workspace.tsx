@@ -6,6 +6,7 @@ import type {
   CreateWalkInLabOrderInput,
   LabOrderPriorityValue,
   LabOrderView,
+  PayerTypeValue,
 } from '@hms/shared-types';
 import { Button, Card, CardContent, Checkbox, Icon, Input, Label, toast } from '@hms/ui';
 import { useRouter } from 'next/navigation';
@@ -14,6 +15,7 @@ import { useTranslations } from 'next-intl';
 import { EncounterLabTestPicker } from '#components/client/encounters/encounter-lab-test-picker';
 import { LabIntakePatientPicker } from '#components/client/laboratory/lab-intake-patient-picker';
 import { LabIntakeSourceChoice } from '#components/client/laboratory/lab-intake-source-choice';
+import { PayerTypeSelect } from '#components/client/registrations/payer-type-select';
 import { InlineNotice } from '#components/client/shared/inline-notice';
 import type { LabIntakePatient } from '#lib/laboratory/lab-intake-patient';
 import { labOrderControllerCreateWalkInLabOrderV1 } from '#lib/api/generated/laboratory-orders/laboratory-orders';
@@ -33,9 +35,11 @@ type LabIntakeSource = 'WALK_IN' | 'EXTERNAL_REFERRAL';
  */
 export function LabIntakeWorkspace() {
   const t = useTranslations('operations.laboratory.intake');
+  const payerT = useTranslations('operations.registrations.payer');
   const router = useRouter();
   const [patient, setPatient] = useState<LabIntakePatient | null>(null);
   const [source, setSource] = useState<LabIntakeSource>('WALK_IN');
+  const [payerType, setPayerType] = useState<PayerTypeValue | undefined>(undefined);
   const [requesterName, setRequesterName] = useState<string>('');
   const [requesterFacility, setRequesterFacility] = useState<string>('');
   const [testIds, setTestIds] = useState<string[]>([]);
@@ -52,6 +56,9 @@ export function LabIntakeWorkspace() {
   function resolveValidationError(): string | null {
     if (!patient) {
       return t('pickPatient');
+    }
+    if (!payerType) {
+      return payerT('required');
     }
     if (testIds.length === 0 && panelIds.length === 0) {
       return t('pickSomething');
@@ -73,6 +80,7 @@ export function LabIntakeWorkspace() {
     const payload: CreateWalkInLabOrderInput = {
       patientId: patient.id,
       source,
+      payerType,
       ...(testIds.length > 0 ? { testIds } : {}),
       ...(panelIds.length > 0 ? { panelIds } : {}),
       priority,
@@ -113,6 +121,16 @@ export function LabIntakeWorkspace() {
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium text-slate-900">{t('source.legend')}</legend>
             <LabIntakeSourceChoice value={source} onChange={setSource} disabled={isBusy} />
+          </fieldset>
+
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium text-slate-900">{payerT('label')}</legend>
+            <PayerTypeSelect
+              id="lab-intake-payer-select"
+              value={payerType}
+              onChange={setPayerType}
+              disabled={isBusy}
+            />
           </fieldset>
 
           {source === 'EXTERNAL_REFERRAL' ? (
