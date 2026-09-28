@@ -70,7 +70,10 @@ jobs:
     runs-on: ubuntu-latest
     # A leaked async handle can keep Jest's process alive after the run
     # completes; fail the job instead of holding a runner for six hours.
-    timeout-minutes: 30
+    # 60, not 30: on the 2-core private-repo runner the in-band API unit
+    # suite alone takes ~25 minutes, so 30 cut the integration tests off
+    # a minute after they started (#449).
+    timeout-minutes: 60
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hms_dev?schema=public
       # SJ-5 removed the `?? 'dev-access-secret'` fallbacks, so a missing JWT
