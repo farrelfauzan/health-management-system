@@ -24,6 +24,12 @@ vi.mock('#lib/api/generated/analytics/analytics', () => ({
     'analytics-operations',
     params,
   ],
+  // The Operasional page's small reporting card; left loading here.
+  analyticsReportingHealthControllerGetReportingHealthV1: () => new Promise(() => undefined),
+  getAnalyticsReportingHealthControllerGetReportingHealthV1QueryKey: (params: unknown) => [
+    'analytics-reporting-health',
+    params,
+  ],
 }));
 vi.mock('#lib/specialties/use-specialties-list', () => ({
   useSpecialtiesList: () => ({ specialties: [] }),

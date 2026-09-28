@@ -146,6 +146,74 @@
         "subtitle": "Check-ins by day and hour",
         "comingSoon": "The busiest-hours map is being prepared and will appear here."
       }
+    },
+    "reporting": {
+      "kpi": {
+        "submitted": "Sent to SATUSEHAT",
+        "submittedHelper": "In this period",
+        "pending": "Pending",
+        "pendingOldest": "Oldest {age}",
+        "pendingNone": "Nothing waiting",
+        "failed": "Failed",
+        "failedHelper": "Needs fixing before it is sent again",
+        "bpjsFailed": "Failed to BPJS",
+        "bpjsHelper": "{submitted} sent in this period"
+      },
+      "age": {
+        "minutes": "{minutes} min",
+        "hoursMinutes": "{hours} h {minutes} min",
+        "days": "{days} days"
+      },
+      "columns": {
+        "kind": "Type",
+        "submitted": "Sent",
+        "pending": "Pending now",
+        "failed": "Failed now",
+        "action": "Action"
+      },
+      "fix": "Fix",
+      "fixLabel": "Fix {count} failed {kind} submissions",
+      "noSubmissions": "No submissions yet.",
+      "satusehat": {
+        "title": "SATUSEHAT",
+        "subtitle": "Submissions by data type",
+        "note": "Failure reasons open in the submission list, not here, because the message can contain patient data.",
+        "kinds": {
+          "ENCOUNTER": "Visit",
+          "LAB_REPORT": "Lab result",
+          "EPISODE_OF_CARE_FINISH": "Pregnancy episode closed",
+          "POSTNATAL_EPISODE_FINISH": "Postnatal period closed"
+        }
+      },
+      "bpjs": {
+        "title": "BPJS PCare and Antrean",
+        "subtitle": "Submissions by type",
+        "types": {
+          "PENDAFTARAN": "Registration",
+          "KUNJUNGAN": "Visit",
+          "PENDAFTARAN_DELETE": "Registration removal",
+          "OBAT": "Medication",
+          "ANTREAN_ADD": "Mobile JKN queue: add",
+          "ANTREAN_PANGGIL": "Mobile JKN queue: call",
+          "ANTREAN_BATAL": "Mobile JKN queue: cancel"
+        }
+      },
+      "readiness": {
+        "title": "Ready to send?",
+        "subtitle": "Visits finished in this period that cannot be sent yet because data is missing",
+        "problem": "Issue",
+        "encounters": "Visits",
+        "withoutPrimaryDiagnosis": "No primary diagnosis",
+        "unlinkedClinician": "Clinician has no NIK for SATUSEHAT",
+        "view": "View"
+      },
+      "summary": {
+        "title": "Reporting status",
+        "subtitle": "Submissions that need attention",
+        "failed": "{count} failed",
+        "pending": "{count} pending",
+        "open": "Open reporting status"
+      }
     }
   }
 }

@@ -148,3 +148,47 @@ export type AnalyticsOperationsData = AnalyticsDashboardData<
   AnalyticsVisitSeriesPoint[],
   AnalyticsOperationsBreakdowns
 >;
+
+/**
+ * One kind of SATUSEHAT submission (P29-T06, PRD FR-INT-01). `submitted`
+ * counts what reached SATUSEHAT in the range; `pending` and `failed` are
+ * what is outstanding now, whatever the range, because a failure from last
+ * month still needs fixing this month. Counts only: the failure text stays
+ * in the submission list, since it can carry patient detail.
+ */
+export type AnalyticsSatusehatKindRow = {
+  kind: string;
+  submitted: number;
+  pending: number;
+  failed: number;
+  oldestPendingAt: string | null;
+};
+
+/** One BPJS submission type (PRD FR-INT-02), on the same rule as SATUSEHAT. */
+export type AnalyticsBpjsTypeRow = {
+  type: string;
+  submitted: number;
+  pending: number;
+  failed: number;
+};
+
+/**
+ * Finished visits in the range that cannot be reported yet: no primary
+ * diagnosis, or a clinician without a NIK (SATUSEHAT finds practitioners by
+ * NIK).
+ */
+export type AnalyticsReportingReadiness = {
+  encountersWithoutPrimaryDiagnosis: number;
+  encountersWithUnlinkedClinician: number;
+};
+
+/**
+ * The reporting status page (P29-T06). `bpjs` is `null` when neither BPJS
+ * feature is on, so the page leaves the block out instead of showing zeros
+ * for an integration the clinic does not use.
+ */
+export type AnalyticsReportingHealthData = {
+  satusehat: AnalyticsSatusehatKindRow[];
+  bpjs: AnalyticsBpjsTypeRow[] | null;
+  readiness: AnalyticsReportingReadiness;
+};

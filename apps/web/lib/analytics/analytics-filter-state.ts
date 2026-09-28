@@ -61,3 +61,19 @@ export type AnalyticsKpiDeltaInput = Omit<AnalyticsDeltaInput, 'previous'> & {
   previous: number | null | undefined;
   previousLabel: string;
 };
+
+/** How long something has waited, split for "2 j 14 mnt" or "3 hari". */
+export type ElapsedParts =
+  | { unit: 'minutes'; minutes: number }
+  | { unit: 'hoursMinutes'; hours: number; minutes: number }
+  | { unit: 'days'; days: number };
+
+/** One row of a submission table: counts and, when something failed, where to fix it. */
+export type AnalyticsSubmissionTableRow = {
+  key: string;
+  label: string;
+  submitted: number;
+  pending: number;
+  failed: number;
+  fixHref?: string;
+};
