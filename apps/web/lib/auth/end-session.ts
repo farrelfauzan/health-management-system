@@ -5,8 +5,7 @@ import {
   authControllerLogoutV1,
 } from '#lib/api/generated/auth/auth';
 import { clearAccessTokenCookie } from '#lib/auth/access-token-cookie';
-
-const LOGIN_PATH = '/login';
+import { SESSION_ENDED_LOGIN } from '#lib/auth/session-ended-login';
 
 /**
  * Why the session is ending. Only the audit trail and the endpoint differ —
@@ -48,6 +47,9 @@ export async function endSession(
   clearAccessTokenCookie();
 
   if (typeof window !== 'undefined') {
-    window.location.assign(LOGIN_PATH);
+    // Through the marker rather than plain /login: when the server call above
+    // failed, the API never cleared its session hint, and plain /login would
+    // send the user straight back into the shell they just left.
+    window.location.assign(SESSION_ENDED_LOGIN.href);
   }
 }

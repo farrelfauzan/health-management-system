@@ -8,6 +8,7 @@ import {
 } from '#lib/auth/access-token-cookie';
 import { recordFailedRequest } from '#lib/api/failed-request-buffer';
 import { mfaTicketStore } from '#lib/auth/mfa-ticket-store';
+import { SESSION_ENDED_LOGIN } from '#lib/auth/session-ended-login';
 
 /**
  * Where the API lives.
@@ -65,14 +66,17 @@ function redirectToLogin(): void {
     return;
   }
 
-  window.location.assign(LOGIN_PATH);
+  window.location.assign(SESSION_ENDED_LOGIN.href);
 }
 
 function clearSessionAndRedirect(): void {
   // Only the access-token cookie is ours to clear. The refresh token is
   // `httpOnly` and path-scoped to the API (SJ-6), so this tier cannot see it
   // and must not pretend to — the server drops it on logout or on the reuse
-  // check that killed the family.
+  // check that killed the family. The session hint is the API's too, but it
+  // outlives a killed family and would bounce plain /login straight back to
+  // the shell, so the redirect goes through the marker `proxy.ts` answers by
+  // clearing it (see `session-ended-login.ts`).
   clearAccessTokenCookie();
   redirectToLogin();
 }

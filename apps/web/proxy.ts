@@ -7,6 +7,7 @@ import {
   PREFERRED_SHELL_COOKIE_NAME,
   parsePreferredShell,
 } from '#lib/auth/preferred-shell-cookie';
+import { SESSION_ENDED_LOGIN } from '#lib/auth/session-ended-login';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { DOCTOR_PROFILE_COMPLETION } from '#lib/doctor-profile/doctor-profile-completion';
@@ -179,6 +180,13 @@ export function proxy(request: NextRequest) {
   }
 
   if (pathname === LOGIN_PATH) {
+    // The client has already learnt the session is dead (refresh refused,
+    // logout, lock) but cannot clear the API's session hint itself, and the
+    // hint alone would send it straight back to its shell. Clear both here and
+    // land on plain /login, which the next pass renders.
+    if (request.nextUrl.searchParams.has(SESSION_ENDED_LOGIN.param)) {
+      return buildLoginRedirectWithClearedCookie(request);
+    }
     if (hasAdminSession || hasDoctorSession || hasPharmacistSession || hasPatientSession) {
       return redirectToHome();
     }
