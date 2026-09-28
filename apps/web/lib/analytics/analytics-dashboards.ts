@@ -1,12 +1,7 @@
 import type { AppAction } from '@hms/ui';
 
 export type AnalyticsDashboardSlug =
-  | 'operations'
-  | 'finance'
-  | 'case-mix'
-  | 'pharmacy'
-  | 'laboratory'
-  | 'reporting';
+  'operations' | 'finance' | 'case-mix' | 'pharmacy' | 'laboratory' | 'reporting';
 
 export type AnalyticsNavigationKey =
   | 'analyticsOperations'
