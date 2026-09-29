@@ -65,7 +65,8 @@
       "vs": "vs {value}",
       "up": "naik",
       "down": "turun",
-      "flat": "tetap"
+      "flat": "tetap",
+      "minutes": "{value} mnt"
     },
     "states": {
       "loading": "Memuat dasbor",
@@ -86,7 +87,13 @@
         "newPatientsShare": "{percent}% dari kunjungan",
         "noShowRate": "Tingkat no-show",
         "noShowHelper": "{noShows} dari {due} janji temu",
-        "noShowNone": "Belum ada janji temu yang jatuh tempo"
+        "noShowNone": "Belum ada janji temu yang jatuh tempo",
+        "waitTime": "Median waktu tunggu",
+        "waitHelper": "Check-in sampai mulai diperiksa",
+        "consultTime": "Median lama periksa",
+        "consultHelper": "Mulai sampai selesai diperiksa",
+        "excludedHelper": "{count} kunjungan > 8 jam dikecualikan",
+        "minutesValue": "{value} mnt"
       },
       "trend": {
         "title": {
@@ -139,12 +146,54 @@
         "REJECTED": "Ditolak",
         "SCHEDULED": "Terjadwal",
         "CONFIRMED": "Dikonfirmasi",
-        "REQUESTED": "Menunggu persetujuan"
+        "REQUESTED": "Menunggu persetujuan",
+        "sessionUtilisation": "Keterisian sesi praktik rata-rata <strong>{percent}%</strong>"
       },
       "busiestHours": {
         "title": "Jam tersibuk",
         "subtitle": "Check-in per hari dan jam",
-        "comingSoon": "Peta jam tersibuk sedang disiapkan dan akan tampil di sini."
+        "ariaLabel": "Check-in per hari dan jam. Paling sibuk {weekday} pukul {hour}.00 dengan {count} check-in.",
+        "ariaLabelEmpty": "Belum ada check-in pada periode ini.",
+        "less": "Sedikit",
+        "more": "Banyak",
+        "hour": "Jam",
+        "weekday": "Hari",
+        "weekdays": {
+          "1": "Sen",
+          "2": "Sel",
+          "3": "Rab",
+          "4": "Kam",
+          "5": "Jum",
+          "6": "Sab",
+          "7": "Min"
+        },
+        "weekdaysLong": {
+          "1": "Senin",
+          "2": "Selasa",
+          "3": "Rabu",
+          "4": "Kamis",
+          "5": "Jumat",
+          "6": "Sabtu",
+          "7": "Minggu"
+        }
+      },
+      "inpatient": {
+        "title": "Rawat inap",
+        "subtitle": "Masuk, pulang, lama rawat, dan keterisian tempat tidur",
+        "admissions": "Masuk",
+        "discharges": "Pulang",
+        "lengthOfStay": "Rata-rata lama rawat",
+        "lengthOfStayValue": "{days} hari",
+        "occupancy": "Keterisian tempat tidur",
+        "vs": "vs {value}",
+        "admissionsLink": "Rawat inap",
+        "dispositions": {
+          "HOME": "Pulang ke rumah",
+          "AGAINST_ADVICE": "Pulang atas permintaan sendiri",
+          "REFERRED": "Dirujuk",
+          "DIED": "Meninggal",
+          "OTHER": "Lainnya"
+        }
       }
     },
     "reporting": {

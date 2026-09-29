@@ -5,6 +5,7 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotalsInpatient } from './analyticsOperationsControllerGetOperationsV1200DataComparisonTotalsInpatient';
 
 export type AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotals = {
   visits: number;
@@ -15,4 +16,12 @@ export type AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotals 
   completedAppointments: number;
   noShowAppointments: number;
   noShowRatePercent: number;
+  medianWaitMinutes: number;
+  p90WaitMinutes: number;
+  excludedWaitIntervals: number;
+  medianConsultMinutes: number;
+  p90ConsultMinutes: number;
+  excludedConsultIntervals: number;
+  sessionUtilisationPercent: number;
+  inpatient?: AnalyticsOperationsControllerGetOperationsV1200DataComparisonTotalsInpatient;
 };

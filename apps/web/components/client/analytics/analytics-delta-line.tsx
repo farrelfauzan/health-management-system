@@ -37,9 +37,7 @@ export function AnalyticsDeltaLine({ delta, previousLabel }: AnalyticsDeltaLineP
       <span className={cn('flex items-center gap-0.5 font-semibold', TONE_CLASSES[delta.tone])}>
         <Icon name={ARROW_BY_DIRECTION[delta.direction]} size={16} />
         <span className="sr-only">{t(delta.direction)}</span>
-        {delta.kind === 'percent'
-          ? t('percent', { value: signed })
-          : t('points', { value: signed })}
+        {t(delta.kind, { value: signed })}
       </span>
       <span className="text-slate-500">{t('vs', { value: previousLabel })}</span>
     </div>

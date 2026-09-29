@@ -10,6 +10,8 @@ import type { AnalyticsAppointmentOutcome } from '@hms/shared-types';
 
 type AnalyticsAppointmentOutcomesCardProps = {
   outcomes: AnalyticsAppointmentOutcome[];
+  /** Booked appointments over capacity, across capped sessions; `null` when none had a cap. */
+  sessionUtilisationPercent?: number | null;
 };
 
 const PERCENT = 100;
@@ -48,6 +50,7 @@ const SWATCH_BY_STATUS: Readonly<Record<string, string>> = {
  */
 export function AnalyticsAppointmentOutcomesCard({
   outcomes,
+  sessionUtilisationPercent = null,
 }: AnalyticsAppointmentOutcomesCardProps) {
   const t = useTranslations('analytics.operations.outcomes');
   const format = useFormatter();
@@ -121,6 +124,14 @@ export function AnalyticsAppointmentOutcomesCard({
           ))}
         </ul>
       </div>
+      {sessionUtilisationPercent !== null ? (
+        <p className="border-t border-slate-200 pt-2 text-xs text-slate-500">
+          {t.rich('sessionUtilisation', {
+            percent: format.number(sessionUtilisationPercent, { maximumFractionDigits: 1 }),
+            strong: (chunks) => <strong className="text-slate-900">{chunks}</strong>,
+          })}
+        </p>
+      ) : null}
     </AnalyticsCard>
   );
 }

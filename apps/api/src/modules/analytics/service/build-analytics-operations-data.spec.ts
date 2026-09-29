@@ -23,6 +23,24 @@ describe('buildAnalyticsOperationsData', () => {
       outcomes: [],
       channels: [],
       walkIns: 0,
+      timings: {
+        medianWaitMinutes: null,
+        p90WaitMinutes: null,
+        excludedWaitIntervals: 0,
+        medianConsultMinutes: null,
+        p90ConsultMinutes: null,
+        excludedConsultIntervals: 0,
+      },
+      busiestHours: [],
+      sessions: {
+        cappedSessions: 0,
+        capacity: 0,
+        bookedAppointments: 0,
+        movedSessions: 0,
+        cancelledSessions: 0,
+      },
+      inpatient: null,
+      inpatientDispositions: null,
       ...overrides,
     };
   }
@@ -208,5 +226,121 @@ describe('buildAnalyticsOperationsData', () => {
       status: 'COMPLETED',
       appointments: 610,
     });
+  });
+
+  it('gives 10 beds and 64 occupied bed-days over 10 days an occupancy of 64%', () => {
+    const inputCurrent = buildPeriod(
+      '2026-09-01',
+      '2026-09-10',
+      buildSnapshot({
+        inpatient: {
+          admissions: 8,
+          discharges: 6,
+          averageLengthOfStayDays: 2.44,
+          occupiedBedDays: 64,
+          bedCount: 10,
+        },
+        inpatientDispositions: [{ disposition: 'HOME', discharges: 6 }],
+      }),
+    );
+
+    const actual = buildAnalyticsOperationsData({ current: inputCurrent });
+
+    expect(actual.totals.inpatient).toEqual({
+      admissions: 8,
+      discharges: 6,
+      averageLengthOfStayDays: 2.4,
+      bedOccupancyPercent: 64,
+    });
+    expect(actual.breakdowns.inpatientDispositions).toEqual([
+      { disposition: 'HOME', discharges: 6 },
+    ]);
+  });
+
+  it('leaves inpatient out when the feature is off', () => {
+    const actual = buildAnalyticsOperationsData({
+      current: buildPeriod('2026-09-01', '2026-09-30', buildSnapshot()),
+    });
+
+    expect(actual.totals.inpatient).toBeNull();
+    expect(actual.breakdowns.inpatientDispositions).toBeNull();
+  });
+
+  it('rounds wait and consult times to whole minutes and keeps the excluded counts', () => {
+    const inputCurrent = buildPeriod(
+      '2026-09-01',
+      '2026-09-30',
+      buildSnapshot({
+        timings: {
+          medianWaitMinutes: 17.6,
+          p90WaitMinutes: 41.2,
+          excludedWaitIntervals: 1,
+          medianConsultMinutes: 11.4,
+          p90ConsultMinutes: 22.5,
+          excludedConsultIntervals: 14,
+        },
+      }),
+    );
+
+    const actual = buildAnalyticsOperationsData({ current: inputCurrent });
+
+    expect(actual.totals).toMatchObject({
+      medianWaitMinutes: 18,
+      p90WaitMinutes: 41,
+      excludedWaitIntervals: 1,
+      medianConsultMinutes: 11,
+      p90ConsultMinutes: 23,
+      excludedConsultIntervals: 14,
+    });
+  });
+
+  it('computes session utilisation over capped sessions, and none without capacity', () => {
+    const withCapacity = buildAnalyticsOperationsData({
+      current: buildPeriod(
+        '2026-09-01',
+        '2026-09-30',
+        buildSnapshot({
+          sessions: {
+            cappedSessions: 20,
+            capacity: 400,
+            bookedAppointments: 328,
+            movedSessions: 2,
+            cancelledSessions: 1,
+          },
+        }),
+      ),
+    });
+    const withoutCapacity = buildAnalyticsOperationsData({
+      current: buildPeriod('2026-09-01', '2026-09-30', buildSnapshot()),
+    });
+
+    expect(withCapacity.totals.sessionUtilisationPercent).toBe(82);
+    expect(withCapacity.breakdowns.sessions).toMatchObject({
+      movedSessions: 2,
+      cancelledSessions: 1,
+    });
+    expect(withoutCapacity.totals.sessionUtilisationPercent).toBeNull();
+  });
+
+  it('orders the busiest-hours cells by weekday then hour', () => {
+    const actual = buildAnalyticsOperationsData({
+      current: buildPeriod(
+        '2026-09-01',
+        '2026-09-30',
+        buildSnapshot({
+          busiestHours: [
+            { weekday: 2, hour: 8, checkIns: 3 },
+            { weekday: 1, hour: 9, checkIns: 5 },
+            { weekday: 1, hour: 8, checkIns: 7 },
+          ],
+        }),
+      ),
+    });
+
+    expect(actual.breakdowns.busiestHours.map((cell) => `${cell.weekday}-${cell.hour}`)).toEqual([
+      '1-8',
+      '1-9',
+      '2-8',
+    ]);
   });
 });

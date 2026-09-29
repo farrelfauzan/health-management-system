@@ -13,6 +13,20 @@ const operationsTotals = {
   noShowAppointments: 65,
   // `null` when no appointment was completed or missed.
   noShowRatePercent: 9.6,
+  medianWaitMinutes: 18,
+  p90WaitMinutes: 41,
+  excludedWaitIntervals: 2,
+  medianConsultMinutes: 11,
+  p90ConsultMinutes: 23,
+  excludedConsultIntervals: 14,
+  sessionUtilisationPercent: 82,
+  // `null` when the rooms and inpatient feature is off.
+  inpatient: optionalExample({
+    admissions: 57,
+    discharges: 54,
+    averageLengthOfStayDays: 2.4,
+    bedOccupancyPercent: 64,
+  }),
 };
 
 const operationsSeries = [
@@ -54,6 +68,16 @@ export const ANALYTICS_EXAMPLES = {
             { status: 'COMPLETED', appointments: 610 },
             { status: 'NO_SHOW', appointments: 65 },
           ],
+          busiestHours: [{ weekday: 1, hour: 8, checkIns: 96 }],
+          sessions: {
+            cappedSessions: 88,
+            capacity: 1760,
+            bookedAppointments: 1443,
+            movedSessions: 2,
+            cancelledSessions: 1,
+          },
+          // `null` when the rooms and inpatient feature is off.
+          inpatientDispositions: optionalExample([{ disposition: 'HOME', discharges: 48 }]),
           // The schema is inferred from the first row, so a numeric rate
           // leads; the API itself lists WALK_IN first, with a null rate.
           bookingChannels: [

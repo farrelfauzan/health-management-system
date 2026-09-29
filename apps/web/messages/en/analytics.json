@@ -65,7 +65,8 @@
       "vs": "vs {value}",
       "up": "up",
       "down": "down",
-      "flat": "unchanged"
+      "flat": "unchanged",
+      "minutes": "{value} min"
     },
     "states": {
       "loading": "Loading the dashboard",
@@ -86,7 +87,13 @@
         "newPatientsShare": "{percent}% of visits",
         "noShowRate": "No-show rate",
         "noShowHelper": "{noShows} of {due} appointments",
-        "noShowNone": "No appointments were due yet"
+        "noShowNone": "No appointments were due yet",
+        "waitTime": "Median wait",
+        "waitHelper": "Check-in to the start of the examination",
+        "consultTime": "Median examination",
+        "consultHelper": "Start to end of the examination",
+        "excludedHelper": "{count} visits over 8 h left out",
+        "minutesValue": "{value} min"
       },
       "trend": {
         "title": {
@@ -139,12 +146,54 @@
         "REJECTED": "Rejected",
         "SCHEDULED": "Scheduled",
         "CONFIRMED": "Confirmed",
-        "REQUESTED": "Awaiting approval"
+        "REQUESTED": "Awaiting approval",
+        "sessionUtilisation": "Average practice session fill <strong>{percent}%</strong>"
       },
       "busiestHours": {
         "title": "Busiest hours",
         "subtitle": "Check-ins by day and hour",
-        "comingSoon": "The busiest-hours map is being prepared and will appear here."
+        "ariaLabel": "Check-ins by day and hour. Busiest on {weekday} at {hour}:00 with {count} check-ins.",
+        "ariaLabelEmpty": "No check-ins in this period yet.",
+        "less": "Fewer",
+        "more": "More",
+        "hour": "Hour",
+        "weekday": "Day",
+        "weekdays": {
+          "1": "Mon",
+          "2": "Tue",
+          "3": "Wed",
+          "4": "Thu",
+          "5": "Fri",
+          "6": "Sat",
+          "7": "Sun"
+        },
+        "weekdaysLong": {
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday",
+          "7": "Sunday"
+        }
+      },
+      "inpatient": {
+        "title": "Inpatient",
+        "subtitle": "Admissions, discharges, length of stay and bed occupancy",
+        "admissions": "Admitted",
+        "discharges": "Discharged",
+        "lengthOfStay": "Average length of stay",
+        "lengthOfStayValue": "{days} days",
+        "occupancy": "Bed occupancy",
+        "vs": "vs {value}",
+        "admissionsLink": "Admissions",
+        "dispositions": {
+          "HOME": "Home",
+          "AGAINST_ADVICE": "Left against advice",
+          "REFERRED": "Referred",
+          "DIED": "Died",
+          "OTHER": "Other"
+        }
       }
     },
     "reporting": {

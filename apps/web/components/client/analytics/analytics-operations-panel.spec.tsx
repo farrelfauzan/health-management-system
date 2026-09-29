@@ -63,6 +63,14 @@ function buildOperations(): AnalyticsOperationsData {
       completedAppointments: 30,
       noShowAppointments: 10,
       noShowRatePercent: 25,
+      medianWaitMinutes: 18,
+      p90WaitMinutes: 41,
+      excludedWaitIntervals: 0,
+      medianConsultMinutes: 11,
+      p90ConsultMinutes: 23,
+      excludedConsultIntervals: 14,
+      sessionUtilisationPercent: 82,
+      inpatient: null,
     },
     series: [{ bucket: '2026-09-01', visits: 150, consultation: 150, labOnly: 0, admission: 0 }],
     breakdowns: {
@@ -78,6 +86,15 @@ function buildOperations(): AnalyticsOperationsData {
       bookingChannels: [
         { channel: 'WHATSAPP', bookings: 40, completed: 30, noShows: 10, noShowRatePercent: 25 },
       ],
+      busiestHours: [{ weekday: 1, hour: 8, checkIns: 96 }],
+      sessions: {
+        cappedSessions: 20,
+        capacity: 400,
+        bookedAppointments: 328,
+        movedSessions: 0,
+        cancelledSessions: 0,
+      },
+      inpatientDispositions: null,
     },
     comparison: {
       from: '2026-08-01',
@@ -91,6 +108,14 @@ function buildOperations(): AnalyticsOperationsData {
         completedAppointments: 25,
         noShowAppointments: 5,
         noShowRatePercent: 16.7,
+        medianWaitMinutes: 15,
+        p90WaitMinutes: 35,
+        excludedWaitIntervals: 0,
+        medianConsultMinutes: 12,
+        p90ConsultMinutes: 22,
+        excludedConsultIntervals: 0,
+        sessionUtilisationPercent: 80,
+        inpatient: null,
       },
       series: [],
     },
@@ -192,6 +217,35 @@ describe('AnalyticsOperationsPanel', () => {
       },
       expect.anything(),
     );
+  });
+
+  it('shows the wait against last period, the busiest hour and session fill, and no inpatient card', async () => {
+    getOperationsMock.mockResolvedValue({
+      status: 200,
+      data: {
+        data: buildOperations(),
+        meta: {
+          from: '2026-09-01',
+          to: '2026-09-30',
+          timezone: 'Asia/Jakarta',
+          granularity: 'day',
+          generatedAt: '2026-09-28T07:32:00.000Z',
+        },
+      },
+    });
+
+    renderPanel();
+
+    expect(await screen.findByText('18 mnt')).toBeInTheDocument();
+    expect(screen.getByText('+3 mnt')).toBeInTheDocument();
+    expect(screen.getByText('14 kunjungan > 8 jam dikecualikan')).toBeInTheDocument();
+    expect(
+      screen.getByRole('img', {
+        name: 'Check-in per hari dan jam. Paling sibuk Senin pukul 08.00 dengan 96 check-in.',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('82%')).toBeInTheDocument();
+    expect(screen.queryByText('Rawat inap')).not.toBeInTheDocument();
   });
 
   it('writes a preset change into the URL', async () => {

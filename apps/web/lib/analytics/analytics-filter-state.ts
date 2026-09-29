@@ -33,9 +33,10 @@ export type AnalyticsPeriodRange = {
 /**
  * How a KPI changed against the comparison period. `percent` is a relative
  * change (visits +8,4%); `points` is the difference between two rates
- * (no-show −1,2 poin), because a percentage of a percentage misleads.
+ * (no-show −1,2 poin), because a percentage of a percentage misleads;
+ * `minutes` is the difference between two durations (wait +3 mnt).
  */
-export type AnalyticsDeltaKind = 'percent' | 'points';
+export type AnalyticsDeltaKind = 'percent' | 'points' | 'minutes';
 
 export type AnalyticsDeltaDirection = 'up' | 'down' | 'flat';
 
@@ -76,4 +77,17 @@ export type AnalyticsSubmissionTableRow = {
   pending: number;
   failed: number;
   fixHref?: string;
+};
+
+/** One heatmap cell: its check-ins and a shade from 0 (none) to 4 (busiest). */
+export type BusiestHoursGridCell = {
+  hour: number;
+  checkIns: number;
+  shade: number;
+};
+
+export type BusiestHoursGrid = {
+  hours: number[];
+  rows: Array<{ weekday: number; cells: BusiestHoursGridCell[] }>;
+  busiest: { weekday: number; hour: number; checkIns: number } | null;
 };

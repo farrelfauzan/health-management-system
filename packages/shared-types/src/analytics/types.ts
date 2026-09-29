@@ -1,6 +1,9 @@
+import type { AnalyticsFilterInput } from '#analytics/schemas';
 import type {
   AnalyticsBpjsTypeRow,
+  AnalyticsBusiestHourCell,
   AnalyticsGranularity,
+  AnalyticsInpatientDisposition,
   AnalyticsReportingReadiness,
 } from '#analytics/contracts';
 
@@ -82,6 +85,9 @@ export type AnalyticsNoShowCounts = {
 export type AnalyticsSqlScope = {
   startUtc: string;
   endUtc: string;
+  /** The range's local dates, for `date` columns such as a session's day. */
+  fromDate: string;
+  toDate: string;
   granularity: AnalyticsGranularity;
   timeZone: string;
   doctorId?: string;
@@ -127,6 +133,37 @@ export type AnalyticsWalkInRow = {
   walkIns: number;
 };
 
+/** Wait and consult intervals, as Postgres's percentiles return them. */
+export type AnalyticsTimingsRow = {
+  medianWaitMinutes: number | null;
+  p90WaitMinutes: number | null;
+  excludedWaitIntervals: number;
+  medianConsultMinutes: number | null;
+  p90ConsultMinutes: number | null;
+  excludedConsultIntervals: number;
+};
+
+/** Session capacity and bookings; the moved and cancelled counts come from the change log. */
+export type AnalyticsSessionRow = {
+  cappedSessions: number;
+  capacity: number;
+  bookedAppointments: number;
+};
+
+export type AnalyticsSessionChangeRow = {
+  movedSessions: number;
+  cancelledSessions: number;
+};
+
+/** Inpatient counts; occupancy is finished in code, where the range's day count is known. */
+export type AnalyticsInpatientRow = {
+  admissions: number;
+  discharges: number;
+  averageLengthOfStayDays: number | null;
+  occupiedBedDays: number;
+  bedCount: number;
+};
+
 /** Everything the operations dashboard reads for one period, as the database returns it. */
 export type AnalyticsOperationsSnapshot = {
   visitBuckets: AnalyticsVisitBucketRow[];
@@ -136,6 +173,16 @@ export type AnalyticsOperationsSnapshot = {
   outcomes: AnalyticsOutcomeRow[];
   channels: AnalyticsChannelRow[];
   walkIns: number;
+  timings: AnalyticsTimingsRow;
+  busiestHours: AnalyticsBusiestHourCell[];
+  sessions: AnalyticsSessionRow & AnalyticsSessionChangeRow;
+  inpatient: AnalyticsInpatientRow | null;
+  inpatientDispositions: AnalyticsInpatientDisposition[] | null;
+};
+
+export type ReadOperationsSnapshotParams = {
+  scope: AnalyticsSqlScope;
+  includeInpatient: boolean;
 };
 
 /** One period's snapshot and the period it covers, ready to shape into the response. */
@@ -168,4 +215,11 @@ export type AnalyticsReportingHealthSnapshot = {
 export type ReadReportingHealthParams = {
   scope: AnalyticsSqlScope;
   includeBpjs: boolean;
+};
+
+/** One period of the operations dashboard to read. */
+export type ReadOperationsPeriodParams = {
+  range: AnalyticsRange;
+  filter: AnalyticsFilterInput;
+  includeInpatient: boolean;
 };

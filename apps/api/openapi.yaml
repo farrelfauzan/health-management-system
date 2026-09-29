@@ -62172,6 +62172,36 @@ paths:
                             type: integer
                           noShowRatePercent:
                             type: number
+                          medianWaitMinutes:
+                            type: integer
+                          p90WaitMinutes:
+                            type: integer
+                          excludedWaitIntervals:
+                            type: integer
+                          medianConsultMinutes:
+                            type: integer
+                          p90ConsultMinutes:
+                            type: integer
+                          excludedConsultIntervals:
+                            type: integer
+                          sessionUtilisationPercent:
+                            type: integer
+                          inpatient:
+                            type: object
+                            properties:
+                              admissions:
+                                type: integer
+                              discharges:
+                                type: integer
+                              averageLengthOfStayDays:
+                                type: number
+                              bedOccupancyPercent:
+                                type: integer
+                            required:
+                              - admissions
+                              - discharges
+                              - averageLengthOfStayDays
+                              - bedOccupancyPercent
                         required:
                           - visits
                           - newPatients
@@ -62181,6 +62211,13 @@ paths:
                           - completedAppointments
                           - noShowAppointments
                           - noShowRatePercent
+                          - medianWaitMinutes
+                          - p90WaitMinutes
+                          - excludedWaitIntervals
+                          - medianConsultMinutes
+                          - p90ConsultMinutes
+                          - excludedConsultIntervals
+                          - sessionUtilisationPercent
                       series:
                         type: array
                         items:
@@ -62263,6 +62300,52 @@ paths:
                               required:
                                 - status
                                 - appointments
+                          busiestHours:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                weekday:
+                                  type: integer
+                                hour:
+                                  type: integer
+                                checkIns:
+                                  type: integer
+                              required:
+                                - weekday
+                                - hour
+                                - checkIns
+                          sessions:
+                            type: object
+                            properties:
+                              cappedSessions:
+                                type: integer
+                              capacity:
+                                type: integer
+                              bookedAppointments:
+                                type: integer
+                              movedSessions:
+                                type: integer
+                              cancelledSessions:
+                                type: integer
+                            required:
+                              - cappedSessions
+                              - capacity
+                              - bookedAppointments
+                              - movedSessions
+                              - cancelledSessions
+                          inpatientDispositions:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                disposition:
+                                  type: string
+                                discharges:
+                                  type: integer
+                              required:
+                                - disposition
+                                - discharges
                           bookingChannels:
                             type: array
                             items:
@@ -62289,6 +62372,8 @@ paths:
                           - visitsByPoli
                           - visitsByDoctor
                           - appointmentOutcomes
+                          - busiestHours
+                          - sessions
                           - bookingChannels
                       comparison:
                         type: object
@@ -62316,6 +62401,36 @@ paths:
                                 type: integer
                               noShowRatePercent:
                                 type: number
+                              medianWaitMinutes:
+                                type: integer
+                              p90WaitMinutes:
+                                type: integer
+                              excludedWaitIntervals:
+                                type: integer
+                              medianConsultMinutes:
+                                type: integer
+                              p90ConsultMinutes:
+                                type: integer
+                              excludedConsultIntervals:
+                                type: integer
+                              sessionUtilisationPercent:
+                                type: integer
+                              inpatient:
+                                type: object
+                                properties:
+                                  admissions:
+                                    type: integer
+                                  discharges:
+                                    type: integer
+                                  averageLengthOfStayDays:
+                                    type: number
+                                  bedOccupancyPercent:
+                                    type: integer
+                                required:
+                                  - admissions
+                                  - discharges
+                                  - averageLengthOfStayDays
+                                  - bedOccupancyPercent
                             required:
                               - visits
                               - newPatients
@@ -62325,6 +62440,13 @@ paths:
                               - completedAppointments
                               - noShowAppointments
                               - noShowRatePercent
+                              - medianWaitMinutes
+                              - p90WaitMinutes
+                              - excludedWaitIntervals
+                              - medianConsultMinutes
+                              - p90ConsultMinutes
+                              - excludedConsultIntervals
+                              - sessionUtilisationPercent
                           series:
                             type: array
                             items:
@@ -62388,6 +62510,18 @@ paths:
                       completedAppointments: 610
                       noShowAppointments: 65
                       noShowRatePercent: 9.6
+                      medianWaitMinutes: 18
+                      p90WaitMinutes: 41
+                      excludedWaitIntervals: 2
+                      medianConsultMinutes: 11
+                      p90ConsultMinutes: 23
+                      excludedConsultIntervals: 14
+                      sessionUtilisationPercent: 82
+                      inpatient:
+                        admissions: 57
+                        discharges: 54
+                        averageLengthOfStayDays: 2.4
+                        bedOccupancyPercent: 64
                     series:
                       - bucket: 2026-09-01
                         visits: 44
@@ -62422,6 +62556,19 @@ paths:
                           appointments: 610
                         - status: NO_SHOW
                           appointments: 65
+                      busiestHours:
+                        - weekday: 1
+                          hour: 8
+                          checkIns: 96
+                      sessions:
+                        cappedSessions: 88
+                        capacity: 1760
+                        bookedAppointments: 1443
+                        movedSessions: 2
+                        cancelledSessions: 1
+                      inpatientDispositions:
+                        - disposition: HOME
+                          discharges: 48
                       bookingChannels:
                         - channel: WHATSAPP
                           bookings: 168
@@ -62445,6 +62592,18 @@ paths:
                         completedAppointments: 610
                         noShowAppointments: 65
                         noShowRatePercent: 9.6
+                        medianWaitMinutes: 18
+                        p90WaitMinutes: 41
+                        excludedWaitIntervals: 2
+                        medianConsultMinutes: 11
+                        p90ConsultMinutes: 23
+                        excludedConsultIntervals: 14
+                        sessionUtilisationPercent: 82
+                        inpatient:
+                          admissions: 57
+                          discharges: 54
+                          averageLengthOfStayDays: 2.4
+                          bedOccupancyPercent: 64
                       series:
                         - bucket: 2026-09-01
                           visits: 44

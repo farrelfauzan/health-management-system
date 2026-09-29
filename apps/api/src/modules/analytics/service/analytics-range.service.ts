@@ -51,6 +51,8 @@ export class AnalyticsRangeService {
     return {
       startUtc: range.start.toISOString().replace('T', ' ').slice(0, SQL_TIMESTAMP_LENGTH),
       endUtc: range.end.toISOString().replace('T', ' ').slice(0, SQL_TIMESTAMP_LENGTH),
+      fromDate: range.from,
+      toDate: range.to,
       granularity: range.granularity,
       timeZone: range.timeZone,
       doctorId: filter.doctorId,

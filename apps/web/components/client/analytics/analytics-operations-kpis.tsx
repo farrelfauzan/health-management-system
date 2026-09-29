@@ -15,8 +15,8 @@ type AnalyticsOperationsKpisProps = {
 const PERCENT = 100;
 
 /**
- * Visits, new patients and the no-show rate. Wait and consult times join
- * this row with the operations depth work (P29-T11).
+ * Visits, new patients, the no-show rate, and the median wait and
+ * examination times (P29-T11). A shorter wait reads as good news.
  */
 export function AnalyticsOperationsKpis({ operations }: AnalyticsOperationsKpisProps) {
   const t = useTranslations('analytics.operations.kpi');
@@ -30,6 +30,10 @@ export function AnalyticsOperationsKpis({ operations }: AnalyticsOperationsKpisP
     value === null || value === undefined
       ? '—'
       : `${format.number(value, { maximumFractionDigits: 1 })}%`;
+  const minutes = (value: number | null | undefined) =>
+    value === null || value === undefined
+      ? '—'
+      : t('minutesValue', { value: format.number(value) });
   function renderDelta(input: AnalyticsKpiDeltaInput) {
     const delta = resolveAnalyticsDelta({ ...input, previous: input.previous ?? null });
     return delta ? (
@@ -93,6 +97,48 @@ export function AnalyticsOperationsKpis({ operations }: AnalyticsOperationsKpisP
                 due: format.number(due),
               })
             : t('noShowNone')
+        }
+      />
+      <AnalyticsKpiTile
+        icon="hourglass_top"
+        label={t('waitTime')}
+        value={minutes(totals.medianWaitMinutes)}
+        delta={
+          previous
+            ? renderDelta({
+                current: totals.medianWaitMinutes,
+                previous: previous.medianWaitMinutes,
+                kind: 'minutes',
+                higherIsBetter: false,
+                previousLabel: minutes(previous.medianWaitMinutes),
+              })
+            : undefined
+        }
+        helper={
+          totals.excludedWaitIntervals > 0
+            ? t('excludedHelper', { count: format.number(totals.excludedWaitIntervals) })
+            : t('waitHelper')
+        }
+      />
+      <AnalyticsKpiTile
+        icon="timer"
+        label={t('consultTime')}
+        value={minutes(totals.medianConsultMinutes)}
+        delta={
+          previous
+            ? renderDelta({
+                current: totals.medianConsultMinutes,
+                previous: previous.medianConsultMinutes,
+                kind: 'minutes',
+                higherIsBetter: false,
+                previousLabel: minutes(previous.medianConsultMinutes),
+              })
+            : undefined
+        }
+        helper={
+          totals.excludedConsultIntervals > 0
+            ? t('excludedHelper', { count: format.number(totals.excludedConsultIntervals) })
+            : t('consultHelper')
         }
       />
     </div>

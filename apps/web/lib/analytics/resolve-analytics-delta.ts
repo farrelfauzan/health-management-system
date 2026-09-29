@@ -26,6 +26,20 @@ function resolveTone(
   return (direction === 'up') === higherIsBetter ? 'good' : 'bad';
 }
 
+function resolveDeltaValue({
+  current,
+  previous,
+  kind,
+}: Pick<AnalyticsDeltaInput, 'kind'> & { current: number; previous: number }): number | null {
+  if (kind === 'percent') {
+    return computeChangePercent(current, previous);
+  }
+  if (kind === 'minutes') {
+    return Math.round(current - previous);
+  }
+  return Math.round((current - previous) * ONE_DECIMAL) / ONE_DECIMAL;
+}
+
 /**
  * The change a KPI tile shows under its value, or `null` when there is
  * nothing honest to show: no comparison figure, or growth from zero. The
@@ -41,10 +55,7 @@ export function resolveAnalyticsDelta({
   if (current === null || previous === null) {
     return null;
   }
-  const value =
-    kind === 'percent'
-      ? computeChangePercent(current, previous)
-      : Math.round((current - previous) * ONE_DECIMAL) / ONE_DECIMAL;
+  const value = resolveDeltaValue({ current, previous, kind });
   if (value === null) {
     return null;
   }
