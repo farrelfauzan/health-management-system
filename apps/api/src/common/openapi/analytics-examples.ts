@@ -90,4 +90,30 @@ export const ANALYTICS_EXAMPLES = {
       },
     },
   },
+  reportingHealth: {
+    response: {
+      data: {
+        satusehat: [
+          {
+            kind: 'ENCOUNTER',
+            submitted: 1058,
+            pending: 12,
+            failed: 3,
+            // `null` when nothing of this kind is waiting.
+            oldestPendingAt: '2026-09-28T05:18:00.000Z',
+          },
+        ],
+        // `null` when neither BPJS feature is on.
+        bpjs: [{ type: 'PENDAFTARAN', submitted: 410, pending: 0, failed: 1 }],
+        readiness: { encountersWithoutPrimaryDiagnosis: 72, encountersWithUnlinkedClinician: 0 },
+      },
+      meta: {
+        from: '2026-09-01',
+        to: '2026-09-30',
+        timezone: 'Asia/Jakarta',
+        granularity: 'day',
+        generatedAt: '2026-09-28T07:32:00.000Z',
+      },
+    },
+  },
 } as const;

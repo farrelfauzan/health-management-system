@@ -35,6 +35,7 @@ import {
   toast,
   useAbility,
 } from '@hms/ui';
+import { useSearchParams } from 'next/navigation';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
 import { InlineNotice } from '#components/client/shared/inline-notice';
@@ -57,6 +58,7 @@ import {
   SUBMISSION_MONITOR_PROVIDERS,
   type SubmissionMonitorProvider,
 } from '#lib/integrations/submission-monitor-providers';
+import { parseSubmissionMonitorFilters } from '#lib/integrations/parse-submission-monitor-filters';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 import { formatStatusLabel } from '#lib/shared/status-label';
 import { IntegrationProviderLogo } from '#components/client/integrations/integration-provider-logo';
@@ -161,9 +163,14 @@ export function IntegrationSubmissionMonitor() {
     allowed: SUBMISSION_MONITOR_PROVIDERS.filter((candidate) => readableProviders[candidate]),
     fallback: canReadBpjs ? 'bpjs' : 'satusehat',
   });
-  const [status, setStatus] = useState<StatusFilter>('ALL');
-  const [type, setType] = useState<'ALL' | BpjsSubmissionTypeValue>('ALL');
-  const [satusehatKind, setSatusehatKind] = useState<'ALL' | SatusehatSubmissionKindValue>('ALL');
+  // P29-T06. A "Perbaiki" link on the reporting status page opens the
+  // monitor already filtered (`?status=FAILED&kind=ENCOUNTER`); the filters
+  // stay local state after that, as before.
+  const searchParams = useSearchParams();
+  const [initialFilters] = useState(() => parseSubmissionMonitorFilters(searchParams));
+  const [status, setStatus] = useState<StatusFilter>(initialFilters.status);
+  const [type, setType] = useState<'ALL' | BpjsSubmissionTypeValue>(initialFilters.type);
+  const [satusehatKind, setSatusehatKind] = useState<'ALL' | SatusehatSubmissionKindValue>(initialFilters.kind);
   // P21-T03. Null closes the drawer; a row id opens it and drives the fetch.
   const [detailSubmissionId, setDetailSubmissionId] = useState<string | null>(null);
   const [month, setMonth] = useState(currentMonth);

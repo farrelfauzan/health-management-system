@@ -151,6 +151,15 @@ export * from './analyticsOperationsControllerGetOperationsV1200DataComparisonTo
 export * from './analyticsOperationsControllerGetOperationsV1200DataSeriesItem';
 export * from './analyticsOperationsControllerGetOperationsV1200DataTotals';
 export * from './analyticsOperationsControllerGetOperationsV1200Meta';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1Compare';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1Params';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1PayerType';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1200';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1200Data';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1200DataBpjsItem';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1200DataReadiness';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1200DataSatusehatItem';
+export * from './analyticsReportingHealthControllerGetReportingHealthV1200Meta';
 export * from './antenatalExaminationControllerDismissReferralRuleV1200';
 export * from './antenatalExaminationControllerDismissReferralRuleV1200Data';
 export * from './antenatalExaminationControllerDismissReferralRuleV1200DataChecklistItem';

@@ -62485,6 +62485,191 @@ paths:
       summary: Read the operations dashboard
       tags:
         - Analytics
+  /api/v1/analytics/reporting-health:
+    get:
+      operationId: AnalyticsReportingHealthController_getReportingHealth_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+      responses:
+        "200":
+          description: "SATUSEHAT submissions per kind and BPJS submissions per type:
+            `submitted` counts what arrived between `from` and `to`; `pending`
+            and `failed` are what is outstanding now, whatever the range, and
+            `oldestPendingAt` is when the oldest pending one was queued. `bpjs`
+            is null when neither BPJS feature is on. `readiness` counts the
+            range's finished visits that cannot be reported yet: no primary
+            diagnosis, or a clinician without a NIK. Failure text is never
+            included — it can quote patient data — so each failed count is meant
+            to link to the submission list. Only `from` and `to` apply;
+            `compare`, poli, clinician and payer are ignored. Cached for five
+            minutes."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      satusehat:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            kind:
+                              type: string
+                            submitted:
+                              type: integer
+                            pending:
+                              type: integer
+                            failed:
+                              type: integer
+                            oldestPendingAt:
+                              type: string
+                          required:
+                            - kind
+                            - submitted
+                            - pending
+                            - failed
+                            - oldestPendingAt
+                      bpjs:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            submitted:
+                              type: integer
+                            pending:
+                              type: integer
+                            failed:
+                              type: integer
+                          required:
+                            - type
+                            - submitted
+                            - pending
+                            - failed
+                      readiness:
+                        type: object
+                        properties:
+                          encountersWithoutPrimaryDiagnosis:
+                            type: integer
+                          encountersWithUnlinkedClinician:
+                            type: integer
+                        required:
+                          - encountersWithoutPrimaryDiagnosis
+                          - encountersWithUnlinkedClinician
+                    required:
+                      - satusehat
+                      - bpjs
+                      - readiness
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
+                        type: string
+                    required:
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    satusehat:
+                      - kind: ENCOUNTER
+                        submitted: 1058
+                        pending: 12
+                        failed: 3
+                        oldestPendingAt: 2026-09-28T05:18:00.000Z
+                    bpjs:
+                      - type: PENDAFTARAN
+                        submitted: 410
+                        pending: 0
+                        failed: 1
+                    readiness:
+                      encountersWithoutPrimaryDiagnosis: 72
+                      encountersWithUnlinkedClinician: 0
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-28T07:32:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the reporting status
+      tags:
+        - Analytics
 info:
   title: HMS API
   description: Health Management System API

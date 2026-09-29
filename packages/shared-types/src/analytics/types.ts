@@ -1,4 +1,8 @@
-import type { AnalyticsGranularity } from '#analytics/contracts';
+import type {
+  AnalyticsBpjsTypeRow,
+  AnalyticsGranularity,
+  AnalyticsReportingReadiness,
+} from '#analytics/contracts';
 
 /** Local calendar dates, both ends included. */
 export type AnalyticsPeriod = {
@@ -143,4 +147,25 @@ export type AnalyticsOperationsPeriodSnapshot = {
 export type BuildAnalyticsOperationsDataParams = {
   current: AnalyticsOperationsPeriodSnapshot;
   comparison?: AnalyticsOperationsPeriodSnapshot;
+};
+
+/** A SATUSEHAT kind row as the database returns it, before dates become ISO text. */
+export type AnalyticsSatusehatKindDbRow = {
+  kind: string;
+  submitted: number;
+  pending: number;
+  failed: number;
+  oldestPendingAt: Date | null;
+};
+
+/** Everything the reporting status page reads, as the database returns it. */
+export type AnalyticsReportingHealthSnapshot = {
+  satusehat: AnalyticsSatusehatKindDbRow[];
+  bpjs: AnalyticsBpjsTypeRow[] | null;
+  readiness: AnalyticsReportingReadiness;
+};
+
+export type ReadReportingHealthParams = {
+  scope: AnalyticsSqlScope;
+  includeBpjs: boolean;
 };

@@ -146,6 +146,74 @@
         "subtitle": "Check-in per hari dan jam",
         "comingSoon": "Peta jam tersibuk sedang disiapkan dan akan tampil di sini."
       }
+    },
+    "reporting": {
+      "kpi": {
+        "submitted": "Terkirim ke SATUSEHAT",
+        "submittedHelper": "Pada periode ini",
+        "pending": "Tertunda",
+        "pendingOldest": "Tertua {age}",
+        "pendingNone": "Tidak ada yang menunggu",
+        "failed": "Gagal",
+        "failedHelper": "Perlu diperbaiki sebelum dikirim ulang",
+        "bpjsFailed": "Gagal ke BPJS",
+        "bpjsHelper": "{submitted} terkirim pada periode ini"
+      },
+      "age": {
+        "minutes": "{minutes} mnt",
+        "hoursMinutes": "{hours} j {minutes} mnt",
+        "days": "{days} hari"
+      },
+      "columns": {
+        "kind": "Jenis",
+        "submitted": "Terkirim",
+        "pending": "Tertunda saat ini",
+        "failed": "Gagal saat ini",
+        "action": "Tindakan"
+      },
+      "fix": "Perbaiki",
+      "fixLabel": "Perbaiki {count} kiriman {kind} yang gagal",
+      "noSubmissions": "Belum ada kiriman.",
+      "satusehat": {
+        "title": "SATUSEHAT",
+        "subtitle": "Kiriman per jenis data",
+        "note": "Penyebab kegagalan dibuka di daftar kiriman, bukan di sini, karena pesannya bisa memuat data pasien.",
+        "kinds": {
+          "ENCOUNTER": "Kunjungan",
+          "LAB_REPORT": "Hasil lab",
+          "EPISODE_OF_CARE_FINISH": "Episode kehamilan selesai",
+          "POSTNATAL_EPISODE_FINISH": "Masa nifas selesai"
+        }
+      },
+      "bpjs": {
+        "title": "BPJS PCare dan Antrean",
+        "subtitle": "Kiriman per jenis",
+        "types": {
+          "PENDAFTARAN": "Pendaftaran",
+          "KUNJUNGAN": "Kunjungan",
+          "PENDAFTARAN_DELETE": "Hapus pendaftaran",
+          "OBAT": "Obat",
+          "ANTREAN_ADD": "Antrean Mobile JKN: tambah",
+          "ANTREAN_PANGGIL": "Antrean Mobile JKN: panggil",
+          "ANTREAN_BATAL": "Antrean Mobile JKN: batal"
+        }
+      },
+      "readiness": {
+        "title": "Siap dikirim?",
+        "subtitle": "Pemeriksaan selesai pada periode ini yang belum bisa dikirim karena datanya belum lengkap",
+        "problem": "Masalah",
+        "encounters": "Pemeriksaan",
+        "withoutPrimaryDiagnosis": "Belum ada diagnosis utama",
+        "unlinkedClinician": "Tenaga klinis belum punya NIK untuk SATUSEHAT",
+        "view": "Lihat"
+      },
+      "summary": {
+        "title": "Status pelaporan",
+        "subtitle": "Kiriman yang perlu ditindaklanjuti",
+        "failed": "{count} gagal",
+        "pending": "{count} tertunda",
+        "open": "Buka status pelaporan"
+      }
     }
   }
 }

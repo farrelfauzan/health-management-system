@@ -21,6 +21,10 @@ type AnalyticsFilterBarProps = {
   today: string;
   rangeProblem: AnalyticsRangeProblem | null;
   onChange: (next: AnalyticsFilterState) => void;
+  /** Off for a page the filter cannot narrow by poli or clinician, such as reporting status. */
+  showNarrowing?: boolean;
+  /** Off for a page with nothing to compare, such as reporting status. */
+  showCompare?: boolean;
 };
 
 /**
@@ -33,6 +37,8 @@ export function AnalyticsFilterBar({
   today,
   rangeProblem,
   onChange,
+  showNarrowing = true,
+  showCompare = true,
 }: AnalyticsFilterBarProps) {
   const t = useTranslations('analytics.filter');
   function handlePresetSelect(preset: AnalyticsPeriodPreset): void {
@@ -58,23 +64,27 @@ export function AnalyticsFilterBar({
               )}
             </div>
           </div>
-          {rangeProblem === null ? (
+          {showCompare && rangeProblem === null ? (
             <AnalyticsCompareToggle
               range={{ from: state.from, to: state.to }}
               isChecked={state.compare}
               onCheckedChange={(compare) => onChange({ ...state, compare })}
             />
           ) : null}
-          <div className="grow" />
-          <AnalyticsPoliSelect
-            value={state.specialtyId}
-            onChange={(specialtyId) => onChange({ ...state, specialtyId, doctorId: undefined })}
-          />
-          <AnalyticsDoctorSelect
-            value={state.doctorId}
-            specialtyId={state.specialtyId}
-            onChange={(doctorId) => onChange({ ...state, doctorId })}
-          />
+          {showNarrowing ? (
+            <>
+              <div className="grow" />
+              <AnalyticsPoliSelect
+                value={state.specialtyId}
+                onChange={(specialtyId) => onChange({ ...state, specialtyId, doctorId: undefined })}
+              />
+              <AnalyticsDoctorSelect
+                value={state.doctorId}
+                specialtyId={state.specialtyId}
+                onChange={(doctorId) => onChange({ ...state, doctorId })}
+              />
+            </>
+          ) : null}
         </section>
       </CardContent>
     </Card>

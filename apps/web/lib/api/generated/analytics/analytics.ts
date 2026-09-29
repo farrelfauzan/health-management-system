@@ -22,7 +22,9 @@ import type {
 
 import type {
   AnalyticsOperationsControllerGetOperationsV1200,
-  AnalyticsOperationsControllerGetOperationsV1Params
+  AnalyticsOperationsControllerGetOperationsV1Params,
+  AnalyticsReportingHealthControllerGetReportingHealthV1200,
+  AnalyticsReportingHealthControllerGetReportingHealthV1Params
 } from '../model';
 
 import { orvalAxiosMutator } from '../../http';
@@ -127,6 +129,99 @@ export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsOperationsControllerGetOperationsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the reporting status
+ */
+export const analyticsReportingHealthControllerGetReportingHealthV1 = (
+    params: AnalyticsReportingHealthControllerGetReportingHealthV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsReportingHealthControllerGetReportingHealthV1200>(
+      {url: `/api/v1/analytics/reporting-health`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsReportingHealthControllerGetReportingHealthV1QueryKey = (params?: AnalyticsReportingHealthControllerGetReportingHealthV1Params,) => {
+    return [
+    `/api/v1/analytics/reporting-health`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsReportingHealthControllerGetReportingHealthV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError = unknown>(params: AnalyticsReportingHealthControllerGetReportingHealthV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsReportingHealthControllerGetReportingHealthV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>> = ({ signal }) => analyticsReportingHealthControllerGetReportingHealthV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsReportingHealthControllerGetReportingHealthV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>>
+export type AnalyticsReportingHealthControllerGetReportingHealthV1QueryError = unknown
+
+
+export function useAnalyticsReportingHealthControllerGetReportingHealthV1<TData = Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError = unknown>(
+ params: AnalyticsReportingHealthControllerGetReportingHealthV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsReportingHealthControllerGetReportingHealthV1<TData = Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError = unknown>(
+ params: AnalyticsReportingHealthControllerGetReportingHealthV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsReportingHealthControllerGetReportingHealthV1<TData = Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError = unknown>(
+ params: AnalyticsReportingHealthControllerGetReportingHealthV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the reporting status
+ */
+
+export function useAnalyticsReportingHealthControllerGetReportingHealthV1<TData = Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError = unknown>(
+ params: AnalyticsReportingHealthControllerGetReportingHealthV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsReportingHealthControllerGetReportingHealthV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsReportingHealthControllerGetReportingHealthV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
