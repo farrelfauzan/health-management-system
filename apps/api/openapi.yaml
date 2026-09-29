@@ -62846,6 +62846,474 @@ paths:
       summary: Read the reporting status
       tags:
         - Analytics
+  /api/v1/analytics/finance:
+    get:
+      operationId: AnalyticsFinanceController_getFinance_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+      responses:
+        "200":
+          description: "Revenue follows the invoice date: ISSUED and PAID invoices by
+            `issuedAt` in clinic time, drafts and voided invoices never. Prices
+            are tax-inclusive, so `taxAmount` is the PPN inside `revenue`.
+            `cashReceived` and `breakdowns.paymentMethods` follow the payment
+            date instead, counted exactly as `GET /reports/cashier-daily` counts
+            them, so the two reconcile. Clinicians are credited through the
+            invoice's encounter, as in the cashier report; a walk-in lab or
+            inpatient bill is the unattributed row (`doctorId: null`). `payers`
+            pairs each payer's visits with its revenue, `payerType: null` being
+            a visit whose payer was never recorded. `outstanding` is every
+            unpaid invoice now, whatever the range, by clinic days since issue
+            (0–7, 8–30, over 30). `voidedInvoices` counts invoices voided in the
+            range after they were issued. `specialtyId`, `doctorId` and
+            `payerType` narrow every block. Amounts are rupiah, summed in
+            integer cents; no patient or invoice number appears. `compare=true`
+            adds `comparison` and `previousRevenue` per clinician and poli.
+            Cached for five minutes; a query past ten seconds answers 503
+            `ANALYTICS_QUERY_TIMEOUT`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          revenue:
+                            type: integer
+                          taxAmount:
+                            type: integer
+                          invoices:
+                            type: integer
+                          invoicedVisits:
+                            type: integer
+                          revenuePerVisit:
+                            type: integer
+                          unpaidInvoices:
+                            type: integer
+                          unpaidAmount:
+                            type: integer
+                          cashReceived:
+                            type: integer
+                          payments:
+                            type: integer
+                          voidedInvoices:
+                            type: integer
+                          voidedAmount:
+                            type: integer
+                        required:
+                          - revenue
+                          - taxAmount
+                          - invoices
+                          - invoicedVisits
+                          - revenuePerVisit
+                          - unpaidInvoices
+                          - unpaidAmount
+                          - cashReceived
+                          - payments
+                          - voidedInvoices
+                          - voidedAmount
+                      series:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            bucket:
+                              type: string
+                            revenue:
+                              type: integer
+                            cashReceived:
+                              type: integer
+                          required:
+                            - bucket
+                            - revenue
+                            - cashReceived
+                      breakdowns:
+                        type: object
+                        properties:
+                          paymentMethods:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                method:
+                                  type: string
+                                payments:
+                                  type: integer
+                                amount:
+                                  type: integer
+                              required:
+                                - method
+                                - payments
+                                - amount
+                          itemTypes:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                itemType:
+                                  type: string
+                                lines:
+                                  type: integer
+                                amount:
+                                  type: integer
+                                taxAmount:
+                                  type: integer
+                              required:
+                                - itemType
+                                - lines
+                                - amount
+                                - taxAmount
+                          doctors:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                doctorId:
+                                  type: string
+                                doctorName:
+                                  type: string
+                                specialtyName:
+                                  type: string
+                                invoices:
+                                  type: integer
+                                visits:
+                                  type: integer
+                                revenue:
+                                  type: integer
+                                revenuePerVisit:
+                                  type: integer
+                                previousRevenue:
+                                  type: integer
+                              required:
+                                - doctorId
+                                - doctorName
+                                - specialtyName
+                                - invoices
+                                - visits
+                                - revenue
+                                - revenuePerVisit
+                          poli:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                specialtyId:
+                                  type: string
+                                specialtyName:
+                                  type: string
+                                invoices:
+                                  type: integer
+                                revenue:
+                                  type: integer
+                                previousRevenue:
+                                  type: integer
+                              required:
+                                - specialtyId
+                                - specialtyName
+                                - invoices
+                                - revenue
+                          payers:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                payerType:
+                                  type: string
+                                visits:
+                                  type: integer
+                                invoices:
+                                  type: integer
+                                revenue:
+                                  type: integer
+                              required:
+                                - payerType
+                                - visits
+                                - invoices
+                                - revenue
+                          outstanding:
+                            type: object
+                            properties:
+                              invoices:
+                                type: integer
+                              amount:
+                                type: integer
+                              aging:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    bucket:
+                                      type: string
+                                    invoices:
+                                      type: integer
+                                    amount:
+                                      type: integer
+                                  required:
+                                    - bucket
+                                    - invoices
+                                    - amount
+                            required:
+                              - invoices
+                              - amount
+                              - aging
+                        required:
+                          - paymentMethods
+                          - itemTypes
+                          - doctors
+                          - poli
+                          - payers
+                          - outstanding
+                      comparison:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                          totals:
+                            type: object
+                            properties:
+                              revenue:
+                                type: integer
+                              taxAmount:
+                                type: integer
+                              invoices:
+                                type: integer
+                              invoicedVisits:
+                                type: integer
+                              revenuePerVisit:
+                                type: integer
+                              unpaidInvoices:
+                                type: integer
+                              unpaidAmount:
+                                type: integer
+                              cashReceived:
+                                type: integer
+                              payments:
+                                type: integer
+                              voidedInvoices:
+                                type: integer
+                              voidedAmount:
+                                type: integer
+                            required:
+                              - revenue
+                              - taxAmount
+                              - invoices
+                              - invoicedVisits
+                              - revenuePerVisit
+                              - unpaidInvoices
+                              - unpaidAmount
+                              - cashReceived
+                              - payments
+                              - voidedInvoices
+                              - voidedAmount
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                bucket:
+                                  type: string
+                                revenue:
+                                  type: integer
+                                cashReceived:
+                                  type: integer
+                              required:
+                                - bucket
+                                - revenue
+                                - cashReceived
+                        required:
+                          - from
+                          - to
+                          - totals
+                          - series
+                    required:
+                      - totals
+                      - series
+                      - breakdowns
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
+                        type: string
+                    required:
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    totals:
+                      revenue: 196250000
+                      taxAmount: 2140000
+                      invoices: 1208
+                      invoicedVisits: 1188
+                      revenuePerVisit: 165194
+                      unpaidInvoices: 41
+                      unpaidAmount: 9800000
+                      cashReceived: 186400000
+                      payments: 1147
+                      voidedInvoices: 7
+                      voidedAmount: 1200000
+                    series:
+                      - bucket: 2026-09-01
+                        revenue: 6420000
+                        cashReceived: 6110000
+                      - bucket: 2026-09-02
+                        revenue: 7150500
+                        cashReceived: 6980000
+                    breakdowns:
+                      paymentMethods:
+                        - method: CASH
+                          payments: 512
+                          amount: 82016000
+                        - method: QRIS
+                          payments: 318
+                          amount: 50328000
+                      itemTypes:
+                        - itemType: MEDICATION
+                          lines: 2480
+                          amount: 71400000
+                          taxAmount: 0
+                      doctors:
+                        - doctorId: 6c1d0a2f-3b4e-4d7c-9f8a-0b1c2d3e4f5a
+                          doctorName: dr. Rina Kartika
+                          specialtyName: Poli Umum
+                          invoices: 418
+                          visits: 412
+                          revenue: 61200000
+                          revenuePerVisit: 148544
+                          previousRevenue: 56150000
+                      poli:
+                        - specialtyId: 5b0c9f1e-2a3d-4c6b-8e7f-9a0b1c2d3e4f
+                          specialtyName: Poli Umum
+                          invoices: 640
+                          revenue: 95000000
+                          previousRevenue: 88400000
+                      payers:
+                        - payerType: GENERAL
+                          visits: 649
+                          invoices: 640
+                          revenue: 139300000
+                      outstanding:
+                        invoices: 41
+                        amount: 9800000
+                        aging:
+                          - bucket: 0-7
+                            invoices: 26
+                            amount: 5900000
+                          - bucket: 8-30
+                            invoices: 11
+                            amount: 3100000
+                          - bucket: over-30
+                            invoices: 4
+                            amount: 800000
+                    comparison:
+                      from: 2026-08-01
+                      to: 2026-08-31
+                      totals:
+                        revenue: 176400000
+                        taxAmount: 2140000
+                        invoices: 1208
+                        invoicedVisits: 1188
+                        revenuePerVisit: 165194
+                        unpaidInvoices: 41
+                        unpaidAmount: 9800000
+                        cashReceived: 186400000
+                        payments: 1147
+                        voidedInvoices: 7
+                        voidedAmount: 1200000
+                      series:
+                        - bucket: 2026-09-01
+                          revenue: 6420000
+                          cashReceived: 6110000
+                        - bucket: 2026-09-02
+                          revenue: 7150500
+                          cashReceived: 6980000
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-28T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the finance dashboard
+      tags:
+        - Analytics
 info:
   title: HMS API
   description: Health Management System API

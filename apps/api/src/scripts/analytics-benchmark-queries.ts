@@ -25,9 +25,33 @@ const APPOINTMENT_FILTER = `
     SELECT d.id FROM doctor_profiles d WHERE d.specialty_id = $4::uuid
   ))`;
 
+// An invoice aliased `i` joined to the visit it bills (P29-T08): its own
+// registration, its encounter's, or for a stay the referring encounter's.
+const INVOICE_VISIT_JOINS = `
+  LEFT JOIN encounters e ON e.id = i.encounter_id
+  LEFT JOIN admissions ad ON ad.id = i.admission_id
+  LEFT JOIN encounters se ON se.id = ad.source_encounter_id
+  LEFT JOIN registrations r
+    ON r.id = COALESCE(i.registration_id, e.registration_id, se.registration_id)`;
+
+// Narrowed by the clinician of the invoice's encounter and the visit's poli.
+const INVOICE_NARROWING = `
+  AND ($3::uuid IS NULL OR e.doctor_id = $3::uuid)
+  AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)`;
+
+// Revenue by invoice date (Q-3): issued and paid invoices issued in the range.
+const REVENUE_FILTER = `
+  i.deleted_at IS NULL
+  AND i.status IN ('ISSUED', 'PAID')
+  AND i.issued_at >= $1::timestamp
+  AND i.issued_at < $2::timestamp
+  ${INVOICE_NARROWING}`;
+
+const FINANCE_PARAMS = ['startUtc', 'endUtc', 'doctorId', 'specialtyId'] as const;
+
 /**
  * The candidate SQL for every Sprint 1 analytics query (P29-T04 operations,
- * P29-T06 reporting status) plus the Sprint 2 revenue query as a preview.
+ * P29-T06 reporting status) and the P29-T08 finance queries, as shipped.
  * The shapes follow the ticket definitions; T04 and T06 are expected to
  * adopt them, and re-run the benchmark if they change a join.
  */
@@ -176,16 +200,99 @@ export const ANALYTICS_BENCHMARK_QUERIES: readonly AnalyticsBenchmarkQuery[] = [
         )`,
   },
   {
-    id: 'revenue-by-bucket-and-method',
-    requirement: 'FR-FIN-01 (Sprint 2 preview)',
+    id: 'revenue-by-bucket',
+    requirement: 'FR-FIN-01',
     dashboard: 'finance',
-    params: ['startUtc', 'endUtc', 'granularity', 'timeZone'],
+    params: [...FINANCE_PARAMS, 'granularity', 'timeZone'],
     sql: `
-      SELECT date_trunc($3, (p.paid_at AT TIME ZONE 'UTC') AT TIME ZONE $4) AS bucket,
-             p.method, sum(p.amount) AS revenue, count(*)::int AS payments
+      SELECT date_trunc($5, (i.issued_at AT TIME ZONE 'UTC') AT TIME ZONE $6) AS bucket,
+             count(*)::int AS invoices, sum(i.total_amount) AS revenue, sum(i.tax_amount) AS tax,
+             sum(i.total_amount) FILTER (WHERE i.status = 'ISSUED') AS unpaid
+      FROM invoices i ${INVOICE_VISIT_JOINS}
+      WHERE ${REVENUE_FILTER}
+      GROUP BY 1`,
+  },
+  {
+    id: 'cash-by-bucket-and-method',
+    requirement: 'FR-FIN-02',
+    dashboard: 'finance',
+    params: [...FINANCE_PARAMS, 'granularity', 'timeZone'],
+    sql: `
+      SELECT date_trunc($5, (p.paid_at AT TIME ZONE 'UTC') AT TIME ZONE $6) AS bucket,
+             p.method, sum(p.amount) AS amount, count(*)::int AS payments
       FROM payments p
-      JOIN invoices i ON i.id = p.invoice_id AND i.deleted_at IS NULL AND i.status <> 'VOID'
-      WHERE p.paid_at >= $1::timestamp AND p.paid_at < $2::timestamp
+      JOIN invoices i ON i.id = p.invoice_id ${INVOICE_VISIT_JOINS}
+      WHERE p.paid_at >= $1::timestamp AND p.paid_at < $2::timestamp ${INVOICE_NARROWING}
       GROUP BY 1, 2`,
+  },
+  {
+    id: 'revenue-by-item-type',
+    requirement: 'FR-FIN-03',
+    dashboard: 'finance',
+    params: FINANCE_PARAMS,
+    sql: `
+      SELECT it.item_type, count(*)::int AS lines, sum(it.amount) AS amount, sum(it.tax_amount) AS tax
+      FROM invoice_items it
+      JOIN invoices i ON i.id = it.invoice_id ${INVOICE_VISIT_JOINS}
+      WHERE ${REVENUE_FILTER}
+      GROUP BY 1`,
+  },
+  {
+    id: 'revenue-by-doctor',
+    requirement: 'FR-FIN-04',
+    dashboard: 'finance',
+    params: FINANCE_PARAMS,
+    sql: `
+      SELECT e.doctor_id, d.full_name, ds.name, count(*)::int AS invoices,
+             count(DISTINCT COALESCE(r.id, i.id))::int AS visits, sum(i.total_amount) AS revenue
+      FROM invoices i ${INVOICE_VISIT_JOINS}
+      LEFT JOIN doctor_profiles d ON d.id = e.doctor_id
+      LEFT JOIN specialties ds ON ds.id = d.specialty_id
+      WHERE ${REVENUE_FILTER}
+      GROUP BY 1, 2, 3`,
+  },
+  {
+    id: 'revenue-by-poli-and-payer',
+    requirement: 'FR-FIN-04, FR-FIN-06',
+    dashboard: 'finance',
+    params: FINANCE_PARAMS,
+    sql: `
+      SELECT r.specialty_id, r.payer_type, count(*)::int AS invoices,
+             count(DISTINCT COALESCE(r.id, i.id))::int AS visits, sum(i.total_amount) AS revenue
+      FROM invoices i ${INVOICE_VISIT_JOINS}
+      WHERE ${REVENUE_FILTER}
+      GROUP BY 1, 2`,
+  },
+  {
+    id: 'visits-by-payer',
+    requirement: 'FR-FIN-06',
+    dashboard: 'finance',
+    params: VISIT_PARAMS,
+    sql: `
+      SELECT r.payer_type, count(*)::int AS visits
+      FROM registrations r
+      WHERE ${VISIT_FILTER}
+      GROUP BY 1`,
+  },
+  {
+    id: 'outstanding-by-age',
+    requirement: 'FR-FIN-05',
+    dashboard: 'finance',
+    params: ['doctorId', 'specialtyId', 'timeZone'],
+    sql: `
+      SELECT CASE
+               WHEN age <= 7 THEN '0-7' WHEN age <= 30 THEN '8-30' ELSE 'over-30'
+             END AS bucket,
+             count(*)::int AS invoices, sum(total_amount) AS amount
+      FROM (
+        SELECT i.total_amount,
+               (now() AT TIME ZONE $3)::date
+                 - ((i.issued_at AT TIME ZONE 'UTC') AT TIME ZONE $3)::date AS age
+        FROM invoices i ${INVOICE_VISIT_JOINS}
+        WHERE i.deleted_at IS NULL AND i.status = 'ISSUED' AND i.issued_at IS NOT NULL
+          AND ($1::uuid IS NULL OR e.doctor_id = $1::uuid)
+          AND ($2::uuid IS NULL OR r.specialty_id = $2::uuid)
+      ) aged
+      GROUP BY 1`,
   },
 ];

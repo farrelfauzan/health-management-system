@@ -4,8 +4,10 @@ import type {
   AnalyticsBusiestHourCell,
   AnalyticsGranularity,
   AnalyticsInpatientDisposition,
+  AnalyticsOutstandingAgeBucket,
   AnalyticsReportingReadiness,
 } from '#analytics/contracts';
+import type { InvoiceItemTypeValue, PaymentMethodValue } from '#billing/schemas';
 
 /** Local calendar dates, both ends included. */
 export type AnalyticsPeriod = {
@@ -227,4 +229,110 @@ export type ReadOperationsPeriodParams = {
   range: AnalyticsRange;
   filter: AnalyticsFilterInput;
   includeInpatient: boolean;
+};
+
+/**
+ * Finance rows as the database returns them (P29-T08). Money comes back as
+ * whole cents in a float, exact below 2^53, so nothing is summed as a
+ * fractional rupiah.
+ */
+export type AnalyticsRevenueBucketRow = {
+  bucket: string;
+  invoices: number;
+  revenueCents: number;
+  taxCents: number;
+  unpaidInvoices: number;
+  unpaidCents: number;
+};
+
+export type AnalyticsCashBucketRow = {
+  bucket: string;
+  payments: number;
+  amountCents: number;
+};
+
+export type AnalyticsPaymentMethodRow = {
+  method: PaymentMethodValue;
+  payments: number;
+  amountCents: number;
+};
+
+export type AnalyticsItemTypeRow = {
+  itemType: InvoiceItemTypeValue;
+  lines: number;
+  amountCents: number;
+  taxCents: number;
+};
+
+export type AnalyticsFinanceDoctorRow = {
+  doctorId: string | null;
+  doctorName: string | null;
+  specialtyName: string | null;
+  invoices: number;
+  visits: number;
+  revenueCents: number;
+};
+
+export type AnalyticsFinancePoliRow = {
+  specialtyId: string | null;
+  specialtyName: string | null;
+  invoices: number;
+  revenueCents: number;
+};
+
+export type AnalyticsFinancePayerRow = {
+  payerType: AnalyticsPayerTypeValue | null;
+  invoices: number;
+  revenueCents: number;
+};
+
+export type AnalyticsPayerVisitRow = {
+  payerType: AnalyticsPayerTypeValue | null;
+  visits: number;
+};
+
+export type AnalyticsInvoiceCountRow = {
+  invoices: number;
+  amountCents: number;
+};
+
+export type AnalyticsOutstandingAgeRow = {
+  bucket: AnalyticsOutstandingAgeBucket;
+  invoices: number;
+  amountCents: number;
+};
+
+export type AnalyticsInvoicedVisitRow = {
+  invoicedVisits: number;
+};
+
+/** Every finance figure for one period, as read in one transaction. */
+export type AnalyticsFinanceSnapshot = {
+  revenueBuckets: AnalyticsRevenueBucketRow[];
+  cashBuckets: AnalyticsCashBucketRow[];
+  paymentMethods: AnalyticsPaymentMethodRow[];
+  itemTypes: AnalyticsItemTypeRow[];
+  doctors: AnalyticsFinanceDoctorRow[];
+  poli: AnalyticsFinancePoliRow[];
+  payerRevenue: AnalyticsFinancePayerRow[];
+  payerVisits: AnalyticsPayerVisitRow[];
+  invoicedVisits: number;
+  voids: AnalyticsInvoiceCountRow;
+  outstanding: AnalyticsOutstandingAgeRow[];
+};
+
+export type AnalyticsFinancePeriodSnapshot = {
+  range: AnalyticsRange;
+  snapshot: AnalyticsFinanceSnapshot;
+};
+
+export type BuildAnalyticsFinanceDataParams = {
+  current: AnalyticsFinancePeriodSnapshot;
+  comparison?: AnalyticsFinancePeriodSnapshot;
+};
+
+/** One period of the finance dashboard to read. */
+export type ReadFinancePeriodParams = {
+  range: AnalyticsRange;
+  filter: AnalyticsFilterInput;
 };

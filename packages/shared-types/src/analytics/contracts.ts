@@ -1,3 +1,6 @@
+import type { AnalyticsPayerTypeValue } from '#analytics/schemas';
+import type { InvoiceItemTypeValue, PaymentMethodValue } from '#billing/schemas';
+
 /** How a dashboard's time series is bucketed (PRD FR-FDN-04). */
 export type AnalyticsGranularity = 'day' | 'week' | 'month';
 
@@ -247,3 +250,124 @@ export type AnalyticsReportingHealthData = {
   bpjs: AnalyticsBpjsTypeRow[] | null;
   readiness: AnalyticsReportingReadiness;
 };
+
+/**
+ * The finance headline (P29-T08, PRD FR-FIN-01 to 06). Revenue follows the
+ * **invoice date** (Q-3, answered 2026-09-28): an invoice counts in the
+ * period its `issuedAt` falls in, paid or still open. Drafts and voided
+ * invoices never count. Prices are tax-inclusive, so `taxAmount` is the PPN
+ * inside `revenue`, never added to it.
+ *
+ * `cashReceived` is the other clock: payments by their `paidAt`. It is the
+ * figure the daily cashier report shows, so the two can be reconciled. All
+ * amounts are rupiah, summed in integer cents.
+ */
+export type AnalyticsFinanceTotals = {
+  revenue: number;
+  taxAmount: number;
+  invoices: number;
+  /** Visits with an invoice issued in the period; a bill with no visit counts once. */
+  invoicedVisits: number;
+  /** `revenue / invoicedVisits`, rounded to the rupiah; `null` with no invoice. */
+  revenuePerVisit: number | null;
+  /** Invoices issued in the period that are still unpaid. */
+  unpaidInvoices: number;
+  unpaidAmount: number;
+  cashReceived: number;
+  payments: number;
+  /** Invoices voided in the period after they were issued; a voided draft billed nobody. */
+  voidedInvoices: number;
+  voidedAmount: number;
+};
+
+/** One bucket of the finance trend; `bucket` is its first local date. */
+export type AnalyticsFinanceSeriesPoint = {
+  bucket: string;
+  revenue: number;
+  cashReceived: number;
+};
+
+/** Payments received in the period by method: the cashier report's split. */
+export type AnalyticsRevenueByPaymentMethod = {
+  method: PaymentMethodValue;
+  payments: number;
+  amount: number;
+};
+
+/** Invoice lines of the period's invoices by what they charge for; `taxAmount` is inside `amount`. */
+export type AnalyticsRevenueByItemType = {
+  itemType: InvoiceItemTypeValue;
+  lines: number;
+  amount: number;
+  taxAmount: number;
+};
+
+/**
+ * Revenue credited to a clinician the way the cashier report does: through
+ * the invoice's encounter. A walk-in lab bill or an inpatient bill has no
+ * encounter and lands on `doctorId: null`, the unattributed row.
+ */
+export type AnalyticsRevenueByDoctor = {
+  doctorId: string | null;
+  doctorName: string | null;
+  specialtyName: string | null;
+  invoices: number;
+  visits: number;
+  revenue: number;
+  revenuePerVisit: number | null;
+  previousRevenue?: number;
+};
+
+/** Revenue at one poli, through the visit the invoice bills. */
+export type AnalyticsRevenueByPoli = {
+  specialtyId: string | null;
+  specialtyName: string | null;
+  invoices: number;
+  revenue: number;
+  previousRevenue?: number;
+};
+
+/**
+ * Visits and revenue by who pays (P29-T07). `payerType: null` is a visit
+ * whose payer was never recorded, shown as "Tidak tercatat", never guessed.
+ */
+export type AnalyticsRevenueByPayer = {
+  payerType: AnalyticsPayerTypeValue | null;
+  visits: number;
+  invoices: number;
+  revenue: number;
+};
+
+export type AnalyticsOutstandingAgeBucket = '0-7' | '8-30' | 'over-30';
+
+export type AnalyticsOutstandingAge = {
+  bucket: AnalyticsOutstandingAgeBucket;
+  invoices: number;
+  amount: number;
+};
+
+/**
+ * Invoices issued and not yet paid, now, whatever the period: a bill from
+ * last month is still owed this month. Age counts clinic days since issue.
+ */
+export type AnalyticsOutstandingInvoices = {
+  invoices: number;
+  amount: number;
+  aging: AnalyticsOutstandingAge[];
+};
+
+export type AnalyticsFinanceBreakdowns = {
+  paymentMethods: AnalyticsRevenueByPaymentMethod[];
+  itemTypes: AnalyticsRevenueByItemType[];
+  doctors: AnalyticsRevenueByDoctor[];
+  poli: AnalyticsRevenueByPoli[];
+  payers: AnalyticsRevenueByPayer[];
+  outstanding: AnalyticsOutstandingInvoices;
+};
+
+/** The finance dashboard (P29-T08). Amounts only: no patient or invoice number appears in it. */
+export type AnalyticsFinanceData = AnalyticsDashboardData<
+  AnalyticsFinanceTotals,
+  AnalyticsFinanceSeriesPoint[],
+  AnalyticsFinanceBreakdowns
+>;
