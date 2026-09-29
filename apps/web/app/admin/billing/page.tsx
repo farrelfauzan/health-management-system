@@ -4,6 +4,7 @@ import { buildAppAbility } from '@hms/ui';
 
 import { BillingWorkspace } from '#components/client/billing/billing-workspace';
 import { BILLING_TABS } from '#lib/billing/billing-tab';
+import { parseInvoicesSearchParams } from '#lib/billing/search-params';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
@@ -42,6 +43,7 @@ export default async function AdminBillingPage({ searchParams }: AdminBillingPag
       currentUserId={claims?.sub ?? null}
       initialTab={parseTabSearchParam(params.tab, BILLING_TABS)}
       currentPeriod={resolveClinicToday().slice(0, PERIOD_LENGTH)}
+      initialInvoicesQuery={parseInvoicesSearchParams(params)}
     />
   );
 }

@@ -8,7 +8,7 @@
       },
       "finance": {
         "title": "Keuangan",
-        "subtitle": "Pendapatan yang cocok dengan laci kasir, dirinci per metode, layanan, dokter, dan penjamin"
+        "subtitle": "Pendapatan per tanggal invoice, dirinci per metode, layanan, dokter, dan penjamin"
       },
       "case-mix": {
         "title": "Pola penyakit",
@@ -74,7 +74,9 @@
       "up": "naik",
       "down": "turun",
       "flat": "tetap",
-      "minutes": "{value} mnt"
+      "minutes": "{value} mnt",
+      "rupiah": "{value}",
+      "invoices": "{value} invoice"
     },
     "states": {
       "loading": "Memuat dasbor",
@@ -271,6 +273,101 @@
         "pending": "{count} tertunda",
         "open": "Buka status pelaporan"
       }
+    },
+    "finance": {
+      "kpi": {
+        "revenue": "Pendapatan",
+        "revenueHelper": "Per tanggal invoice · kas diterima {cash}",
+        "perVisit": "Rata-rata per kunjungan",
+        "perVisitHelper": "{visits} kunjungan dengan invoice",
+        "unpaid": "Belum dibayar",
+        "unpaidHelper": "{invoices} invoice periode ini belum lunas",
+        "voided": "Dibatalkan (void)",
+        "voidedHelper": "{invoices} invoice"
+      },
+      "trend": {
+        "title": {
+          "day": "Pendapatan harian",
+          "week": "Pendapatan mingguan",
+          "month": "Pendapatan bulanan"
+        },
+        "subtitle": "Per tanggal invoice, termasuk PPN",
+        "ariaLabel": "Pendapatan {current} dibanding {previous}",
+        "ariaLabelSingle": "Pendapatan {current}",
+        "tableCaption": "Pendapatan per periode",
+        "bucket": "Periode",
+        "current": "Periode ini",
+        "previous": "Pembanding"
+      },
+      "methods": {
+        "title": "Metode pembayaran",
+        "subtitle": "Kas diterima {amount}, per tanggal bayar",
+        "ariaLabel": "Porsi kas diterima per metode pembayaran",
+        "empty": "Belum ada pembayaran pada periode ini.",
+        "names": {
+          "CASH": "Tunai",
+          "TRANSFER": "Transfer",
+          "QRIS": "QRIS",
+          "INSURANCE": "Asuransi"
+        }
+      },
+      "services": {
+        "title": "Pendapatan per jenis layanan",
+        "subtitle": "Baris invoice periode ini, sebelum pajak",
+        "taxNote": "Pajak terpungut {amount} dicatat terpisah",
+        "empty": "Belum ada invoice pada periode ini.",
+        "names": {
+          "CONSULTATION": "Konsultasi",
+          "PROCEDURE": "Tindakan",
+          "MEDICATION": "Obat",
+          "ACCOMMODATION": "Rawat inap",
+          "LAB": "Laboratorium",
+          "OTHER": "Lainnya"
+        }
+      },
+      "payers": {
+        "title": "Penjamin",
+        "subtitle": "Porsi kunjungan dan pendapatan",
+        "visits": "Kunjungan",
+        "revenue": "Pendapatan",
+        "share": "{label} {percent}%",
+        "ariaLabel": "{metric}: {shares}",
+        "names": {
+          "GENERAL": "Umum",
+          "BPJS": "BPJS",
+          "INSURANCE": "Asuransi",
+          "notRecorded": "Tidak tercatat"
+        },
+        "notRecordedNote": "Kunjungan sebelum kolom penjamin ada ditampilkan sebagai “Tidak tercatat”, tidak ditebak."
+      },
+      "outstanding": {
+        "title": "Umur invoice belum dibayar",
+        "subtitle": "Semua invoice yang belum lunas saat ini, dihitung dari tanggal terbit",
+        "link": "Daftar invoice",
+        "age": "Umur",
+        "invoices": "Invoice",
+        "amount": "Nilai",
+        "total": "Total",
+        "buckets": {
+          "0-7": "0–7 hari",
+          "8-30": "8–30 hari",
+          "over-30": "> 30 hari"
+        }
+      },
+      "doctors": {
+        "title": "Pendapatan per dokter",
+        "subtitle": "Atribusi sama dengan laporan kasir harian",
+        "doctor": "Dokter / bidan",
+        "poli": "Poli",
+        "visits": "Kunjungan",
+        "revenue": "Pendapatan",
+        "perVisit": "Per kunjungan",
+        "change": "vs {label}",
+        "unattributed": "Tanpa dokter",
+        "empty": "Belum ada invoice pada periode ini."
+      },
+      "emptyTitle": "Belum ada invoice pada periode ini",
+      "emptyDescription": "Coba pilih rentang tanggal lain, atau hapus filter poli, dokter, dan penjamin."
     }
   }
 }

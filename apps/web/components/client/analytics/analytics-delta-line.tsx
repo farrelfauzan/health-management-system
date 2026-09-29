@@ -4,6 +4,7 @@ import { cn, Icon } from '@hms/ui';
 import { useLocale, useTranslations } from 'next-intl';
 
 import type { AnalyticsDelta } from '#lib/analytics/analytics-filter-state';
+import { formatRupiah } from '#lib/analytics/format-rupiah';
 import { formatSignedNumber } from '#lib/analytics/format-signed-number';
 
 type AnalyticsDeltaLineProps = {
@@ -31,7 +32,10 @@ const TONE_CLASSES: Readonly<Record<AnalyticsDelta['tone'], string>> = {
 export function AnalyticsDeltaLine({ delta, previousLabel }: AnalyticsDeltaLineProps) {
   const t = useTranslations('analytics.delta');
   const locale = useLocale();
-  const signed = formatSignedNumber(delta.value, locale);
+  const signed =
+    delta.kind === 'rupiah'
+      ? formatRupiah(delta.value, locale, { isCompact: true, isSigned: true })
+      : formatSignedNumber(delta.value, locale);
   return (
     <div className="flex items-center gap-1.5 text-[13px]">
       <span className={cn('flex items-center gap-0.5 font-semibold', TONE_CLASSES[delta.tone])}>

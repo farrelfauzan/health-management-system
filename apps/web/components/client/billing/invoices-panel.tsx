@@ -16,12 +16,16 @@ import { NumberedPagination } from '#components/client/shared/numbered-paginatio
 import { INVOICES_PAGE_SIZE, type InvoicesSearchParams } from '#lib/billing/search-params';
 import { useInvoicesList } from '#lib/billing/use-invoices-list';
 
-export function InvoicesPanel() {
+type InvoicesPanelProps = {
+  /** Where a link asked the list to open; the first page of every invoice otherwise. */
+  initialQuery?: InvoicesSearchParams;
+};
+
+export function InvoicesPanel({
+  initialQuery = { page: 1, limit: INVOICES_PAGE_SIZE },
+}: InvoicesPanelProps) {
   const t = useTranslations('operations.billing');
-  const [query, setQuery] = useState<InvoicesSearchParams>({
-    page: 1,
-    limit: INVOICES_PAGE_SIZE,
-  });
+  const [query, setQuery] = useState<InvoicesSearchParams>(initialQuery);
   const [openInvoiceId, setOpenInvoiceId] = useState<string | null>(null);
   const invoicesQuery = useInvoicesList(query);
 
