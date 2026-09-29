@@ -137,6 +137,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   // P29-T01. Every analytics dashboard goes with the analytics feature.
   AnalyticsOperationsController: 'analytics',
   AnalyticsReportingHealthController: 'analytics',
+  AnalyticsFinanceController: 'analytics',
 };
 
 /**
