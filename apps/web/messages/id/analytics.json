@@ -30,6 +30,122 @@
     "placeholder": {
       "title": "Dasbor ini sedang disiapkan",
       "description": "Angkanya akan tampil di sini setelah siap. Tidak ada yang perlu diatur."
+    },
+    "freshness": {
+      "asOf": "Data per {time} {zone}",
+      "reload": "Muat ulang",
+      "reloading": "Memuat ulang…"
+    },
+    "filter": {
+      "label": "Filter",
+      "period": "Periode",
+      "presetsLabel": "Pilihan periode",
+      "presets": {
+        "today": "Hari ini",
+        "last-7-days": "7 hari",
+        "this-month": "Bulan ini",
+        "last-month": "Bulan lalu",
+        "last-3-months": "3 bulan",
+        "last-12-months": "12 bulan",
+        "custom": "Kustom"
+      },
+      "customFrom": "Dari tanggal",
+      "customTo": "Sampai tanggal",
+      "compare": "Bandingkan dengan <strong>{range}</strong>",
+      "poli": "Poli",
+      "allPoli": "Semua poli",
+      "doctor": "Dokter",
+      "allDoctors": "Semua dokter",
+      "rangeTooLong": "Rentang paling panjang 24 bulan. Perpendek tanggal mulai atau akhir.",
+      "endBeforeStart": "Tanggal akhir tidak boleh sebelum tanggal mulai."
+    },
+    "delta": {
+      "percent": "{value}%",
+      "points": "{value} poin",
+      "vs": "vs {value}",
+      "up": "naik",
+      "down": "turun",
+      "flat": "tetap"
+    },
+    "states": {
+      "loading": "Memuat dasbor",
+      "emptyTitle": "Belum ada kunjungan pada periode ini",
+      "emptyDescription": "Coba pilih rentang tanggal lain, atau hapus filter poli dan dokter.",
+      "clearFilters": "Hapus filter",
+      "slowTitle": "Perhitungan terlalu lama",
+      "slowDescription": "Rentang tanggal ini terlalu besar untuk dihitung sekarang. Persempit rentangnya, lalu coba lagi. Pendaftaran dan kasir tetap berjalan normal.",
+      "retry": "Coba lagi",
+      "pickThreeMonths": "Pilih 3 bulan",
+      "errorTitle": "Dasbor belum bisa dimuat",
+      "errorDescription": "Terjadi gangguan saat mengambil angka. Coba lagi sebentar lagi."
+    },
+    "operations": {
+      "kpi": {
+        "visits": "Kunjungan",
+        "newPatients": "Pasien baru",
+        "newPatientsShare": "{percent}% dari kunjungan",
+        "noShowRate": "Tingkat no-show",
+        "noShowHelper": "{noShows} dari {due} janji temu",
+        "noShowNone": "Belum ada janji temu yang jatuh tempo"
+      },
+      "trend": {
+        "title": {
+          "day": "Kunjungan harian",
+          "week": "Kunjungan mingguan",
+          "month": "Kunjungan bulanan"
+        },
+        "subtitle": "Kunjungan yang check-in atau selesai, per kalender klinik",
+        "ariaLabel": "Kunjungan {current} dibanding {previous}",
+        "ariaLabelSingle": "Kunjungan {current}",
+        "tableCaption": "Jumlah kunjungan per periode",
+        "bucket": "Periode",
+        "current": "Periode ini",
+        "previous": "Pembanding"
+      },
+      "poli": {
+        "title": "Kunjungan per poli",
+        "subtitle": "Perubahan dibanding {range}",
+        "subtitleNoCompare": "Jumlah kunjungan tiap poli",
+        "noPoli": "Tanpa poli",
+        "newPoli": "baru"
+      },
+      "visitTypes": {
+        "title": "Jenis kunjungan",
+        "CONSULTATION": "Konsultasi",
+        "LAB_ONLY": "Lab saja",
+        "ADMISSION": "Rawat inap"
+      },
+      "channels": {
+        "title": "Asal kunjungan",
+        "subtitle": "Jalur pemesanan dan tingkat no-show-nya",
+        "channel": "Jalur",
+        "visits": "Kunjungan",
+        "noShow": "No-show",
+        "WALK_IN": "Datang langsung",
+        "STAFF": "Dijadwalkan staf",
+        "WHATSAPP": "WhatsApp",
+        "TELEGRAM": "Telegram",
+        "MOBILE_JKN": "Mobile JKN",
+        "appointmentsLink": "Janji temu"
+      },
+      "outcomes": {
+        "title": "Hasil janji temu",
+        "subtitle": "{count} janji temu terjadwal pada periode ini",
+        "completedShare": "selesai",
+        "ariaLabel": "Hasil janji temu: {summary}",
+        "COMPLETED": "Selesai",
+        "NO_SHOW": "Tidak datang",
+        "CANCELLED": "Dibatalkan",
+        "REJECTED": "Ditolak",
+        "SCHEDULED": "Terjadwal",
+        "CONFIRMED": "Dikonfirmasi",
+        "REQUESTED": "Menunggu persetujuan"
+      },
+      "busiestHours": {
+        "title": "Jam tersibuk",
+        "subtitle": "Check-in per hari dan jam",
+        "comingSoon": "Peta jam tersibuk sedang disiapkan dan akan tampil di sini."
+      }
     }
   }
 }

@@ -30,6 +30,122 @@
     "placeholder": {
       "title": "This dashboard is being prepared",
       "description": "The figures will appear here once they are ready. There is nothing to set up."
+    },
+    "freshness": {
+      "asOf": "Data as of {time} {zone}",
+      "reload": "Reload",
+      "reloading": "Reloading…"
+    },
+    "filter": {
+      "label": "Filters",
+      "period": "Period",
+      "presetsLabel": "Period presets",
+      "presets": {
+        "today": "Today",
+        "last-7-days": "7 days",
+        "this-month": "This month",
+        "last-month": "Last month",
+        "last-3-months": "3 months",
+        "last-12-months": "12 months",
+        "custom": "Custom"
+      },
+      "customFrom": "From",
+      "customTo": "To",
+      "compare": "Compare with <strong>{range}</strong>",
+      "poli": "Poli",
+      "allPoli": "All poli",
+      "doctor": "Clinician",
+      "allDoctors": "All clinicians",
+      "rangeTooLong": "The range can be at most 24 months. Move the start or end date closer.",
+      "endBeforeStart": "The end date cannot be before the start date."
+    },
+    "delta": {
+      "percent": "{value}%",
+      "points": "{value} pts",
+      "vs": "vs {value}",
+      "up": "up",
+      "down": "down",
+      "flat": "unchanged"
+    },
+    "states": {
+      "loading": "Loading the dashboard",
+      "emptyTitle": "No visits in this period yet",
+      "emptyDescription": "Try another date range, or clear the poli and clinician filters.",
+      "clearFilters": "Clear filters",
+      "slowTitle": "This took too long to calculate",
+      "slowDescription": "This date range is too large to calculate right now. Narrow it and try again. Registration and billing keep working as normal.",
+      "retry": "Try again",
+      "pickThreeMonths": "Pick 3 months",
+      "errorTitle": "The dashboard could not load",
+      "errorDescription": "Something went wrong while fetching the figures. Try again in a moment."
+    },
+    "operations": {
+      "kpi": {
+        "visits": "Visits",
+        "newPatients": "New patients",
+        "newPatientsShare": "{percent}% of visits",
+        "noShowRate": "No-show rate",
+        "noShowHelper": "{noShows} of {due} appointments",
+        "noShowNone": "No appointments were due yet"
+      },
+      "trend": {
+        "title": {
+          "day": "Daily visits",
+          "week": "Weekly visits",
+          "month": "Monthly visits"
+        },
+        "subtitle": "Visits checked in or completed, by clinic calendar",
+        "ariaLabel": "Visits {current} compared with {previous}",
+        "ariaLabelSingle": "Visits {current}",
+        "tableCaption": "Visits per period",
+        "bucket": "Period",
+        "current": "This period",
+        "previous": "Comparison"
+      },
+      "poli": {
+        "title": "Visits by poli",
+        "subtitle": "Change against {range}",
+        "subtitleNoCompare": "Visits at each poli",
+        "noPoli": "No poli",
+        "newPoli": "new"
+      },
+      "visitTypes": {
+        "title": "Visit type",
+        "CONSULTATION": "Consultation",
+        "LAB_ONLY": "Lab only",
+        "ADMISSION": "Inpatient"
+      },
+      "channels": {
+        "title": "Where visits come from",
+        "subtitle": "Booking channel and its no-show rate",
+        "channel": "Channel",
+        "visits": "Visits",
+        "noShow": "No-show",
+        "WALK_IN": "Walk-in",
+        "STAFF": "Booked by staff",
+        "WHATSAPP": "WhatsApp",
+        "TELEGRAM": "Telegram",
+        "MOBILE_JKN": "Mobile JKN",
+        "appointmentsLink": "Appointments"
+      },
+      "outcomes": {
+        "title": "Appointment outcomes",
+        "subtitle": "{count} appointments scheduled in this period",
+        "completedShare": "completed",
+        "ariaLabel": "Appointment outcomes: {summary}",
+        "COMPLETED": "Completed",
+        "NO_SHOW": "No-show",
+        "CANCELLED": "Cancelled",
+        "REJECTED": "Rejected",
+        "SCHEDULED": "Scheduled",
+        "CONFIRMED": "Confirmed",
+        "REQUESTED": "Awaiting approval"
+      },
+      "busiestHours": {
+        "title": "Busiest hours",
+        "subtitle": "Check-ins by day and hour",
+        "comingSoon": "The busiest-hours map is being prepared and will appear here."
+      }
     }
   }
 }
