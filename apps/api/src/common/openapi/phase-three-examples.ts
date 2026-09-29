@@ -330,6 +330,8 @@ const registration = {
   queueDate: '2026-07-20',
   poliQueueNumber: 1,
   poli: { id: specialtyId, name: 'Internal Medicine' },
+  // Who pays (P29-T07); absent on visits from before it was asked.
+  payerType: optionalExample('BPJS'),
   registeredAt: timestamp,
   createdById: userId,
   createdAt: timestamp,
@@ -940,8 +942,8 @@ export const PHASE_THREE_EXAMPLES = {
     sessionUpdateRequest: { maxPatients: 15, status: 'CLOSED' },
   },
   registration: {
-    createRequest: { patientId, appointmentId },
-    updateRequest: { status: 'CHECKED_IN' },
+    createRequest: { patientId, appointmentId, payerType: optionalExample('BPJS') },
+    updateRequest: { status: 'CHECKED_IN', payerType: optionalExample('BPJS') },
     item: registration,
     listItem: {
       ...registration,

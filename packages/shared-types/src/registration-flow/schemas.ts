@@ -59,10 +59,26 @@ export const registrationTypeSchema = z.enum(REGISTRATION_TYPES);
 
 export type RegistrationTypeValue = z.infer<typeof registrationTypeSchema>;
 
+/**
+ * Who pays for the visit (P29-T07, Q-2 answered 2026-09-28): general, BPJS or
+ * private insurance. Company contracts have no value of their own yet.
+ */
+export const PAYER_TYPES = ['GENERAL', 'BPJS', 'INSURANCE'] as const;
+
+export const payerTypeSchema = z.enum(PAYER_TYPES);
+
+export type PayerTypeValue = z.infer<typeof payerTypeSchema>;
+
 export const createRegistrationSchema = z.object({
   patientId: z.string().uuid(),
   appointmentId: z.string().uuid().optional(),
   privacyNotice: privacyNoticeEvidenceSchema.optional(),
+  /**
+   * The web forms always ask for it. Omitted, a Mobile JKN booking is
+   * recorded as BPJS and anything else stays unrecorded; GENERAL is never
+   * assumed.
+   */
+  payerType: payerTypeSchema.optional(),
 });
 
 export const listRegistrationsQuerySchema = z
@@ -180,9 +196,14 @@ export const updateRegistrationSchema = z
      * forced a check-in and did not is worse than one that was told no.
      */
     force: z.boolean().optional(),
+    /** Corrects who pays for the visit (P29-T07). */
+    payerType: payerTypeSchema.optional(),
   })
   .refine(
-    (payload) => payload.status !== undefined || payload.appointmentId !== undefined,
+    (payload) =>
+      payload.status !== undefined ||
+      payload.appointmentId !== undefined ||
+      payload.payerType !== undefined,
     { message: 'At least one field must be provided' },
   );
 

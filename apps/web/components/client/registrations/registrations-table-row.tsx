@@ -25,6 +25,7 @@ type RegistrationsTableRowProps = {
     isForced?: boolean,
   ) => void;
   onOpenEncounter: (registration: RegistrationListItem) => void;
+  onChangePayer: (registration: RegistrationListItem) => void;
 };
 
 export function RegistrationsTableRow({
@@ -32,6 +33,7 @@ export function RegistrationsTableRow({
   variant,
   onTransition,
   onOpenEncounter,
+  onChangePayer,
 }: RegistrationsTableRowProps) {
   const t = useTranslations('operations');
   const format = useFormatter();
@@ -87,24 +89,46 @@ export function RegistrationsTableRow({
           : [action];
       })
     : [];
-  const actions: RowAction[] = canOpenEncounter
-    ? [
-        {
-          label: t('registrations.openEncounter'),
-          icon: 'clinical_notes',
-          isDestructive: false,
-          onSelect: () => onOpenEncounter(registration),
-        },
-        ...transitionActions,
-      ]
-    : transitionActions;
+  // Who pays is the desk's to correct (P29-T07), never the patient's own.
+  const payerActions: RowAction[] =
+    variant === 'admin' && canUpdate && registration.status !== 'CANCELLED'
+      ? [
+          {
+            label: t('registrations.payer.change'),
+            icon: 'payments',
+            isDestructive: false,
+            onSelect: () => onChangePayer(registration),
+          },
+        ]
+      : [];
+  const actions: RowAction[] = [
+    ...(canOpenEncounter
+      ? [
+          {
+            label: t('registrations.openEncounter'),
+            icon: 'clinical_notes',
+            isDestructive: false,
+            onSelect: () => onOpenEncounter(registration),
+          },
+        ]
+      : []),
+    ...transitionActions,
+    ...payerActions,
+  ];
 
   return (
     <TableRow className="transition-colors hover:bg-slate-50">
       <TableCell className="px-4 py-3">
         <div className="flex items-center gap-3">
           <AvatarInitials name={registration.patient.fullName} />
-          <p className="text-sm font-medium text-slate-900">{registration.patient.fullName}</p>
+          <div>
+            <p className="text-sm font-medium text-slate-900">{registration.patient.fullName}</p>
+            <p className="text-xs text-slate-500">
+              {registration.payerType
+                ? t(`registrations.payer.types.${registration.payerType}`)
+                : t('registrations.payer.notRecorded')}
+            </p>
+          </div>
         </div>
       </TableCell>
       <DataTableMonoCell>{registration.patient.mrn}</DataTableMonoCell>

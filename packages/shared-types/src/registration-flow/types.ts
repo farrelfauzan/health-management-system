@@ -1,9 +1,7 @@
-import type {
-  AppointmentStatusValue,
-  AppointmentTypeValue,
-} from '#appointment-management/schemas';
+import type { AppointmentStatusValue, AppointmentTypeValue } from '#appointment-management/schemas';
 import type { CheckInPracticeWindow } from '#registration-flow/resolve-checkin-window';
 import type {
+  PayerTypeValue,
   RegistrationStatusValue,
   RegistrationTypeValue,
 } from '#registration-flow/schemas';
@@ -52,6 +50,11 @@ export type CreateRegistrationRecordPayload = {
   queueDate: Date;
   privacyNotice?: PrivacyNoticeEvidenceInput;
   actorUserId: string;
+  /**
+   * Who pays (P29-T07). Omitted, a Mobile JKN booking is recorded as BPJS
+   * and anything else stays null.
+   */
+  payerType?: PayerTypeValue;
 };
 
 export type QueueNumberAllocationRow = {
@@ -70,6 +73,7 @@ export type UpdateRegistrationRecordPayload = {
   appointmentId?: string | null;
   checkedInAt?: Date;
   completedAt?: Date;
+  payerType?: PayerTypeValue;
 };
 
 export type FindOpenRegistrationParams = {
@@ -91,6 +95,7 @@ export type RegistrationRecord = {
   queueDate: Date | null;
   specialtyId: string | null;
   poliQueueNumber: number | null;
+  payerType: PayerTypeValue | null;
   registeredAt: Date;
   checkedInAt: Date | null;
   completedAt: Date | null;

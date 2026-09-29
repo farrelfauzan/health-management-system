@@ -274,11 +274,19 @@ export class RegistrationFlowRepository {
         payload.actorUserId,
         payload.privacyNotice,
       );
+      // A Mobile JKN booking is a BPJS visit by construction (P29-T07); with
+      // no booking and no answer the payer stays unrecorded, never GENERAL.
+      const payerType =
+        payload.payerType ??
+        (payload.appointmentId && (await this.hasBpjsOriginBooking(tx, payload.appointmentId))
+          ? 'BPJS'
+          : null);
       return tx.registration.create({
         data: {
           patientId: payload.patientId,
           appointmentId: payload.appointmentId,
           type: payload.type ?? 'CONSULTATION',
+          payerType,
           createdById: payload.createdById,
           queueNumber,
           queueDate: payload.queueDate,
@@ -334,6 +342,7 @@ export class RegistrationFlowRepository {
           ...(payload.appointmentId !== undefined ? { appointmentId: payload.appointmentId } : {}),
           ...(payload.checkedInAt !== undefined ? { checkedInAt: payload.checkedInAt } : {}),
           ...(payload.completedAt !== undefined ? { completedAt: payload.completedAt } : {}),
+          ...(payload.payerType !== undefined ? { payerType: payload.payerType } : {}),
           ...(poliReassignment ?? {}),
         },
         include: REGISTRATION_RELATIONS_INCLUDE,

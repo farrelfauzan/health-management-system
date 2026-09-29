@@ -25,6 +25,7 @@ type RegistrationsTableProps = {
     isForced?: boolean,
   ) => void;
   onOpenEncounter: (registration: RegistrationListItem) => void;
+  onChangePayer: (registration: RegistrationListItem) => void;
 };
 
 export function RegistrationsTable({
@@ -34,6 +35,7 @@ export function RegistrationsTable({
   isError,
   onTransition,
   onOpenEncounter,
+  onChangePayer,
 }: RegistrationsTableProps) {
   const t = useTranslations('operations');
   const showEmptyState = !isPending && registrations.length === 0;
@@ -75,6 +77,7 @@ export function RegistrationsTable({
               variant={variant}
               onTransition={onTransition}
               onOpenEncounter={onOpenEncounter}
+              onChangePayer={onChangePayer}
             />
           ))
         )}

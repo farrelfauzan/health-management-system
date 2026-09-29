@@ -1,3 +1,5 @@
+import type { AnalyticsPayerTypeValue } from '@hms/shared-types';
+
 /** The period chips on every analytics filter bar, in their on-screen order. */
 export const ANALYTICS_PERIOD_PRESETS = [
   'today',
@@ -23,6 +25,8 @@ export type AnalyticsFilterState = {
   compare: boolean;
   specialtyId?: string;
   doctorId?: string;
+  /** Who pays for the visit (P29-T07). */
+  payerType?: AnalyticsPayerTypeValue;
 };
 
 export type AnalyticsPeriodRange = {

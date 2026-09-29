@@ -17,6 +17,10 @@ const AUGUST_VISITS = 120;
 const SEPTEMBER_VISITS = 150;
 const WHATSAPP_COMPLETED = 30;
 const WHATSAPP_NO_SHOWS = 10;
+const WHATSAPP_BOOKINGS = WHATSAPP_COMPLETED + WHATSAPP_NO_SHOWS;
+const SEPTEMBER_BPJS_VISITS = 30;
+const SEPTEMBER_INSURED_VISITS = 10;
+const SEPTEMBER = { from: '2031-09-01', to: '2031-09-30', compare: 'true' };
 const OPERATIONS_PERMISSIONS = [
   { action: 'read-operations', resource: 'Analytics', scope: 'ANY' as const },
 ];
@@ -88,6 +92,14 @@ describe('Analytics operations against PostgreSQL', () => {
     appointmentIds.push(...rows.map((row) => row.id));
   }
 
+  /** September's first 30 visits are BPJS, the next 10 insured, the rest unrecorded. */
+  function resolveSeptemberPayer(index: number): 'BPJS' | 'INSURANCE' | null {
+    if (index < SEPTEMBER_BPJS_VISITS) {
+      return 'BPJS';
+    }
+    return index < SEPTEMBER_BPJS_VISITS + SEPTEMBER_INSURED_VISITS ? 'INSURANCE' : null;
+  }
+
   /**
    * Patients 0–119 visit in August; all 150 in September, so 30 are new.
    * The 30 completed WhatsApp bookings are 30 of September's visits; the
@@ -103,6 +115,7 @@ describe('Analytics operations against PostgreSQL', () => {
       patientId,
       registeredAt: atJakarta(dayOf('2031-09', index)),
       appointmentId: index < WHATSAPP_COMPLETED ? (appointmentIds[index] as string) : null,
+      payerType: resolveSeptemberPayer(index),
     }));
     const visits = [...august, ...september].map((visit, index) => ({
       id: randomUUID(),
@@ -220,6 +233,21 @@ describe('Analytics operations against PostgreSQL', () => {
       },
     ]);
     expect(response.body.data.comparison.totals.visits).toBe(AUGUST_VISITS);
+  });
+
+  it('given a BPJS payer filter, then only BPJS visits count and appointment outcomes stay whole', async () => {
+    const response = await readOperations({ ...SEPTEMBER, payerType: 'BPJS' });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.totals.visits).toBe(SEPTEMBER_BPJS_VISITS);
+    expect(response.body.data.comparison.totals.visits).toBe(0);
+    expect(response.body.data.totals.appointments).toBe(WHATSAPP_BOOKINGS);
+  });
+
+  it('given an insurance payer filter, then an unrecorded payer matches neither', async () => {
+    const response = await readOperations({ ...SEPTEMBER, payerType: 'INSURANCE' });
+
+    expect(response.body.data.totals.visits).toBe(SEPTEMBER_INSURED_VISITS);
   });
 
   it('given a cancelled registration, then it is not counted', async () => {

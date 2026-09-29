@@ -19,6 +19,7 @@ export type RegistrationFlowControllerListRegistrationsV1200DataItem = {
   queueDate: string;
   poliQueueNumber: number;
   poli: RegistrationFlowControllerListRegistrationsV1200DataItemPoli;
+  payerType?: string;
   registeredAt: string;
   createdById: string;
   createdAt: string;

@@ -451,6 +451,7 @@ export class LabOrderService {
     const visit = await this.registrationFlowService.createLabOnlyRegistration({
       patientId: payload.patientId,
       privacyNotice: payload.privacyNotice,
+      payerType: payload.payerType,
       currentUser,
     });
     const created = await this.labOrderRepository.createLabOrder({

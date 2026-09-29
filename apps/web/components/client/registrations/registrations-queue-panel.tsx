@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { ChannelArrivalsPanel } from '#components/client/channel-arrivals/channel-arrivals-panel';
 import { EncounterOpenDialog } from '#components/client/encounters/encounter-open-dialog';
 import { RegistrationCreateDialog } from '#components/client/registrations/registration-create-dialog';
+import { RegistrationPayerDialog } from '#components/client/registrations/registration-payer-dialog';
 import { RegistrationTransitionDialog } from '#components/client/registrations/registration-transition-dialog';
 import {
   RegistrationsFilterCard,
@@ -59,6 +60,7 @@ export function RegistrationsQueuePanel({
   const [encounterRegistration, setEncounterRegistration] = useState<RegistrationListItem | null>(
     null,
   );
+  const [payerRegistration, setPayerRegistration] = useState<RegistrationListItem | null>(null);
 
   function navigateWithParams(next: RegistrationsSearchParams): void {
     router.replace(`${pathname}?${buildRegistrationsSearchParams(next).toString()}`);
@@ -136,6 +138,7 @@ export function RegistrationsQueuePanel({
             isError={registrationsQuery.isError}
             onTransition={handleTransition}
             onOpenEncounter={setEncounterRegistration}
+            onChangePayer={setPayerRegistration}
           />
           <NumberedPagination
             className="border-t border-slate-100 px-4 py-3"
@@ -167,6 +170,19 @@ export function RegistrationsQueuePanel({
             }
           }}
           registration={encounterRegistration}
+        />
+      ) : null}
+
+      {payerRegistration ? (
+        <RegistrationPayerDialog
+          key={payerRegistration.id}
+          open={Boolean(payerRegistration)}
+          onOpenChange={(dialogOpen) => {
+            if (!dialogOpen) {
+              setPayerRegistration(null);
+            }
+          }}
+          registration={payerRegistration}
         />
       ) : null}
 

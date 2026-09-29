@@ -3,17 +3,15 @@ import { z } from 'zod';
 import { addCalendarDays } from '#analytics/add-calendar-days';
 import { addCalendarMonths } from '#analytics/add-calendar-months';
 import { parseCalendarDate } from '#analytics/parse-calendar-date';
+import { PAYER_TYPES, payerTypeSchema } from '#registration-flow/schemas';
 
 /** The longest range any dashboard answers (PRD FR-FDN-03). */
 export const ANALYTICS_MAX_RANGE_MONTHS = 24;
 
-/**
- * Who pays for the visit. Mirrors the registration payer field P29-T07 adds;
- * PRD Q-2 may add a category for company contracts.
- */
-export const ANALYTICS_PAYER_TYPES = ['GENERAL', 'BPJS', 'INSURANCE'] as const;
+/** Who pays for the visit: the registration payer field (P29-T07). */
+export const ANALYTICS_PAYER_TYPES = PAYER_TYPES;
 
-export const analyticsPayerTypeSchema = z.enum(ANALYTICS_PAYER_TYPES);
+export const analyticsPayerTypeSchema = payerTypeSchema;
 
 const analyticsDateSchema = z
   .string()

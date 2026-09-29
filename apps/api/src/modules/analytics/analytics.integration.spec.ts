@@ -162,19 +162,6 @@ describe('Analytics integration', () => {
     expect(JSON.stringify(response.body.error)).toContain('Choose a range of at most 24 months');
   });
 
-  it('given a payer filter, then answers 400 until visits record the payer', async () => {
-    const token = await buildToken('admin-user', 'admin@hms.local');
-    mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);
-
-    const response = await request(app.getHttpServer())
-      .get(OPERATIONS_PATH)
-      .query({ ...SEPTEMBER_QUERY, payerType: 'BPJS' })
-      .set('Authorization', `Bearer ${token}`);
-
-    expect(response.status).toBe(400);
-    expect(response.body.error.code).toBe('ANALYTICS_PAYER_FILTER_UNAVAILABLE');
-  });
-
   it('given no dates, then answers 400', async () => {
     const token = await buildToken('admin-user', 'admin@hms.local');
     mockActorWithPermissions('ADMIN', ADMIN_ANALYTICS_PERMISSIONS);

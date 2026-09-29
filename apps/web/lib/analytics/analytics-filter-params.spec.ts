@@ -98,6 +98,11 @@ describe('parseAnalyticsFilterParams', () => {
     expect(actual.doctorId).toBeUndefined();
   });
 
+  it('reads a payer and drops one outside general, BPJS and insurance', () => {
+    expect(parseAnalyticsFilterParams({ payer: 'BPJS' }, TODAY).payerType).toBe('BPJS');
+    expect(parseAnalyticsFilterParams({ payer: 'COMPANY' }, TODAY).payerType).toBeUndefined();
+  });
+
   it('takes the first value of a repeated parameter', () => {
     expect(parseAnalyticsFilterParams({ period: ['last-month', 'today'] }, TODAY).preset).toBe(
       'last-month',
@@ -127,6 +132,7 @@ describe('toAnalyticsFilterSearchParams', () => {
       compare: 'false',
       poli: POLI_ID,
       doctor: DOCTOR_ID,
+      payer: 'INSURANCE',
     };
     const inputState = parseAnalyticsFilterParams(inputParams, TODAY);
 

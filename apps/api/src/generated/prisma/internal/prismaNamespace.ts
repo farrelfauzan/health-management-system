@@ -11800,6 +11800,7 @@ export const RegistrationScalarFieldEnum = {
   queueDate: 'queueDate',
   specialtyId: 'specialtyId',
   poliQueueNumber: 'poliQueueNumber',
+  payerType: 'payerType',
   registeredAt: 'registeredAt',
   checkedInAt: 'checkedInAt',
   completedAt: 'completedAt',
@@ -14299,6 +14300,20 @@ export type EnumRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInputTyp
  * Reference to a field of type 'RegistrationStatus[]'
  */
 export type ListEnumRegistrationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RegistrationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PayerType'
+ */
+export type EnumPayerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PayerType'>
+    
+
+
+/**
+ * Reference to a field of type 'PayerType[]'
+ */
+export type ListEnumPayerTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PayerType[]'>
     
 
 

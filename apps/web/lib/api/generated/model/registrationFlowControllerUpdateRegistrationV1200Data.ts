@@ -17,6 +17,7 @@ export type RegistrationFlowControllerUpdateRegistrationV1200Data = {
   queueDate: string;
   poliQueueNumber: number;
   poli: RegistrationFlowControllerUpdateRegistrationV1200DataPoli;
+  payerType?: string;
   registeredAt: string;
   createdById: string;
   createdAt: string;

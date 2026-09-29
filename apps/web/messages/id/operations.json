@@ -243,6 +243,25 @@
         "statusReason": "Alasan status",
         "registered": "Terdaftar",
         "linkedAppointment": "Janji temu terkait"
+      },
+      "payer": {
+        "label": "Penjamin",
+        "placeholder": "Pilih penjamin",
+        "required": "Pilih penjamin kunjungan ini.",
+        "help": "Pasien yang mendaftar lewat Mobile JKN dicatat sebagai BPJS.",
+        "types": {
+          "GENERAL": "Umum",
+          "BPJS": "BPJS",
+          "INSURANCE": "Asuransi"
+        },
+        "notRecorded": "Penjamin belum dicatat",
+        "change": "Ubah penjamin",
+        "changeDescription": "Penjamin kunjungan {name}. Dipakai untuk laporan penjamin di Analitik.",
+        "cancel": "Batal",
+        "save": "Simpan",
+        "saving": "Menyimpan…",
+        "changeError": "Penjamin belum bisa disimpan.",
+        "changeSuccess": "Penjamin disimpan."
       }
     },
     "pharmacy": {

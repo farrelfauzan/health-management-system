@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { privacyNoticeEvidenceSchema } from '#patient-management/schemas';
+import { payerTypeSchema } from '#registration-flow/schemas';
 
 const MAX_CODE_LENGTH = 32;
 const MAX_NAME_LENGTH = 200;
@@ -261,6 +262,8 @@ export const createWalkInLabOrderSchema = z
      * in only for a blood draw is not an exemption.
      */
     privacyNotice: privacyNoticeEvidenceSchema.optional(),
+    /** Who pays for the LAB_ONLY visit (P29-T07). */
+    payerType: payerTypeSchema.optional(),
   })
   .refine((payload) => (payload.testIds ?? []).length + (payload.panelIds ?? []).length > 0, {
     path: ['testIds'],

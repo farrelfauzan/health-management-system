@@ -1,6 +1,6 @@
 import type { AppointmentStatusValue } from '#appointment-management/schemas';
 import type { CheckInWindowReason } from '#registration-flow/resolve-checkin-window';
-import type { RegistrationStatusValue } from '#registration-flow/schemas';
+import type { PayerTypeValue, RegistrationStatusValue } from '#registration-flow/schemas';
 
 /**
  * The doctor's practice hours for this registration today, and when the desk
@@ -54,6 +54,8 @@ export type RegistrationResponse = {
    */
   poliQueueNumber?: number;
   poli?: RegistrationPoli;
+  /** Who pays for the visit (P29-T07). Absent when it was never recorded. */
+  payerType?: PayerTypeValue;
   registeredAt: string;
   checkedInAt?: string;
   completedAt?: string;

@@ -46,6 +46,7 @@ export type RegistrationMinAggregateOutputType = {
   queueDate: Date | null
   specialtyId: string | null
   poliQueueNumber: number | null
+  payerType: $Enums.PayerType | null
   registeredAt: Date | null
   checkedInAt: Date | null
   completedAt: Date | null
@@ -65,6 +66,7 @@ export type RegistrationMaxAggregateOutputType = {
   queueDate: Date | null
   specialtyId: string | null
   poliQueueNumber: number | null
+  payerType: $Enums.PayerType | null
   registeredAt: Date | null
   checkedInAt: Date | null
   completedAt: Date | null
@@ -84,6 +86,7 @@ export type RegistrationCountAggregateOutputType = {
   queueDate: number
   specialtyId: number
   poliQueueNumber: number
+  payerType: number
   registeredAt: number
   checkedInAt: number
   completedAt: number
@@ -115,6 +118,7 @@ export type RegistrationMinAggregateInputType = {
   queueDate?: true
   specialtyId?: true
   poliQueueNumber?: true
+  payerType?: true
   registeredAt?: true
   checkedInAt?: true
   completedAt?: true
@@ -134,6 +138,7 @@ export type RegistrationMaxAggregateInputType = {
   queueDate?: true
   specialtyId?: true
   poliQueueNumber?: true
+  payerType?: true
   registeredAt?: true
   checkedInAt?: true
   completedAt?: true
@@ -153,6 +158,7 @@ export type RegistrationCountAggregateInputType = {
   queueDate?: true
   specialtyId?: true
   poliQueueNumber?: true
+  payerType?: true
   registeredAt?: true
   checkedInAt?: true
   completedAt?: true
@@ -259,6 +265,7 @@ export type RegistrationGroupByOutputType = {
   queueDate: Date | null
   specialtyId: string | null
   poliQueueNumber: number | null
+  payerType: $Enums.PayerType | null
   registeredAt: Date
   checkedInAt: Date | null
   completedAt: Date | null
@@ -301,6 +308,7 @@ export type RegistrationWhereInput = {
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   specialtyId?: Prisma.UuidNullableFilter<"Registration"> | string | null
   poliQueueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
+  payerType?: Prisma.EnumPayerTypeNullableFilter<"Registration"> | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -328,6 +336,7 @@ export type RegistrationOrderByWithRelationInput = {
   queueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   specialtyId?: Prisma.SortOrderInput | Prisma.SortOrder
   poliQueueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  payerType?: Prisma.SortOrderInput | Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -360,6 +369,7 @@ export type RegistrationWhereUniqueInput = Prisma.AtLeast<{
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   specialtyId?: Prisma.UuidNullableFilter<"Registration"> | string | null
   poliQueueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
+  payerType?: Prisma.EnumPayerTypeNullableFilter<"Registration"> | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -387,6 +397,7 @@ export type RegistrationOrderByWithAggregationInput = {
   queueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   specialtyId?: Prisma.SortOrderInput | Prisma.SortOrder
   poliQueueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  payerType?: Prisma.SortOrderInput | Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrderInput | Prisma.SortOrder
   completedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -414,6 +425,7 @@ export type RegistrationScalarWhereWithAggregatesInput = {
   queueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
   specialtyId?: Prisma.UuidNullableWithAggregatesFilter<"Registration"> | string | null
   poliQueueNumber?: Prisma.IntNullableWithAggregatesFilter<"Registration"> | number | null
+  payerType?: Prisma.EnumPayerTypeNullableWithAggregatesFilter<"Registration"> | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeWithAggregatesFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Registration"> | Date | string | null
@@ -430,6 +442,7 @@ export type RegistrationCreateInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -456,6 +469,7 @@ export type RegistrationUncheckedCreateInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -476,6 +490,7 @@ export type RegistrationUpdateInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -502,6 +517,7 @@ export type RegistrationUncheckedUpdateInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -525,6 +541,7 @@ export type RegistrationCreateManyInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -541,6 +558,7 @@ export type RegistrationUpdateManyMutationInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -559,6 +577,7 @@ export type RegistrationUncheckedUpdateManyInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -604,6 +623,7 @@ export type RegistrationCountOrderByAggregateInput = {
   queueDate?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
   poliQueueNumber?: Prisma.SortOrder
+  payerType?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -628,6 +648,7 @@ export type RegistrationMaxOrderByAggregateInput = {
   queueDate?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
   poliQueueNumber?: Prisma.SortOrder
+  payerType?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -647,6 +668,7 @@ export type RegistrationMinOrderByAggregateInput = {
   queueDate?: Prisma.SortOrder
   specialtyId?: Prisma.SortOrder
   poliQueueNumber?: Prisma.SortOrder
+  payerType?: Prisma.SortOrder
   registeredAt?: Prisma.SortOrder
   checkedInAt?: Prisma.SortOrder
   completedAt?: Prisma.SortOrder
@@ -832,6 +854,10 @@ export type EnumRegistrationStatusFieldUpdateOperationsInput = {
   set?: $Enums.RegistrationStatus
 }
 
+export type NullableEnumPayerTypeFieldUpdateOperationsInput = {
+  set?: $Enums.PayerType | null
+}
+
 export type RegistrationCreateNestedOneWithoutEncounterInput = {
   create?: Prisma.XOR<Prisma.RegistrationCreateWithoutEncounterInput, Prisma.RegistrationUncheckedCreateWithoutEncounterInput>
   connectOrCreate?: Prisma.RegistrationCreateOrConnectWithoutEncounterInput
@@ -897,6 +923,7 @@ export type RegistrationCreateWithoutCreatedByInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -922,6 +949,7 @@ export type RegistrationUncheckedCreateWithoutCreatedByInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -973,6 +1001,7 @@ export type RegistrationScalarWhereInput = {
   queueDate?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   specialtyId?: Prisma.UuidNullableFilter<"Registration"> | string | null
   poliQueueNumber?: Prisma.IntNullableFilter<"Registration"> | number | null
+  payerType?: Prisma.EnumPayerTypeNullableFilter<"Registration"> | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFilter<"Registration"> | Date | string
   checkedInAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
   completedAt?: Prisma.DateTimeNullableFilter<"Registration"> | Date | string | null
@@ -989,6 +1018,7 @@ export type RegistrationCreateWithoutPatientInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1013,6 +1043,7 @@ export type RegistrationUncheckedCreateWithoutPatientInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1059,6 +1090,7 @@ export type RegistrationCreateWithoutSpecialtyInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1083,6 +1115,7 @@ export type RegistrationUncheckedCreateWithoutSpecialtyInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1129,6 +1162,7 @@ export type RegistrationCreateWithoutAppointmentInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1153,6 +1187,7 @@ export type RegistrationUncheckedCreateWithoutAppointmentInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1189,6 +1224,7 @@ export type RegistrationUpdateWithoutAppointmentInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1213,6 +1249,7 @@ export type RegistrationUncheckedUpdateWithoutAppointmentInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1233,6 +1270,7 @@ export type RegistrationCreateWithoutEncounterInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1258,6 +1296,7 @@ export type RegistrationUncheckedCreateWithoutEncounterInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1293,6 +1332,7 @@ export type RegistrationUpdateWithoutEncounterInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1318,6 +1358,7 @@ export type RegistrationUncheckedUpdateWithoutEncounterInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1337,6 +1378,7 @@ export type RegistrationCreateWithoutInvoicesInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1362,6 +1404,7 @@ export type RegistrationUncheckedCreateWithoutInvoicesInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1397,6 +1440,7 @@ export type RegistrationUpdateWithoutInvoicesInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1422,6 +1466,7 @@ export type RegistrationUncheckedUpdateWithoutInvoicesInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1441,6 +1486,7 @@ export type RegistrationCreateWithoutBpjsSubmissionsInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1466,6 +1512,7 @@ export type RegistrationUncheckedCreateWithoutBpjsSubmissionsInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1501,6 +1548,7 @@ export type RegistrationUpdateWithoutBpjsSubmissionsInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1526,6 +1574,7 @@ export type RegistrationUncheckedUpdateWithoutBpjsSubmissionsInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1545,6 +1594,7 @@ export type RegistrationCreateWithoutLabOrdersInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1570,6 +1620,7 @@ export type RegistrationUncheckedCreateWithoutLabOrdersInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1605,6 +1656,7 @@ export type RegistrationUpdateWithoutLabOrdersInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1630,6 +1682,7 @@ export type RegistrationUncheckedUpdateWithoutLabOrdersInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1652,6 +1705,7 @@ export type RegistrationCreateManyCreatedByInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1667,6 +1721,7 @@ export type RegistrationUpdateWithoutCreatedByInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1692,6 +1747,7 @@ export type RegistrationUncheckedUpdateWithoutCreatedByInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1714,6 +1770,7 @@ export type RegistrationUncheckedUpdateManyWithoutCreatedByInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1731,6 +1788,7 @@ export type RegistrationCreateManyPatientInput = {
   queueDate?: Date | string | null
   specialtyId?: string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1747,6 +1805,7 @@ export type RegistrationUpdateWithoutPatientInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1771,6 +1830,7 @@ export type RegistrationUncheckedUpdateWithoutPatientInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1793,6 +1853,7 @@ export type RegistrationUncheckedUpdateManyWithoutPatientInput = {
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   specialtyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1811,6 +1872,7 @@ export type RegistrationCreateManySpecialtyInput = {
   queueNumber?: number | null
   queueDate?: Date | string | null
   poliQueueNumber?: number | null
+  payerType?: $Enums.PayerType | null
   registeredAt?: Date | string
   checkedInAt?: Date | string | null
   completedAt?: Date | string | null
@@ -1827,6 +1889,7 @@ export type RegistrationUpdateWithoutSpecialtyInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1851,6 +1914,7 @@ export type RegistrationUncheckedUpdateWithoutSpecialtyInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1873,6 +1937,7 @@ export type RegistrationUncheckedUpdateManyWithoutSpecialtyInput = {
   queueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   queueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   poliQueueNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  payerType?: Prisma.NullableEnumPayerTypeFieldUpdateOperationsInput | $Enums.PayerType | null
   registeredAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   checkedInAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1941,6 +2006,7 @@ export type RegistrationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   queueDate?: boolean
   specialtyId?: boolean
   poliQueueNumber?: boolean
+  payerType?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -1969,6 +2035,7 @@ export type RegistrationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   queueDate?: boolean
   specialtyId?: boolean
   poliQueueNumber?: boolean
+  payerType?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -1992,6 +2059,7 @@ export type RegistrationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   queueDate?: boolean
   specialtyId?: boolean
   poliQueueNumber?: boolean
+  payerType?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -2015,6 +2083,7 @@ export type RegistrationSelectScalar = {
   queueDate?: boolean
   specialtyId?: boolean
   poliQueueNumber?: boolean
+  payerType?: boolean
   registeredAt?: boolean
   checkedInAt?: boolean
   completedAt?: boolean
@@ -2024,7 +2093,7 @@ export type RegistrationSelectScalar = {
   deletedAt?: boolean
 }
 
-export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "appointmentId" | "type" | "status" | "queueNumber" | "queueDate" | "specialtyId" | "poliQueueNumber" | "registeredAt" | "checkedInAt" | "completedAt" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["registration"]>
+export type RegistrationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "patientId" | "appointmentId" | "type" | "status" | "queueNumber" | "queueDate" | "specialtyId" | "poliQueueNumber" | "payerType" | "registeredAt" | "checkedInAt" | "completedAt" | "createdById" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["registration"]>
 export type RegistrationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientProfileDefaultArgs<ExtArgs>
   appointment?: boolean | Prisma.Registration$appointmentArgs<ExtArgs>
@@ -2104,6 +2173,11 @@ export type $RegistrationPayload<ExtArgs extends runtime.Types.Extensions.Intern
      * and governed by the same never-renumbered, never-reissued rule.
      */
     poliQueueNumber: number | null
+    /**
+     * Who pays for the visit (P29-T07). Null on rows from before it was asked
+     * that carry no BPJS trace: analytics shows them as "Tidak tercatat".
+     */
+    payerType: $Enums.PayerType | null
     registeredAt: Date
     checkedInAt: Date | null
     completedAt: Date | null
@@ -2551,6 +2625,7 @@ export interface RegistrationFieldRefs {
   readonly queueDate: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly specialtyId: Prisma.FieldRef<"Registration", 'String'>
   readonly poliQueueNumber: Prisma.FieldRef<"Registration", 'Int'>
+  readonly payerType: Prisma.FieldRef<"Registration", 'PayerType'>
   readonly registeredAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly checkedInAt: Prisma.FieldRef<"Registration", 'DateTime'>
   readonly completedAt: Prisma.FieldRef<"Registration", 'DateTime'>
