@@ -34,6 +34,26 @@ const operationsSeries = [
   { bucket: '2026-09-02', visits: 51, consultation: 46, labOnly: 3, admission: 2 },
 ];
 
+const financeTotals = {
+  revenue: 196_250_000,
+  taxAmount: 2_140_000,
+  invoices: 1_208,
+  invoicedVisits: 1_188,
+  // `null` with no invoice in the period.
+  revenuePerVisit: 165_194,
+  unpaidInvoices: 41,
+  unpaidAmount: 9_800_000,
+  cashReceived: 186_400_000,
+  payments: 1_147,
+  voidedInvoices: 7,
+  voidedAmount: 1_200_000,
+};
+
+const financeSeries = [
+  { bucket: '2026-09-01', revenue: 6_420_000, cashReceived: 6_110_000 },
+  { bucket: '2026-09-02', revenue: 7_150_500, cashReceived: 6_980_000 },
+];
+
 /** Request and response examples for the P29 analytics endpoints. */
 export const ANALYTICS_EXAMPLES = {
   operations: {
@@ -103,6 +123,68 @@ export const ANALYTICS_EXAMPLES = {
           to: '2026-08-31',
           totals: { ...operationsTotals, visits: 1151 },
           series: operationsSeries,
+        }),
+      },
+      meta: {
+        from: '2026-09-01',
+        to: '2026-09-30',
+        timezone: 'Asia/Jakarta',
+        granularity: 'day',
+        generatedAt: '2026-09-28T02:00:00.000Z',
+      },
+    },
+  },
+  finance: {
+    response: {
+      data: {
+        totals: financeTotals,
+        series: financeSeries,
+        breakdowns: {
+          paymentMethods: [
+            { method: 'CASH', payments: 512, amount: 82_016_000 },
+            { method: 'QRIS', payments: 318, amount: 50_328_000 },
+          ],
+          itemTypes: [{ itemType: 'MEDICATION', lines: 2_480, amount: 71_400_000, taxAmount: 0 }],
+          // The unattributed row (`doctorId: null`) comes last.
+          doctors: [
+            {
+              doctorId: DOCTOR_ID,
+              doctorName: 'dr. Rina Kartika',
+              specialtyName: 'Poli Umum',
+              invoices: 418,
+              visits: 412,
+              revenue: 61_200_000,
+              revenuePerVisit: 148_544,
+              previousRevenue: optionalExample(56_150_000),
+            },
+          ],
+          poli: [
+            {
+              specialtyId: POLI_UMUM_ID,
+              specialtyName: 'Poli Umum',
+              invoices: 640,
+              revenue: 95_000_000,
+              previousRevenue: optionalExample(88_400_000),
+            },
+          ],
+          // General, BPJS, insurance, then `payerType: null` ("not recorded").
+          payers: [{ payerType: 'GENERAL', visits: 649, invoices: 640, revenue: 139_300_000 }],
+          outstanding: {
+            invoices: 41,
+            amount: 9_800_000,
+            aging: [
+              { bucket: '0-7', invoices: 26, amount: 5_900_000 },
+              { bucket: '8-30', invoices: 11, amount: 3_100_000 },
+              { bucket: 'over-30', invoices: 4, amount: 800_000 },
+            ],
+          },
+        },
+        // Only with `compare=true`.
+        comparison: optionalExample({
+          from: '2026-08-01',
+          to: '2026-08-31',
+          totals: { ...financeTotals, revenue: 176_400_000 },
+          series: financeSeries,
         }),
       },
       meta: {

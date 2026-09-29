@@ -21,6 +21,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AnalyticsFinanceControllerGetFinanceV1200,
+  AnalyticsFinanceControllerGetFinanceV1Params,
   AnalyticsOperationsControllerGetOperationsV1200,
   AnalyticsOperationsControllerGetOperationsV1Params,
   AnalyticsReportingHealthControllerGetReportingHealthV1200,
@@ -222,6 +224,99 @@ export function useAnalyticsReportingHealthControllerGetReportingHealthV1<TData 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsReportingHealthControllerGetReportingHealthV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the finance dashboard
+ */
+export const analyticsFinanceControllerGetFinanceV1 = (
+    params: AnalyticsFinanceControllerGetFinanceV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsFinanceControllerGetFinanceV1200>(
+      {url: `/api/v1/analytics/finance`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsFinanceControllerGetFinanceV1QueryKey = (params?: AnalyticsFinanceControllerGetFinanceV1Params,) => {
+    return [
+    `/api/v1/analytics/finance`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsFinanceControllerGetFinanceV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError = unknown>(params: AnalyticsFinanceControllerGetFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsFinanceControllerGetFinanceV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>> = ({ signal }) => analyticsFinanceControllerGetFinanceV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsFinanceControllerGetFinanceV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>>
+export type AnalyticsFinanceControllerGetFinanceV1QueryError = unknown
+
+
+export function useAnalyticsFinanceControllerGetFinanceV1<TData = Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError = unknown>(
+ params: AnalyticsFinanceControllerGetFinanceV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsFinanceControllerGetFinanceV1<TData = Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError = unknown>(
+ params: AnalyticsFinanceControllerGetFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsFinanceControllerGetFinanceV1<TData = Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError = unknown>(
+ params: AnalyticsFinanceControllerGetFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the finance dashboard
+ */
+
+export function useAnalyticsFinanceControllerGetFinanceV1<TData = Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError = unknown>(
+ params: AnalyticsFinanceControllerGetFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsFinanceControllerGetFinanceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsFinanceControllerGetFinanceV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

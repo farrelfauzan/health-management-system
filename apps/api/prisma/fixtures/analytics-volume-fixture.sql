@@ -10,8 +10,9 @@
 --   4 poli, 8 clinicians, 15 000 patients
 --   ~47 000 appointments (~40 000 kept, ~7 000 no-show or cancelled), 52 000 registrations (50 000 visits + 2 000 cancelled)
 --   50 000 encounters with ~65 000 diagnoses, 35 000 prescriptions
---   60 000 invoices with ~56 000 payments (one per paid invoice, the schema's
---   rule), 8 000 lab orders
+--   60 000 invoices with 120 000 lines and ~56 000 payments (one per paid
+--   invoice, the schema's rule), 8 000 lab orders
+--   a payer on every visit: BPJS where a KUNJUNGAN was sent, else mostly general
 --   50 000 SATUSEHAT and 20 000 BPJS submissions
 -- Deterministic: `setseed` fixes every random() below, so a re-run on a fresh
 -- database produces the same rows and the same plans.
@@ -308,6 +309,24 @@ SELECT
 FROM fixture_invoice
 WHERE roll_status >= 0.06;
 
+-- Two lines per invoice (P29-T08): the service, and what was dispensed, so
+-- the revenue-by-service query sums a realistic number of lines.
+INSERT INTO invoice_items (
+  id, invoice_id, item_type, description, quantity, unit_price, amount, created_at, updated_at
+)
+SELECT gen_random_uuid(), invoice_id, line.item_type, line.description, 1, line.amount, line.amount,
+       issued_at, issued_at
+FROM fixture_invoice
+CROSS JOIN LATERAL (
+  VALUES
+    (
+      CASE WHEN encounter_id IS NULL THEN 'LAB'::"InvoiceItemType" ELSE 'CONSULTATION'::"InvoiceItemType" END,
+      'Perf service',
+      total_amount - floor(total_amount * 0.4)
+    ),
+    ('MEDICATION'::"InvoiceItemType", 'Perf medication', floor(total_amount * 0.4))
+) AS line(item_type, description, amount);
+
 INSERT INTO satusehat_submissions (
   id, encounter_id, kind, status, attempts, next_attempt_at, submitted_at, created_at, updated_at
 )
@@ -350,5 +369,18 @@ SELECT
 FROM fixture_visit v
 CROSS JOIN (VALUES ('PENDAFTARAN'::"BpjsSubmissionType"), ('KUNJUNGAN'::"BpjsSubmissionType")) AS t(type)
 WHERE v.visit_no <= 50000 AND v.roll_channel >= 0.25 AND v.roll_channel < 0.45;
+
+-- Who pays (P29-T07): BPJS where a kunjungan went to PCare, as the migration's
+-- backfill decides, and otherwise a fixed spread keyed on the row's id.
+UPDATE registrations r
+SET payer_type = (
+  CASE
+    WHEN EXISTS (
+      SELECT 1 FROM bpjs_submissions s WHERE s.registration_id = r.id AND s.type = 'KUNJUNGAN'
+    ) THEN 'BPJS'
+    WHEN abs(hashtext(r.id::text)) % 20 < 17 THEN 'GENERAL'
+    ELSE 'INSURANCE'
+  END
+)::payer_type;
 
 ANALYZE;

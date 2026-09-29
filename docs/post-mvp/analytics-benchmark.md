@@ -173,6 +173,41 @@ The database is 281 MB, larger than Postgres's default 128 MB `shared_buffers`.
 | finished-without-primary-diagnosis | 12 months | one poli | 12.2 | 12.5 |
 | revenue-by-bucket-and-method | 12 months | one poli | 28.0 | 28.7 |
 
+## P29-T08 re-run: finance by invoice date (2026-09-29)
+
+**Ticket:** SJ-273. The PO answered Q-3 on 2026-09-28: revenue follows the invoice date, not the payment date.
+
+The finance rows in the tables above time the Sprint 1 preview query (payments by `paid_at`). T08 replaced it with the shipped queries in `src/scripts/analytics-benchmark-queries.ts`:
+- revenue by `issued_at`;
+- cash by `paid_at`;
+- revenue by item type, clinician, poli and payer;
+- visits by payer;
+- unpaid invoices by age.
+
+**Fixture change.** The fixture gained two lines per invoice (120 000 `invoice_items`) and a payer on every visit. Before this, the item-type query summed nothing.
+
+**Result.** Every dashboard still meets its gate. The comparison period is included in every measured request.
+
+| Dashboard | Range | Filter | p50 ms | p95 ms | Gate ms | Verdict |
+|---|---|---|---:|---:|---:|---|
+| finance | 30 days | none | 152.1 | 161.9 | < 400 | meets |
+| finance | 30 days | one doctor | 49.1 | 52.7 | < 400 | meets |
+| finance | 30 days | one poli | 136.8 | 143.0 | < 400 | meets |
+| finance | 12 months | none | 318.2 | 323.9 | < 1500 | meets |
+| finance | 12 months | one doctor | 99.9 | 117.2 | < 1500 | meets |
+| finance | 12 months | one poli | 186.6 | 190.4 | < 1500 | meets |
+
+**Slowest query.** Revenue by clinician over 12 months, unfiltered, has a p95 of 131 ms. It joins every invoice to its encounter, the stay's referring encounter and the visit.
+
+**Closest to its gate.** The 30-day finance request, at 40% of its gate. `EXPLAIN ANALYZE` of the 30-day revenue-by-clinician query (29 ms) shows where the time goes:
+- The invoices are found through the existing `invoices(status, issued_at)` index.
+- The time is the hash join that reads all of `encounters` (50 000 rows).
+- The merge join walks the whole `registrations` primary key.
+
+**No index added.** These scans grow with total history, like the 30-day scans listed above.
+
+**Watch at five years of history.** The 30-day request would approach its gate. The fix to try then is a nested loop into both tables by primary key, not a new index. For example, fetch the range's invoices first in a `MATERIALIZED` CTE.
+
 ## Index decision: none added
 
 The ticket allows an index only where a hot path does a sequential scan.

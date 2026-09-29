@@ -11,6 +11,7 @@ import type {
 
 import { Prisma } from '../../../generated/prisma/client';
 import type { PrismaTransactionClient } from '../../../common/prisma/prisma.types';
+import { buildAnalyticsVisitFilter } from './build-analytics-visit-filter';
 
 // Longer than this between check-in and the examination, or inside it, is
 // a clock left running, not a wait (PRD FR-OPS-07).
@@ -28,24 +29,7 @@ const SECONDS_PER_DAY = 86_400;
 export class AnalyticsOperationsDepthRepository {
   /** The visit filter of the operations dashboard, for a registration aliased `r`. */
   buildVisitFilter(scope: AnalyticsSqlScope): Prisma.Sql {
-    const doctorFilter = scope.doctorId
-      ? Prisma.sql`AND EXISTS (
-          SELECT 1 FROM "encounters" fe
-          WHERE fe."registration_id" = r."id" AND fe."doctor_id" = ${scope.doctorId}::uuid
-            AND fe."deleted_at" IS NULL)`
-      : Prisma.empty;
-    const poliFilter = scope.specialtyId
-      ? Prisma.sql`AND r."specialty_id" = ${scope.specialtyId}::uuid`
-      : Prisma.empty;
-    // A visit whose payer was never recorded matches no payer (P29-T07).
-    const payerFilter = scope.payerType
-      ? Prisma.sql`AND r."payer_type" = ${scope.payerType}::payer_type`
-      : Prisma.empty;
-    return Prisma.sql`r."deleted_at" IS NULL
-      AND r."status" IN ('CHECKED_IN', 'COMPLETED')
-      AND r."registered_at" >= ${scope.startUtc}::timestamp
-      AND r."registered_at" < ${scope.endUtc}::timestamp
-      ${doctorFilter} ${poliFilter} ${payerFilter}`;
+    return buildAnalyticsVisitFilter(scope);
   }
 
   /** Narrows by a doctor column, directly or through the doctor's poli. */
