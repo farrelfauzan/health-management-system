@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { NextRequest } from 'next/server';
+import { NextRequest, type NextResponse } from 'next/server';
 import { describe, expect, it } from 'vitest';
 
 import { proxy } from './proxy';
@@ -390,6 +390,69 @@ describe('proxy', () => {
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toBe(`${BASE_URL}/doctor/dashboard`);
+  });
+
+  /**
+   * 2026-09-28: a session the server killed (refresh family gone) left the API's
+   * session hint behind. The client cleared only the access token and went to
+   * /login, which the hint sent back to the dashboard, whose calls 401'd — a
+   * redirect loop. The hint is the cookie that kept it going.
+   */
+  describe('a session ended by a failed refresh', () => {
+    const adminHint = buildSessionHint({
+      exp: futureUnix(),
+      roles: ['ADMIN'],
+      permissions: ['portal.admin-access:any'],
+    });
+
+    /** Replays a redirect the way a browser would: follow it, honouring Set-Cookie. */
+    function followRedirect(previous: NextRequest, response: NextResponse): NextRequest {
+      const location = response.headers.get('location');
+      if (location === null) {
+        throw new Error('expected a redirect');
+      }
+      const jar = new Map(previous.cookies.getAll().map((cookie) => [cookie.name, cookie.value]));
+      for (const cookie of response.cookies.getAll()) {
+        if (cookie.value === '') {
+          jar.delete(cookie.name);
+        } else {
+          jar.set(cookie.name, cookie.value);
+        }
+      }
+      const cookieHeader = [...jar].map(([name, value]) => `${name}=${value}`).join('; ');
+      return new NextRequest(location, cookieHeader ? { headers: { cookie: cookieHeader } } : {});
+    }
+
+    it('is kept signed in by the session hint alone on plain /login', () => {
+      const response = proxy(buildRequest('/login', undefined, adminHint));
+
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/dashboard`);
+    });
+
+    it('clears the access token and the session hint on /login?ended=1', () => {
+      const adminToken = buildToken({ exp: futureUnix(), roles: ['ADMIN'] });
+      const response = proxy(buildRequest('/login?ended=1', adminToken, adminHint));
+
+      expect(response.status).toBe(307);
+      expect(response.headers.get('location')).toBe(`${BASE_URL}/login`);
+      expect(response.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value).toBe('');
+      expect(response.cookies.get(SESSION_HINT_COOKIE_NAME)?.value).toBe('');
+    });
+
+    it('lands on /login and stays there', () => {
+      let request = buildRequest('/login?ended=1', undefined, adminHint);
+      const visitedPaths: string[] = [];
+      let response = proxy(request);
+      while (response.headers.get('location') !== null && visitedPaths.length < 5) {
+        request = followRedirect(request, response);
+        visitedPaths.push(request.nextUrl.pathname);
+        response = proxy(request);
+      }
+
+      expect(visitedPaths).toEqual(['/login']);
+      expect(response.headers.get('x-middleware-next')).toBe('1');
+      expect(request.cookies.has(SESSION_HINT_COOKIE_NAME)).toBe(false);
+    });
   });
 
   describe('offboarding (P16-T41)', () => {

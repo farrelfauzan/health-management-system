@@ -1,11 +1,12 @@
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { apiClient } from '#lib/api/http';
 import {
   ACCESS_TOKEN_COOKIE_NAME,
   readAccessTokenFromBrowserCookie,
 } from '#lib/auth/access-token-cookie';
+import { SESSION_ENDED_LOGIN } from '#lib/auth/session-ended-login';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 
 function buildResponse(
@@ -72,5 +73,49 @@ describe('apiClient refresh interceptor', () => {
     // holds it as an httpOnly cookie, so there is nothing here to assert on
     // beyond the access token the interceptor did persist.
     expect(readAccessTokenFromBrowserCookie()).toBe('new-access-token');
+  });
+
+  /**
+   * 2026-09-28: the refresh family was gone server-side. Plain /login would be
+   * bounced back to the shell by the API's session hint, which this tier cannot
+   * clear, so the client must go through the marker `proxy.ts` clears it on.
+   */
+  describe('when the refresh itself is refused', () => {
+    const assignMock = vi.fn();
+
+    beforeEach(() => {
+      assignMock.mockClear();
+      vi.stubGlobal('location', {
+        pathname: '/admin/dashboard',
+        protocol: 'http:',
+        assign: assignMock,
+      });
+      apiClient.defaults.adapter = async (
+        config: InternalAxiosRequestConfig,
+      ): Promise<AxiosResponse> => {
+        const response = buildResponse(config, 401, {});
+        throw new AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, undefined, response);
+      };
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('drops the access token and sends the browser to the session-ended login', async () => {
+      await expect(apiClient.get('/api/v1/patients/patient-id')).rejects.toBeInstanceOf(AxiosError);
+
+      expect(readAccessTokenFromBrowserCookie()).toBeNull();
+      expect(assignMock).toHaveBeenCalledTimes(1);
+      expect(assignMock).toHaveBeenCalledWith(SESSION_ENDED_LOGIN.href);
+    });
+
+    it('does not navigate again once it is already on /login', async () => {
+      vi.stubGlobal('location', { pathname: '/login', protocol: 'http:', assign: assignMock });
+
+      await expect(apiClient.get('/api/v1/patients/patient-id')).rejects.toBeInstanceOf(AxiosError);
+
+      expect(assignMock).not.toHaveBeenCalled();
+    });
   });
 });
