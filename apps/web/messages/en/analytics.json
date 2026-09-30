@@ -400,6 +400,20 @@
           "doctors": "By doctor",
           "outstanding": "Age of unpaid invoices"
         },
+        "case-mix": {
+          "summary": "Summary",
+          "top-diagnoses": "Top 10 primary diagnoses",
+          "groups": "By ICD-10 group",
+          "coding-by-poli": "Coding completeness by poli",
+          "top-procedures": "Most frequent procedures"
+        },
+        "pharmacy": {
+          "summary": "Summary",
+          "prescriptions-trend": "Prescriptions by period",
+          "top-medications": "Most dispensed medications",
+          "reorder": "Needs reordering",
+          "expiring": "Expiring soon"
+        },
         "reporting": {
           "satusehat": "SATUSEHAT",
           "bpjs": "BPJS PCare and Antrean",
@@ -475,6 +489,87 @@
       "suppressedNote": "Counts under 5 are hidden to protect patient privacy",
       "emptyTitle": "No finished encounter in this period",
       "emptyDescription": "Try another date range, or clear the poli, doctor and payer filters."
+    },
+    "pharmacy": {
+      "kpi": {
+        "issued": "Prescriptions issued",
+        "issuedHelper": "{elsewhere} filled at an outside pharmacy",
+        "fullyDispensed": "Fully dispensed",
+        "fullyDispensedHelper": "{dispensed} prescriptions · {partial} partly · {cancelled} cancelled",
+        "median": "Median issue to dispense",
+        "minutes": "{value} min",
+        "revenue": "Medication revenue",
+        "revenueHelper": "By invoice date, the same as Finance"
+      },
+      "topMedications": {
+        "title": "Most dispensed medications",
+        "subtitle": "Units handed over on dispenses that were not cancelled",
+        "empty": "No medication was dispensed in this period.",
+        "quantity": "{quantity} {unit}",
+        "moreInExport": "Showing the top {shown}. The CSV export has {total}."
+      },
+      "reorder": {
+        "title": "Needs reordering",
+        "subtitle": "Current stock at or below the reorder level",
+        "link": "Medication stock",
+        "medication": "Medication",
+        "stock": "Left",
+        "level": "Level",
+        "cover": "Lasts",
+        "coverDays": "~{days} days",
+        "unused": "Unused",
+        "unusedHint": "Nothing dispensed in the last 30 days",
+        "total": "{count} medications at or below their reorder level",
+        "shown": "Showing the {shown} most urgent",
+        "empty": "Every medication is above its reorder level."
+      },
+      "expiring": {
+        "title": "Expiring soon",
+        "subtitle": "Batches with stock left",
+        "link": "Expiry report",
+        "batches": "{count} batches",
+        "units": "{count} units left",
+        "windows": {
+          "EXPIRED": "Already expired",
+          "WITHIN_30_DAYS": "≤ 30 days",
+          "WITHIN_60_DAYS": "31–60 days",
+          "WITHIN_90_DAYS": "61–90 days"
+        }
+      },
+      "flow": {
+        "title": "Prescription flow",
+        "subtitle": "Status of the prescriptions issued in this period",
+        "ariaLabel": "Prescriptions issued, split by their status now",
+        "empty": "No prescription was issued in this period.",
+        "statuses": {
+          "fullyDispensed": "Dispensed",
+          "partiallyDispensed": "Partly",
+          "cancelled": "Cancelled",
+          "awaitingDispense": "Not yet dispensed",
+          "filledElsewhere": "Filled elsewhere"
+        }
+      },
+      "stockAsOf": "Stock as of {date}, not filtered by period",
+      "units": {
+        "TABLET": "tablets",
+        "KAPSUL": "capsules",
+        "KAPLET": "caplets",
+        "SACHET": "sachets",
+        "AMPUL": "ampoules",
+        "VIAL": "vials",
+        "BOTOL": "bottles",
+        "TUBE": "tubes",
+        "STRIP": "strips",
+        "BOX": "boxes",
+        "PCS": "pcs",
+        "ML": "ml",
+        "MG": "mg",
+        "GRAM": "g",
+        "MCG": "mcg",
+        "IU": "IU",
+        "TETES": "drops",
+        "SUPOSITORIA": "suppositories"
+      }
     }
   }
 }

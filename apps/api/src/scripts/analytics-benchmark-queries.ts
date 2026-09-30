@@ -63,10 +63,24 @@ const FINISHED_WITH_PRIMARY = `
       AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
   )`;
 
+// Prescriptions issued in the range (P29-T13), narrowed by prescriber and
+// by the poli of the visit they were written in.
+const ISSUED_PRESCRIPTIONS = `
+  WITH issued AS (
+    SELECT p.id, p.status, p.fulfilment_site, p.issued_at
+    FROM prescriptions p
+    LEFT JOIN encounters e ON e.id = p.encounter_id
+    LEFT JOIN registrations r ON r.id = e.registration_id
+    WHERE p.deleted_at IS NULL AND p.status <> 'DRAFT'
+      AND p.issued_at >= $1::timestamp AND p.issued_at < $2::timestamp
+      AND ($3::uuid IS NULL OR p.doctor_id = $3::uuid)
+      AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
+  )`;
+
 /**
  * The candidate SQL for every Sprint 1 analytics query (P29-T04 operations,
- * P29-T06 reporting status), the P29-T08 finance and the P29-T12 case-mix
- * queries, as shipped.
+ * P29-T06 reporting status), the P29-T08 finance, the P29-T12 case-mix and
+ * the P29-T13 pharmacy queries, as shipped.
  * The shapes follow the ticket definitions; T04 and T06 are expected to
  * adopt them, and re-run the benchmark if they change a join.
  */
@@ -350,5 +364,109 @@ export const ANALYTICS_BENCHMARK_QUERIES: readonly AnalyticsBenchmarkQuery[] = [
       LEFT JOIN icd9cm_codes ic ON ic.id = p.icd9cm_code_id
       WHERE p.deleted_at IS NULL
       GROUP BY 1 ORDER BY 2 DESC`,
+  },
+  {
+    id: 'pharmacy-prescription-outcomes',
+    requirement: 'FR-PHR-01',
+    dashboard: 'pharmacy',
+    params: FINANCE_PARAMS,
+    sql: `${ISSUED_PRESCRIPTIONS},
+      first_dispense AS (
+        SELECT extract(epoch FROM min(d.dispensed_at) - i.issued_at) / 60 AS minutes
+        FROM issued i
+        JOIN dispense_records d ON d.prescription_id = i.id AND d.status = 'DISPENSED'
+        GROUP BY i.id, i.issued_at
+      )
+      SELECT count(*)::int AS issued,
+             count(*) FILTER (WHERE status = 'DISPENSED')::int AS dispensed,
+             (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY minutes)
+              FROM first_dispense WHERE minutes >= 0) AS median_minutes
+      FROM issued`,
+  },
+  {
+    id: 'pharmacy-prescription-buckets',
+    requirement: 'FR-PHR-01',
+    dashboard: 'pharmacy',
+    params: [...FINANCE_PARAMS, 'granularity', 'timeZone'],
+    sql: `${ISSUED_PRESCRIPTIONS}
+      SELECT date_trunc($5, (issued_at AT TIME ZONE 'UTC') AT TIME ZONE $6) AS bucket,
+             count(*)::int AS issued, count(*) FILTER (WHERE status = 'DISPENSED')::int AS dispensed
+      FROM issued GROUP BY 1`,
+  },
+  {
+    id: 'pharmacy-medication-revenue',
+    requirement: 'FR-PHR-04',
+    dashboard: 'pharmacy',
+    params: [...FINANCE_PARAMS, 'granularity', 'timeZone'],
+    sql: `
+      SELECT date_trunc($5, (i.issued_at AT TIME ZONE 'UTC') AT TIME ZONE $6) AS bucket,
+             sum(it.amount) AS amount
+      FROM invoice_items it
+      JOIN invoices i ON i.id = it.invoice_id
+      ${INVOICE_VISIT_JOINS}
+      WHERE it.item_type = 'MEDICATION' AND ${REVENUE_FILTER}
+      GROUP BY 1`,
+  },
+  {
+    id: 'pharmacy-top-medications',
+    requirement: 'FR-PHR-02',
+    dashboard: 'pharmacy',
+    params: FINANCE_PARAMS,
+    sql: `
+      SELECT m.id, m.name, sum(di.quantity)::int AS quantity, count(DISTINCT d.id)::int AS dispenses
+      FROM dispense_items di
+      JOIN dispense_records d ON d.id = di.dispense_record_id AND d.status = 'DISPENSED'
+      JOIN prescriptions p ON p.id = d.prescription_id
+      JOIN medications m ON m.id = di.medication_id
+      LEFT JOIN encounters e ON e.id = p.encounter_id
+      LEFT JOIN registrations r ON r.id = e.registration_id
+      WHERE p.deleted_at IS NULL
+        AND d.dispensed_at >= $1::timestamp AND d.dispensed_at < $2::timestamp
+        AND ($3::uuid IS NULL OR p.doctor_id = $3::uuid)
+        AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
+      GROUP BY m.id ORDER BY 3 DESC, m.name LIMIT 20`,
+  },
+  {
+    id: 'pharmacy-reorder',
+    requirement: 'FR-PHR-03, FR-PHR-05',
+    dashboard: 'pharmacy',
+    params: ['timeZone'],
+    sql: `
+      WITH stock AS (
+        SELECT medication_id, sum(remaining_quantity) AS quantity
+        FROM medication_stock_receipts
+        WHERE remaining_quantity > 0
+          AND (expiry_date IS NULL OR expiry_date >= (now() AT TIME ZONE $1)::date)
+        GROUP BY 1
+      ),
+      used AS (
+        SELECT di.medication_id, sum(di.quantity) AS quantity
+        FROM dispense_items di
+        JOIN dispense_records d ON d.id = di.dispense_record_id AND d.status = 'DISPENSED'
+        WHERE d.dispensed_at >= (now() AT TIME ZONE 'UTC') - interval '30 days'
+        GROUP BY 1
+      )
+      SELECT m.id, COALESCE(s.quantity, 0) AS stock, m.reorder_level, COALESCE(u.quantity, 0) AS used
+      FROM medications m
+      LEFT JOIN stock s ON s.medication_id = m.id
+      LEFT JOIN used u ON u.medication_id = m.id
+      WHERE m.deleted_at IS NULL AND COALESCE(s.quantity, 0) <= m.reorder_level`,
+  },
+  {
+    id: 'pharmacy-expiry-windows',
+    requirement: 'FR-PHR-03',
+    dashboard: 'pharmacy',
+    params: ['timeZone'],
+    sql: `
+      SELECT CASE
+               WHEN expiry_date < (now() AT TIME ZONE $1)::date THEN 'EXPIRED'
+               WHEN expiry_date <= (now() AT TIME ZONE $1)::date + 30 THEN 'WITHIN_30_DAYS'
+               WHEN expiry_date <= (now() AT TIME ZONE $1)::date + 60 THEN 'WITHIN_60_DAYS'
+               ELSE 'WITHIN_90_DAYS'
+             END AS bucket,
+             count(*)::int AS batches, sum(remaining_quantity)::int AS units
+      FROM medication_stock_receipts
+      WHERE remaining_quantity > 0 AND expiry_date <= (now() AT TIME ZONE $1)::date + 90
+      GROUP BY 1`,
   },
 ];

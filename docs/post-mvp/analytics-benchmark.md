@@ -229,6 +229,29 @@ The finance rows in the tables above time the Sprint 1 preview query (payments b
 
 **No index added.**
 
+## P29-T13 re-run: pharmacy (2026-09-30)
+
+**Ticket:** SJ-278.
+
+**Fixture change.** The fixture gained 150 catalog medications with three batches each, expiring from a month ago to a year out. Every dispensed prescription gained one dispense, 5 to 45 minutes after issue, with two lines for two different medications (one line per product per dispense, `dispense_items_product_line_key`). Before this, prescriptions had no dispense records, and there was no catalog or stock.
+
+**Result.** The pharmacy queries meet the gate. The comparison period is included in every measured request. The two stock queries (reorder, expiry windows) run once per request in the API, but the benchmark times them for both periods, so the figures below overstate them slightly.
+
+| Dashboard | Range | Filter | p50 ms | p95 ms | Gate ms | Verdict |
+|---|---|---|---:|---:|---:|---|
+| pharmacy | 30 days | none | 75.9 | 77.3 | < 400 | meets |
+| pharmacy | 30 days | one doctor | 31.7 | 41.2 | < 400 | meets |
+| pharmacy | 30 days | one poli | 106.0 | 110.5 | < 400 | meets |
+| pharmacy | 12 months | none | 155.4 | 170.7 | < 1500 | meets |
+| pharmacy | 12 months | one doctor | 49.6 | 52.8 | < 1500 | meets |
+| pharmacy | 12 months | one poli | 112.7 | 123.9 | < 1500 | meets |
+
+**Slowest query.** Top medications over 12 months, at a p95 of 65 ms. It joins dispense lines to their dispense, prescription and medication. Medication revenue is next, at 56 ms; it is the finance dashboard's item-type query narrowed to `MEDICATION`.
+
+**Other dashboards.** Unchanged by the new rows. Over 12 months with no filter, the p95 figures were: finance 327 ms, case mix 136 ms, operations 83 ms, reporting 24 ms.
+
+**No index added.**
+
 ## Index decision: none added
 
 The ticket allows an index only where a hot path does a sequential scan.

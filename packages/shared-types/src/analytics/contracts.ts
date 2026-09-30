@@ -1,5 +1,6 @@
 import type { AnalyticsPayerTypeValue } from '#analytics/schemas';
 import type { InvoiceItemTypeValue, PaymentMethodValue } from '#billing/schemas';
+import type { MedicationUnitValue } from '#pharmacy-flow/schemas';
 
 /** How a dashboard's time series is bucketed (PRD FR-FDN-04). */
 export type AnalyticsGranularity = 'day' | 'week' | 'month';
@@ -468,4 +469,112 @@ export type AnalyticsCaseMixData = AnalyticsDashboardData<
   AnalyticsCaseMixTotals,
   AnalyticsCaseMixSeriesPoint[],
   AnalyticsCaseMixBreakdowns
+>;
+
+/**
+ * The pharmacy headline (P29-T13, PRD FR-PHR-01 and 04). A prescription
+ * counts in the period it was issued, under the status it has now, so the
+ * five outcomes add up to `prescriptionsIssued`. `filledElsewhere` is an
+ * issued prescription the patient was sent to buy at an outside apotek: it
+ * will never be dispensed here, so `fullyDispensedPercent` leaves it out.
+ * `medianDispenseMinutes` runs from issue to the first dispense that was not
+ * cancelled. `medicationRevenue` is in rupiah: the `MEDICATION` lines of
+ * issued and paid invoices, by invoice date (Q-3), the same figure the
+ * finance dashboard shows for medication.
+ */
+export type AnalyticsPharmacyTotals = {
+  prescriptionsIssued: number;
+  fullyDispensed: number;
+  partiallyDispensed: number;
+  cancelled: number;
+  awaitingDispense: number;
+  filledElsewhere: number;
+  fullyDispensedPercent: number | null;
+  medianDispenseMinutes: number | null;
+  medicationRevenue: number;
+};
+
+/** Prescriptions issued and medication revenue in one bucket; `bucket` is its first local date. */
+export type AnalyticsPharmacySeriesPoint = {
+  bucket: string;
+  prescriptionsIssued: number;
+  fullyDispensed: number;
+  medicationRevenue: number;
+};
+
+/**
+ * One medication by the units handed over in the range (PRD FR-PHR-02),
+ * counted on dispenses that were not cancelled. A compound line has no
+ * catalog medication and is not ranked.
+ */
+export type AnalyticsPharmacyMedication = {
+  medicationId: string;
+  code: string;
+  name: string;
+  strength: string | null;
+  unit: MedicationUnitValue | null;
+  quantity: number;
+  dispenses: number;
+};
+
+/**
+ * A medication at or below its reorder level now (PRD FR-PHR-03), by the
+ * rule the stock page uses: stock is what is left of every batch that has
+ * not expired. `averageDailyDispensed` is over the last thirty days, clinic
+ * wide; `daysOfCover` is stock over it (FR-PHR-05), `null` when nothing was
+ * dispensed.
+ */
+export type AnalyticsPharmacyReorderItem = {
+  medicationId: string;
+  code: string;
+  name: string;
+  strength: string | null;
+  unit: MedicationUnitValue | null;
+  stock: number;
+  reorderLevel: number;
+  averageDailyDispensed: number;
+  daysOfCover: number | null;
+};
+
+/** Batches with stock left, by when they expire: already expired, then 0–30, 31–60 and 61–90 days out. */
+export type AnalyticsPharmacyExpiryWindow =
+  | 'EXPIRED'
+  | 'WITHIN_30_DAYS'
+  | 'WITHIN_60_DAYS'
+  | 'WITHIN_90_DAYS';
+
+export type AnalyticsPharmacyExpiryBucket = {
+  window: AnalyticsPharmacyExpiryWindow;
+  batches: number;
+  units: number;
+  medications: number;
+};
+
+/**
+ * Stock health now, whatever the filter says (PRD FR-PHR-03): stock is
+ * clinic wide and has no period. `reorder` is the most urgent fifty, fewest
+ * days of cover first; `reorderCount` is all of them. The expiry windows use
+ * the expiry report's own rule, so the same batches appear in both.
+ */
+export type AnalyticsPharmacyStockHealth = {
+  asOfDate: string;
+  reorderCount: number;
+  reorder: AnalyticsPharmacyReorderItem[];
+  expiring: AnalyticsPharmacyExpiryBucket[];
+};
+
+export type AnalyticsPharmacyBreakdowns = {
+  topMedications: AnalyticsPharmacyMedication[];
+  stock: AnalyticsPharmacyStockHealth;
+};
+
+/**
+ * The pharmacy dashboard (P29-T13). Dispensed quantities are units, not
+ * patients, so nothing here is suppressed (NFR-AN-03 covers case mix and
+ * demographics); no patient or prescription id appears.
+ */
+export type AnalyticsPharmacyData = AnalyticsDashboardData<
+  AnalyticsPharmacyTotals,
+  AnalyticsPharmacySeriesPoint[],
+  AnalyticsPharmacyBreakdowns
 >;

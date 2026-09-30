@@ -13,9 +13,15 @@ type PharmacyWorkspaceProps = {
   initialQuery: PharmacySearchParams;
   /** A tab asked for by the URL; honoured only when this person may see it (SJ-162). */
   initialTab?: PharmacyTab;
+  /** `?reorder=true`: the stock tab opens on medications at or below their reorder level. */
+  initialReorderOnly?: boolean;
 };
 
-export function PharmacyWorkspace({ initialQuery, initialTab }: PharmacyWorkspaceProps) {
+export function PharmacyWorkspace({
+  initialQuery,
+  initialTab,
+  initialReorderOnly = false,
+}: PharmacyWorkspaceProps) {
   const t = useTranslations('pharmacyInventory');
   const ability = useAbility();
   const canReadQueue = ability.can('read', 'Prescription');
@@ -49,7 +55,7 @@ export function PharmacyWorkspace({ initialQuery, initialTab }: PharmacyWorkspac
         ) : null}
         {canReadInventory ? (
           <TabsContent value="inventory">
-            <InventoryPanel />
+            <InventoryPanel initialReorderOnly={initialReorderOnly} />
           </TabsContent>
         ) : null}
     </Tabs>

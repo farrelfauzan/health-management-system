@@ -63650,6 +63650,396 @@ paths:
       summary: Read the case-mix dashboard
       tags:
         - Analytics
+  /api/v1/analytics/pharmacy:
+    get:
+      operationId: AnalyticsPharmacyController_getPharmacy_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+      responses:
+        "200":
+          description: "Prescriptions issued in the range under the status they have now:
+            `fullyDispensed`, `partiallyDispensed`, `cancelled`,
+            `awaitingDispense`, and `filledElsewhere` for those sent to an
+            outside apotek, which add up to `prescriptionsIssued`.
+            `fullyDispensedPercent` leaves the outside ones out.
+            `medianDispenseMinutes` runs from issue to the first dispense that
+            was not cancelled. `medicationRevenue` (rupiah) is the `MEDICATION`
+            lines of issued and paid invoices by invoice date, the finance
+            dashboard's figure. `topMedications` is the twenty catalog
+            medications with the most units handed over in the range. `stock` is
+            now and ignores every filter: `reorder` lists medications at or
+            below their reorder level by the stock page's rule (batches not yet
+            expired), fewest days of cover first, at most fifty, with
+            `reorderCount` counting them all; `expiring` counts batches with
+            stock left that have expired or expire within 30, 60 and 90 days, by
+            the expiry report's rule. `doctorId` narrows by prescriber;
+            `specialtyId` and `payerType` by the visit the prescription was
+            written in. Answers 403 `FEATURE_DISABLED` when the pharmacy module
+            is off. Cached for five minutes; a query past ten seconds answers
+            503 `ANALYTICS_QUERY_TIMEOUT`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          prescriptionsIssued:
+                            type: integer
+                          fullyDispensed:
+                            type: integer
+                          partiallyDispensed:
+                            type: integer
+                          cancelled:
+                            type: integer
+                          awaitingDispense:
+                            type: integer
+                          filledElsewhere:
+                            type: integer
+                          fullyDispensedPercent:
+                            type: number
+                          medianDispenseMinutes:
+                            type: integer
+                          medicationRevenue:
+                            type: integer
+                        required:
+                          - prescriptionsIssued
+                          - fullyDispensed
+                          - partiallyDispensed
+                          - cancelled
+                          - awaitingDispense
+                          - filledElsewhere
+                          - medicationRevenue
+                      series:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            bucket:
+                              type: string
+                            prescriptionsIssued:
+                              type: integer
+                            fullyDispensed:
+                              type: integer
+                            medicationRevenue:
+                              type: integer
+                          required:
+                            - bucket
+                            - prescriptionsIssued
+                            - fullyDispensed
+                            - medicationRevenue
+                      breakdowns:
+                        type: object
+                        properties:
+                          topMedications:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                medicationId:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                strength:
+                                  type: string
+                                unit:
+                                  type: string
+                                quantity:
+                                  type: integer
+                                dispenses:
+                                  type: integer
+                              required:
+                                - medicationId
+                                - code
+                                - name
+                                - quantity
+                                - dispenses
+                          stock:
+                            type: object
+                            properties:
+                              asOfDate:
+                                type: string
+                              reorderCount:
+                                type: integer
+                              reorder:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    medicationId:
+                                      type: string
+                                    code:
+                                      type: string
+                                    name:
+                                      type: string
+                                    strength:
+                                      type: string
+                                    unit:
+                                      type: string
+                                    stock:
+                                      type: integer
+                                    reorderLevel:
+                                      type: integer
+                                    averageDailyDispensed:
+                                      type: integer
+                                    daysOfCover:
+                                      type: number
+                                  required:
+                                    - medicationId
+                                    - code
+                                    - name
+                                    - stock
+                                    - reorderLevel
+                                    - averageDailyDispensed
+                              expiring:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    window:
+                                      type: string
+                                    batches:
+                                      type: integer
+                                    units:
+                                      type: integer
+                                    medications:
+                                      type: integer
+                                  required:
+                                    - window
+                                    - batches
+                                    - units
+                                    - medications
+                            required:
+                              - asOfDate
+                              - reorderCount
+                              - reorder
+                              - expiring
+                        required:
+                          - topMedications
+                          - stock
+                      comparison:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                          totals:
+                            type: object
+                            properties:
+                              prescriptionsIssued:
+                                type: integer
+                              fullyDispensed:
+                                type: integer
+                              partiallyDispensed:
+                                type: integer
+                              cancelled:
+                                type: integer
+                              awaitingDispense:
+                                type: integer
+                              filledElsewhere:
+                                type: integer
+                              fullyDispensedPercent:
+                                type: number
+                              medianDispenseMinutes:
+                                type: integer
+                              medicationRevenue:
+                                type: integer
+                            required:
+                              - prescriptionsIssued
+                              - fullyDispensed
+                              - partiallyDispensed
+                              - cancelled
+                              - awaitingDispense
+                              - filledElsewhere
+                              - fullyDispensedPercent
+                              - medianDispenseMinutes
+                              - medicationRevenue
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                bucket:
+                                  type: string
+                                prescriptionsIssued:
+                                  type: integer
+                                fullyDispensed:
+                                  type: integer
+                                medicationRevenue:
+                                  type: integer
+                              required:
+                                - bucket
+                                - prescriptionsIssued
+                                - fullyDispensed
+                                - medicationRevenue
+                        required:
+                          - from
+                          - to
+                          - totals
+                          - series
+                    required:
+                      - totals
+                      - series
+                      - breakdowns
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
+                        type: string
+                    required:
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    totals:
+                      prescriptionsIssued: 874
+                      fullyDispensed: 812
+                      partiallyDispensed: 21
+                      cancelled: 12
+                      awaitingDispense: 29
+                      filledElsewhere: 0
+                      fullyDispensedPercent: 92.9
+                      medianDispenseMinutes: 14
+                      medicationRevenue: 71400000
+                    series:
+                      - bucket: 2026-09-01
+                        prescriptionsIssued: 31
+                        fullyDispensed: 29
+                        medicationRevenue: 2380000
+                    breakdowns:
+                      topMedications:
+                        - medicationId: 7d2e1b3a-4c5f-4e8d-a0b9-1c2d3e4f5a6b
+                          code: PCT500
+                          name: Paracetamol
+                          strength: 500 mg
+                          unit: TABLET
+                          quantity: 3420
+                          dispenses: 402
+                      stock:
+                        asOfDate: 2026-09-30
+                        reorderCount: 9
+                        reorder:
+                          - medicationId: 8e3f2c4b-5d6a-4f9e-b1c0-2d3e4f5a6b7c
+                            code: AMX500
+                            name: Amoksisilin
+                            strength: 500 mg
+                            unit: KAPSUL
+                            stock: 40
+                            reorderLevel: 50
+                            averageDailyDispensed: 33
+                            daysOfCover: 1.2
+                        expiring:
+                          - window: WITHIN_30_DAYS
+                            batches: 3
+                            units: 240
+                            medications: 3
+                    comparison:
+                      from: 2026-08-01
+                      to: 2026-08-31
+                      totals:
+                        prescriptionsIssued: 823
+                        fullyDispensed: 753
+                        partiallyDispensed: 24
+                        cancelled: 15
+                        awaitingDispense: 31
+                        filledElsewhere: 0
+                        fullyDispensedPercent: 91.5
+                        medianDispenseMinutes: 12
+                        medicationRevenue: 65000000
+                      series:
+                        - bucket: 2026-08-01
+                          prescriptionsIssued: 27
+                          fullyDispensed: 25
+                          medicationRevenue: 2100000
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-30T07:32:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the pharmacy dashboard
+      tags:
+        - Analytics
   /api/v1/analytics/operations/export:
     get:
       operationId: AnalyticsExportController_exportOperations_v1
@@ -63836,6 +64226,68 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the case-mix dashboard as CSV
+      tags: *a96
+  /api/v1/analytics/pharmacy/export:
+    get:
+      operationId: AnalyticsExportController_exportPharmacy_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+        - name: tables
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The dashboard's aggregate tables as CSV, one section per table
+            under its title, for the same filter as the dashboard. `tables` is a
+            comma-separated list of table keys; omitted, every table is written,
+            and an unknown key answers 400 `ANALYTICS_EXPORT_UNKNOWN_TABLE`.
+            UTF-8 with a BOM so Excel opens it; the file is
+            `metaklinik-<dashboard>-<from>-<to>.csv`. Needs `analytics.export`
+            and the dashboard's own read key. No patient appears in it. Every
+            export writes one `EXPORT` audit row with the dashboard, the filters
+            and the row count.
+      summary: Export the pharmacy dashboard as CSV
       tags: *a96
   /api/v1/analytics/reporting/export:
     get:

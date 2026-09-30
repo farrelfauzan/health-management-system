@@ -59,7 +59,12 @@ import { useTaxPriceBreakdowns } from '#lib/taxes/use-tax-price-breakdowns';
 const PAGE_SIZE = 10;
 const EXPIRY_DAYS = 30;
 
-export function InventoryPanel() {
+type InventoryPanelProps = {
+  /** Opens on the reorder list, as the Farmasi dashboard's link asks (P29-T13). */
+  initialReorderOnly?: boolean;
+};
+
+export function InventoryPanel({ initialReorderOnly = false }: InventoryPanelProps) {
   const t = useTranslations('pharmacyInventory');
   const locale = useLocale();
   const format = useFormatter();
@@ -72,7 +77,7 @@ export function InventoryPanel() {
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search.trim());
   const [category, setCategory] = useState('ALL');
-  const [reorderOnly, setReorderOnly] = useState(false);
+  const [reorderOnly, setReorderOnly] = useState(initialReorderOnly);
   const [editingMedication, setEditingMedication] = useState<MedicationResponse | null | undefined>(
     undefined,
   );

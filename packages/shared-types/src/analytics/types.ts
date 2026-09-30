@@ -12,11 +12,14 @@ import type {
   AnalyticsGranularity,
   AnalyticsInpatientDisposition,
   AnalyticsOutstandingAgeBucket,
+  AnalyticsPharmacyExpiryWindow,
+  AnalyticsPharmacyMedication,
   AnalyticsReportingReadiness,
   AnalyticsResponse,
   AnalyticsResponseMeta,
 } from '#analytics/contracts';
 import type { InvoiceItemTypeValue, PaymentMethodValue } from '#billing/schemas';
+import type { MedicationUnitValue } from '#pharmacy-flow/schemas';
 
 /** Local calendar dates, both ends included. */
 export type AnalyticsPeriod = {
@@ -457,6 +460,79 @@ export type BuildAnalyticsCaseMixDataParams = {
 };
 
 export type ReadCaseMixPeriodParams = {
+  range: AnalyticsRange;
+  filter: AnalyticsFilterInput;
+};
+
+/** Pharmacy rows as the database returns them (P29-T13). */
+export type AnalyticsPharmacyTotalsRow = {
+  prescriptionsIssued: number;
+  fullyDispensed: number;
+  partiallyDispensed: number;
+  cancelled: number;
+  awaitingDispense: number;
+  filledElsewhere: number;
+  medianDispenseMinutes: number | null;
+};
+
+export type AnalyticsPharmacyBucketRow = {
+  bucket: string;
+  prescriptionsIssued: number;
+  fullyDispensed: number;
+};
+
+export type AnalyticsMedicationRevenueBucketRow = {
+  bucket: string;
+  amountCents: number;
+};
+
+export type AnalyticsPharmacyMedicationRow = AnalyticsPharmacyMedication;
+
+export type AnalyticsPharmacyReorderRow = {
+  medicationId: string;
+  code: string;
+  name: string;
+  strength: string | null;
+  unit: MedicationUnitValue | null;
+  stock: number;
+  reorderLevel: number;
+  dispensedLast30Days: number;
+};
+
+export type AnalyticsPharmacyExpiryRow = {
+  window: AnalyticsPharmacyExpiryWindow;
+  batches: number;
+  units: number;
+  medications: number;
+};
+
+/** Every pharmacy figure for one period, as read in one transaction. */
+export type AnalyticsPharmacySnapshot = {
+  totals: AnalyticsPharmacyTotalsRow;
+  buckets: AnalyticsPharmacyBucketRow[];
+  revenueBuckets: AnalyticsMedicationRevenueBucketRow[];
+  medications: AnalyticsPharmacyMedicationRow[];
+};
+
+/** Stock health now, read once whatever the period. */
+export type AnalyticsPharmacyStockSnapshot = {
+  asOfDate: string;
+  reorder: AnalyticsPharmacyReorderRow[];
+  expiry: AnalyticsPharmacyExpiryRow[];
+};
+
+export type AnalyticsPharmacyPeriodSnapshot = {
+  range: AnalyticsRange;
+  snapshot: AnalyticsPharmacySnapshot;
+};
+
+export type BuildAnalyticsPharmacyDataParams = {
+  current: AnalyticsPharmacyPeriodSnapshot;
+  comparison?: AnalyticsPharmacyPeriodSnapshot;
+  stock: AnalyticsPharmacyStockSnapshot;
+};
+
+export type ReadPharmacyPeriodParams = {
   range: AnalyticsRange;
   filter: AnalyticsFilterInput;
 };

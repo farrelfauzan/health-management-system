@@ -400,6 +400,20 @@
           "doctors": "Per dokter",
           "outstanding": "Umur invoice belum dibayar"
         },
+        "case-mix": {
+          "summary": "Ringkasan",
+          "top-diagnoses": "10 diagnosis utama terbanyak",
+          "groups": "Per kelompok ICD-10",
+          "coding-by-poli": "Kelengkapan kode per poli",
+          "top-procedures": "Tindakan terbanyak"
+        },
+        "pharmacy": {
+          "summary": "Ringkasan",
+          "prescriptions-trend": "Resep per periode",
+          "top-medications": "Obat paling banyak diserahkan",
+          "reorder": "Perlu dipesan ulang",
+          "expiring": "Mendekati kedaluwarsa"
+        },
         "reporting": {
           "satusehat": "SATUSEHAT",
           "bpjs": "BPJS PCare dan Antrean",
@@ -475,6 +489,87 @@
       "suppressedNote": "Angka di bawah 5 disembunyikan untuk melindungi privasi pasien",
       "emptyTitle": "Belum ada pemeriksaan selesai pada periode ini",
       "emptyDescription": "Coba pilih rentang tanggal lain, atau hapus filter poli, dokter, dan penjamin."
+    },
+    "pharmacy": {
+      "kpi": {
+        "issued": "Resep terbit",
+        "issuedHelper": "{elsewhere} ditebus di apotek luar",
+        "fullyDispensed": "Diserahkan penuh",
+        "fullyDispensedHelper": "{dispensed} resep · {partial} sebagian · {cancelled} batal",
+        "median": "Median terbit ke serah",
+        "minutes": "{value} mnt",
+        "revenue": "Pendapatan obat",
+        "revenueHelper": "Per tanggal invoice, sama dengan Keuangan"
+      },
+      "topMedications": {
+        "title": "Obat paling banyak diserahkan",
+        "subtitle": "Jumlah satuan pada penyerahan yang tidak dibatalkan",
+        "empty": "Belum ada obat yang diserahkan pada periode ini.",
+        "quantity": "{quantity} {unit}",
+        "moreInExport": "Menampilkan {shown} teratas. Ekspor CSV memuat {total}."
+      },
+      "reorder": {
+        "title": "Perlu dipesan ulang",
+        "subtitle": "Stok saat ini di bawah atau sama dengan batas pesan",
+        "link": "Stok obat",
+        "medication": "Obat",
+        "stock": "Sisa",
+        "level": "Batas",
+        "cover": "Cukup untuk",
+        "coverDays": "±{days} hari",
+        "unused": "Tidak dipakai",
+        "unusedHint": "Tidak ada penyerahan dalam 30 hari terakhir",
+        "total": "{count} obat di bawah batas pesan",
+        "shown": "Menampilkan {shown} paling mendesak",
+        "empty": "Semua obat di atas batas pesan."
+      },
+      "expiring": {
+        "title": "Mendekati kedaluwarsa",
+        "subtitle": "Batch yang masih bersisa",
+        "link": "Laporan kedaluwarsa",
+        "batches": "{count} batch",
+        "units": "{count} satuan tersisa",
+        "windows": {
+          "EXPIRED": "Sudah kedaluwarsa",
+          "WITHIN_30_DAYS": "≤ 30 hari",
+          "WITHIN_60_DAYS": "31–60 hari",
+          "WITHIN_90_DAYS": "61–90 hari"
+        }
+      },
+      "flow": {
+        "title": "Alur resep",
+        "subtitle": "Status resep yang terbit pada periode ini",
+        "ariaLabel": "Pembagian resep yang terbit menurut statusnya sekarang",
+        "empty": "Belum ada resep yang terbit pada periode ini.",
+        "statuses": {
+          "fullyDispensed": "Diserahkan",
+          "partiallyDispensed": "Sebagian",
+          "cancelled": "Dibatalkan",
+          "awaitingDispense": "Belum diserahkan",
+          "filledElsewhere": "Ditebus di luar"
+        }
+      },
+      "stockAsOf": "Stok per {date}, tidak mengikuti filter periode",
+      "units": {
+        "TABLET": "tablet",
+        "KAPSUL": "kapsul",
+        "KAPLET": "kaplet",
+        "SACHET": "sachet",
+        "AMPUL": "ampul",
+        "VIAL": "vial",
+        "BOTOL": "botol",
+        "TUBE": "tube",
+        "STRIP": "strip",
+        "BOX": "box",
+        "PCS": "pcs",
+        "ML": "ml",
+        "MG": "mg",
+        "GRAM": "gram",
+        "MCG": "mcg",
+        "IU": "IU",
+        "TETES": "tetes",
+        "SUPOSITORIA": "supositoria"
+      }
     }
   }
 }

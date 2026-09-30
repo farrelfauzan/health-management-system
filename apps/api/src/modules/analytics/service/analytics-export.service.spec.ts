@@ -5,6 +5,7 @@ import type { AuditService } from '../../../common/audit/audit.service';
 import type { AnalyticsCaseMixService } from './analytics-case-mix.service';
 import type { AnalyticsFinanceService } from './analytics-finance.service';
 import type { AnalyticsOperationsService } from './analytics-operations.service';
+import type { AnalyticsPharmacyService } from './analytics-pharmacy.service';
 import type { AnalyticsReportingHealthService } from './analytics-reporting-health.service';
 import { AnalyticsExportService } from './analytics-export.service';
 
@@ -50,6 +51,7 @@ describe('AnalyticsExportService', () => {
       {} as AnalyticsOperationsService,
       mockFinance as unknown as AnalyticsFinanceService,
       {} as AnalyticsCaseMixService,
+      {} as AnalyticsPharmacyService,
       {} as AnalyticsReportingHealthService,
       mockAudit as unknown as AuditService,
     );

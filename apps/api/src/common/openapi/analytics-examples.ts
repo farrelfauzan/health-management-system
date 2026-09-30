@@ -267,6 +267,96 @@ export const ANALYTICS_EXAMPLES = {
       },
     },
   },
+  pharmacy: {
+    response: {
+      data: {
+        totals: {
+          prescriptionsIssued: 874,
+          fullyDispensed: 812,
+          partiallyDispensed: 21,
+          cancelled: 12,
+          awaitingDispense: 29,
+          // Sent to an outside apotek; left out of `fullyDispensedPercent`.
+          filledElsewhere: 0,
+          // `null` with nothing issued, or no dispense to time.
+          fullyDispensedPercent: optionalExample(92.9),
+          medianDispenseMinutes: optionalExample(14),
+          medicationRevenue: 71_400_000,
+        },
+        series: [
+          {
+            bucket: '2026-09-01',
+            prescriptionsIssued: 31,
+            fullyDispensed: 29,
+            medicationRevenue: 2_380_000,
+          },
+        ],
+        breakdowns: {
+          topMedications: [
+            {
+              medicationId: '7d2e1b3a-4c5f-4e8d-a0b9-1c2d3e4f5a6b',
+              code: 'PCT500',
+              name: 'Paracetamol',
+              strength: optionalExample('500 mg'),
+              unit: optionalExample('TABLET'),
+              quantity: 3_420,
+              dispenses: 402,
+            },
+          ],
+          // Now, whatever the filter says.
+          stock: {
+            asOfDate: '2026-09-30',
+            reorderCount: 9,
+            reorder: [
+              {
+                medicationId: '8e3f2c4b-5d6a-4f9e-b1c0-2d3e4f5a6b7c',
+                code: 'AMX500',
+                name: 'Amoksisilin',
+                strength: optionalExample('500 mg'),
+                unit: optionalExample('KAPSUL'),
+                stock: 40,
+                reorderLevel: 50,
+                averageDailyDispensed: 33,
+                // `null` when nothing was dispensed in the last thirty days.
+                daysOfCover: optionalExample(1.2),
+              },
+            ],
+            expiring: [{ window: 'WITHIN_30_DAYS', batches: 3, units: 240, medications: 3 }],
+          },
+        },
+        comparison: optionalExample({
+          from: '2026-08-01',
+          to: '2026-08-31',
+          totals: {
+            prescriptionsIssued: 823,
+            fullyDispensed: 753,
+            partiallyDispensed: 24,
+            cancelled: 15,
+            awaitingDispense: 31,
+            filledElsewhere: 0,
+            fullyDispensedPercent: 91.5,
+            medianDispenseMinutes: 12,
+            medicationRevenue: 65_000_000,
+          },
+          series: [
+            {
+              bucket: '2026-08-01',
+              prescriptionsIssued: 27,
+              fullyDispensed: 25,
+              medicationRevenue: 2_100_000,
+            },
+          ],
+        }),
+      },
+      meta: {
+        from: '2026-09-01',
+        to: '2026-09-30',
+        timezone: 'Asia/Jakarta',
+        granularity: 'day',
+        generatedAt: '2026-09-30T07:32:00.000Z',
+      },
+    },
+  },
   reportingHealth: {
     response: {
       data: {

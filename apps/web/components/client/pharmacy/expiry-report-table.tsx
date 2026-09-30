@@ -14,7 +14,10 @@ export function ExpiryReportTable({ items, throughDate }: ExpiryReportTableProps
   const format = useFormatter();
 
   return (
-    <Card className="gap-0 overflow-hidden rounded-xl border-slate-200 py-0 shadow-none">
+    <Card
+      id="expiry-report"
+      className="scroll-mt-6 gap-0 overflow-hidden rounded-xl border-slate-200 py-0 shadow-none"
+    >
       <div className="border-b border-slate-200 px-5 py-4">
         <h2 className="font-heading text-base font-semibold text-slate-900">{t('expiryTitle')}</h2>
         <p className="mt-1 text-sm text-slate-500">{t('expiryDescription')}</p>

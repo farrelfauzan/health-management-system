@@ -9,8 +9,10 @@ import { resolveAnalyticsAccess } from '#lib/analytics/resolve-analytics-access.
  */
 export default async function AdminAnalyticsPage() {
   const access = await resolveAnalyticsAccess();
-  const firstReadable = ANALYTICS_DASHBOARDS.find((dashboard) =>
-    access.ability.can(dashboard.action, 'Analytics'),
+  const firstReadable = ANALYTICS_DASHBOARDS.find(
+    (dashboard) =>
+      access.ability.can(dashboard.action, 'Analytics') &&
+      (dashboard.requiredFeature === undefined || access.hasFeature(dashboard.requiredFeature)),
   );
   redirect(access.isEnabled && firstReadable ? firstReadable.href : '/admin/dashboard');
 }

@@ -13,11 +13,13 @@ import { AuditService } from '../../../common/audit/audit.service';
 import { AnalyticsCaseMixService } from './analytics-case-mix.service';
 import { AnalyticsFinanceService } from './analytics-finance.service';
 import { AnalyticsOperationsService } from './analytics-operations.service';
+import { AnalyticsPharmacyService } from './analytics-pharmacy.service';
 import { AnalyticsReportingHealthService } from './analytics-reporting-health.service';
 import { buildAnalyticsExportCsv } from './build-analytics-export-csv';
 import { CASE_MIX_EXPORT_TABLES } from './case-mix-export-tables';
 import { FINANCE_EXPORT_TABLES } from './finance-export-tables';
 import { OPERATIONS_EXPORT_TABLES } from './operations-export-tables';
+import { PHARMACY_EXPORT_TABLES } from './pharmacy-export-tables';
 import { REPORTING_EXPORT_TABLES } from './reporting-export-tables';
 import { toAnalyticsExportRunner } from './to-analytics-export-runner';
 
@@ -45,6 +47,7 @@ export class AnalyticsExportService {
     operationsService: AnalyticsOperationsService,
     financeService: AnalyticsFinanceService,
     caseMixService: AnalyticsCaseMixService,
+    pharmacyService: AnalyticsPharmacyService,
     reportingHealthService: AnalyticsReportingHealthService,
     private readonly auditService: AuditService,
   ) {
@@ -66,6 +69,12 @@ export class AnalyticsExportService {
         title: 'Pola penyakit',
         load: (filter) => caseMixService.getCaseMix(filter),
         tables: CASE_MIX_EXPORT_TABLES,
+      }),
+      pharmacy: toAnalyticsExportRunner({
+        dashboard: 'pharmacy',
+        title: 'Farmasi',
+        load: (filter) => pharmacyService.getPharmacy(filter),
+        tables: PHARMACY_EXPORT_TABLES,
       }),
       reporting: toAnalyticsExportRunner({
         dashboard: 'reporting',

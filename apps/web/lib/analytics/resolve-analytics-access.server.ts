@@ -1,3 +1,4 @@
+import type { FeatureKey } from '@hms/shared-types';
 import { buildAppAbility, type AppAbility } from '@hms/ui';
 import { cookies } from 'next/headers';
 
@@ -9,6 +10,8 @@ import { isFeatureEnabled } from '#lib/shell/is-feature-enabled';
 
 export type AnalyticsAccess = {
   isEnabled: boolean;
+  /** Whether a module a dashboard reports on is on, e.g. `pharmacy`. */
+  hasFeature: (featureKey: FeatureKey) => boolean;
   ability: AppAbility;
 };
 
@@ -25,6 +28,7 @@ export async function resolveAnalyticsAccess(): Promise<AnalyticsAccess> {
   });
   return {
     isEnabled: isFeatureEnabled(claims, 'analytics'),
+    hasFeature: (featureKey) => isFeatureEnabled(claims, featureKey),
     ability: buildAppAbility(resolveAppAbilityRules(claims)),
   };
 }

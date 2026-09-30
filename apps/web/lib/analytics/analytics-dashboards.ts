@@ -1,3 +1,4 @@
+import type { FeatureKey } from '@hms/shared-types';
 import type { AppAction } from '@hms/ui';
 
 export type AnalyticsDashboardSlug =
@@ -18,6 +19,11 @@ export type AnalyticsDashboard = {
   labelKey: AnalyticsNavigationKey;
   icon: string;
   action: AppAction;
+  /**
+   * The module the dashboard reports on, when it is sold apart: with it
+   * off there is nothing to show, so the entry hides and the API refuses.
+   */
+  requiredFeature?: FeatureKey;
 };
 
 /**
@@ -64,6 +70,7 @@ export const ANALYTICS_DASHBOARDS: readonly AnalyticsDashboard[] = [
     labelKey: 'analyticsPharmacy',
     icon: 'medication',
     action: 'read-pharmacy',
+    requiredFeature: 'pharmacy',
   },
   {
     slug: 'laboratory',

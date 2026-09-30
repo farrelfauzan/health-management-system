@@ -153,6 +153,17 @@ describe('proxy', () => {
     expect(response.headers.get('x-middleware-next')).toBe('1');
   });
 
+  it('lets a pharmacist open pharmacy analytics, and no other dashboard (P29-T13)', () => {
+    const pharmacistToken = buildToken({ exp: futureUnix(), roles: ['PHARMACIST'] });
+
+    const pharmacy = proxy(buildRequest('/admin/analytics/pharmacy', pharmacistToken));
+    const finance = proxy(buildRequest('/admin/analytics/finance', pharmacistToken));
+
+    expect(pharmacy.headers.get('x-middleware-next')).toBe('1');
+    expect(finance.status).toBe(307);
+    expect(finance.headers.get('location')).toBe(`${BASE_URL}/admin/pharmacy`);
+  });
+
   it('keeps a pharmacist out of unrelated admin routes', () => {
     const pharmacistToken = buildToken({ exp: futureUnix(), roles: ['PHARMACIST'] });
     const response = proxy(buildRequest('/admin/administration', pharmacistToken));

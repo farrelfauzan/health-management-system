@@ -15,6 +15,7 @@ import { resolveSessionIdlePolicy } from '#lib/shell/session-idle-policy';
 import { ACCESS_TOKEN_COOKIE_NAME } from '#lib/auth/access-token-cookie';
 import { hasAnyRole } from '#lib/auth/access-token-claims';
 import { resolveOffboardingSession } from '#lib/auth/offboarding-session';
+import { resolveDisabledAnalyticsHrefs } from '#lib/analytics/resolve-disabled-analytics-hrefs';
 import { SESSION_HINT_COOKIE_NAME } from '#lib/auth/session-hint-cookie';
 import { resolveSessionClaims } from '#lib/auth/session-claims';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
@@ -56,6 +57,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   const excludedNavHrefs = [
     ...(isPharmacistOnly || isTechnicianOnly || offboarding ? ['/admin/dashboard'] : []),
     ...resolveDisabledNavHrefs(claims),
+    ...resolveDisabledAnalyticsHrefs(claims),
   ];
   const sections = filterNavSections(buildAppAbility(rules), undefined, excludedNavHrefs);
   const isChatEnabled = offboarding === null && isFeatureEnabled(claims, 'ai-chatbot');

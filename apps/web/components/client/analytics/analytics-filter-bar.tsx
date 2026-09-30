@@ -26,6 +26,11 @@ type AnalyticsFilterBarProps = {
   showNarrowing?: boolean;
   /** Off for a page with nothing to compare, such as reporting status. */
   showCompare?: boolean;
+  /**
+   * Off for a viewer who cannot list poli and clinicians (P29-T13: a
+   * pharmacist on Farmasi); the payer filter stays.
+   */
+  showClinicianFilters?: boolean;
 };
 
 /**
@@ -39,6 +44,7 @@ export function AnalyticsFilterBar({
   onChange,
   showNarrowing = true,
   showCompare = true,
+  showClinicianFilters = true,
 }: AnalyticsFilterBarProps) {
   const t = useTranslations('analytics.filter');
   function handlePresetSelect(preset: AnalyticsPeriodPreset): void {
@@ -74,15 +80,21 @@ export function AnalyticsFilterBar({
           {showNarrowing ? (
             <>
               <div className="grow" />
-              <AnalyticsPoliSelect
-                value={state.specialtyId}
-                onChange={(specialtyId) => onChange({ ...state, specialtyId, doctorId: undefined })}
-              />
-              <AnalyticsDoctorSelect
-                value={state.doctorId}
-                specialtyId={state.specialtyId}
-                onChange={(doctorId) => onChange({ ...state, doctorId })}
-              />
+              {showClinicianFilters ? (
+                <>
+                  <AnalyticsPoliSelect
+                    value={state.specialtyId}
+                    onChange={(specialtyId) =>
+                      onChange({ ...state, specialtyId, doctorId: undefined })
+                    }
+                  />
+                  <AnalyticsDoctorSelect
+                    value={state.doctorId}
+                    specialtyId={state.specialtyId}
+                    onChange={(doctorId) => onChange({ ...state, doctorId })}
+                  />
+                </>
+              ) : null}
               <AnalyticsPayerSelect
                 value={state.payerType}
                 onChange={(payerType) => onChange({ ...state, payerType })}

@@ -73,6 +73,22 @@ export class AnalyticsExportController {
     return this.sendExport({ dashboard: 'case-mix', query, response, currentUser });
   }
 
+  @Get('pharmacy/export')
+  @Auth([
+    { action: 'export', subject: 'Analytics' },
+    { action: 'read-pharmacy', subject: 'Analytics' },
+  ])
+  @ApiOperation({ summary: 'Export the pharmacy dashboard as CSV' })
+  @ApiOkResponse({ description: EXPORT_DESCRIPTION })
+  @ApiProduces('text/csv')
+  exportPharmacy(
+    @Query() query: AnalyticsExportQueryDto,
+    @Res() response: BinaryResponseWriter,
+    @AuthUser() currentUser?: CurrentUser,
+  ): Promise<void> {
+    return this.sendExport({ dashboard: 'pharmacy', query, response, currentUser });
+  }
+
   @Get('reporting/export')
   @Auth([
     { action: 'export', subject: 'Analytics' },
