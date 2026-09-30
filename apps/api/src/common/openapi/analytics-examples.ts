@@ -432,6 +432,8 @@ export const ANALYTICS_EXAMPLES = {
           bookedAppointments: 241,
           // `null` with no capped session.
           sessionUtilisationPercent: optionalExample(86),
+          // Rupiah: accruals minus reversals in the range.
+          grossFee: 12_450_000,
         },
         series: [{ bucket: '2026-09-01', finishedEncounters: 11 }],
         breakdowns: {
@@ -439,6 +441,7 @@ export const ANALYTICS_EXAMPLES = {
             { code: 'J06.9', name: optionalExample('ISPA akut, tidak spesifik'), count: 51 },
           ],
           codedEncounters: 270,
+          feesByMonth: [{ period: '2026-09', grossFee: 12_450_000, entries: 262 }],
         },
         comparison: optionalExample({
           from: '2026-08-01',
@@ -452,6 +455,7 @@ export const ANALYTICS_EXAMPLES = {
             sessionCapacity: 280,
             bookedAppointments: 230,
             sessionUtilisationPercent: 82,
+            grossFee: 11_300_000,
           },
           series: [{ bucket: '2026-08-01', finishedEncounters: 9 }],
         }),

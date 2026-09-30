@@ -27,6 +27,7 @@ function buildPeriod(
       appointments: { completedAppointments: 0, noShowAppointments: 0 },
       sessions: { cappedSessions: 0, capacity: 0, bookedAppointments: 0 },
       diagnoses: [],
+      fees: [],
       ...snapshot,
     },
   };
@@ -38,6 +39,10 @@ describe('buildAnalyticsPracticeData', () => {
       totals: { finishedEncounters: 60, codedEncounters: 40, medianConsultMinutes: 11.6 },
       appointments: { completedAppointments: 219, noShowAppointments: 19 },
       sessions: { cappedSessions: 14, capacity: 280, bookedAppointments: 241 },
+      fees: [
+        { period: '2026-08', grossFeeCents: 120_000_00, entries: 3 },
+        { period: '2026-09', grossFeeCents: 45_050_50, entries: 2 },
+      ],
     });
 
     const actual = buildAnalyticsPracticeData({ current: inputPeriod });
@@ -51,8 +56,13 @@ describe('buildAnalyticsPracticeData', () => {
       sessionCapacity: 280,
       bookedAppointments: 241,
       sessionUtilisationPercent: 86,
+      grossFee: 165_050.5,
     });
     expect(actual.breakdowns.codedEncounters).toBe(40);
+    expect(actual.breakdowns.feesByMonth).toEqual([
+      { period: '2026-08', grossFee: 120_000, entries: 3 },
+      { period: '2026-09', grossFee: 45_050.5, entries: 2 },
+    ]);
   });
 
   it('fills every bucket of the range, empty ones as zero', () => {

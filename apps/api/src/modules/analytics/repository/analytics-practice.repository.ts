@@ -3,6 +3,7 @@ import type {
   AnalyticsPracticeAppointmentRow,
   AnalyticsPracticeBucketRow,
   AnalyticsPracticeDiagnosisRow,
+  AnalyticsPracticeFeeRow,
   AnalyticsPracticeSnapshot,
   AnalyticsPracticeTotalsRow,
   AnalyticsSqlScope,
@@ -22,8 +23,9 @@ const TOP_DIAGNOSES = 10;
 type ClinicianIdRow = { id: string };
 
 /**
- * The "Praktik saya" reads (P29-T15, PRD FR-PRC-01 to 03), over the
- * encounter, diagnosis, appointment and session tables (D-049). Every query
+ * The "Praktik saya" reads (P29-T15, PRD FR-PRC-01 to 04), over the
+ * encounter, diagnosis, appointment, session and jasa medis ledger tables
+ * (D-049). Every query
  * is narrowed to one clinician: `scope.doctorId` is always set, by the
  * service, from the signed-in user's own profile.
  */
@@ -55,6 +57,7 @@ export class AnalyticsPracticeRepository {
       appointments: await this.readAppointments(tx, scope),
       sessions: await this.analyticsOperationsDepthRepository.readSessions(tx, scope),
       diagnoses: await this.listDiagnoses(tx, scope),
+      fees: await this.listFees(tx, scope),
     }));
   }
 
@@ -136,5 +139,26 @@ export class AnalyticsPracticeRepository {
       GROUP BY 1, 2
       ORDER BY "count" DESC, "code"
       LIMIT ${TOP_DIAGNOSES}`;
+  }
+
+  /**
+   * The clinician's jasa medis ledger in the range (P29-T18), by ledger
+   * month: accruals and reversals by when they happened, so a payment voided
+   * later subtracts in the month it was voided, as on the admin's statement.
+   */
+  private listFees(
+    tx: PrismaTransactionClient,
+    scope: AnalyticsSqlScope,
+  ): Promise<AnalyticsPracticeFeeRow[]> {
+    return tx.$queryRaw<AnalyticsPracticeFeeRow[]>`
+      SELECT f."period"::text AS "period",
+             (COALESCE(sum(f."gross_fee"), 0) * 100)::float8 AS "grossFeeCents",
+             count(*)::int AS "entries"
+      FROM "clinician_fee_entries" f
+      WHERE f."doctor_id" = ${scope.doctorId}::uuid
+        AND f."occurred_at" >= ${scope.startUtc}::timestamp
+        AND f."occurred_at" < ${scope.endUtc}::timestamp
+      GROUP BY 1
+      ORDER BY 1`;
   }
 }

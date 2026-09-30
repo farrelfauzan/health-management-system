@@ -15,4 +15,5 @@ export type AnalyticsPracticeControllerGetMyPracticeV1200DataTotals = {
   sessionCapacity: number;
   bookedAppointments: number;
   sessionUtilisationPercent?: number;
+  grossFee: number;
 };

@@ -653,6 +653,15 @@
         "subtitle": "Dari pemeriksaan saya sendiri",
         "empty": "Belum ada pemeriksaan berkode pada periode ini.",
         "footnote": "Dari {coded} pemeriksaan dengan diagnosis utama berkode"
+      },
+      "fees": {
+        "title": "Honor saya",
+        "subtitle": "Jasa medis kotor dari invoice yang dibayar, dikurangi yang dibatalkan",
+        "month": "Bulan",
+        "amount": "Honor kotor",
+        "entries": "Baris",
+        "empty": "Belum ada honor pada periode ini.",
+        "footnote": "Rincian per baris ada di slip jasa medis dari admin klinik."
       }
     }
   }

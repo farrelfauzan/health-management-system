@@ -5,9 +5,11 @@
  * Health Management System API
  * OpenAPI spec version: 1.0.0
  */
+import type { AnalyticsPracticeControllerGetMyPracticeV1200DataBreakdownsFeesByMonthItem } from './analyticsPracticeControllerGetMyPracticeV1200DataBreakdownsFeesByMonthItem';
 import type { AnalyticsPracticeControllerGetMyPracticeV1200DataBreakdownsTopDiagnosesItem } from './analyticsPracticeControllerGetMyPracticeV1200DataBreakdownsTopDiagnosesItem';
 
 export type AnalyticsPracticeControllerGetMyPracticeV1200DataBreakdowns = {
   topDiagnoses: AnalyticsPracticeControllerGetMyPracticeV1200DataBreakdownsTopDiagnosesItem[];
   codedEncounters: number;
+  feesByMonth: AnalyticsPracticeControllerGetMyPracticeV1200DataBreakdownsFeesByMonthItem[];
 };

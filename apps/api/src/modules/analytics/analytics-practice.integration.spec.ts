@@ -22,6 +22,8 @@ const PRACTICE_PERMISSION = {
   scope: 'OWN' as const,
 };
 
+type SeededFee = { kind: 'ACCRUAL' | 'REVERSAL'; itemIndex: number; grossFee: number };
+
 type Clinician = {
   userId: string;
   doctorId: string;
@@ -34,6 +36,9 @@ type Clinician = {
  * 60 encounters (40 coded with one code, 20 uncoded, 10 to 19 minutes long),
  * a colleague 80, and a midwife 5. The doctor had 8 appointments kept and 2
  * missed. Every clinician owns a user, and the practice is read as that user.
+ * Fees (P29-T18): the doctor earned Rp300.000 and Rp50.000 on two paid
+ * lines, and the Rp50.000 was reversed when its invoice was voided; the
+ * colleague earned Rp500.000.
  */
 describe('Analytics my practice against PostgreSQL', () => {
   let app: INestApplication;
@@ -57,6 +62,7 @@ describe('Analytics my practice against PostgreSQL', () => {
   };
   const registrationIds: string[] = [];
   const encounterIds: string[] = [];
+  const invoiceIds: string[] = [];
   let queueNumber = 0;
 
   const authRepositoryMock = { findUserById: jest.fn(), findUserByEmail: jest.fn() };
@@ -151,6 +157,51 @@ describe('Analytics my practice against PostgreSQL', () => {
     encounterIds.push(...rows.map((row) => row.encounterId));
   }
 
+  async function seedFees(clinician: Clinician, fees: SeededFee[]): Promise<void> {
+    const encounterId = encounterIds[
+      clinician === clinicians.me ? 0 : clinicians.me.encounters
+    ] as string;
+    const itemCount = Math.max(...fees.map((fee) => fee.itemIndex)) + 1;
+    const invoice = await prisma.invoice.create({
+      data: {
+        invoiceNumber: `INV-${suffix}-${clinician.doctorId.slice(0, 4)}`,
+        encounterId,
+        patientId,
+        status: 'PAID',
+        totalAmount: 1_000_000,
+        taxAmount: 0,
+        issuedAt: STARTED_AT,
+        items: {
+          create: Array.from({ length: itemCount }, (_, index) => ({
+            itemType: 'CONSULTATION' as const,
+            description: `Konsultasi ${index}`,
+            quantity: 1,
+            unitPrice: 500_000,
+            amount: 500_000,
+            taxAmount: 0,
+          })),
+        },
+      },
+      include: { items: { orderBy: { description: 'asc' } } },
+    });
+    invoiceIds.push(invoice.id);
+    await prisma.clinicianFeeEntry.createMany({
+      data: fees.map((fee) => ({
+        kind: fee.kind,
+        invoiceId: invoice.id,
+        invoiceItemId: invoice.items[fee.itemIndex]?.id as string,
+        doctorId: clinician.doctorId,
+        ruleMode: 'FIXED' as const,
+        ruleValue: Math.abs(fee.grossFee),
+        lineAmount: fee.kind === 'ACCRUAL' ? 500_000 : -500_000,
+        grossFee: fee.grossFee,
+        clinicShare: fee.kind === 'ACCRUAL' ? 500_000 - fee.grossFee : -(500_000 + fee.grossFee),
+        period: DAY.slice(0, 7),
+        occurredAt: STARTED_AT,
+      })),
+    });
+  }
+
   async function seedAppointments(): Promise<void> {
     const statuses = [...Array(8).fill('COMPLETED'), 'NO_SHOW', 'NO_SHOW'] as const;
     await prisma.appointment.createMany({
@@ -200,10 +251,19 @@ describe('Analytics my practice against PostgreSQL', () => {
     await seedEncounters(clinicians.colleague, 80);
     await seedEncounters(clinicians.midwife, 0);
     await seedAppointments();
+    await seedFees(clinicians.me, [
+      { kind: 'ACCRUAL', itemIndex: 0, grossFee: 300_000 },
+      { kind: 'ACCRUAL', itemIndex: 1, grossFee: 50_000 },
+      { kind: 'REVERSAL', itemIndex: 1, grossFee: -50_000 },
+    ]);
+    await seedFees(clinicians.colleague, [{ kind: 'ACCRUAL', itemIndex: 0, grossFee: 500_000 }]);
   });
 
   afterAll(async () => {
     const doctorIds = Object.values(clinicians).map((clinician) => clinician.doctorId);
+    await prisma.clinicianFeeEntry.deleteMany({ where: { invoiceId: { in: invoiceIds } } });
+    await prisma.invoiceItem.deleteMany({ where: { invoiceId: { in: invoiceIds } } });
+    await prisma.invoice.deleteMany({ where: { id: { in: invoiceIds } } });
     await prisma.appointment.deleteMany({ where: { doctorId: { in: doctorIds } } });
     await prisma.diagnosis.deleteMany({ where: { encounterId: { in: encounterIds } } });
     await prisma.encounter.deleteMany({ where: { id: { in: encounterIds } } });
@@ -231,12 +291,24 @@ describe('Analytics my practice against PostgreSQL', () => {
       noShowAppointments: 2,
       noShowRatePercent: 20,
     });
-    expect(response.body.data.breakdowns).toEqual({
+    expect(response.body.data.breakdowns).toMatchObject({
       topDiagnoses: [{ code, name: 'Kode uji', count: 40 }],
       codedEncounters: 40,
     });
     expect(body).not.toContain(clinicians.colleague.doctorId);
     expect(body).not.toContain('Klinisi colleague');
+  });
+
+  it('given my paid lines earned Rp300.000 and a colleague Rp500.000, then I see Rp300.000, the voided line subtracted', async () => {
+    const mine = await readPracticeAs(clinicians.me, 'DOCTOR');
+    const colleague = await readPracticeAs(clinicians.colleague, 'DOCTOR');
+
+    expect(mine.body.data.totals.grossFee).toBe(300_000);
+    expect(mine.body.data.breakdowns.feesByMonth).toEqual([
+      { period: DAY.slice(0, 7), grossFee: 300_000, entries: 3 },
+    ]);
+    expect(JSON.stringify(mine.body)).not.toContain('500000');
+    expect(colleague.body.data.totals.grossFee).toBe(500_000);
   });
 
   it('given ?doctorId=<other>, then my own data is returned', async () => {

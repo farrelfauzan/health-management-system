@@ -6,7 +6,7 @@ Analytics (phase **P29**) gives the clinic owner and admin one place to see how 
 
 |  |  |
 | --- | --- |
-| Status | Accepted — built in Sprints 37–39 (SJ-266..282); Q-1 to Q-3 answered |
+| Status | Accepted — built in Sprints 37–39 (SJ-266..282); Q-1 to Q-6 answered |
 | Target | P29, after P28 (session reschedule) |
 | Feature key | `analytics` (new entry in the feature-entitlement catalogue) |
 | Stakeholders | Product owner, clinic owner / admin (pilot clinics), engineering |
@@ -145,7 +145,7 @@ Conventions: a **visit** is a `Registration` in `CHECKED_IN` or `COMPLETED`, buc
 | FR-PRC-01 | Patients seen | My finished encounters per bucket | MUST |
 | FR-PRC-02 | My appointments | Outcomes and no-show rate for my sessions | SHOULD |
 | FR-PRC-03 | My case mix | Top 10 primary diagnoses in my own encounters | SHOULD |
-| FR-PRC-04 | My fees | My gross clinician fee per month (open question Q-4) | COULD |
+| FR-PRC-04 | My fees | My gross clinician fee per month (Q-4 answered yes; built in P29-T18) | COULD |
 
 Out of reach with today's data: **pharmacy margin** (no purchase cost on `Medication` or stock receipts) and **patient satisfaction** (nothing collects it).
 
@@ -309,7 +309,7 @@ P29 fits three sprints at the team's usual 24–27 points, with the riskiest par
 
 Definition of done for every ticket: lint, typecheck, unit and integration specs, build and `prisma validate` green in CI; contract synced with `pnpm api:contract:sync`; `db:seed` re-run noted in the PR for new keys; T07 notes its migration and backfill.
 
-Not in these three sprints (COULD, next phase if pilots ask): demographics (FR-OPS-10), top services and clinician fees (FR-FIN-09, 10), diagnosis trend and maternal headline (FR-CLN-05, 06), days of stock left (FR-PHR-05), my fees (FR-PRC-04).
+Not in these three sprints (COULD, next phase if pilots ask): demographics (FR-OPS-10), top services and clinician fees (FR-FIN-09, 10), diagnosis trend and maternal headline (FR-CLN-05, 06). Days of stock left (FR-PHR-05) shipped with P29-T13 after all, and my fees (FR-PRC-04) with P29-T18 once Q-4 was answered.
 
 ## 9. Risks and open questions
 
@@ -327,8 +327,8 @@ Not in these three sprints (COULD, next phase if pilots ask): demographics (FR-O
 | Q-1 | May `ADMIN` (the owner) see clinic-wide case mix, given D-033 keeps record content to clinicians? Answered 2026-09-30: yes, as statistics that cannot point at a patient | Product owner | Sprint 3 planning | Yes, E4 |
 | Q-2 | Are general, BPJS and insurance enough payer values, or do company contracts need their own? Answered 2026-09-28: those three for now | Product owner | Sprint 2 planning | Yes, T07 |
 | Q-3 | Revenue on payment date (cash basis, matches the drawer) or on invoice date? Answered 2026-09-28: invoice date (accrual); cash is shown beside it by payment date | Product owner | Sprint 2 planning | Yes, T08 |
-| Q-4 | May doctors and midwives see their own clinician fee in My practice? | Product owner | Sprint 3 planning | No |
-| Q-5 | Is analytics in the base plan (key on by default) or a paid add-on? | Product owner | Sprint 1 planning | No |
-| Q-6 | Is 5 the right suppression threshold for a small clinic, and should it also apply to revenue per doctor? | Product owner with legal review | Sprint 3 planning | No |
+| Q-4 | May doctors and midwives see their own clinician fee in My practice? Answered 2026-09-30: yes | Product owner | Sprint 3 planning | No |
+| Q-5 | Is analytics in the base plan (key on by default) or a paid add-on? Answered 2026-09-30: base plan | Product owner | Sprint 1 planning | No |
+| Q-6 | Is 5 the right suppression threshold for a small clinic, and should it also apply to revenue per doctor? Answered 2026-09-30: keep 5; revenue per doctor is not suppressed | Product owner with legal review | Sprint 3 planning | No |
 
 Sources: repository `main` at 8ca85958 — `apps/api/prisma/schema.prisma`, `apps/api/prisma/seed.sql`, `apps/api/src/modules/billing/service/cashier-report.service.ts`, `apps/web/lib/dashboard/`, `docs/post-mvp/decisions.md` (D-033), `docs/post-mvp/multi-tenancy.md`; Development Board ticket P19-T07.

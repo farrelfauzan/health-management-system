@@ -607,6 +607,12 @@ export type AnalyticsPracticeAppointmentRow = {
 
 export type AnalyticsPracticeDiagnosisRow = AnalyticsPracticeDiagnosis;
 
+export type AnalyticsPracticeFeeRow = {
+  period: string;
+  grossFeeCents: number;
+  entries: number;
+};
+
 /** Every practice figure for one period, as read in one transaction. */
 export type AnalyticsPracticeSnapshot = {
   totals: AnalyticsPracticeTotalsRow;
@@ -614,6 +620,7 @@ export type AnalyticsPracticeSnapshot = {
   appointments: AnalyticsPracticeAppointmentRow;
   sessions: AnalyticsSessionRow;
   diagnoses: AnalyticsPracticeDiagnosisRow[];
+  fees: AnalyticsPracticeFeeRow[];
 };
 
 export type AnalyticsPracticePeriodSnapshot = {

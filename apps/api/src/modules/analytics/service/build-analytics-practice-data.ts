@@ -9,9 +9,14 @@ import {
 } from '@hms/shared-types';
 
 const PERCENT = 100;
+const CENTS_PER_RUPIAH = 100;
+
+function toRupiah(cents: number): number {
+  return Math.round(cents) / CENTS_PER_RUPIAH;
+}
 
 function buildTotals(period: AnalyticsPracticePeriodSnapshot): AnalyticsPracticeTotals {
-  const { totals, appointments, sessions } = period.snapshot;
+  const { totals, appointments, sessions, fees } = period.snapshot;
   return {
     finishedEncounters: totals.finishedEncounters,
     medianConsultMinutes:
@@ -29,6 +34,7 @@ function buildTotals(period: AnalyticsPracticePeriodSnapshot): AnalyticsPractice
       sessions.capacity > 0
         ? Math.round((sessions.bookedAppointments / sessions.capacity) * PERCENT)
         : null,
+    grossFee: toRupiah(fees.reduce((total, row) => total + row.grossFeeCents, 0)),
   };
 }
 
@@ -41,8 +47,9 @@ function buildSeries(period: AnalyticsPracticePeriodSnapshot): AnalyticsPractice
 }
 
 /**
- * Shapes one clinician's snapshots into the response (P29-T15). Nothing is
- * suppressed: every count is of the clinician's own encounters.
+ * Shapes one clinician's snapshots into the response (P29-T15, fees P29-T18).
+ * Nothing is suppressed: every count is of the clinician's own encounters,
+ * and the fee is their own (Q-4).
  */
 export function buildAnalyticsPracticeData({
   current,
@@ -54,6 +61,11 @@ export function buildAnalyticsPracticeData({
     breakdowns: {
       topDiagnoses: current.snapshot.diagnoses,
       codedEncounters: current.snapshot.totals.codedEncounters,
+      feesByMonth: current.snapshot.fees.map((row) => ({
+        period: row.period,
+        grossFee: toRupiah(row.grossFeeCents),
+        entries: row.entries,
+      })),
     },
   };
   if (!comparison) {

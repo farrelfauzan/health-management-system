@@ -1543,8 +1543,8 @@ FROM (
     -- it yet" case the rule above allows.
     ('maternal-care', FALSE),
     ('taxes', TRUE),
-    -- P29-T01. On by default, like `taxes`: no screen edits entitlements yet,
-    -- and whether analytics is an add-on is still open (PRD Q-5).
+    -- P29-T01. On by default: analytics is part of the base plan, not an
+    -- add-on (product owner, PRD Q-5, 2026-09-30).
     ('analytics', TRUE)
 ) AS seed_feature_entitlements(feature_key, is_enabled)
 ON CONFLICT ("feature_key") DO NOTHING;
