@@ -8,7 +8,7 @@
       },
       "finance": {
         "title": "Finance",
-        "subtitle": "Revenue that matches the cashier drawer, by method, service, doctor and payer"
+        "subtitle": "Revenue by invoice date, split by method, service, doctor and payer"
       },
       "case-mix": {
         "title": "Case mix",
@@ -74,7 +74,9 @@
       "up": "up",
       "down": "down",
       "flat": "unchanged",
-      "minutes": "{value} min"
+      "minutes": "{value} min",
+      "rupiah": "{value}",
+      "invoices": "{value} invoices"
     },
     "states": {
       "loading": "Loading the dashboard",
@@ -271,6 +273,101 @@
         "pending": "{count} pending",
         "open": "Open reporting status"
       }
+    },
+    "finance": {
+      "kpi": {
+        "revenue": "Revenue",
+        "revenueHelper": "By invoice date · cash received {cash}",
+        "perVisit": "Average per visit",
+        "perVisitHelper": "{visits} visits with an invoice",
+        "unpaid": "Unpaid",
+        "unpaidHelper": "{invoices} invoices from this period not yet paid",
+        "voided": "Voided",
+        "voidedHelper": "{invoices} invoices"
+      },
+      "trend": {
+        "title": {
+          "day": "Daily revenue",
+          "week": "Weekly revenue",
+          "month": "Monthly revenue"
+        },
+        "subtitle": "By invoice date, PPN included",
+        "ariaLabel": "Revenue {current} against {previous}",
+        "ariaLabelSingle": "Revenue {current}",
+        "tableCaption": "Revenue per period",
+        "bucket": "Period",
+        "current": "This period",
+        "previous": "Comparison"
+      },
+      "methods": {
+        "title": "Payment method",
+        "subtitle": "Cash received {amount}, by payment date",
+        "ariaLabel": "Share of cash received by payment method",
+        "empty": "No payment in this period.",
+        "names": {
+          "CASH": "Cash",
+          "TRANSFER": "Transfer",
+          "QRIS": "QRIS",
+          "INSURANCE": "Insurance"
+        }
+      },
+      "services": {
+        "title": "Revenue by service",
+        "subtitle": "Invoice lines of this period, before tax",
+        "taxNote": "Tax collected {amount} is recorded separately",
+        "empty": "No invoice in this period.",
+        "names": {
+          "CONSULTATION": "Consultation",
+          "PROCEDURE": "Procedure",
+          "MEDICATION": "Medication",
+          "ACCOMMODATION": "Inpatient stay",
+          "LAB": "Laboratory",
+          "OTHER": "Other"
+        }
+      },
+      "payers": {
+        "title": "Payer",
+        "subtitle": "Share of visits and of revenue",
+        "visits": "Visits",
+        "revenue": "Revenue",
+        "share": "{label} {percent}%",
+        "ariaLabel": "{metric}: {shares}",
+        "names": {
+          "GENERAL": "General",
+          "BPJS": "BPJS",
+          "INSURANCE": "Insurance",
+          "notRecorded": "Not recorded"
+        },
+        "notRecordedNote": "Visits from before the payer was asked show as “Not recorded”, never guessed."
+      },
+      "outstanding": {
+        "title": "Age of unpaid invoices",
+        "subtitle": "Every invoice unpaid now, counted from its issue date",
+        "link": "Invoice list",
+        "age": "Age",
+        "invoices": "Invoices",
+        "amount": "Amount",
+        "total": "Total",
+        "buckets": {
+          "0-7": "0–7 days",
+          "8-30": "8–30 days",
+          "over-30": "> 30 days"
+        }
+      },
+      "doctors": {
+        "title": "Revenue by doctor",
+        "subtitle": "Credited the way the daily cashier report credits it",
+        "doctor": "Doctor / midwife",
+        "poli": "Poli",
+        "visits": "Visits",
+        "revenue": "Revenue",
+        "perVisit": "Per visit",
+        "change": "vs {label}",
+        "unattributed": "No doctor",
+        "empty": "No invoice in this period."
+      },
+      "emptyTitle": "No invoice in this period",
+      "emptyDescription": "Try another date range, or clear the poli, doctor and payer filters."
     }
   }
 }

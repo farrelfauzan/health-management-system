@@ -38,9 +38,11 @@ export type AnalyticsPeriodRange = {
  * How a KPI changed against the comparison period. `percent` is a relative
  * change (visits +8,4%); `points` is the difference between two rates
  * (no-show −1,2 poin), because a percentage of a percentage misleads;
- * `minutes` is the difference between two durations (wait +3 mnt).
+ * `minutes` is the difference between two durations (wait +3 mnt);
+ * `rupiah` is the difference between two amounts (unpaid +Rp1,4 jt);
+ * `invoices` is the difference between two counts of invoices (−2 invoice).
  */
-export type AnalyticsDeltaKind = 'percent' | 'points' | 'minutes';
+export type AnalyticsDeltaKind = 'percent' | 'points' | 'minutes' | 'rupiah' | 'invoices';
 
 export type AnalyticsDeltaDirection = 'up' | 'down' | 'flat';
 
@@ -65,6 +67,12 @@ export type AnalyticsDelta = {
 export type AnalyticsKpiDeltaInput = Omit<AnalyticsDeltaInput, 'previous'> & {
   previous: number | null | undefined;
   previousLabel: string;
+};
+
+/** `isCompact` shortens a million and more ("Rp186,4 jt"); `isSigned` writes "+" too. */
+export type FormatRupiahOptions = {
+  isCompact?: boolean;
+  isSigned?: boolean;
 };
 
 /** How long something has waited, split for "2 j 14 mnt" or "3 hari". */
@@ -94,4 +102,22 @@ export type BusiestHoursGrid = {
   hours: number[];
   rows: Array<{ weekday: number; cells: BusiestHoursGridCell[] }>;
   busiest: { weekday: number; hour: number; checkIns: number } | null;
+};
+
+/**
+ * A colour of one category on a finance chart: the Tailwind class for its
+ * legend swatch and the fill recharts paints, with the hex as a fallback.
+ */
+export type AnalyticsSeriesColor = {
+  swatchClassName: string;
+  fill: string;
+};
+
+/** One slice of a share bar or donut legend: its label and its whole-number share. */
+export type AnalyticsShareSegment = {
+  key: string;
+  label: string;
+  value: number;
+  percent: number;
+  color: AnalyticsSeriesColor;
 };

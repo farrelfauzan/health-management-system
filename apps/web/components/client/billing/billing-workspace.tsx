@@ -11,6 +11,7 @@ import { DocumentTemplatesPanel } from '#components/client/document-templates/do
 import { PageHeader } from '#components/shared/page-header';
 import { BILLING_TABS, type BillingTab } from '#lib/billing/billing-tab';
 import { useShellBreadcrumbRoot } from '#lib/navigation/use-shell-breadcrumb-root';
+import type { InvoicesSearchParams } from '#lib/billing/search-params';
 import { useTabSearchParam } from '#lib/navigation/use-tab-search-param';
 
 type BillingWorkspaceProps = {
@@ -24,12 +25,15 @@ type BillingWorkspaceProps = {
   initialTab?: BillingTab;
   /** The clinic-local current month, `YYYY-MM`, for the jasa medis statement (P27-T06). */
   currentPeriod: string;
+  /** The invoice filter a link opened the page with, e.g. unpaid from Keuangan (P29-T09). */
+  initialInvoicesQuery?: InvoicesSearchParams;
 };
 
 export function BillingWorkspace({
   currentUserId,
   initialTab,
   currentPeriod,
+  initialInvoicesQuery,
 }: BillingWorkspaceProps) {
   const t = useTranslations('operations.billing');
   const root = useShellBreadcrumbRoot();
@@ -75,7 +79,7 @@ export function BillingWorkspace({
         </TabsList>
         {canReadInvoices ? (
           <TabsContent value="invoices">
-            <InvoicesPanel />
+            <InvoicesPanel initialQuery={initialInvoicesQuery} />
           </TabsContent>
         ) : null}
         {canReadTariffs ? (

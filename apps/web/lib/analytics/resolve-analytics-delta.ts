@@ -34,7 +34,7 @@ function resolveDeltaValue({
   if (kind === 'percent') {
     return computeChangePercent(current, previous);
   }
-  if (kind === 'minutes') {
+  if (kind === 'minutes' || kind === 'rupiah' || kind === 'invoices') {
     return Math.round(current - previous);
   }
   return Math.round((current - previous) * ONE_DECIMAL) / ONE_DECIMAL;
