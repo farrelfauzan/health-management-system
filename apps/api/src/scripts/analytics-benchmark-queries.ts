@@ -91,10 +91,24 @@ const PLACED_LAB_ORDERS = `
       AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
   )`;
 
+// A clinician's finished encounters (P29-T15). The API always binds one
+// clinician; the unfiltered variant reads every clinician's, an upper bound.
+const MY_FINISHED = `
+  WITH finished AS (
+    SELECT e.started_at, extract(epoch FROM (e.ended_at - e.started_at)) / 60 AS consult_minutes, c.code
+    FROM encounters e
+    LEFT JOIN diagnoses d ON d.encounter_id = e.id AND d.type = 'PRIMARY' AND d.deleted_at IS NULL
+    LEFT JOIN icd10_codes c ON c.id = d.icd10_code_id
+    WHERE e.deleted_at IS NULL AND e.status = 'FINISHED'
+      AND e.started_at >= $1::timestamp AND e.started_at < $2::timestamp
+      AND ($3::uuid IS NULL OR e.doctor_id = $3::uuid)
+  )`;
+
 /**
  * The candidate SQL for every Sprint 1 analytics query (P29-T04 operations,
  * P29-T06 reporting status), the P29-T08 finance, the P29-T12 case-mix,
- * the P29-T13 pharmacy and the P29-T14 laboratory queries, as shipped.
+ * the P29-T13 pharmacy, the P29-T14 laboratory and the P29-T15
+ * practice queries, as shipped.
  * The shapes follow the ticket definitions; T04 and T06 are expected to
  * adopt them, and re-run the benchmark if they change a join.
  */
@@ -520,5 +534,40 @@ export const ANALYTICS_BENCHMARK_QUERIES: readonly AnalyticsBenchmarkQuery[] = [
       JOIN lab_tests t ON t.id = i.lab_test_id
       WHERE p.status <> 'CANCELLED'
       GROUP BY t.id ORDER BY 2 DESC, t.id LIMIT 10`,
+  },
+  {
+    id: 'practice-totals-and-buckets',
+    requirement: 'FR-PRC-01',
+    dashboard: 'practice',
+    params: ['startUtc', 'endUtc', 'doctorId', 'granularity', 'timeZone'],
+    sql: `${MY_FINISHED}
+      SELECT date_trunc($4, (started_at AT TIME ZONE 'UTC') AT TIME ZONE $5) AS bucket,
+             count(*)::int AS finished,
+             percentile_cont(0.5) WITHIN GROUP (ORDER BY consult_minutes)
+               FILTER (WHERE consult_minutes BETWEEN 0 AND 480) AS median_minutes
+      FROM finished GROUP BY 1`,
+  },
+  {
+    id: 'practice-appointments',
+    requirement: 'FR-PRC-02',
+    dashboard: 'practice',
+    params: ['startUtc', 'endUtc', 'doctorId'],
+    sql: `
+      SELECT count(*) FILTER (WHERE status = 'COMPLETED')::int AS completed,
+             count(*) FILTER (WHERE status = 'NO_SHOW')::int AS no_shows
+      FROM appointments a
+      WHERE a.deleted_at IS NULL
+        AND a.scheduled_at >= $1::timestamp AND a.scheduled_at < $2::timestamp
+        AND ($3::uuid IS NULL OR a.doctor_id = $3::uuid)`,
+  },
+  {
+    id: 'practice-top-diagnoses',
+    requirement: 'FR-PRC-03',
+    dashboard: 'practice',
+    params: ['startUtc', 'endUtc', 'doctorId'],
+    sql: `${MY_FINISHED}
+      SELECT code, count(*)::int AS encounters
+      FROM finished WHERE code IS NOT NULL
+      GROUP BY 1 ORDER BY 2 DESC, 1 LIMIT 10`,
   },
 ];

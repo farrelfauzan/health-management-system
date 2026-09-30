@@ -40,6 +40,7 @@ export type ShellNavigationKey =
   | 'settings'
   | 'today'
   | 'analytics'
+  | 'myPractice'
   | AnalyticsNavigationKey;
 
 /**

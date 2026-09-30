@@ -619,6 +619,41 @@
           "EXTERNAL_REFERRAL": "Outside referral"
         }
       }
+    },
+    "practice": {
+      "title": "My practice",
+      "subtitle": "Patients, schedule and diagnoses from your own encounters",
+      "note": "This page shows only your own encounters and schedule.",
+      "noProfile": "This account is not linked to a doctor or midwife profile, so there is no practice to show yet.",
+      "kpi": {
+        "finished": "Patients I saw",
+        "consult": "Median consultation",
+        "minutes": "{value} min",
+        "noShow": "No-shows in my sessions",
+        "noShowHelper": "{noShows} of {appointments} appointments",
+        "utilisation": "Session fill",
+        "utilisationHelper": "{booked} of {capacity} places"
+      },
+      "trend": {
+        "title": {
+          "day": "Patients per day",
+          "week": "Patients per week",
+          "month": "Patients per month"
+        },
+        "subtitle": "Encounters I finished",
+        "ariaLabel": "Finished encounters {current} compared with {previous}",
+        "ariaLabelSingle": "Finished encounters {current}",
+        "tableCaption": "Finished encounters per period",
+        "bucket": "Period",
+        "current": "This period",
+        "previous": "Comparison"
+      },
+      "diagnoses": {
+        "title": "My most frequent diagnoses",
+        "subtitle": "From my own encounters",
+        "empty": "No coded encounter in this period yet.",
+        "footnote": "From {coded} encounters with a coded primary diagnosis"
+      }
     }
   }
 }

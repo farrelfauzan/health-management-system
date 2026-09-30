@@ -23,7 +23,8 @@ export type AnalyticsBenchmarkDashboard =
   | 'finance'
   | 'case-mix'
   | 'pharmacy'
-  | 'laboratory';
+  | 'laboratory'
+  | 'practice';
 
 /**
  * A candidate query. `params` names, in `$1…$n` order, which of the shared

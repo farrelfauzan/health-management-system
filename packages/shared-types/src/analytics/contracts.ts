@@ -646,3 +646,51 @@ export type AnalyticsLaboratoryData = AnalyticsDashboardData<
   AnalyticsLaboratorySeriesPoint[],
   AnalyticsLaboratoryBreakdowns
 >;
+
+/**
+ * A clinician's own practice (P29-T15, PRD FR-PRC-01 to 03): the encounters
+ * they finished, how long a consultation took (median, between 0 and 8
+ * hours), their appointment outcomes and no-show rate, and how full their
+ * capped sessions were. Always the signed-in clinician's; nothing about a
+ * colleague appears.
+ */
+export type AnalyticsPracticeTotals = {
+  finishedEncounters: number;
+  medianConsultMinutes: number | null;
+  completedAppointments: number;
+  noShowAppointments: number;
+  noShowRatePercent: number | null;
+  sessionCapacity: number;
+  bookedAppointments: number;
+  sessionUtilisationPercent: number | null;
+};
+
+/** Encounters the clinician finished in one bucket; `bucket` is its first local date. */
+export type AnalyticsPracticeSeriesPoint = {
+  bucket: string;
+  finishedEncounters: number;
+};
+
+/**
+ * One of the clinician's ten most frequent coded primary diagnoses. Not
+ * suppressed: every encounter behind it is one the clinician treated and
+ * can open.
+ */
+export type AnalyticsPracticeDiagnosis = {
+  code: string;
+  name: string | null;
+  count: number;
+};
+
+export type AnalyticsPracticeBreakdowns = {
+  topDiagnoses: AnalyticsPracticeDiagnosis[];
+  /** Finished encounters with a coded primary diagnosis, the whole the list is drawn from. */
+  codedEncounters: number;
+};
+
+/** The "Praktik saya" dashboard (P29-T15). */
+export type AnalyticsPracticeData = AnalyticsDashboardData<
+  AnalyticsPracticeTotals,
+  AnalyticsPracticeSeriesPoint[],
+  AnalyticsPracticeBreakdowns
+>;
