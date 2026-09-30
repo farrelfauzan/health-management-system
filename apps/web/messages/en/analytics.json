@@ -653,6 +653,15 @@
         "subtitle": "From my own encounters",
         "empty": "No coded encounter in this period yet.",
         "footnote": "From {coded} encounters with a coded primary diagnosis"
+      },
+      "fees": {
+        "title": "My fees",
+        "subtitle": "Gross clinician fee from paid invoices, less any voided",
+        "month": "Month",
+        "amount": "Gross fee",
+        "entries": "Lines",
+        "empty": "No fee in this period yet.",
+        "footnote": "The line-by-line statement comes from the clinic admin."
       }
     }
   }

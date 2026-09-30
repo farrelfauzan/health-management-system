@@ -663,6 +663,12 @@ export type AnalyticsPracticeTotals = {
   sessionCapacity: number;
   bookedAppointments: number;
   sessionUtilisationPercent: number | null;
+  /**
+   * The clinician's gross jasa medis fee in the range, in rupiah (P29-T18,
+   * Q-4): accruals when an invoice is paid minus reversals when a paid one
+   * is voided, by when each happened.
+   */
+  grossFee: number;
 };
 
 /** Encounters the clinician finished in one bucket; `bucket` is its first local date. */
@@ -682,10 +688,21 @@ export type AnalyticsPracticeDiagnosis = {
   count: number;
 };
 
+/**
+ * The clinician's gross fee in one ledger month (`YYYY-MM`), over the part
+ * of the month inside the range; `entries` counts accruals and reversals.
+ */
+export type AnalyticsPracticeFeeMonth = {
+  period: string;
+  grossFee: number;
+  entries: number;
+};
+
 export type AnalyticsPracticeBreakdowns = {
   topDiagnoses: AnalyticsPracticeDiagnosis[];
   /** Finished encounters with a coded primary diagnosis, the whole the list is drawn from. */
   codedEncounters: number;
+  feesByMonth: AnalyticsPracticeFeeMonth[];
 };
 
 /** The "Praktik saya" dashboard (P29-T15). */

@@ -13,7 +13,7 @@ import { AnalyticsPracticeService } from '../service/analytics-practice.service'
 /**
  * "Praktik saya" (P29-T15, PRD FR-PRC), behind `analytics.read-practice`,
  * which DOCTOR and MIDWIFE hold with scope OWN: the practice shown is always
- * the caller's own.
+ * the caller's own, their own fee included (Q-4).
  */
 @ApiTags('Analytics')
 @RequireFeature('analytics')
@@ -26,7 +26,7 @@ export class AnalyticsPracticeController {
   @ApiEndpoint({
     summary: "Read the signed-in clinician's own practice",
     responseDescription:
-      "The signed-in doctor's or midwife's own practice, resolved from their clinician profile: `doctorId`, `specialtyId` and `payerType` in the query are ignored, so no colleague can be read. `finishedEncounters` are their finished encounters started in the range, per bucket in `series`; `medianConsultMinutes` is start to end, between 0 and 8 hours. Appointments scheduled in the range give `completedAppointments`, `noShowAppointments` and `noShowRatePercent` (no-shows over completed plus no-shows). `sessionUtilisationPercent` is appointments booked over the capacity of their capped sessions. `topDiagnoses` is their ten most frequent coded primary diagnoses, not suppressed, since every encounter behind them is their own. Answers 403 `ANALYTICS_NO_CLINICIAN_PROFILE` for a user with no clinician profile. Cached for five minutes per clinician.",
+      "The signed-in doctor's or midwife's own practice, resolved from their clinician profile: `doctorId`, `specialtyId` and `payerType` in the query are ignored, so no colleague can be read. `finishedEncounters` are their finished encounters started in the range, per bucket in `series`; `medianConsultMinutes` is start to end, between 0 and 8 hours. Appointments scheduled in the range give `completedAppointments`, `noShowAppointments` and `noShowRatePercent` (no-shows over completed plus no-shows). `sessionUtilisationPercent` is appointments booked over the capacity of their capped sessions. `topDiagnoses` is their ten most frequent coded primary diagnoses, not suppressed, since every encounter behind them is their own. `grossFee` (rupiah) is their jasa medis fee in the range, accruals when an invoice is paid minus reversals when a paid one is voided, by when each happened; `feesByMonth` splits it by ledger month (P29-T18, Q-4). Answers 403 `ANALYTICS_NO_CLINICIAN_PROFILE` for a user with no clinician profile. Cached for five minutes per clinician.",
     responseExample: ANALYTICS_EXAMPLES.practice.response,
   })
   getMyPractice(@Query() filter: AnalyticsFilterQueryDto, @AuthUser() currentUser?: CurrentUser) {

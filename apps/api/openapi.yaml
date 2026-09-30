@@ -64489,7 +64489,10 @@ paths:
             `sessionUtilisationPercent` is appointments booked over the capacity
             of their capped sessions. `topDiagnoses` is their ten most frequent
             coded primary diagnoses, not suppressed, since every encounter
-            behind them is their own. Answers 403
+            behind them is their own. `grossFee` (rupiah) is their jasa medis
+            fee in the range, accruals when an invoice is paid minus reversals
+            when a paid one is voided, by when each happened; `feesByMonth`
+            splits it by ledger month (P29-T18, Q-4). Answers 403
             `ANALYTICS_NO_CLINICIAN_PROFILE` for a user with no clinician
             profile. Cached for five minutes per clinician."
           content:
@@ -64519,12 +64522,15 @@ paths:
                             type: integer
                           sessionUtilisationPercent:
                             type: integer
+                          grossFee:
+                            type: integer
                         required:
                           - finishedEncounters
                           - completedAppointments
                           - noShowAppointments
                           - sessionCapacity
                           - bookedAppointments
+                          - grossFee
                       series:
                         type: array
                         items:
@@ -64556,9 +64562,25 @@ paths:
                                 - count
                           codedEncounters:
                             type: integer
+                          feesByMonth:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                period:
+                                  type: string
+                                grossFee:
+                                  type: integer
+                                entries:
+                                  type: integer
+                              required:
+                                - period
+                                - grossFee
+                                - entries
                         required:
                           - topDiagnoses
                           - codedEncounters
+                          - feesByMonth
                       comparison:
                         type: object
                         properties:
@@ -64585,6 +64607,8 @@ paths:
                                 type: integer
                               sessionUtilisationPercent:
                                 type: integer
+                              grossFee:
+                                type: integer
                             required:
                               - finishedEncounters
                               - medianConsultMinutes
@@ -64594,6 +64618,7 @@ paths:
                               - sessionCapacity
                               - bookedAppointments
                               - sessionUtilisationPercent
+                              - grossFee
                           series:
                             type: array
                             items:
@@ -64648,6 +64673,7 @@ paths:
                       sessionCapacity: 280
                       bookedAppointments: 241
                       sessionUtilisationPercent: 86
+                      grossFee: 12450000
                     series:
                       - bucket: 2026-09-01
                         finishedEncounters: 11
@@ -64657,6 +64683,10 @@ paths:
                           name: ISPA akut, tidak spesifik
                           count: 51
                       codedEncounters: 270
+                      feesByMonth:
+                        - period: 2026-09
+                          grossFee: 12450000
+                          entries: 262
                     comparison:
                       from: 2026-08-01
                       to: 2026-08-31
@@ -64669,6 +64699,7 @@ paths:
                         sessionCapacity: 280
                         bookedAppointments: 230
                         sessionUtilisationPercent: 82
+                        grossFee: 11300000
                       series:
                         - bucket: 2026-08-01
                           finishedEncounters: 9

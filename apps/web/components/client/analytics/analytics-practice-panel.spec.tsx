@@ -42,6 +42,7 @@ function buildPractice(): AnalyticsPracticeData {
       sessionCapacity: 280,
       bookedAppointments: 241,
       sessionUtilisationPercent: 86,
+      grossFee: 12_450_000,
     },
     series: [
       { bucket: '2026-09-01', finishedEncounters: 11 },
@@ -53,6 +54,7 @@ function buildPractice(): AnalyticsPracticeData {
         { code: 'I10', name: 'Hipertensi esensial', count: 29 },
       ],
       codedEncounters: 270,
+      feesByMonth: [{ period: '2026-09', grossFee: 12_450_000, entries: 262 }],
     },
   };
 }
@@ -102,6 +104,17 @@ describe('AnalyticsPracticePanel', () => {
     expect(
       screen.getByText('Halaman ini hanya menampilkan pemeriksaan dan jadwal Anda sendiri.'),
     ).toBeInTheDocument();
+  });
+
+  it('shows the clinician their own fee, and a line per ledger month', async () => {
+    getPracticeMock.mockResolvedValue({ status: 200, data: { data: buildPractice(), meta: META } });
+
+    renderPanel();
+
+    expect(await screen.findByText('Honor saya')).toBeInTheDocument();
+    expect(screen.getByText('Rp12,5 jt')).toBeInTheDocument();
+    expect(screen.getByText('September 2026')).toBeInTheDocument();
+    expect(screen.getByText('Rp12.450.000')).toBeInTheDocument();
   });
 
   it('offers no poli, clinician or payer filter, and sends none', async () => {

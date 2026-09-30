@@ -247,6 +247,7 @@ export * from './analyticsPracticeControllerGetMyPracticeV1PayerType';
 export * from './analyticsPracticeControllerGetMyPracticeV1200';
 export * from './analyticsPracticeControllerGetMyPracticeV1200Data';
 export * from './analyticsPracticeControllerGetMyPracticeV1200DataBreakdowns';
+export * from './analyticsPracticeControllerGetMyPracticeV1200DataBreakdownsFeesByMonthItem';
 export * from './analyticsPracticeControllerGetMyPracticeV1200DataBreakdownsTopDiagnosesItem';
 export * from './analyticsPracticeControllerGetMyPracticeV1200DataComparison';
 export * from './analyticsPracticeControllerGetMyPracticeV1200DataComparisonSeriesItem';

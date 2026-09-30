@@ -4,6 +4,7 @@ import type { AnalyticsPracticeData, AnalyticsResponseMeta } from '@hms/shared-t
 import { useFormatter, type DateTimeFormatOptions } from 'next-intl';
 
 import { AnalyticsPracticeDiagnosesCard } from '#components/client/analytics/analytics-practice-diagnoses-card';
+import { AnalyticsPracticeFeesCard } from '#components/client/analytics/analytics-practice-fees-card';
 import { AnalyticsPracticeKpis } from '#components/client/analytics/analytics-practice-kpis';
 import { AnalyticsPracticeTrendCard } from '#components/client/analytics/analytics-practice-trend-card';
 import { formatAnalyticsDateRange } from '#lib/analytics/format-analytics-date-range';
@@ -34,6 +35,7 @@ export function AnalyticsPracticeContent({ practice, meta }: AnalyticsPracticeCo
         />
         <AnalyticsPracticeDiagnosesCard breakdowns={practice.breakdowns} />
       </div>
+      <AnalyticsPracticeFeesCard practice={practice} />
     </div>
   );
 }
