@@ -243,6 +243,7 @@ async function runBenchmark(options: AnalyticsBenchmarkOptions): Promise<void> {
       'finance',
       'case-mix',
       'pharmacy',
+      'laboratory',
     ];
     for (const dashboard of dashboards) {
       const queries = ANALYTICS_BENCHMARK_QUERIES.filter((query) => query.dashboard === dashboard);

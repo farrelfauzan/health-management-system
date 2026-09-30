@@ -64040,6 +64040,326 @@ paths:
       summary: Read the pharmacy dashboard
       tags:
         - Analytics
+  /api/v1/analytics/laboratory:
+    get:
+      operationId: AnalyticsLaboratoryController_getLaboratory_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+      responses:
+        "200":
+          description: "Lab orders placed in the range under the status they have now:
+            `released`, `inProgress` (ordered, collected, being run or resulted,
+            not yet released), `sentOut` (run by an outside lab, never released
+            here) and `cancelled`, which add up to `orders`. Turnaround is order
+            to release over released orders, median and p90 in whole minutes.
+            `recollectedOrders` are orders whose sample was taken again; the
+            recollection rate is over orders run here, the cancellation rate
+            over every order. `sources` counts orders from an encounter, a
+            walk-in and an external referral. `tests` is the ten tests on the
+            most orders that were not cancelled, each with the turnaround of the
+            orders it was on (`null` until one is released). `doctorId` narrows
+            by the ordering clinician; `specialtyId` and `payerType` by the
+            order's registration. Answers 403 `FEATURE_DISABLED` when the
+            laboratory module is off. Cached for five minutes; a query past ten
+            seconds answers 503 `ANALYTICS_QUERY_TIMEOUT`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          orders:
+                            type: integer
+                          released:
+                            type: integer
+                          inProgress:
+                            type: integer
+                          sentOut:
+                            type: integer
+                          cancelled:
+                            type: integer
+                          medianTurnaroundMinutes:
+                            type: integer
+                          p90TurnaroundMinutes:
+                            type: integer
+                          recollectedOrders:
+                            type: integer
+                          recollectionRatePercent:
+                            type: number
+                          cancellationRatePercent:
+                            type: number
+                        required:
+                          - orders
+                          - released
+                          - inProgress
+                          - sentOut
+                          - cancelled
+                          - recollectedOrders
+                      series:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            bucket:
+                              type: string
+                            orders:
+                              type: integer
+                            released:
+                              type: integer
+                          required:
+                            - bucket
+                            - orders
+                            - released
+                      breakdowns:
+                        type: object
+                        properties:
+                          sources:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                source:
+                                  type: string
+                                orders:
+                                  type: integer
+                              required:
+                                - source
+                                - orders
+                          tests:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                labTestId:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                orders:
+                                  type: integer
+                                releasedOrders:
+                                  type: integer
+                                medianTurnaroundMinutes:
+                                  type: integer
+                                p90TurnaroundMinutes:
+                                  type: integer
+                              required:
+                                - labTestId
+                                - code
+                                - name
+                                - orders
+                                - releasedOrders
+                        required:
+                          - sources
+                          - tests
+                      comparison:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                          totals:
+                            type: object
+                            properties:
+                              orders:
+                                type: integer
+                              released:
+                                type: integer
+                              inProgress:
+                                type: integer
+                              sentOut:
+                                type: integer
+                              cancelled:
+                                type: integer
+                              medianTurnaroundMinutes:
+                                type: integer
+                              p90TurnaroundMinutes:
+                                type: integer
+                              recollectedOrders:
+                                type: integer
+                              recollectionRatePercent:
+                                type: number
+                              cancellationRatePercent:
+                                type: number
+                            required:
+                              - orders
+                              - released
+                              - inProgress
+                              - sentOut
+                              - cancelled
+                              - medianTurnaroundMinutes
+                              - p90TurnaroundMinutes
+                              - recollectedOrders
+                              - recollectionRatePercent
+                              - cancellationRatePercent
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                bucket:
+                                  type: string
+                                orders:
+                                  type: integer
+                                released:
+                                  type: integer
+                              required:
+                                - bucket
+                                - orders
+                                - released
+                        required:
+                          - from
+                          - to
+                          - totals
+                          - series
+                    required:
+                      - totals
+                      - series
+                      - breakdowns
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
+                        type: string
+                    required:
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    totals:
+                      orders: 486
+                      released: 452
+                      inProgress: 18
+                      sentOut: 0
+                      cancelled: 16
+                      medianTurnaroundMinutes: 52
+                      p90TurnaroundMinutes: 130
+                      recollectedOrders: 11
+                      recollectionRatePercent: 2.3
+                      cancellationRatePercent: 3.3
+                    series:
+                      - bucket: 2026-09-01
+                        orders: 17
+                        released: 16
+                    breakdowns:
+                      sources:
+                        - source: ENCOUNTER
+                          orders: 371
+                      tests:
+                        - labTestId: 9f4a3d5c-6e7b-4a0f-c2d1-3e4f5a6b7c8d
+                          code: CBC
+                          name: Darah lengkap
+                          orders: 168
+                          releasedOrders: 160
+                          medianTurnaroundMinutes: 45
+                          p90TurnaroundMinutes: 80
+                    comparison:
+                      from: 2026-08-01
+                      to: 2026-08-31
+                      totals:
+                        orders: 464
+                        released: 430
+                        inProgress: 12
+                        sentOut: 0
+                        cancelled: 22
+                        medianTurnaroundMinutes: 58
+                        p90TurnaroundMinutes: 115
+                        recollectedOrders: 12
+                        recollectionRatePercent: 2.7
+                        cancellationRatePercent: 4.7
+                      series:
+                        - bucket: 2026-08-01
+                          orders: 15
+                          released: 14
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-30T07:32:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the laboratory dashboard
+      tags:
+        - Analytics
   /api/v1/analytics/operations/export:
     get:
       operationId: AnalyticsExportController_exportOperations_v1
@@ -64288,6 +64608,68 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the pharmacy dashboard as CSV
+      tags: *a96
+  /api/v1/analytics/laboratory/export:
+    get:
+      operationId: AnalyticsExportController_exportLaboratory_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+        - name: tables
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The dashboard's aggregate tables as CSV, one section per table
+            under its title, for the same filter as the dashboard. `tables` is a
+            comma-separated list of table keys; omitted, every table is written,
+            and an unknown key answers 400 `ANALYTICS_EXPORT_UNKNOWN_TABLE`.
+            UTF-8 with a BOM so Excel opens it; the file is
+            `metaklinik-<dashboard>-<from>-<to>.csv`. Needs `analytics.export`
+            and the dashboard's own read key. No patient appears in it. Every
+            export writes one `EXPORT` audit row with the dashboard, the filters
+            and the row count.
+      summary: Export the laboratory dashboard as CSV
       tags: *a96
   /api/v1/analytics/reporting/export:
     get:

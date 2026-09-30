@@ -77,10 +77,24 @@ const ISSUED_PRESCRIPTIONS = `
       AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
   )`;
 
+// Lab orders placed in the range (P29-T14), narrowed by the ordering
+// clinician and by the poli of the order's registration.
+const PLACED_LAB_ORDERS = `
+  WITH placed AS (
+    SELECT lo.id, lo.status, lo.fulfilment_site, lo.source, lo.recollect_count, lo.ordered_at,
+           CASE WHEN lo.status = 'RELEASED' AND lo.released_at >= lo.ordered_at
+                THEN extract(epoch FROM lo.released_at - lo.ordered_at) / 60 END AS minutes
+    FROM lab_orders lo
+    JOIN registrations r ON r.id = lo.registration_id
+    WHERE lo.ordered_at >= $1::timestamp AND lo.ordered_at < $2::timestamp
+      AND ($3::uuid IS NULL OR lo.ordered_by_id = $3::uuid)
+      AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
+  )`;
+
 /**
  * The candidate SQL for every Sprint 1 analytics query (P29-T04 operations,
- * P29-T06 reporting status), the P29-T08 finance, the P29-T12 case-mix and
- * the P29-T13 pharmacy queries, as shipped.
+ * P29-T06 reporting status), the P29-T08 finance, the P29-T12 case-mix,
+ * the P29-T13 pharmacy and the P29-T14 laboratory queries, as shipped.
  * The shapes follow the ticket definitions; T04 and T06 are expected to
  * adopt them, and re-run the benchmark if they change a join.
  */
@@ -468,5 +482,43 @@ export const ANALYTICS_BENCHMARK_QUERIES: readonly AnalyticsBenchmarkQuery[] = [
       FROM medication_stock_receipts
       WHERE remaining_quantity > 0 AND expiry_date <= (now() AT TIME ZONE $1)::date + 90
       GROUP BY 1`,
+  },
+  {
+    id: 'laboratory-outcomes-and-turnaround',
+    requirement: 'FR-LAB-01, FR-LAB-02, FR-LAB-04',
+    dashboard: 'laboratory',
+    params: FINANCE_PARAMS,
+    sql: `${PLACED_LAB_ORDERS}
+      SELECT count(*)::int AS orders,
+             count(*) FILTER (WHERE status = 'RELEASED')::int AS released,
+             count(*) FILTER (WHERE recollect_count > 0)::int AS recollected,
+             percentile_cont(0.5) WITHIN GROUP (ORDER BY minutes) AS median_minutes,
+             percentile_cont(0.9) WITHIN GROUP (ORDER BY minutes) AS p90_minutes
+      FROM placed`,
+  },
+  {
+    id: 'laboratory-buckets-and-sources',
+    requirement: 'FR-LAB-01',
+    dashboard: 'laboratory',
+    params: [...FINANCE_PARAMS, 'granularity', 'timeZone'],
+    sql: `${PLACED_LAB_ORDERS}
+      SELECT date_trunc($5, (ordered_at AT TIME ZONE 'UTC') AT TIME ZONE $6) AS bucket, source,
+             count(*)::int AS orders
+      FROM placed GROUP BY 1, 2`,
+  },
+  {
+    id: 'laboratory-top-tests',
+    requirement: 'FR-LAB-02, FR-LAB-03',
+    dashboard: 'laboratory',
+    params: FINANCE_PARAMS,
+    sql: `${PLACED_LAB_ORDERS}
+      SELECT t.id, count(*)::int AS orders,
+             percentile_cont(0.5) WITHIN GROUP (ORDER BY p.minutes) AS median_minutes,
+             percentile_cont(0.9) WITHIN GROUP (ORDER BY p.minutes) AS p90_minutes
+      FROM placed p
+      JOIN lab_order_items i ON i.lab_order_id = p.id AND i.status <> 'CANCELLED'
+      JOIN lab_tests t ON t.id = i.lab_test_id
+      WHERE p.status <> 'CANCELLED'
+      GROUP BY t.id ORDER BY 2 DESC, t.id LIMIT 10`,
   },
 ];

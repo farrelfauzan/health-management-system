@@ -11,6 +11,8 @@ import type {
   AnalyticsExportTable,
   AnalyticsGranularity,
   AnalyticsInpatientDisposition,
+  AnalyticsLabOrderSource,
+  AnalyticsLaboratoryTest,
   AnalyticsOutstandingAgeBucket,
   AnalyticsPharmacyExpiryWindow,
   AnalyticsPharmacyMedication,
@@ -533,6 +535,54 @@ export type BuildAnalyticsPharmacyDataParams = {
 };
 
 export type ReadPharmacyPeriodParams = {
+  range: AnalyticsRange;
+  filter: AnalyticsFilterInput;
+};
+
+/** Laboratory rows as the database returns them (P29-T14). */
+export type AnalyticsLaboratoryTotalsRow = {
+  orders: number;
+  released: number;
+  inProgress: number;
+  sentOut: number;
+  cancelled: number;
+  recollectedOrders: number;
+  medianTurnaroundMinutes: number | null;
+  p90TurnaroundMinutes: number | null;
+};
+
+export type AnalyticsLaboratoryBucketRow = {
+  bucket: string;
+  orders: number;
+  released: number;
+};
+
+export type AnalyticsLaboratorySourceRow = {
+  source: AnalyticsLabOrderSource;
+  orders: number;
+};
+
+export type AnalyticsLaboratoryTestRow = AnalyticsLaboratoryTest;
+
+/** Every laboratory figure for one period, as read in one transaction. */
+export type AnalyticsLaboratorySnapshot = {
+  totals: AnalyticsLaboratoryTotalsRow;
+  buckets: AnalyticsLaboratoryBucketRow[];
+  sources: AnalyticsLaboratorySourceRow[];
+  tests: AnalyticsLaboratoryTestRow[];
+};
+
+export type AnalyticsLaboratoryPeriodSnapshot = {
+  range: AnalyticsRange;
+  snapshot: AnalyticsLaboratorySnapshot;
+};
+
+export type BuildAnalyticsLaboratoryDataParams = {
+  current: AnalyticsLaboratoryPeriodSnapshot;
+  comparison?: AnalyticsLaboratoryPeriodSnapshot;
+};
+
+export type ReadLaboratoryPeriodParams = {
   range: AnalyticsRange;
   filter: AnalyticsFilterInput;
 };

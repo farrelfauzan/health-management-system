@@ -12,12 +12,14 @@ import { AuditAction } from '../../../generated/prisma/client';
 import { AuditService } from '../../../common/audit/audit.service';
 import { AnalyticsCaseMixService } from './analytics-case-mix.service';
 import { AnalyticsFinanceService } from './analytics-finance.service';
+import { AnalyticsLaboratoryService } from './analytics-laboratory.service';
 import { AnalyticsOperationsService } from './analytics-operations.service';
 import { AnalyticsPharmacyService } from './analytics-pharmacy.service';
 import { AnalyticsReportingHealthService } from './analytics-reporting-health.service';
 import { buildAnalyticsExportCsv } from './build-analytics-export-csv';
 import { CASE_MIX_EXPORT_TABLES } from './case-mix-export-tables';
 import { FINANCE_EXPORT_TABLES } from './finance-export-tables';
+import { LABORATORY_EXPORT_TABLES } from './laboratory-export-tables';
 import { OPERATIONS_EXPORT_TABLES } from './operations-export-tables';
 import { PHARMACY_EXPORT_TABLES } from './pharmacy-export-tables';
 import { REPORTING_EXPORT_TABLES } from './reporting-export-tables';
@@ -48,6 +50,7 @@ export class AnalyticsExportService {
     financeService: AnalyticsFinanceService,
     caseMixService: AnalyticsCaseMixService,
     pharmacyService: AnalyticsPharmacyService,
+    laboratoryService: AnalyticsLaboratoryService,
     reportingHealthService: AnalyticsReportingHealthService,
     private readonly auditService: AuditService,
   ) {
@@ -75,6 +78,12 @@ export class AnalyticsExportService {
         title: 'Farmasi',
         load: (filter) => pharmacyService.getPharmacy(filter),
         tables: PHARMACY_EXPORT_TABLES,
+      }),
+      laboratory: toAnalyticsExportRunner({
+        dashboard: 'laboratory',
+        title: 'Laboratorium',
+        load: (filter) => laboratoryService.getLaboratory(filter),
+        tables: LABORATORY_EXPORT_TABLES,
       }),
       reporting: toAnalyticsExportRunner({
         dashboard: 'reporting',

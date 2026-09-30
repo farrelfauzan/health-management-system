@@ -89,6 +89,22 @@ export class AnalyticsExportController {
     return this.sendExport({ dashboard: 'pharmacy', query, response, currentUser });
   }
 
+  @Get('laboratory/export')
+  @Auth([
+    { action: 'export', subject: 'Analytics' },
+    { action: 'read-lab', subject: 'Analytics' },
+  ])
+  @ApiOperation({ summary: 'Export the laboratory dashboard as CSV' })
+  @ApiOkResponse({ description: EXPORT_DESCRIPTION })
+  @ApiProduces('text/csv')
+  exportLaboratory(
+    @Query() query: AnalyticsExportQueryDto,
+    @Res() response: BinaryResponseWriter,
+    @AuthUser() currentUser?: CurrentUser,
+  ): Promise<void> {
+    return this.sendExport({ dashboard: 'laboratory', query, response, currentUser });
+  }
+
   @Get('reporting/export')
   @Auth([
     { action: 'export', subject: 'Analytics' },

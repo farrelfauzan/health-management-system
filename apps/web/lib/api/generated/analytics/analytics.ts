@@ -25,11 +25,14 @@ import type {
   AnalyticsCaseMixControllerGetCaseMixV1Params,
   AnalyticsExportControllerExportCaseMixV1Params,
   AnalyticsExportControllerExportFinanceV1Params,
+  AnalyticsExportControllerExportLaboratoryV1Params,
   AnalyticsExportControllerExportOperationsV1Params,
   AnalyticsExportControllerExportPharmacyV1Params,
   AnalyticsExportControllerExportReportingV1Params,
   AnalyticsFinanceControllerGetFinanceV1200,
   AnalyticsFinanceControllerGetFinanceV1Params,
+  AnalyticsLaboratoryControllerGetLaboratoryV1200,
+  AnalyticsLaboratoryControllerGetLaboratoryV1Params,
   AnalyticsOperationsControllerGetOperationsV1200,
   AnalyticsOperationsControllerGetOperationsV1Params,
   AnalyticsPharmacyControllerGetPharmacyV1200,
@@ -524,6 +527,99 @@ export function useAnalyticsPharmacyControllerGetPharmacyV1<TData = Awaited<Retu
 
 
 /**
+ * @summary Read the laboratory dashboard
+ */
+export const analyticsLaboratoryControllerGetLaboratoryV1 = (
+    params: AnalyticsLaboratoryControllerGetLaboratoryV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsLaboratoryControllerGetLaboratoryV1200>(
+      {url: `/api/v1/analytics/laboratory`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsLaboratoryControllerGetLaboratoryV1QueryKey = (params?: AnalyticsLaboratoryControllerGetLaboratoryV1Params,) => {
+    return [
+    `/api/v1/analytics/laboratory`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsLaboratoryControllerGetLaboratoryV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError = unknown>(params: AnalyticsLaboratoryControllerGetLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsLaboratoryControllerGetLaboratoryV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>> = ({ signal }) => analyticsLaboratoryControllerGetLaboratoryV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsLaboratoryControllerGetLaboratoryV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>>
+export type AnalyticsLaboratoryControllerGetLaboratoryV1QueryError = unknown
+
+
+export function useAnalyticsLaboratoryControllerGetLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsLaboratoryControllerGetLaboratoryV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsLaboratoryControllerGetLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsLaboratoryControllerGetLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsLaboratoryControllerGetLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsLaboratoryControllerGetLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the laboratory dashboard
+ */
+
+export function useAnalyticsLaboratoryControllerGetLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsLaboratoryControllerGetLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsLaboratoryControllerGetLaboratoryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsLaboratoryControllerGetLaboratoryV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary Export the operations dashboard as CSV
  */
 export const analyticsExportControllerExportOperationsV1 = (
@@ -884,6 +980,99 @@ export function useAnalyticsExportControllerExportPharmacyV1<TData = Awaited<Ret
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsExportControllerExportPharmacyV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Export the laboratory dashboard as CSV
+ */
+export const analyticsExportControllerExportLaboratoryV1 = (
+    params: AnalyticsExportControllerExportLaboratoryV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/analytics/laboratory/export`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsExportControllerExportLaboratoryV1QueryKey = (params?: AnalyticsExportControllerExportLaboratoryV1Params,) => {
+    return [
+    `/api/v1/analytics/laboratory/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsExportControllerExportLaboratoryV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError = unknown>(params: AnalyticsExportControllerExportLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsExportControllerExportLaboratoryV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>> = ({ signal }) => analyticsExportControllerExportLaboratoryV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsExportControllerExportLaboratoryV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>>
+export type AnalyticsExportControllerExportLaboratoryV1QueryError = unknown
+
+
+export function useAnalyticsExportControllerExportLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportLaboratoryV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export the laboratory dashboard as CSV
+ */
+
+export function useAnalyticsExportControllerExportLaboratoryV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportLaboratoryV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportLaboratoryV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsExportControllerExportLaboratoryV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

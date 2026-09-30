@@ -52,6 +52,7 @@ export function AnalyticsExportDialog({
   const financeT = useTranslations('analytics.export.tables.finance');
   const caseMixT = useTranslations('analytics.export.tables.case-mix');
   const pharmacyT = useTranslations('analytics.export.tables.pharmacy');
+  const laboratoryT = useTranslations('analytics.export.tables.laboratory');
   const reportingT = useTranslations('analytics.export.tables.reporting');
   // The keys come from the same list the messages are written for; a spec
   // on the API side holds that list to the tables it registers.
@@ -65,6 +66,8 @@ export function AnalyticsExportDialog({
         return caseMixT(key as Parameters<typeof caseMixT>[0]);
       case 'pharmacy':
         return pharmacyT(key as Parameters<typeof pharmacyT>[0]);
+      case 'laboratory':
+        return laboratoryT(key as Parameters<typeof laboratoryT>[0]);
       default:
         return reportingT(key as Parameters<typeof reportingT>[0]);
     }

@@ -252,6 +252,33 @@ The finance rows in the tables above time the Sprint 1 preview query (payments b
 
 **No index added.**
 
+## P29-T14 re-run: laboratory (2026-09-30)
+
+**Ticket:** SJ-279.
+
+**Fixture change.**
+- The fixture gained 20 lab tests.
+- Each of the 8,000 lab orders gained one to three order lines, about 16,000 in all.
+- Released orders now get a release time spread over five hours, instead of a fixed three hours.
+- About 3% of released orders had their sample taken again, and about 30% of the orders still waiting were cancelled.
+
+**Result.** The laboratory queries meet the gate. The comparison period is included in every measured request.
+
+| Dashboard | Range | Filter | p50 ms | p95 ms | Gate ms | Verdict |
+|---|---|---|---:|---:|---:|---|
+| laboratory | 30 days | none | 13.5 | 16.7 | < 400 | meets |
+| laboratory | 30 days | one doctor | 9.2 | 17.4 | < 400 | meets |
+| laboratory | 30 days | one poli | 26.6 | 28.2 | < 400 | meets |
+| laboratory | 12 months | none | 29.8 | 32.2 | < 1500 | meets |
+| laboratory | 12 months | one doctor | 9.7 | 10.1 | < 1500 | meets |
+| laboratory | 12 months | one poli | 21.5 | 37.0 | < 1500 | meets |
+
+**Slowest query.** Top tests over 12 months, at a p95 of 15 ms.
+
+**Other dashboards.** Finance's p95 over 12 months with no filter read 442 ms this run, against 327 ms before. Its queries did not change, so this is run-to-run variance on a busy machine. It is still well under the 1.5 s gate.
+
+**No index added.**
+
 ## Index decision: none added
 
 The ticket allows an index only where a hot path does a sequential scan.

@@ -14,6 +14,7 @@
 --   60 000 invoices with 120 000 lines and ~56 000 payments (one per paid
 --   invoice, the schema's rule), 8 000 lab orders
 --   150 medications with 450 batches, ~33 000 dispenses with ~66 000 lines
+--   20 lab tests, ~16 000 lab order lines
 --   a payer on every visit: BPJS where a KUNJUNGAN was sent, else mostly general
 --   50 000 SATUSEHAT and 20 000 BPJS submissions
 -- Deterministic: `setseed` fixes every random() below, so a re-run on a fresh
@@ -486,5 +487,45 @@ SELECT
   f.dispensed_at
 FROM fixture_dispense f
 CROSS JOIN (VALUES (0), (37)) AS line(offset_no);
+
+-- Laboratory (P29-T14): 20 tests, one to three per order, a release time
+-- spread over five hours instead of the fixed three, and a few orders whose
+-- sample was taken again or that were cancelled.
+INSERT INTO lab_tests (id, code, name, specimen_type, result_type, unit, updated_at)
+SELECT
+  ('c0000000-0000-4000-8000-' || lpad(n::text, 12, '0'))::uuid,
+  'PERF-LAB-T' || n,
+  'Perf Lab Test ' || n,
+  'WHOLE_BLOOD'::lab_specimen_type,
+  'NUMERIC'::lab_result_type,
+  'mg/dL',
+  now()
+FROM generate_series(1, 20) AS n;
+
+CREATE TEMP TABLE fixture_lab_order AS
+SELECT id AS lab_order_id, floor(power(random(), 2) * 20)::int AS test_no,
+       1 + floor(random() * 3)::int AS test_count
+FROM lab_orders;
+
+INSERT INTO lab_order_items (id, lab_order_id, lab_test_id, status, updated_at)
+SELECT
+  gen_random_uuid(),
+  o.lab_order_id,
+  ('c0000000-0000-4000-8000-' || lpad((1 + (o.test_no + line.offset_no) % 20)::text, 12, '0'))::uuid,
+  'PENDING'::lab_order_item_status,
+  now()
+FROM fixture_lab_order o
+CROSS JOIN (VALUES (0, 1), (7, 2), (13, 3)) AS line(offset_no, line_no)
+WHERE line.line_no <= o.test_count;
+
+UPDATE lab_orders
+SET released_at = ordered_at + ((15 + floor(power(random(), 2) * 300)) || ' minutes')::interval
+WHERE status = 'RELEASED';
+
+UPDATE lab_orders SET recollect_count = 1 WHERE status = 'RELEASED' AND random() < 0.03;
+
+UPDATE lab_orders
+SET status = 'CANCELLED', cancelled_at = ordered_at + interval '1 hour', cancel_reason = 'Perf'
+WHERE status = 'ORDERED' AND random() < 0.3;
 
 ANALYZE;

@@ -127,6 +127,8 @@ describe('proxy', () => {
       '/admin/laboratory',
       '/admin/laboratory/c4d5e6f7-a8b9-4c0d-9e1f-2a3b4c5d6e7f',
       '/admin/settings/laboratory',
+      '/admin/analytics',
+      '/admin/analytics/laboratory',
     ]) {
       expect(proxy(buildRequest(path, technicianToken)).headers.get('x-middleware-next')).toBe('1');
     }
@@ -139,7 +141,12 @@ describe('proxy', () => {
       permissions: ['portal.admin-access:any'],
     });
 
-    for (const path of ['/admin/patients', '/admin/encounters', '/admin/billing']) {
+    for (const path of [
+      '/admin/patients',
+      '/admin/encounters',
+      '/admin/billing',
+      '/admin/analytics/finance',
+    ]) {
       const response = proxy(buildRequest(path, technicianToken));
       expect(response.status).toBe(307);
       expect(response.headers.get('location')).toBe(`${BASE_URL}/admin/laboratory`);

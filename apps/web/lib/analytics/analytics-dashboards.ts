@@ -79,6 +79,7 @@ export const ANALYTICS_DASHBOARDS: readonly AnalyticsDashboard[] = [
     labelKey: 'analyticsLaboratory',
     icon: 'science',
     action: 'read-lab',
+    requiredFeature: 'laboratory',
   },
   {
     slug: 'reporting',
