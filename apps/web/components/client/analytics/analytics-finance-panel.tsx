@@ -4,6 +4,7 @@ import { keepPreviousData } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { AnalyticsDataFreshness } from '#components/client/analytics/analytics-data-freshness';
+import { AnalyticsExportButton } from '#components/client/analytics/analytics-export-button';
 import { AnalyticsEmptyState } from '#components/client/analytics/analytics-empty-state';
 import { AnalyticsErrorState } from '#components/client/analytics/analytics-error-state';
 import { AnalyticsFilterBar } from '#components/client/analytics/analytics-filter-bar';
@@ -95,12 +96,20 @@ export function AnalyticsFinancePanel({
           { label: t('dashboards.finance.title') },
         ]}
         actions={
-          <AnalyticsDataFreshness
-            generatedAt={query.financeMeta?.generatedAt}
-            timeZone={query.financeMeta?.timezone}
-            isFetching={query.isFetching}
-            onReload={() => void query.refetch()}
-          />
+          <div className="flex flex-wrap items-center gap-3">
+            <AnalyticsDataFreshness
+              generatedAt={query.financeMeta?.generatedAt}
+              timeZone={query.financeMeta?.timezone}
+              isFetching={query.isFetching}
+              onReload={() => void query.refetch()}
+            />
+            <AnalyticsExportButton
+              dashboard="finance"
+              dashboardTitle={t('dashboards.finance.title')}
+              filter={filter}
+              isDisabled={rangeProblem !== null}
+            />
+          </div>
         }
       />
       <AnalyticsFilterBar

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { AuthModule } from '../auth/auth.module';
+import { AnalyticsExportController } from './controller/analytics-export.controller';
 import { AnalyticsFinanceController } from './controller/analytics-finance.controller';
 import { AnalyticsOperationsController } from './controller/analytics-operations.controller';
 import { AnalyticsReportingHealthController } from './controller/analytics-reporting-health.controller';
@@ -10,6 +11,7 @@ import { AnalyticsOperationsRepository } from './repository/analytics-operations
 import { AnalyticsQueryRepository } from './repository/analytics-query.repository';
 import { AnalyticsReportingHealthRepository } from './repository/analytics-reporting-health.repository';
 import { AnalyticsCacheService } from './service/analytics-cache.service';
+import { AnalyticsExportService } from './service/analytics-export.service';
 import { AnalyticsFinanceService } from './service/analytics-finance.service';
 import { AnalyticsOperationsService } from './service/analytics-operations.service';
 import { AnalyticsRangeService } from './service/analytics-range.service';
@@ -27,6 +29,7 @@ import { AnalyticsReportingHealthService } from './service/analytics-reporting-h
     AnalyticsOperationsController,
     AnalyticsReportingHealthController,
     AnalyticsFinanceController,
+    AnalyticsExportController,
   ],
   providers: [
     AnalyticsOperationsService,
@@ -39,6 +42,7 @@ import { AnalyticsReportingHealthService } from './service/analytics-reporting-h
     AnalyticsReportingHealthRepository,
     AnalyticsFinanceService,
     AnalyticsFinanceRepository,
+    AnalyticsExportService,
   ],
 })
 export class AnalyticsModule {}

@@ -371,3 +371,17 @@ export type AnalyticsFinanceData = AnalyticsDashboardData<
   AnalyticsFinanceSeriesPoint[],
   AnalyticsFinanceBreakdowns
 >;
+
+/** One cell of an exported table: text, a number a spreadsheet can sum, or empty. */
+export type AnalyticsExportCell = string | number | null;
+
+/**
+ * One table of a dashboard's CSV export (P29-T10): the same aggregate the
+ * screen shows, under its own title. No row names a patient.
+ */
+export type AnalyticsExportTable = {
+  key: string;
+  title: string;
+  columns: string[];
+  rows: AnalyticsExportCell[][];
+};

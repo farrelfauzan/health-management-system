@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { AnalyticsDataFreshness } from '#components/client/analytics/analytics-data-freshness';
+import { AnalyticsExportButton } from '#components/client/analytics/analytics-export-button';
 import { AnalyticsErrorState } from '#components/client/analytics/analytics-error-state';
 import { AnalyticsFilterBar } from '#components/client/analytics/analytics-filter-bar';
 import { AnalyticsLoadingState } from '#components/client/analytics/analytics-loading-state';
@@ -76,12 +77,20 @@ export function AnalyticsReportingHealthPanel({
           { label: t('dashboards.reporting.title') },
         ]}
         actions={
-          <AnalyticsDataFreshness
-            generatedAt={query.reportingHealthMeta?.generatedAt}
-            timeZone={query.reportingHealthMeta?.timezone}
-            isFetching={query.isFetching}
-            onReload={() => void query.refetch()}
-          />
+          <div className="flex flex-wrap items-center gap-3">
+            <AnalyticsDataFreshness
+              generatedAt={query.reportingHealthMeta?.generatedAt}
+              timeZone={query.reportingHealthMeta?.timezone}
+              isFetching={query.isFetching}
+              onReload={() => void query.refetch()}
+            />
+            <AnalyticsExportButton
+              dashboard="reporting"
+              dashboardTitle={t('dashboards.reporting.title')}
+              filter={filter}
+              isDisabled={rangeProblem !== null}
+            />
+          </div>
         }
       />
       <AnalyticsFilterBar

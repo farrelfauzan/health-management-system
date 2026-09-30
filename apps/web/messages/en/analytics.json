@@ -368,6 +368,43 @@
       },
       "emptyTitle": "No invoice in this period",
       "emptyDescription": "Try another date range, or clear the poli, doctor and payer filters."
+    },
+    "export": {
+      "button": "Export CSV",
+      "title": "Export {dashboard} · {range}",
+      "tablesLabel": "Tables to export",
+      "note": "The file holds summary figures only, never a patient name or number. Every export is recorded in the audit log.",
+      "cancel": "Cancel",
+      "download": "Download CSV",
+      "downloading": "Downloading…",
+      "chooseOne": "Choose at least one table.",
+      "error": "The export could not be made. Try again shortly.",
+      "success": "CSV downloaded.",
+      "tables": {
+        "operations": {
+          "summary": "Summary",
+          "visits-trend": "Visits per period",
+          "visits-by-poli": "Visits per poli",
+          "visits-by-doctor": "Visits per doctor",
+          "booking-channels": "Where visits come from",
+          "appointment-outcomes": "Appointment outcomes",
+          "busiest-hours": "Busiest hours"
+        },
+        "finance": {
+          "summary": "Summary",
+          "revenue-trend": "Revenue per period",
+          "payment-methods": "Payment method",
+          "service-types": "By service",
+          "payers": "Payer",
+          "doctors": "By doctor",
+          "outstanding": "Age of unpaid invoices"
+        },
+        "reporting": {
+          "satusehat": "SATUSEHAT",
+          "bpjs": "BPJS PCare and Antrean",
+          "readiness": "Ready to send?"
+        }
+      }
     }
   }
 }

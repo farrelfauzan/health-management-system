@@ -138,6 +138,7 @@ const GATED_CONTROLLERS: Readonly<Record<string, FeatureKey>> = {
   AnalyticsOperationsController: 'analytics',
   AnalyticsReportingHealthController: 'analytics',
   AnalyticsFinanceController: 'analytics',
+  AnalyticsExportController: 'analytics',
 };
 
 /**
