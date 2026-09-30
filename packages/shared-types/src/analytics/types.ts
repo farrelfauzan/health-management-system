@@ -404,3 +404,59 @@ export type AnalyticsExportRunner = {
     tableKeys: readonly string[],
   ) => Promise<AnalyticsExportResult>;
 };
+
+/** Case-mix rows as the database returns them (P29-T12). */
+export type AnalyticsCaseMixTotalsRow = {
+  finishedEncounters: number;
+  codedEncounters: number;
+  distinctCodes: number;
+};
+
+export type AnalyticsCaseMixBucketRow = {
+  bucket: string;
+  finishedEncounters: number;
+  codedEncounters: number;
+};
+
+export type AnalyticsCodeCountRow = {
+  code: string;
+  name: string | null;
+  count: number;
+};
+
+export type AnalyticsGroupCountRow = {
+  group: string;
+  count: number;
+};
+
+export type AnalyticsPoliCodingRow = {
+  specialtyId: string | null;
+  specialtyName: string | null;
+  finishedEncounters: number;
+  codedEncounters: number;
+};
+
+/** Every case-mix figure for one period, as read in one transaction. */
+export type AnalyticsCaseMixSnapshot = {
+  totals: AnalyticsCaseMixTotalsRow;
+  buckets: AnalyticsCaseMixBucketRow[];
+  diagnoses: AnalyticsCodeCountRow[];
+  groups: AnalyticsGroupCountRow[];
+  poli: AnalyticsPoliCodingRow[];
+  procedures: AnalyticsCodeCountRow[];
+};
+
+export type AnalyticsCaseMixPeriodSnapshot = {
+  range: AnalyticsRange;
+  snapshot: AnalyticsCaseMixSnapshot;
+};
+
+export type BuildAnalyticsCaseMixDataParams = {
+  current: AnalyticsCaseMixPeriodSnapshot;
+  comparison?: AnalyticsCaseMixPeriodSnapshot;
+};
+
+export type ReadCaseMixPeriodParams = {
+  range: AnalyticsRange;
+  filter: AnalyticsFilterInput;
+};

@@ -208,6 +208,27 @@ The finance rows in the tables above time the Sprint 1 preview query (payments b
 
 **Watch at five years of history.** The 30-day request would approach its gate. The fix to try then is a nested loop into both tables by primary key, not a new index. For example, fetch the range's invoices first in a `MATERIALIZED` CTE.
 
+## P29-T12 re-run: case mix (2026-09-30)
+
+**Ticket:** SJ-277.
+
+**Fixture change.** Primary diagnoses now point at the ICD-10 catalog `seed.sql` curates, with about 90% coded and the rest free text. About 15% of encounters gained an ICD-9-CM procedure. Before this, every diagnosis was uncoded and there were no procedures.
+
+**Result.** The case-mix queries meet the gate. The comparison period is included in every measured request.
+
+| Dashboard | Range | Filter | p50 ms | p95 ms | Gate ms | Verdict |
+|---|---|---|---:|---:|---:|---|
+| case-mix | 30 days | none | 80.5 | 82.0 | < 400 | meets |
+| case-mix | 30 days | one doctor | 46.2 | 47.3 | < 400 | meets |
+| case-mix | 30 days | one poli | 40.8 | 49.2 | < 400 | meets |
+| case-mix | 12 months | none | 118.5 | 138.9 | < 1500 | meets |
+| case-mix | 12 months | one doctor | 42.0 | 43.0 | < 1500 | meets |
+| case-mix | 12 months | one poli | 66.6 | 68.1 | < 1500 | meets |
+
+**Slowest query.** Totals and buckets over 12 months, at a p95 of 47 ms. Every query reads the same finished-encounter CTE, and the unique primary-diagnosis index keeps the diagnosis join one row per encounter.
+
+**No index added.**
+
 ## Index decision: none added
 
 The ticket allows an index only where a hot path does a sequential scan.

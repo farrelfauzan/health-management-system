@@ -385,3 +385,87 @@ export type AnalyticsExportTable = {
   columns: string[];
   rows: AnalyticsExportCell[][];
 };
+
+/**
+ * The case-mix headline (P29-T12, PRD FR-CLN-01 to 04). A finished encounter
+ * is coded when its primary diagnosis carries an ICD-10 code; completeness is
+ * coded over finished. Totals are exact: suppression applies to breakdowns,
+ * where a small count could point at a patient (Q-1, 2026-09-30).
+ */
+export type AnalyticsCaseMixTotals = {
+  finishedEncounters: number;
+  codedEncounters: number;
+  uncodedEncounters: number;
+  codingCompletenessPercent: number | null;
+  distinctCodes: number;
+};
+
+/** Finished and coded encounters in one bucket; `bucket` is its first local date. */
+export type AnalyticsCaseMixSeriesPoint = {
+  bucket: string;
+  finishedEncounters: number;
+  codedEncounters: number;
+};
+
+/**
+ * One row of a ranked clinical list. `CODE` is a single code; `OTHER` gathers
+ * every code below the top ten (`otherCodes` says how many), so the list
+ * always adds up to the total and a withheld count cannot be recovered by
+ * subtraction; `UNCODED` is finished encounters with no coded primary
+ * diagnosis. `sharePercent` is over finished encounters, `null` when the
+ * count is withheld.
+ */
+export type AnalyticsCaseMixRowKind = 'CODE' | 'OTHER' | 'UNCODED';
+
+export type AnalyticsCaseMixDiagnosis = {
+  kind: AnalyticsCaseMixRowKind;
+  code: string | null;
+  name: string | null;
+  otherCodes?: number;
+  count: AnalyticsCount;
+  sharePercent: number | null;
+};
+
+/** Encounters by ICD-10 group, the first letter of the primary diagnosis's code. */
+export type AnalyticsCaseMixGroup = {
+  kind: AnalyticsCaseMixRowKind;
+  group: string | null;
+  otherGroups?: number;
+  count: AnalyticsCount;
+  sharePercent: number | null;
+};
+
+/** Procedures (ICD-9-CM) on the period's finished encounters. */
+export type AnalyticsCaseMixProcedure = {
+  kind: Exclude<AnalyticsCaseMixRowKind, 'UNCODED'>;
+  code: string | null;
+  name: string | null;
+  otherCodes?: number;
+  count: AnalyticsCount;
+};
+
+/** Coding completeness at one poli: finished encounters, and how many are not coded yet. */
+export type AnalyticsCaseMixPoliCoding = {
+  specialtyId: string | null;
+  specialtyName: string | null;
+  finishedEncounters: number;
+  uncodedEncounters: AnalyticsCount;
+  codingCompletenessPercent: number | null;
+};
+
+export type AnalyticsCaseMixBreakdowns = {
+  topDiagnoses: AnalyticsCaseMixDiagnosis[];
+  groups: AnalyticsCaseMixGroup[];
+  codingByPoli: AnalyticsCaseMixPoliCoding[];
+  topProcedures: AnalyticsCaseMixProcedure[];
+};
+
+/**
+ * The case-mix dashboard (P29-T12). Aggregates only: no patient and no
+ * encounter id appears in it, and every clinical breakdown is suppressed.
+ */
+export type AnalyticsCaseMixData = AnalyticsDashboardData<
+  AnalyticsCaseMixTotals,
+  AnalyticsCaseMixSeriesPoint[],
+  AnalyticsCaseMixBreakdowns
+>;

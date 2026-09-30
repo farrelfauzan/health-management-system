@@ -40,9 +40,10 @@ export type AnalyticsPeriodRange = {
  * (no-show −1,2 poin), because a percentage of a percentage misleads;
  * `minutes` is the difference between two durations (wait +3 mnt);
  * `rupiah` is the difference between two amounts (unpaid +Rp1,4 jt);
- * `invoices` is the difference between two counts of invoices (−2 invoice).
+ * `invoices` is the difference between two counts of invoices (−2 invoice);
+ * `count` is the plain difference between two counts (+6).
  */
-export type AnalyticsDeltaKind = 'percent' | 'points' | 'minutes' | 'rupiah' | 'invoices';
+export type AnalyticsDeltaKind = 'percent' | 'points' | 'minutes' | 'rupiah' | 'invoices' | 'count';
 
 export type AnalyticsDeltaDirection = 'up' | 'down' | 'flat';
 

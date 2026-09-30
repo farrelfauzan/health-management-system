@@ -18,6 +18,7 @@ export function useEncountersList(params: EncountersSearchParams) {
     registrationId: params.registrationId,
     startedFrom: params.startedFrom,
     startedTo: params.startedTo,
+    ...(params.isUncoded ? { uncoded: 'true' as const } : {}),
   };
 
   const query = useApiQuery<EncounterListItem[]>({

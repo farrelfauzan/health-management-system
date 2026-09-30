@@ -76,7 +76,8 @@
       "flat": "tetap",
       "minutes": "{value} mnt",
       "rupiah": "{value}",
-      "invoices": "{value} invoice"
+      "invoices": "{value} invoice",
+      "count": "{value}"
     },
     "states": {
       "loading": "Memuat dasbor",
@@ -405,6 +406,75 @@
           "readiness": "Siap dikirim?"
         }
       }
+    },
+    "caseMix": {
+      "kpi": {
+        "finished": "Pemeriksaan selesai",
+        "completeness": "Kelengkapan kode diagnosis",
+        "completenessHelper": "{count} pemeriksaan belum punya diagnosis utama berkode",
+        "distinctCodes": "Kode ICD-10 berbeda"
+      },
+      "diagnoses": {
+        "title": "10 diagnosis utama terbanyak",
+        "subtitle": "Diagnosis utama pada pemeriksaan selesai",
+        "countShare": "{count} · {share}%",
+        "other": "Lainnya ({count} kode)",
+        "uncoded": "Tanpa kode",
+        "empty": "Belum ada diagnosis berkode pada periode ini."
+      },
+      "coding": {
+        "title": "Kelengkapan kode",
+        "subtitle": "Pemeriksaan tanpa diagnosis utama berkode tidak bisa dikirim ke SATUSEHAT dan BPJS",
+        "link": "Pemeriksaan tanpa diagnosis",
+        "ofTotal": "{coded} dari {finished}",
+        "poli": "Poli",
+        "uncoded": "Belum berkode",
+        "noPoli": "Tanpa poli"
+      },
+      "groups": {
+        "title": "Per kelompok ICD-10",
+        "subtitle": "Kelompok huruf kode diagnosis utama",
+        "other": "Lainnya ({count} kelompok)",
+        "uncoded": "Tanpa kode",
+        "names": {
+          "A": "Infeksi dan parasit",
+          "B": "Infeksi dan parasit",
+          "C": "Neoplasma",
+          "D": "Neoplasma dan darah",
+          "E": "Endokrin dan metabolik",
+          "F": "Gangguan jiwa dan perilaku",
+          "G": "Saraf",
+          "H": "Mata dan telinga",
+          "I": "Sirkulasi",
+          "J": "Saluran pernapasan",
+          "K": "Saluran cerna",
+          "L": "Kulit",
+          "M": "Otot dan tulang",
+          "N": "Saluran kemih dan kelamin",
+          "O": "Kehamilan dan persalinan",
+          "P": "Masa perinatal",
+          "Q": "Kelainan bawaan",
+          "R": "Gejala dan temuan klinis",
+          "S": "Cedera",
+          "T": "Cedera dan keracunan",
+          "U": "Kode khusus",
+          "V": "Sebab luar",
+          "W": "Sebab luar",
+          "X": "Sebab luar",
+          "Y": "Sebab luar",
+          "Z": "Faktor status kesehatan"
+        }
+      },
+      "procedures": {
+        "title": "Tindakan terbanyak",
+        "subtitle": "Kode ICD-9-CM pada pemeriksaan selesai",
+        "other": "Lainnya ({count} kode)",
+        "empty": "Belum ada tindakan pada periode ini."
+      },
+      "suppressed": "<5",
+      "suppressedNote": "Angka di bawah 5 disembunyikan untuk melindungi privasi pasien",
+      "emptyTitle": "Belum ada pemeriksaan selesai pada periode ini",
+      "emptyDescription": "Coba pilih rentang tanggal lain, atau hapus filter poli, dokter, dan penjamin."
     }
   }
 }

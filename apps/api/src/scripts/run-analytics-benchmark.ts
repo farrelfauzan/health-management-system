@@ -237,7 +237,12 @@ async function runBenchmark(options: AnalyticsBenchmarkOptions): Promise<void> {
       }
     }
     const dashboardLines: string[] = [];
-    const dashboards: AnalyticsBenchmarkDashboard[] = ['operations', 'reporting', 'finance'];
+    const dashboards: AnalyticsBenchmarkDashboard[] = [
+      'operations',
+      'reporting',
+      'finance',
+      'case-mix',
+    ];
     for (const dashboard of dashboards) {
       const queries = ANALYTICS_BENCHMARK_QUERIES.filter((query) => query.dashboard === dashboard);
       for (const range of RANGES) {

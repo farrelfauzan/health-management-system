@@ -360,6 +360,15 @@ export const listEncountersQuerySchema = z
     registrationId: z.string().uuid().optional(),
     startedFrom: encounterDateSchema.optional(),
     startedTo: encounterDateSchema.optional(),
+    /**
+     * Only encounters whose primary diagnosis has no ICD-10 code, or that
+     * have none at all (P29-T12): the list the Pola penyakit dashboard's
+     * coding-completeness card opens.
+     */
+    uncoded: z
+      .enum(['true', 'false'])
+      .transform((value) => value === 'true')
+      .optional(),
   })
   .refine((query) => !query.startedFrom || !query.startedTo || query.startedFrom <= query.startedTo, {
     message: 'startedFrom must be earlier than or equal to startedTo',

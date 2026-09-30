@@ -25,6 +25,14 @@ describe('encounters search params', () => {
     });
   });
 
+  it('reads and writes the uncoded filter the Pola penyakit card links with (P29-T12)', () => {
+    const parsed = parseEncountersSearchParams({ status: 'FINISHED', uncoded: 'true' });
+
+    expect(parsed).toMatchObject({ status: 'FINISHED', isUncoded: true });
+    expect(buildEncountersSearchParams(parsed).get('uncoded')).toBe('true');
+    expect(parseEncountersSearchParams({ uncoded: 'false' })).not.toHaveProperty('isUncoded');
+  });
+
   it('falls back to defaults when the query is invalid', () => {
     const parsed = parseEncountersSearchParams({ status: 'ARCHIVED', page: '0' });
 

@@ -1466,7 +1466,8 @@
         "issued": "Prescription issued",
         "error": "The prescription could not be printed. Please try again.",
         "openError": "The prescription was issued but could not be opened. Open it from the patient’s Documents tab."
-      }
+      },
+      "uncodedNotice": "Only encounters without an ICD-10-coded primary diagnosis. Choose Reset to see every encounter."
     }
   }
 }

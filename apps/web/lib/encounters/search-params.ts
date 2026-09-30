@@ -9,6 +9,8 @@ export type EncountersSearchParams = {
   registrationId?: string;
   startedFrom?: string;
   startedTo?: string;
+  /** Only encounters without an ICD-10-coded primary diagnosis (P29-T12). */
+  isUncoded?: boolean;
 };
 
 type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -35,6 +37,7 @@ export function parseEncountersSearchParams(raw: RawSearchParams): EncountersSea
     registrationId: pickFirst(raw.registration),
     startedFrom: pickFirst(raw.from),
     startedTo: pickFirst(raw.to),
+    uncoded: pickFirst(raw.uncoded),
   });
 
   if (!parsed.success) {
@@ -50,6 +53,7 @@ export function parseEncountersSearchParams(raw: RawSearchParams): EncountersSea
     registrationId: parsed.data.registrationId,
     startedFrom: parsed.data.startedFrom,
     startedTo: parsed.data.startedTo,
+    ...(parsed.data.uncoded ? { isUncoded: true } : {}),
   };
 }
 
@@ -76,6 +80,9 @@ export function buildEncountersSearchParams(next: EncountersSearchParams): URLSe
   }
   if (next.startedTo) {
     params.set('to', next.startedTo);
+  }
+  if (next.isUncoded) {
+    params.set('uncoded', 'true');
   }
 
   return params;

@@ -10,10 +10,12 @@ import type {
 
 import { AuditAction } from '../../../generated/prisma/client';
 import { AuditService } from '../../../common/audit/audit.service';
+import { AnalyticsCaseMixService } from './analytics-case-mix.service';
 import { AnalyticsFinanceService } from './analytics-finance.service';
 import { AnalyticsOperationsService } from './analytics-operations.service';
 import { AnalyticsReportingHealthService } from './analytics-reporting-health.service';
 import { buildAnalyticsExportCsv } from './build-analytics-export-csv';
+import { CASE_MIX_EXPORT_TABLES } from './case-mix-export-tables';
 import { FINANCE_EXPORT_TABLES } from './finance-export-tables';
 import { OPERATIONS_EXPORT_TABLES } from './operations-export-tables';
 import { REPORTING_EXPORT_TABLES } from './reporting-export-tables';
@@ -42,6 +44,7 @@ export class AnalyticsExportService {
   constructor(
     operationsService: AnalyticsOperationsService,
     financeService: AnalyticsFinanceService,
+    caseMixService: AnalyticsCaseMixService,
     reportingHealthService: AnalyticsReportingHealthService,
     private readonly auditService: AuditService,
   ) {
@@ -57,6 +60,12 @@ export class AnalyticsExportService {
         title: 'Keuangan',
         load: (filter) => financeService.getFinance(filter),
         tables: FINANCE_EXPORT_TABLES,
+      }),
+      'case-mix': toAnalyticsExportRunner({
+        dashboard: 'case-mix',
+        title: 'Pola penyakit',
+        load: (filter) => caseMixService.getCaseMix(filter),
+        tables: CASE_MIX_EXPORT_TABLES,
       }),
       reporting: toAnalyticsExportRunner({
         dashboard: 'reporting',

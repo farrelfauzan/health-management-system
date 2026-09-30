@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import type { AnalyticsFinanceData, AnalyticsResponse } from '@hms/shared-types';
 
 import type { AuditService } from '../../../common/audit/audit.service';
+import type { AnalyticsCaseMixService } from './analytics-case-mix.service';
 import type { AnalyticsFinanceService } from './analytics-finance.service';
 import type { AnalyticsOperationsService } from './analytics-operations.service';
 import type { AnalyticsReportingHealthService } from './analytics-reporting-health.service';
@@ -48,6 +49,7 @@ describe('AnalyticsExportService', () => {
     const service = new AnalyticsExportService(
       {} as AnalyticsOperationsService,
       mockFinance as unknown as AnalyticsFinanceService,
+      {} as AnalyticsCaseMixService,
       {} as AnalyticsReportingHealthService,
       mockAudit as unknown as AuditService,
     );
