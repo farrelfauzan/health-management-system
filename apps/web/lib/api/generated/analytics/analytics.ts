@@ -21,6 +21,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AnalyticsExportControllerExportFinanceV1Params,
+  AnalyticsExportControllerExportOperationsV1Params,
+  AnalyticsExportControllerExportReportingV1Params,
   AnalyticsFinanceControllerGetFinanceV1200,
   AnalyticsFinanceControllerGetFinanceV1Params,
   AnalyticsOperationsControllerGetOperationsV1200,
@@ -317,6 +320,285 @@ export function useAnalyticsFinanceControllerGetFinanceV1<TData = Awaited<Return
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsFinanceControllerGetFinanceV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Export the operations dashboard as CSV
+ */
+export const analyticsExportControllerExportOperationsV1 = (
+    params: AnalyticsExportControllerExportOperationsV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/analytics/operations/export`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsExportControllerExportOperationsV1QueryKey = (params?: AnalyticsExportControllerExportOperationsV1Params,) => {
+    return [
+    `/api/v1/analytics/operations/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsExportControllerExportOperationsV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError = unknown>(params: AnalyticsExportControllerExportOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsExportControllerExportOperationsV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>> = ({ signal }) => analyticsExportControllerExportOperationsV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsExportControllerExportOperationsV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>>
+export type AnalyticsExportControllerExportOperationsV1QueryError = unknown
+
+
+export function useAnalyticsExportControllerExportOperationsV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportOperationsV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportOperationsV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportOperationsV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export the operations dashboard as CSV
+ */
+
+export function useAnalyticsExportControllerExportOperationsV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportOperationsV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportOperationsV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsExportControllerExportOperationsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Export the finance dashboard as CSV
+ */
+export const analyticsExportControllerExportFinanceV1 = (
+    params: AnalyticsExportControllerExportFinanceV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/analytics/finance/export`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsExportControllerExportFinanceV1QueryKey = (params?: AnalyticsExportControllerExportFinanceV1Params,) => {
+    return [
+    `/api/v1/analytics/finance/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsExportControllerExportFinanceV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError = unknown>(params: AnalyticsExportControllerExportFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsExportControllerExportFinanceV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>> = ({ signal }) => analyticsExportControllerExportFinanceV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsExportControllerExportFinanceV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>>
+export type AnalyticsExportControllerExportFinanceV1QueryError = unknown
+
+
+export function useAnalyticsExportControllerExportFinanceV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportFinanceV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportFinanceV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportFinanceV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export the finance dashboard as CSV
+ */
+
+export function useAnalyticsExportControllerExportFinanceV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportFinanceV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportFinanceV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsExportControllerExportFinanceV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Export the reporting status page as CSV
+ */
+export const analyticsExportControllerExportReportingV1 = (
+    params: AnalyticsExportControllerExportReportingV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/analytics/reporting/export`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsExportControllerExportReportingV1QueryKey = (params?: AnalyticsExportControllerExportReportingV1Params,) => {
+    return [
+    `/api/v1/analytics/reporting/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsExportControllerExportReportingV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError = unknown>(params: AnalyticsExportControllerExportReportingV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsExportControllerExportReportingV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>> = ({ signal }) => analyticsExportControllerExportReportingV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsExportControllerExportReportingV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>>
+export type AnalyticsExportControllerExportReportingV1QueryError = unknown
+
+
+export function useAnalyticsExportControllerExportReportingV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportReportingV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportReportingV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportReportingV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportReportingV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportReportingV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export the reporting status page as CSV
+ */
+
+export function useAnalyticsExportControllerExportReportingV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportReportingV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportReportingV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsExportControllerExportReportingV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

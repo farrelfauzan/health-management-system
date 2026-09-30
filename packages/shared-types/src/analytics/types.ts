@@ -1,11 +1,20 @@
-import type { AnalyticsFilterInput, AnalyticsPayerTypeValue } from '#analytics/schemas';
+import type {
+  AnalyticsExportDashboardValue,
+  AnalyticsExportQueryInput,
+  AnalyticsFilterInput,
+  AnalyticsPayerTypeValue,
+} from '#analytics/schemas';
 import type {
   AnalyticsBpjsTypeRow,
   AnalyticsBusiestHourCell,
+  AnalyticsExportCell,
+  AnalyticsExportTable,
   AnalyticsGranularity,
   AnalyticsInpatientDisposition,
   AnalyticsOutstandingAgeBucket,
   AnalyticsReportingReadiness,
+  AnalyticsResponse,
+  AnalyticsResponseMeta,
 } from '#analytics/contracts';
 import type { InvoiceItemTypeValue, PaymentMethodValue } from '#billing/schemas';
 
@@ -335,4 +344,63 @@ export type BuildAnalyticsFinanceDataParams = {
 export type ReadFinancePeriodParams = {
   range: AnalyticsRange;
   filter: AnalyticsFilterInput;
+};
+
+/**
+ * How one dashboard exports (P29-T10): the tables it can write, each built
+ * from the dashboard's own response, and how to read that response. A new
+ * dashboard exports by registering one of these; nothing else changes.
+ */
+export type AnalyticsExportTableSpec<TData> = {
+  key: string;
+  title: string;
+  build: (data: TData) => Pick<AnalyticsExportTable, 'columns' | 'rows'>;
+};
+
+export type AnalyticsExportDashboardSpec<TData> = {
+  dashboard: AnalyticsExportDashboardValue;
+  /** The page title, written at the top of the file. */
+  title: string;
+  load: (filter: AnalyticsFilterInput) => Promise<AnalyticsResponse<TData>>;
+  tables: readonly AnalyticsExportTableSpec<TData>[];
+};
+
+/** A finished export: the file's name and its text, BOM included. */
+export type AnalyticsExportFile = {
+  fileName: string;
+  csv: string;
+  rowCount: number;
+};
+
+export type ExportAnalyticsParams = {
+  dashboard: AnalyticsExportDashboardValue;
+  query: AnalyticsExportQueryInput;
+  actorUserId: string;
+};
+
+export type BuildAnalyticsExportCsvParams = {
+  dashboardTitle: string;
+  meta: AnalyticsResponseMeta;
+  filterLines: AnalyticsExportCell[][];
+  tables: readonly AnalyticsExportTable[];
+};
+
+/** The tables a dashboard's export read, with the period they cover. */
+export type AnalyticsExportResult = {
+  meta: AnalyticsResponseMeta;
+  tables: AnalyticsExportTable[];
+};
+
+/**
+ * One registered dashboard, its data type erased: its title, the tables it
+ * can write, and a function that reads the dashboard and builds the chosen
+ * tables. What `AnalyticsExportService` keeps per dashboard.
+ */
+export type AnalyticsExportRunner = {
+  title: string;
+  tableKeys: readonly string[];
+  run: (
+    filter: AnalyticsFilterInput,
+    tableKeys: readonly string[],
+  ) => Promise<AnalyticsExportResult>;
 };

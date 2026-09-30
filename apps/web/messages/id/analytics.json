@@ -368,6 +368,43 @@
       },
       "emptyTitle": "Belum ada invoice pada periode ini",
       "emptyDescription": "Coba pilih rentang tanggal lain, atau hapus filter poli, dokter, dan penjamin."
+    },
+    "export": {
+      "button": "Ekspor CSV",
+      "title": "Ekspor {dashboard} · {range}",
+      "tablesLabel": "Tabel yang diekspor",
+      "note": "Berkas hanya berisi angka ringkasan, tanpa nama atau nomor pasien. Setiap ekspor dicatat di log audit.",
+      "cancel": "Batal",
+      "download": "Unduh CSV",
+      "downloading": "Mengunduh…",
+      "chooseOne": "Pilih minimal satu tabel.",
+      "error": "Ekspor belum bisa dibuat. Coba lagi sebentar lagi.",
+      "success": "Berkas CSV diunduh.",
+      "tables": {
+        "operations": {
+          "summary": "Ringkasan",
+          "visits-trend": "Kunjungan per periode",
+          "visits-by-poli": "Kunjungan per poli",
+          "visits-by-doctor": "Kunjungan per dokter",
+          "booking-channels": "Asal kunjungan",
+          "appointment-outcomes": "Hasil janji temu",
+          "busiest-hours": "Jam tersibuk"
+        },
+        "finance": {
+          "summary": "Ringkasan",
+          "revenue-trend": "Pendapatan per periode",
+          "payment-methods": "Metode pembayaran",
+          "service-types": "Per jenis layanan",
+          "payers": "Penjamin",
+          "doctors": "Per dokter",
+          "outstanding": "Umur invoice belum dibayar"
+        },
+        "reporting": {
+          "satusehat": "SATUSEHAT",
+          "bpjs": "BPJS PCare dan Antrean",
+          "readiness": "Siap dikirim?"
+        }
+      }
     }
   }
 }

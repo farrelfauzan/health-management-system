@@ -63314,6 +63314,193 @@ paths:
       summary: Read the finance dashboard
       tags:
         - Analytics
+  /api/v1/analytics/operations/export:
+    get:
+      operationId: AnalyticsExportController_exportOperations_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+        - name: tables
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The dashboard's aggregate tables as CSV, one section per table
+            under its title, for the same filter as the dashboard. `tables` is a
+            comma-separated list of table keys; omitted, every table is written,
+            and an unknown key answers 400 `ANALYTICS_EXPORT_UNKNOWN_TABLE`.
+            UTF-8 with a BOM so Excel opens it; the file is
+            `metaklinik-<dashboard>-<from>-<to>.csv`. Needs `analytics.export`
+            and the dashboard's own read key. No patient appears in it. Every
+            export writes one `EXPORT` audit row with the dashboard, the filters
+            and the row count.
+      summary: Export the operations dashboard as CSV
+      tags: &a96
+        - Analytics
+  /api/v1/analytics/finance/export:
+    get:
+      operationId: AnalyticsExportController_exportFinance_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+        - name: tables
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The dashboard's aggregate tables as CSV, one section per table
+            under its title, for the same filter as the dashboard. `tables` is a
+            comma-separated list of table keys; omitted, every table is written,
+            and an unknown key answers 400 `ANALYTICS_EXPORT_UNKNOWN_TABLE`.
+            UTF-8 with a BOM so Excel opens it; the file is
+            `metaklinik-<dashboard>-<from>-<to>.csv`. Needs `analytics.export`
+            and the dashboard's own read key. No patient appears in it. Every
+            export writes one `EXPORT` audit row with the dashboard, the filters
+            and the row count.
+      summary: Export the finance dashboard as CSV
+      tags: *a96
+  /api/v1/analytics/reporting/export:
+    get:
+      operationId: AnalyticsExportController_exportReporting_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+        - name: tables
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The dashboard's aggregate tables as CSV, one section per table
+            under its title, for the same filter as the dashboard. `tables` is a
+            comma-separated list of table keys; omitted, every table is written,
+            and an unknown key answers 400 `ANALYTICS_EXPORT_UNKNOWN_TABLE`.
+            UTF-8 with a BOM so Excel opens it; the file is
+            `metaklinik-<dashboard>-<from>-<to>.csv`. Needs `analytics.export`
+            and the dashboard's own read key. No patient appears in it. Every
+            export writes one `EXPORT` audit row with the dashboard, the filters
+            and the row count.
+      summary: Export the reporting status page as CSV
+      tags: *a96
 info:
   title: HMS API
   description: Health Management System API
