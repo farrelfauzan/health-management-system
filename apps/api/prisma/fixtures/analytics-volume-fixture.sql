@@ -13,6 +13,7 @@
 --   ~7 500 procedures, 35 000 prescriptions
 --   60 000 invoices with 120 000 lines and ~56 000 payments (one per paid
 --   invoice, the schema's rule), 8 000 lab orders
+--   150 medications with 450 batches, ~33 000 dispenses with ~66 000 lines
 --   a payer on every visit: BPJS where a KUNJUNGAN was sent, else mostly general
 --   50 000 SATUSEHAT and 20 000 BPJS submissions
 -- Deterministic: `setseed` fixes every random() below, so a re-run on a fresh
@@ -424,5 +425,66 @@ SET payer_type = (
     ELSE 'INSURANCE'
   END
 )::payer_type;
+
+-- Pharmacy (P29-T13): 150 catalog medications, three batches each with
+-- expiries from a month ago to a year out, and one dispense of two lines for
+-- every dispensed prescription, 5–45 minutes after it was issued.
+INSERT INTO medications (id, code, name, strength, unit, reorder_level, updated_at)
+SELECT
+  ('e0000000-0000-4000-8000-' || lpad(n::text, 12, '0'))::uuid,
+  'PERF-MED-' || n,
+  'Perf Medication ' || n,
+  (100 * (1 + n % 5)) || ' mg',
+  CASE WHEN n % 3 = 0 THEN 'KAPSUL'::"MedicationUnit" ELSE 'TABLET'::"MedicationUnit" END,
+  (random() * 200)::int,
+  now()
+FROM generate_series(1, 150) AS n;
+
+INSERT INTO medication_stock_receipts (
+  id, medication_id, batch_number, expiry_date, quantity, remaining_quantity, received_at, updated_at
+)
+SELECT
+  gen_random_uuid(),
+  ('e0000000-0000-4000-8000-' || lpad(n::text, 12, '0'))::uuid,
+  'PERF-B' || n || '-' || b,
+  current_date + (random() * 430 - 30)::int,
+  500,
+  (random() * 300)::int,
+  now() - interval '90 days',
+  now()
+FROM generate_series(1, 150) AS n
+CROSS JOIN generate_series(1, 3) AS b;
+
+CREATE TEMP TABLE fixture_dispense AS
+SELECT
+  gen_random_uuid() AS dispense_id,
+  p.id AS prescription_id,
+  p.issued_at + ((5 + floor(random() * 40)) || ' minutes')::interval AS dispensed_at
+FROM prescriptions p
+WHERE p.status = 'DISPENSED';
+
+INSERT INTO dispense_records (
+  id, prescription_id, pharmacist_id, dispensed_at, status, created_at, updated_at
+)
+SELECT dispense_id, prescription_id, 'a0000000-0000-4000-8000-000000000001', dispensed_at,
+       'DISPENSED'::"DispenseStatus", dispensed_at, dispensed_at
+FROM fixture_dispense;
+
+-- Two lines per dispense, skewed so a few medications are handed over most.
+-- The second line is a different medication: one line per product per
+-- dispense (dispense_items_product_line_key).
+ALTER TABLE fixture_dispense ADD COLUMN medication_no int;
+UPDATE fixture_dispense SET medication_no = floor(power(random(), 2) * 150)::int;
+
+INSERT INTO dispense_items (id, dispense_record_id, medication_id, quantity, created_at, updated_at)
+SELECT
+  gen_random_uuid(),
+  f.dispense_id,
+  ('e0000000-0000-4000-8000-' || lpad((1 + (f.medication_no + line.offset_no) % 150)::text, 12, '0'))::uuid,
+  5 + floor(random() * 25)::int,
+  f.dispensed_at,
+  f.dispensed_at
+FROM fixture_dispense f
+CROSS JOIN (VALUES (0), (37)) AS line(offset_no);
 
 ANALYZE;

@@ -1,3 +1,4 @@
+import type { AnalyticsExportDashboardValue } from '@hms/shared-types';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
@@ -16,13 +17,16 @@ const { AnalyticsExportDialog } = await import('./analytics-export-dialog');
 
 const FILTER = parseAnalyticsFilterParams({ payer: 'BPJS' }, '2026-09-28');
 
-function renderDialog(onOpenChange = vi.fn()): void {
+function renderDialog(
+  onOpenChange = vi.fn(),
+  dashboard: AnalyticsExportDashboardValue = 'finance',
+): void {
   render(
     <NextIntlClientProvider locale="id" timeZone="Asia/Jakarta" messages={idAnalyticsMessages}>
       <AnalyticsExportDialog
         open
         onOpenChange={onOpenChange}
-        dashboard="finance"
+        dashboard={dashboard}
         dashboardTitle="Keuangan"
         filter={FILTER}
       />
@@ -33,6 +37,16 @@ function renderDialog(onOpenChange = vi.fn()): void {
 describe('AnalyticsExportDialog', () => {
   beforeEach(() => {
     downloadMock.mockReset();
+  });
+
+  it.each([
+    ['case-mix', '10 diagnosis utama terbanyak'],
+    ['pharmacy', 'Perlu dipesan ulang'],
+  ] as const)('names the %s tables in words, not message keys', (dashboard, label) => {
+    renderDialog(vi.fn(), dashboard);
+
+    expect(screen.getByRole('checkbox', { name: label })).toBeChecked();
+    expect(screen.queryByText(/analytics\.export/)).not.toBeInTheDocument();
   });
 
   it('offers every finance table ticked, and says the file holds no patient', () => {

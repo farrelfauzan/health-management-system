@@ -26,6 +26,7 @@ export default async function AdminPharmacyPage({ searchParams }: AdminPharmacyP
       <PharmacyWorkspace
         initialQuery={query}
         initialTab={parseTabSearchParam(params.tab, PHARMACY_TABS)}
+        initialReorderOnly={params.reorder === 'true'}
       />
     </div>
   );

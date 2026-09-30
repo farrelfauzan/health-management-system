@@ -39,6 +39,13 @@ const LOGIN_PATH = '/login';
 const ADMIN_HOME_PATH = '/admin/dashboard';
 const DOCTOR_HOME_PATH = '/doctor/dashboard';
 const PHARMACIST_HOME_PATH = '/admin/pharmacy';
+/**
+ * P29-T13. The whole of a pharmacist-only shell: the workspace, and the
+ * pharmacy analytics a pharmacist holds `analytics.read-pharmacy` for.
+ * `/admin/analytics` itself only redirects to the first dashboard the viewer
+ * may read, which for a pharmacist is that one.
+ */
+const PHARMACIST_PATHS = [PHARMACIST_HOME_PATH, '/admin/analytics', '/admin/analytics/pharmacy'];
 const LABORATORY_HOME_PATH = '/admin/laboratory';
 /**
  * P18-T08. The whole of a technician's shell: the worklist and its order
@@ -216,7 +223,7 @@ export function proxy(request: NextRequest) {
     return canOpenDoctorShell ? NextResponse.next() : redirectToHome();
   }
 
-  if (pathname === PHARMACIST_HOME_PATH && hasPharmacistSession) {
+  if (hasPharmacistSession && PHARMACIST_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 

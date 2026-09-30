@@ -17,7 +17,12 @@ export type AnalyticsBenchmarkParams = {
 };
 
 /** The dashboard a candidate query belongs to, and the ticket that ships it. */
-export type AnalyticsBenchmarkDashboard = 'operations' | 'reporting' | 'finance' | 'case-mix';
+export type AnalyticsBenchmarkDashboard =
+  | 'operations'
+  | 'reporting'
+  | 'finance'
+  | 'case-mix'
+  | 'pharmacy';
 
 /**
  * A candidate query. `params` names, in `$1…$n` order, which of the shared

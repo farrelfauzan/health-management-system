@@ -50,16 +50,24 @@ export function AnalyticsExportDialog({
   const tableKeys: readonly string[] = ANALYTICS_EXPORT_TABLE_KEYS[dashboard];
   const operationsT = useTranslations('analytics.export.tables.operations');
   const financeT = useTranslations('analytics.export.tables.finance');
+  const caseMixT = useTranslations('analytics.export.tables.case-mix');
+  const pharmacyT = useTranslations('analytics.export.tables.pharmacy');
   const reportingT = useTranslations('analytics.export.tables.reporting');
   // The keys come from the same list the messages are written for; a spec
   // on the API side holds that list to the tables it registers.
   const labelTable = (key: string): string => {
-    if (dashboard === 'operations') {
-      return operationsT(key as Parameters<typeof operationsT>[0]);
+    switch (dashboard) {
+      case 'operations':
+        return operationsT(key as Parameters<typeof operationsT>[0]);
+      case 'finance':
+        return financeT(key as Parameters<typeof financeT>[0]);
+      case 'case-mix':
+        return caseMixT(key as Parameters<typeof caseMixT>[0]);
+      case 'pharmacy':
+        return pharmacyT(key as Parameters<typeof pharmacyT>[0]);
+      default:
+        return reportingT(key as Parameters<typeof reportingT>[0]);
     }
-    return dashboard === 'finance'
-      ? financeT(key as Parameters<typeof financeT>[0])
-      : reportingT(key as Parameters<typeof reportingT>[0]);
   };
   const [chosenKeys, setChosenKeys] = useState<readonly string[]>(tableKeys);
   const [error, setError] = useState<string | null>(null);

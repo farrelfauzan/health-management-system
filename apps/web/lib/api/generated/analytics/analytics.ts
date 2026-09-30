@@ -26,11 +26,14 @@ import type {
   AnalyticsExportControllerExportCaseMixV1Params,
   AnalyticsExportControllerExportFinanceV1Params,
   AnalyticsExportControllerExportOperationsV1Params,
+  AnalyticsExportControllerExportPharmacyV1Params,
   AnalyticsExportControllerExportReportingV1Params,
   AnalyticsFinanceControllerGetFinanceV1200,
   AnalyticsFinanceControllerGetFinanceV1Params,
   AnalyticsOperationsControllerGetOperationsV1200,
   AnalyticsOperationsControllerGetOperationsV1Params,
+  AnalyticsPharmacyControllerGetPharmacyV1200,
+  AnalyticsPharmacyControllerGetPharmacyV1Params,
   AnalyticsReportingHealthControllerGetReportingHealthV1200,
   AnalyticsReportingHealthControllerGetReportingHealthV1Params
 } from '../model';
@@ -428,6 +431,99 @@ export function useAnalyticsCaseMixControllerGetCaseMixV1<TData = Awaited<Return
 
 
 /**
+ * @summary Read the pharmacy dashboard
+ */
+export const analyticsPharmacyControllerGetPharmacyV1 = (
+    params: AnalyticsPharmacyControllerGetPharmacyV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsPharmacyControllerGetPharmacyV1200>(
+      {url: `/api/v1/analytics/pharmacy`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsPharmacyControllerGetPharmacyV1QueryKey = (params?: AnalyticsPharmacyControllerGetPharmacyV1Params,) => {
+    return [
+    `/api/v1/analytics/pharmacy`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsPharmacyControllerGetPharmacyV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError = unknown>(params: AnalyticsPharmacyControllerGetPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsPharmacyControllerGetPharmacyV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>> = ({ signal }) => analyticsPharmacyControllerGetPharmacyV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsPharmacyControllerGetPharmacyV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>>
+export type AnalyticsPharmacyControllerGetPharmacyV1QueryError = unknown
+
+
+export function useAnalyticsPharmacyControllerGetPharmacyV1<TData = Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError = unknown>(
+ params: AnalyticsPharmacyControllerGetPharmacyV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsPharmacyControllerGetPharmacyV1<TData = Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError = unknown>(
+ params: AnalyticsPharmacyControllerGetPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsPharmacyControllerGetPharmacyV1<TData = Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError = unknown>(
+ params: AnalyticsPharmacyControllerGetPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the pharmacy dashboard
+ */
+
+export function useAnalyticsPharmacyControllerGetPharmacyV1<TData = Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError = unknown>(
+ params: AnalyticsPharmacyControllerGetPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPharmacyControllerGetPharmacyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsPharmacyControllerGetPharmacyV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary Export the operations dashboard as CSV
  */
 export const analyticsExportControllerExportOperationsV1 = (
@@ -695,6 +791,99 @@ export function useAnalyticsExportControllerExportCaseMixV1<TData = Awaited<Retu
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsExportControllerExportCaseMixV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Export the pharmacy dashboard as CSV
+ */
+export const analyticsExportControllerExportPharmacyV1 = (
+    params: AnalyticsExportControllerExportPharmacyV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/analytics/pharmacy/export`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsExportControllerExportPharmacyV1QueryKey = (params?: AnalyticsExportControllerExportPharmacyV1Params,) => {
+    return [
+    `/api/v1/analytics/pharmacy/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsExportControllerExportPharmacyV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError = unknown>(params: AnalyticsExportControllerExportPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsExportControllerExportPharmacyV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>> = ({ signal }) => analyticsExportControllerExportPharmacyV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsExportControllerExportPharmacyV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>>
+export type AnalyticsExportControllerExportPharmacyV1QueryError = unknown
+
+
+export function useAnalyticsExportControllerExportPharmacyV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportPharmacyV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportPharmacyV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportPharmacyV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export the pharmacy dashboard as CSV
+ */
+
+export function useAnalyticsExportControllerExportPharmacyV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportPharmacyV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportPharmacyV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsExportControllerExportPharmacyV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
