@@ -694,3 +694,22 @@ export type AnalyticsPracticeData = AnalyticsDashboardData<
   AnalyticsPracticeSeriesPoint[],
   AnalyticsPracticeBreakdowns
 >;
+
+/**
+ * Visits so far today against the same weekday a week ago, up to the same
+ * clock time (P29-T16, PRD FR-FDN-09), for the home dashboard. A visit
+ * counts from when it was checked in (or registered, if it never was), so
+ * both days are cut the same way. `asOf` is the instant the count was taken.
+ */
+export type AnalyticsVisitsToday = {
+  date: string;
+  comparisonDate: string;
+  asOf: string;
+  visits: number;
+  comparisonVisits: number;
+  changePercent: number | null;
+};
+
+export type AnalyticsVisitsTodayResponse = {
+  data: AnalyticsVisitsToday;
+};

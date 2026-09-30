@@ -465,6 +465,19 @@ export const ANALYTICS_EXAMPLES = {
       },
     },
   },
+  visitsToday: {
+    response: {
+      data: {
+        date: '2026-09-29',
+        comparisonDate: '2026-09-22',
+        asOf: '2026-09-29T03:00:00.000Z',
+        visits: 42,
+        comparisonVisits: 38,
+        // `null` when last week had no visit by this time.
+        changePercent: optionalExample(10.5),
+      },
+    },
+  },
   reportingHealth: {
     response: {
       data: {

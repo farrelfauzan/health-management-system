@@ -62667,8 +62667,80 @@ paths:
       security:
         - bearer: []
       summary: Read the operations dashboard
-      tags:
+      tags: &a96
         - Analytics
+  /api/v1/analytics/operations/today:
+    get:
+      operationId: AnalyticsOperationsController_getVisitsToday_v1
+      parameters: []
+      responses:
+        "200":
+          description: For the home dashboard (P29-T16). `visits` counts visits
+            (registrations checked in or completed) that arrived today in the
+            clinic's time zone up to now; `comparisonVisits` counts those that
+            arrived on the same weekday a week earlier up to the same clock
+            time. A visit arrives when it is checked in, or when it was
+            registered if it never was, so both days are cut the same way.
+            `changePercent` is one decimal, `null` when last week had none by
+            then. Not cached.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                      comparisonDate:
+                        type: string
+                      asOf:
+                        type: string
+                      visits:
+                        type: integer
+                      comparisonVisits:
+                        type: integer
+                      changePercent:
+                        type: number
+                    required:
+                      - date
+                      - comparisonDate
+                      - asOf
+                      - visits
+                      - comparisonVisits
+                required:
+                  - data
+                example:
+                  data:
+                    date: 2026-09-29
+                    comparisonDate: 2026-09-22
+                    asOf: 2026-09-29T03:00:00.000Z
+                    visits: 42
+                    comparisonVisits: 38
+                    changePercent: 10.5
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Count visits so far today against the same weekday last week
+      tags: *a96
   /api/v1/analytics/reporting-health:
     get:
       operationId: AnalyticsReportingHealthController_getReportingHealth_v1
@@ -64690,7 +64762,7 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the operations dashboard as CSV
-      tags: &a96
+      tags: &a97
         - Analytics
   /api/v1/analytics/finance/export:
     get:
@@ -64753,7 +64825,7 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the finance dashboard as CSV
-      tags: *a96
+      tags: *a97
   /api/v1/analytics/case-mix/export:
     get:
       operationId: AnalyticsExportController_exportCaseMix_v1
@@ -64815,7 +64887,7 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the case-mix dashboard as CSV
-      tags: *a96
+      tags: *a97
   /api/v1/analytics/pharmacy/export:
     get:
       operationId: AnalyticsExportController_exportPharmacy_v1
@@ -64877,7 +64949,7 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the pharmacy dashboard as CSV
-      tags: *a96
+      tags: *a97
   /api/v1/analytics/laboratory/export:
     get:
       operationId: AnalyticsExportController_exportLaboratory_v1
@@ -64939,7 +65011,7 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the laboratory dashboard as CSV
-      tags: *a96
+      tags: *a97
   /api/v1/analytics/reporting/export:
     get:
       operationId: AnalyticsExportController_exportReporting_v1
@@ -65001,7 +65073,7 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the reporting status page as CSV
-      tags: *a96
+      tags: *a97
 info:
   title: HMS API
   description: Health Management System API

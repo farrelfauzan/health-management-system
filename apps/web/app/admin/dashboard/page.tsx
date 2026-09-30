@@ -1,10 +1,15 @@
 import { DashboardStatCards } from '#components/client/dashboard/dashboard-stat-cards';
+import { DashboardVisitsTodayCard } from '#components/client/dashboard/dashboard-visits-today-card';
 import { UpcomingAppointmentsCard } from '#components/client/dashboard/upcoming-appointments-card';
 import { DashboardHeader } from '#components/server/dashboard/dashboard-header';
 import { QuickActionsCard } from '#components/server/dashboard/quick-actions-card';
-import { RecentActivityCard } from '#components/server/dashboard/recent-activity-card';
+import { resolveAnalyticsAccess } from '#lib/analytics/resolve-analytics-access.server';
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  // P29-T16. The visits card reads the operations figures, so it shows only
+  // where the operations dashboard itself would open.
+  const access = await resolveAnalyticsAccess();
+  const canSeeVisitsToday = access.isEnabled && access.ability.can('read-operations', 'Analytics');
   return (
     <div className="space-y-6">
       <DashboardHeader />
@@ -13,7 +18,7 @@ export default function AdminDashboardPage() {
         <UpcomingAppointmentsCard />
         <div className="space-y-6">
           <QuickActionsCard />
-          <RecentActivityCard />
+          {canSeeVisitsToday ? <DashboardVisitsTodayCard /> : null}
         </div>
       </div>
     </div>

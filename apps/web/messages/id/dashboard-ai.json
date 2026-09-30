@@ -18,7 +18,7 @@
       "appointments": "Janji Temu",
       "upcomingWithinHour": "{count, plural, other {# jadwal dalam satu jam ke depan}}",
       "doctorsOnDuty": "Dokter Bertugas",
-      "specialtyBreakdown": "{surgeons, number} dokter bedah, {generalPractitioners, number} dokter umum",
+      "activeClinicians": "Dokter dan bidan aktif",
       "pendingRx": "Resep Tertunda",
       "awaitingVerification": "Menunggu verifikasi apoteker",
       "unableToLoad": "Tidak dapat dimuat"
@@ -51,14 +51,13 @@
       "generateReportDescription": "Data kinerja klinis harian",
       "reportUnavailable": "Fitur laporan akan tersedia pada fase berikutnya."
     },
-    "activity": {
-      "title": "Aktivitas Terbaru",
-      "emergencyAdmission": "Penerimaan pasien gawat darurat",
-      "emergencyAdmissionDescription": "Pasien Sarah Connor (Unit Jantung)",
-      "prescriptionVerified": "Resep telah diverifikasi",
-      "prescriptionVerifiedDescription": "Farmasi menyerahkan pesanan #RX-772",
-      "shiftHandover": "Serah terima sif selesai",
-      "shiftHandoverDescription": "Sif pagi mengambil alih operasional"
+    "visitsToday": {
+      "title": "Kunjungan hari ini",
+      "subtitle": "Sampai jam ini, dibanding {weekday} lalu pada jam yang sama",
+      "previous": "{previous} {weekday} lalu",
+      "noComparison": "Belum ada kunjungan {weekday} lalu sampai jam ini",
+      "link": "Lihat analitik",
+      "unableToLoad": "Tidak dapat dimuat"
     }
   },
   "aiAssistant": {

@@ -30,4 +30,16 @@ export class AnalyticsOperationsController {
   getOperations(@Query() filter: AnalyticsFilterQueryDto) {
     return this.analyticsOperationsService.getOperations(filter);
   }
+
+  @Get('today')
+  @Auth([{ action: 'read-operations', subject: 'Analytics' }])
+  @ApiEndpoint({
+    summary: 'Count visits so far today against the same weekday last week',
+    responseDescription:
+      "For the home dashboard (P29-T16). `visits` counts visits (registrations checked in or completed) that arrived today in the clinic's time zone up to now; `comparisonVisits` counts those that arrived on the same weekday a week earlier up to the same clock time. A visit arrives when it is checked in, or when it was registered if it never was, so both days are cut the same way. `changePercent` is one decimal, `null` when last week had none by then. Not cached.",
+    responseExample: ANALYTICS_EXAMPLES.visitsToday.response,
+  })
+  getVisitsToday() {
+    return this.analyticsOperationsService.getVisitsToday();
+  }
 }
