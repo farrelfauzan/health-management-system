@@ -279,6 +279,27 @@ The finance rows in the tables above time the Sprint 1 preview query (payments b
 
 **No index added.**
 
+## P29-T15 re-run: my practice (2026-09-30)
+
+**Ticket:** SJ-280.
+
+**Fixture:** unchanged.
+
+**How it was measured.** The API always narrows these queries to one clinician, which is the "one doctor" row below. The unfiltered rows read every clinician's encounters, so they are an upper bound. The poli filter doesn't apply to this dashboard, so the "one poli" rows match the unfiltered ones.
+
+**Result.** The practice queries meet the gate. The comparison period is included in every measured request.
+
+| Dashboard | Range | Filter | p50 ms | p95 ms | Gate ms | Verdict |
+|---|---|---|---:|---:|---:|---|
+| practice | 30 days | none | 38.6 | 43.1 | < 400 | meets |
+| practice | 30 days | one doctor | 23.1 | 28.5 | < 400 | meets |
+| practice | 12 months | none | 67.6 | 70.0 | < 1500 | meets |
+| practice | 12 months | one doctor | 19.7 | 20.7 | < 1500 | meets |
+
+**Slowest query.** Totals and buckets over 12 months with every clinician, at a p95 of 46 ms.
+
+**No index added.**
+
 ## Index decision: none added
 
 The ticket allows an index only where a hot path does a sequential scan.

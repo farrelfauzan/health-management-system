@@ -64360,6 +64360,275 @@ paths:
       summary: Read the laboratory dashboard
       tags:
         - Analytics
+  /api/v1/analytics/my-practice:
+    get:
+      operationId: AnalyticsPracticeController_getMyPractice_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+      responses:
+        "200":
+          description: "The signed-in doctor's or midwife's own practice, resolved from
+            their clinician profile: `doctorId`, `specialtyId` and `payerType`
+            in the query are ignored, so no colleague can be read.
+            `finishedEncounters` are their finished encounters started in the
+            range, per bucket in `series`; `medianConsultMinutes` is start to
+            end, between 0 and 8 hours. Appointments scheduled in the range give
+            `completedAppointments`, `noShowAppointments` and
+            `noShowRatePercent` (no-shows over completed plus no-shows).
+            `sessionUtilisationPercent` is appointments booked over the capacity
+            of their capped sessions. `topDiagnoses` is their ten most frequent
+            coded primary diagnoses, not suppressed, since every encounter
+            behind them is their own. Answers 403
+            `ANALYTICS_NO_CLINICIAN_PROFILE` for a user with no clinician
+            profile. Cached for five minutes per clinician."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          finishedEncounters:
+                            type: integer
+                          medianConsultMinutes:
+                            type: integer
+                          completedAppointments:
+                            type: integer
+                          noShowAppointments:
+                            type: integer
+                          noShowRatePercent:
+                            type: integer
+                          sessionCapacity:
+                            type: integer
+                          bookedAppointments:
+                            type: integer
+                          sessionUtilisationPercent:
+                            type: integer
+                        required:
+                          - finishedEncounters
+                          - completedAppointments
+                          - noShowAppointments
+                          - sessionCapacity
+                          - bookedAppointments
+                      series:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            bucket:
+                              type: string
+                            finishedEncounters:
+                              type: integer
+                          required:
+                            - bucket
+                            - finishedEncounters
+                      breakdowns:
+                        type: object
+                        properties:
+                          topDiagnoses:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                count:
+                                  type: integer
+                              required:
+                                - code
+                                - count
+                          codedEncounters:
+                            type: integer
+                        required:
+                          - topDiagnoses
+                          - codedEncounters
+                      comparison:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                          totals:
+                            type: object
+                            properties:
+                              finishedEncounters:
+                                type: integer
+                              medianConsultMinutes:
+                                type: integer
+                              completedAppointments:
+                                type: integer
+                              noShowAppointments:
+                                type: integer
+                              noShowRatePercent:
+                                type: number
+                              sessionCapacity:
+                                type: integer
+                              bookedAppointments:
+                                type: integer
+                              sessionUtilisationPercent:
+                                type: integer
+                            required:
+                              - finishedEncounters
+                              - medianConsultMinutes
+                              - completedAppointments
+                              - noShowAppointments
+                              - noShowRatePercent
+                              - sessionCapacity
+                              - bookedAppointments
+                              - sessionUtilisationPercent
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                bucket:
+                                  type: string
+                                finishedEncounters:
+                                  type: integer
+                              required:
+                                - bucket
+                                - finishedEncounters
+                        required:
+                          - from
+                          - to
+                          - totals
+                          - series
+                    required:
+                      - totals
+                      - series
+                      - breakdowns
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
+                        type: string
+                    required:
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    totals:
+                      finishedEncounters: 286
+                      medianConsultMinutes: 12
+                      completedAppointments: 219
+                      noShowAppointments: 19
+                      noShowRatePercent: 8
+                      sessionCapacity: 280
+                      bookedAppointments: 241
+                      sessionUtilisationPercent: 86
+                    series:
+                      - bucket: 2026-09-01
+                        finishedEncounters: 11
+                    breakdowns:
+                      topDiagnoses:
+                        - code: J06.9
+                          name: ISPA akut, tidak spesifik
+                          count: 51
+                      codedEncounters: 270
+                    comparison:
+                      from: 2026-08-01
+                      to: 2026-08-31
+                      totals:
+                        finishedEncounters: 269
+                        medianConsultMinutes: 12
+                        completedAppointments: 204
+                        noShowAppointments: 20
+                        noShowRatePercent: 8.9
+                        sessionCapacity: 280
+                        bookedAppointments: 230
+                        sessionUtilisationPercent: 82
+                      series:
+                        - bucket: 2026-08-01
+                          finishedEncounters: 9
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-30T07:32:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the signed-in clinician's own practice
+      tags:
+        - Analytics
   /api/v1/analytics/operations/export:
     get:
       operationId: AnalyticsExportController_exportOperations_v1

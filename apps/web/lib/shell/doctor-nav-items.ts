@@ -94,4 +94,19 @@ export const DOCTOR_NAV_SECTIONS: AdminNavSection[] = [
       },
     ],
   },
+  {
+    // P29-T15. The clinician's own practice, on `analytics.read-practice:own`.
+    // Hidden with the `analytics` entitlement (catalog navHrefs).
+    label: 'Analytics',
+    labelKey: 'analytics',
+    items: [
+      {
+        href: '/doctor/analytics',
+        label: 'My practice',
+        labelKey: 'myPractice',
+        icon: 'monitoring',
+        ability: { action: 'read-practice', subject: 'Analytics' },
+      },
+    ],
+  },
 ];

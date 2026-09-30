@@ -7,6 +7,7 @@ import { AnalyticsFinanceController } from './controller/analytics-finance.contr
 import { AnalyticsLaboratoryController } from './controller/analytics-laboratory.controller';
 import { AnalyticsOperationsController } from './controller/analytics-operations.controller';
 import { AnalyticsPharmacyController } from './controller/analytics-pharmacy.controller';
+import { AnalyticsPracticeController } from './controller/analytics-practice.controller';
 import { AnalyticsReportingHealthController } from './controller/analytics-reporting-health.controller';
 import { AnalyticsCaseMixRepository } from './repository/analytics-case-mix.repository';
 import { AnalyticsFinanceRepository } from './repository/analytics-finance.repository';
@@ -14,6 +15,7 @@ import { AnalyticsLaboratoryRepository } from './repository/analytics-laboratory
 import { AnalyticsOperationsDepthRepository } from './repository/analytics-operations-depth.repository';
 import { AnalyticsOperationsRepository } from './repository/analytics-operations.repository';
 import { AnalyticsPharmacyRepository } from './repository/analytics-pharmacy.repository';
+import { AnalyticsPracticeRepository } from './repository/analytics-practice.repository';
 import { AnalyticsQueryRepository } from './repository/analytics-query.repository';
 import { AnalyticsReportingHealthRepository } from './repository/analytics-reporting-health.repository';
 import { AnalyticsCacheService } from './service/analytics-cache.service';
@@ -23,6 +25,7 @@ import { AnalyticsFinanceService } from './service/analytics-finance.service';
 import { AnalyticsLaboratoryService } from './service/analytics-laboratory.service';
 import { AnalyticsOperationsService } from './service/analytics-operations.service';
 import { AnalyticsPharmacyService } from './service/analytics-pharmacy.service';
+import { AnalyticsPracticeService } from './service/analytics-practice.service';
 import { AnalyticsRangeService } from './service/analytics-range.service';
 import { AnalyticsReportingHealthService } from './service/analytics-reporting-health.service';
 
@@ -41,6 +44,7 @@ import { AnalyticsReportingHealthService } from './service/analytics-reporting-h
     AnalyticsCaseMixController,
     AnalyticsPharmacyController,
     AnalyticsLaboratoryController,
+    AnalyticsPracticeController,
     AnalyticsExportController,
   ],
   providers: [
@@ -60,6 +64,8 @@ import { AnalyticsReportingHealthService } from './service/analytics-reporting-h
     AnalyticsPharmacyRepository,
     AnalyticsLaboratoryService,
     AnalyticsLaboratoryRepository,
+    AnalyticsPracticeService,
+    AnalyticsPracticeRepository,
     AnalyticsExportService,
   ],
 })

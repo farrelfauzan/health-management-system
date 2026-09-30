@@ -37,6 +37,8 @@ import type {
   AnalyticsOperationsControllerGetOperationsV1Params,
   AnalyticsPharmacyControllerGetPharmacyV1200,
   AnalyticsPharmacyControllerGetPharmacyV1Params,
+  AnalyticsPracticeControllerGetMyPracticeV1200,
+  AnalyticsPracticeControllerGetMyPracticeV1Params,
   AnalyticsReportingHealthControllerGetReportingHealthV1200,
   AnalyticsReportingHealthControllerGetReportingHealthV1Params
 } from '../model';
@@ -608,6 +610,99 @@ export function useAnalyticsLaboratoryControllerGetLaboratoryV1<TData = Awaited<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsLaboratoryControllerGetLaboratoryV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Read the signed-in clinician's own practice
+ */
+export const analyticsPracticeControllerGetMyPracticeV1 = (
+    params: AnalyticsPracticeControllerGetMyPracticeV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsPracticeControllerGetMyPracticeV1200>(
+      {url: `/api/v1/analytics/my-practice`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsPracticeControllerGetMyPracticeV1QueryKey = (params?: AnalyticsPracticeControllerGetMyPracticeV1Params,) => {
+    return [
+    `/api/v1/analytics/my-practice`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsPracticeControllerGetMyPracticeV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError = unknown>(params: AnalyticsPracticeControllerGetMyPracticeV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsPracticeControllerGetMyPracticeV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>> = ({ signal }) => analyticsPracticeControllerGetMyPracticeV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsPracticeControllerGetMyPracticeV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>>
+export type AnalyticsPracticeControllerGetMyPracticeV1QueryError = unknown
+
+
+export function useAnalyticsPracticeControllerGetMyPracticeV1<TData = Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError = unknown>(
+ params: AnalyticsPracticeControllerGetMyPracticeV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsPracticeControllerGetMyPracticeV1<TData = Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError = unknown>(
+ params: AnalyticsPracticeControllerGetMyPracticeV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsPracticeControllerGetMyPracticeV1<TData = Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError = unknown>(
+ params: AnalyticsPracticeControllerGetMyPracticeV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the signed-in clinician's own practice
+ */
+
+export function useAnalyticsPracticeControllerGetMyPracticeV1<TData = Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError = unknown>(
+ params: AnalyticsPracticeControllerGetMyPracticeV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsPracticeControllerGetMyPracticeV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsPracticeControllerGetMyPracticeV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

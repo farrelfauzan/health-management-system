@@ -185,6 +185,7 @@ export const FEATURE_CATALOG: readonly FeatureCatalogEntry[] = [
       '/admin/analytics/pharmacy',
       '/admin/analytics/laboratory',
       '/admin/analytics/reporting',
+      '/doctor/analytics',
     ],
   },
 ];

@@ -1,6 +1,7 @@
 import { buildAppAbility, ADMIN_PORTAL_ADMIN_RULES } from '@hms/ui';
 import { describe, expect, it } from 'vitest';
 
+import { DOCTOR_NAV_SECTIONS } from './doctor-nav-items';
 import { filterNavSections } from './filter-nav-sections';
 import { resolveAppAbilityRules } from '#lib/rbac/app-ability.server';
 
@@ -47,5 +48,19 @@ describe('filterNavSections — analytics', () => {
     const sections = filterNavSections(ability, undefined, ['/admin/analytics/laboratory']);
 
     expect(sections.some((section) => section.labelKey === 'analytics')).toBe(false);
+  });
+
+  it('shows a clinician "My practice" in the doctor shell, and a pharmacist nothing there', () => {
+    function listDoctorAnalyticsHrefs(permissions: string[]): string[] {
+      const ability = buildAppAbility(resolveAppAbilityRules({ permissions }));
+      return filterNavSections(ability, DOCTOR_NAV_SECTIONS)
+        .filter((section) => section.labelKey === 'analytics')
+        .flatMap((section) => section.items.map((item) => item.href));
+    }
+
+    expect(listDoctorAnalyticsHrefs(['analytics.read-practice:own'])).toEqual([
+      '/doctor/analytics',
+    ]);
+    expect(listDoctorAnalyticsHrefs(['analytics.read-pharmacy:any'])).toEqual([]);
   });
 });

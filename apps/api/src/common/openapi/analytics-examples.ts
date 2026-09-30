@@ -417,6 +417,54 @@ export const ANALYTICS_EXAMPLES = {
       },
     },
   },
+  practice: {
+    response: {
+      data: {
+        totals: {
+          finishedEncounters: 286,
+          // `null` with no finished encounter between 0 and 8 hours long.
+          medianConsultMinutes: optionalExample(12),
+          completedAppointments: 219,
+          noShowAppointments: 19,
+          // `null` with no appointment kept or missed.
+          noShowRatePercent: optionalExample(8),
+          sessionCapacity: 280,
+          bookedAppointments: 241,
+          // `null` with no capped session.
+          sessionUtilisationPercent: optionalExample(86),
+        },
+        series: [{ bucket: '2026-09-01', finishedEncounters: 11 }],
+        breakdowns: {
+          topDiagnoses: [
+            { code: 'J06.9', name: optionalExample('ISPA akut, tidak spesifik'), count: 51 },
+          ],
+          codedEncounters: 270,
+        },
+        comparison: optionalExample({
+          from: '2026-08-01',
+          to: '2026-08-31',
+          totals: {
+            finishedEncounters: 269,
+            medianConsultMinutes: 12,
+            completedAppointments: 204,
+            noShowAppointments: 20,
+            noShowRatePercent: 8.9,
+            sessionCapacity: 280,
+            bookedAppointments: 230,
+            sessionUtilisationPercent: 82,
+          },
+          series: [{ bucket: '2026-08-01', finishedEncounters: 9 }],
+        }),
+      },
+      meta: {
+        from: '2026-09-01',
+        to: '2026-09-30',
+        timezone: 'Asia/Jakarta',
+        granularity: 'day',
+        generatedAt: '2026-09-30T07:32:00.000Z',
+      },
+    },
+  },
   reportingHealth: {
     response: {
       data: {

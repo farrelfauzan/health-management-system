@@ -619,6 +619,41 @@
           "EXTERNAL_REFERRAL": "Rujukan luar"
         }
       }
+    },
+    "practice": {
+      "title": "Praktik saya",
+      "subtitle": "Pasien, jadwal, dan diagnosis dari pemeriksaan Anda sendiri",
+      "note": "Halaman ini hanya menampilkan pemeriksaan dan jadwal Anda sendiri.",
+      "noProfile": "Akun ini belum terhubung dengan profil dokter atau bidan, jadi belum ada praktik untuk ditampilkan.",
+      "kpi": {
+        "finished": "Pasien saya periksa",
+        "consult": "Median lama periksa",
+        "minutes": "{value} mnt",
+        "noShow": "No-show sesi saya",
+        "noShowHelper": "{noShows} dari {appointments} janji temu",
+        "utilisation": "Keterisian sesi",
+        "utilisationHelper": "{booked} dari {capacity} kuota"
+      },
+      "trend": {
+        "title": {
+          "day": "Pasien per hari",
+          "week": "Pasien per minggu",
+          "month": "Pasien per bulan"
+        },
+        "subtitle": "Pemeriksaan yang saya selesaikan",
+        "ariaLabel": "Pemeriksaan selesai {current} dibanding {previous}",
+        "ariaLabelSingle": "Pemeriksaan selesai {current}",
+        "tableCaption": "Pemeriksaan selesai per periode",
+        "bucket": "Periode",
+        "current": "Periode ini",
+        "previous": "Pembanding"
+      },
+      "diagnoses": {
+        "title": "Diagnosis terbanyak saya",
+        "subtitle": "Dari pemeriksaan saya sendiri",
+        "empty": "Belum ada pemeriksaan berkode pada periode ini.",
+        "footnote": "Dari {coded} pemeriksaan dengan diagnosis utama berkode"
+      }
     }
   }
 }

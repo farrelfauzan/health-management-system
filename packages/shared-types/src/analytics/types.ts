@@ -14,6 +14,7 @@ import type {
   AnalyticsLabOrderSource,
   AnalyticsLaboratoryTest,
   AnalyticsOutstandingAgeBucket,
+  AnalyticsPracticeDiagnosis,
   AnalyticsPharmacyExpiryWindow,
   AnalyticsPharmacyMedication,
   AnalyticsReportingReadiness,
@@ -585,4 +586,48 @@ export type BuildAnalyticsLaboratoryDataParams = {
 export type ReadLaboratoryPeriodParams = {
   range: AnalyticsRange;
   filter: AnalyticsFilterInput;
+};
+
+/** Practice rows as the database returns them (P29-T15). */
+export type AnalyticsPracticeTotalsRow = {
+  finishedEncounters: number;
+  codedEncounters: number;
+  medianConsultMinutes: number | null;
+};
+
+export type AnalyticsPracticeBucketRow = {
+  bucket: string;
+  finishedEncounters: number;
+};
+
+export type AnalyticsPracticeAppointmentRow = {
+  completedAppointments: number;
+  noShowAppointments: number;
+};
+
+export type AnalyticsPracticeDiagnosisRow = AnalyticsPracticeDiagnosis;
+
+/** Every practice figure for one period, as read in one transaction. */
+export type AnalyticsPracticeSnapshot = {
+  totals: AnalyticsPracticeTotalsRow;
+  buckets: AnalyticsPracticeBucketRow[];
+  appointments: AnalyticsPracticeAppointmentRow;
+  sessions: AnalyticsSessionRow;
+  diagnoses: AnalyticsPracticeDiagnosisRow[];
+};
+
+export type AnalyticsPracticePeriodSnapshot = {
+  range: AnalyticsRange;
+  snapshot: AnalyticsPracticeSnapshot;
+};
+
+export type BuildAnalyticsPracticeDataParams = {
+  current: AnalyticsPracticePeriodSnapshot;
+  comparison?: AnalyticsPracticePeriodSnapshot;
+};
+
+/** A period of one clinician's practice, whose profile the service resolved from the session. */
+export type ReadPracticePeriodParams = {
+  range: AnalyticsRange;
+  doctorId: string;
 };
