@@ -578,3 +578,71 @@ export type AnalyticsPharmacyData = AnalyticsDashboardData<
   AnalyticsPharmacySeriesPoint[],
   AnalyticsPharmacyBreakdowns
 >;
+
+/**
+ * The laboratory headline (P29-T14, PRD FR-LAB-01, 02 and 04). An order
+ * counts in the period it was placed, under the status it has now:
+ * `released`, `inProgress` (ordered, collected, being run or resulted but
+ * not yet released), `sentOut` (run by an outside lab, so never released
+ * here) and `cancelled` add up to `orders`. Turnaround runs from order to
+ * release, over released orders. The recollection rate is over orders run
+ * here; the cancellation rate is over every order.
+ */
+export type AnalyticsLaboratoryTotals = {
+  orders: number;
+  released: number;
+  inProgress: number;
+  sentOut: number;
+  cancelled: number;
+  medianTurnaroundMinutes: number | null;
+  p90TurnaroundMinutes: number | null;
+  recollectedOrders: number;
+  recollectionRatePercent: number | null;
+  cancellationRatePercent: number | null;
+};
+
+/** Orders placed and released in one bucket; `bucket` is its first local date. */
+export type AnalyticsLaboratorySeriesPoint = {
+  bucket: string;
+  orders: number;
+  released: number;
+};
+
+/** Where a lab order came from (PRD FR-LAB-01). */
+export type AnalyticsLabOrderSource = 'ENCOUNTER' | 'WALK_IN' | 'EXTERNAL_REFERRAL';
+
+export type AnalyticsLaboratorySource = {
+  source: AnalyticsLabOrderSource;
+  orders: number;
+};
+
+/**
+ * One of the ten tests ordered most (PRD FR-LAB-03), with its turnaround
+ * (FR-LAB-02): the release time of the orders it was on, since the lab
+ * releases an order whole. `null` when none of them is released yet.
+ */
+export type AnalyticsLaboratoryTest = {
+  labTestId: string;
+  code: string;
+  name: string;
+  orders: number;
+  releasedOrders: number;
+  medianTurnaroundMinutes: number | null;
+  p90TurnaroundMinutes: number | null;
+};
+
+export type AnalyticsLaboratoryBreakdowns = {
+  sources: AnalyticsLaboratorySource[];
+  tests: AnalyticsLaboratoryTest[];
+};
+
+/**
+ * The laboratory dashboard (P29-T14). Test counts are orders, not patients,
+ * so nothing here is suppressed (NFR-AN-03 covers case mix and
+ * demographics); no patient, order number or result appears.
+ */
+export type AnalyticsLaboratoryData = AnalyticsDashboardData<
+  AnalyticsLaboratoryTotals,
+  AnalyticsLaboratorySeriesPoint[],
+  AnalyticsLaboratoryBreakdowns
+>;

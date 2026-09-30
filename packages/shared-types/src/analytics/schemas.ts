@@ -70,6 +70,7 @@ export const ANALYTICS_EXPORT_DASHBOARDS = [
   'finance',
   'case-mix',
   'pharmacy',
+  'laboratory',
   'reporting',
 ] as const;
 
@@ -101,6 +102,7 @@ export const ANALYTICS_EXPORT_TABLE_KEYS = {
   ],
   'case-mix': ['summary', 'top-diagnoses', 'groups', 'coding-by-poli', 'top-procedures'],
   pharmacy: ['summary', 'prescriptions-trend', 'top-medications', 'reorder', 'expiring'],
+  laboratory: ['summary', 'orders-trend', 'turnaround-by-test', 'sources'],
   reporting: ['satusehat', 'bpjs', 'readiness'],
 } as const;
 

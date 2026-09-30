@@ -42,6 +42,7 @@ describe('AnalyticsExportDialog', () => {
   it.each([
     ['case-mix', '10 diagnosis utama terbanyak'],
     ['pharmacy', 'Perlu dipesan ulang'],
+    ['laboratory', 'Waktu hasil per pemeriksaan'],
   ] as const)('names the %s tables in words, not message keys', (dashboard, label) => {
     renderDialog(vi.fn(), dashboard);
 

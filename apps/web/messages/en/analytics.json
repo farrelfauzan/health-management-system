@@ -414,6 +414,12 @@
           "reorder": "Needs reordering",
           "expiring": "Expiring soon"
         },
+        "laboratory": {
+          "summary": "Summary",
+          "orders-trend": "Orders by period",
+          "turnaround-by-test": "Turnaround by test",
+          "sources": "Order source"
+        },
         "reporting": {
           "satusehat": "SATUSEHAT",
           "bpjs": "BPJS PCare and Antrean",
@@ -569,6 +575,49 @@
         "IU": "IU",
         "TETES": "drops",
         "SUPOSITORIA": "suppositories"
+      }
+    },
+    "laboratory": {
+      "kpi": {
+        "orders": "Lab orders",
+        "median": "Median turnaround",
+        "medianHelper": "Order to released result",
+        "p90": "P90 turnaround",
+        "recollection": "Samples retaken",
+        "recollectionHelper": "Cancelled {cancelled}"
+      },
+      "duration": {
+        "minutes": "{minutes} min",
+        "hours": "{hours} h",
+        "hoursMinutes": "{hours} h {minutes} min"
+      },
+      "tests": {
+        "title": "Turnaround by test",
+        "subtitle": "Median and p90, order to release",
+        "test": "Test",
+        "orders": "Orders",
+        "median": "Median",
+        "p90": "P90",
+        "pending": "Not released yet",
+        "empty": "No lab order was placed in this period."
+      },
+      "status": {
+        "title": "Order status",
+        "subtitle": "Orders placed in this period",
+        "ariaLabel": "Lab orders split by their status now",
+        "empty": "No lab order was placed in this period.",
+        "statuses": {
+          "released": "Released",
+          "inProgress": "In progress",
+          "sentOut": "Sent to an outside lab",
+          "cancelled": "Cancelled"
+        },
+        "sourcesTitle": "Order source",
+        "sources": {
+          "ENCOUNTER": "From a consultation",
+          "WALK_IN": "Walk-in",
+          "EXTERNAL_REFERRAL": "Outside referral"
+        }
       }
     }
   }

@@ -357,6 +357,66 @@ export const ANALYTICS_EXAMPLES = {
       },
     },
   },
+  laboratory: {
+    response: {
+      data: {
+        totals: {
+          orders: 486,
+          released: 452,
+          inProgress: 18,
+          // Run by an outside lab; never released here.
+          sentOut: 0,
+          cancelled: 16,
+          // `null` until an order is released.
+          medianTurnaroundMinutes: optionalExample(52),
+          p90TurnaroundMinutes: optionalExample(130),
+          recollectedOrders: 11,
+          // `null` with nothing to divide by.
+          recollectionRatePercent: optionalExample(2.3),
+          cancellationRatePercent: optionalExample(3.3),
+        },
+        series: [{ bucket: '2026-09-01', orders: 17, released: 16 }],
+        breakdowns: {
+          sources: [{ source: 'ENCOUNTER', orders: 371 }],
+          tests: [
+            {
+              labTestId: '9f4a3d5c-6e7b-4a0f-c2d1-3e4f5a6b7c8d',
+              code: 'CBC',
+              name: 'Darah lengkap',
+              orders: 168,
+              releasedOrders: 160,
+              medianTurnaroundMinutes: optionalExample(45),
+              p90TurnaroundMinutes: optionalExample(80),
+            },
+          ],
+        },
+        comparison: optionalExample({
+          from: '2026-08-01',
+          to: '2026-08-31',
+          totals: {
+            orders: 464,
+            released: 430,
+            inProgress: 12,
+            sentOut: 0,
+            cancelled: 22,
+            medianTurnaroundMinutes: 58,
+            p90TurnaroundMinutes: 115,
+            recollectedOrders: 12,
+            recollectionRatePercent: 2.7,
+            cancellationRatePercent: 4.7,
+          },
+          series: [{ bucket: '2026-08-01', orders: 15, released: 14 }],
+        }),
+      },
+      meta: {
+        from: '2026-09-01',
+        to: '2026-09-30',
+        timezone: 'Asia/Jakarta',
+        granularity: 'day',
+        generatedAt: '2026-09-30T07:32:00.000Z',
+      },
+    },
+  },
   reportingHealth: {
     response: {
       data: {

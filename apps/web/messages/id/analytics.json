@@ -414,6 +414,12 @@
           "reorder": "Perlu dipesan ulang",
           "expiring": "Mendekati kedaluwarsa"
         },
+        "laboratory": {
+          "summary": "Ringkasan",
+          "orders-trend": "Order per periode",
+          "turnaround-by-test": "Waktu hasil per pemeriksaan",
+          "sources": "Asal order"
+        },
         "reporting": {
           "satusehat": "SATUSEHAT",
           "bpjs": "BPJS PCare dan Antrean",
@@ -569,6 +575,49 @@
         "IU": "IU",
         "TETES": "tetes",
         "SUPOSITORIA": "supositoria"
+      }
+    },
+    "laboratory": {
+      "kpi": {
+        "orders": "Order lab",
+        "median": "Median waktu hasil",
+        "medianHelper": "Order sampai hasil dirilis",
+        "p90": "P90 waktu hasil",
+        "recollection": "Ambil ulang sampel",
+        "recollectionHelper": "Batal {cancelled}"
+      },
+      "duration": {
+        "minutes": "{minutes} mnt",
+        "hours": "{hours} j",
+        "hoursMinutes": "{hours} j {minutes} mnt"
+      },
+      "tests": {
+        "title": "Waktu hasil per pemeriksaan",
+        "subtitle": "Median dan p90, order sampai rilis",
+        "test": "Pemeriksaan",
+        "orders": "Order",
+        "median": "Median",
+        "p90": "P90",
+        "pending": "Belum dirilis",
+        "empty": "Belum ada order lab pada periode ini."
+      },
+      "status": {
+        "title": "Status order",
+        "subtitle": "Order yang dibuat pada periode ini",
+        "ariaLabel": "Pembagian order lab menurut statusnya sekarang",
+        "empty": "Belum ada order lab pada periode ini.",
+        "statuses": {
+          "released": "Dirilis",
+          "inProgress": "Dalam proses",
+          "sentOut": "Dikirim ke lab luar",
+          "cancelled": "Dibatalkan"
+        },
+        "sourcesTitle": "Asal order",
+        "sources": {
+          "ENCOUNTER": "Dari pemeriksaan",
+          "WALK_IN": "Datang langsung",
+          "EXTERNAL_REFERRAL": "Rujukan luar"
+        }
       }
     }
   }

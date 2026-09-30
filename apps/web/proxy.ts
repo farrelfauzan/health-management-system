@@ -39,13 +39,14 @@ const LOGIN_PATH = '/login';
 const ADMIN_HOME_PATH = '/admin/dashboard';
 const DOCTOR_HOME_PATH = '/doctor/dashboard';
 const PHARMACIST_HOME_PATH = '/admin/pharmacy';
+const ANALYTICS_INDEX_PATH = '/admin/analytics';
 /**
  * P29-T13. The whole of a pharmacist-only shell: the workspace, and the
  * pharmacy analytics a pharmacist holds `analytics.read-pharmacy` for.
  * `/admin/analytics` itself only redirects to the first dashboard the viewer
  * may read, which for a pharmacist is that one.
  */
-const PHARMACIST_PATHS = [PHARMACIST_HOME_PATH, '/admin/analytics', '/admin/analytics/pharmacy'];
+const PHARMACIST_PATHS = [PHARMACIST_HOME_PATH, ANALYTICS_INDEX_PATH, '/admin/analytics/pharmacy'];
 const LABORATORY_HOME_PATH = '/admin/laboratory';
 /**
  * P18-T08. The whole of a technician's shell: the worklist and its order
@@ -53,7 +54,13 @@ const LABORATORY_HOME_PATH = '/admin/laboratory';
  * cards call patient and appointment endpoints a bench account cannot read,
  * and a home page that greets somebody with three 403s is not a home page.
  */
-const LAB_TECHNICIAN_PATH_PREFIXES = [LABORATORY_HOME_PATH, '/admin/settings/laboratory'];
+const LAB_TECHNICIAN_PATH_PREFIXES = [
+  LABORATORY_HOME_PATH,
+  '/admin/settings/laboratory',
+  // P29-T14. The laboratory dashboard, which a technician holds
+  // `analytics.read-lab` for.
+  '/admin/analytics/laboratory',
+];
 const PORTAL_HOME_PATH = '/portal/registrations';
 const DOCTOR_PATH_PREFIX = '/doctor';
 const PORTAL_PATH_PREFIX = '/portal';
@@ -228,9 +235,13 @@ export function proxy(request: NextRequest) {
   }
 
   if (hasTechnicianOnlySession) {
-    const isLaboratoryPath = LAB_TECHNICIAN_PATH_PREFIXES.some(
-      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-    );
+    // `/admin/analytics` itself only redirects to the first dashboard the
+    // viewer may read, which for a technician is the laboratory one.
+    const isLaboratoryPath =
+      pathname === ANALYTICS_INDEX_PATH ||
+      LAB_TECHNICIAN_PATH_PREFIXES.some(
+        (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+      );
     return isLaboratoryPath ? NextResponse.next() : redirectToHome();
   }
 

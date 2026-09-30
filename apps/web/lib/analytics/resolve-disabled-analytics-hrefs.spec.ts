@@ -14,6 +14,12 @@ describe('resolveDisabledAnalyticsHrefs', () => {
     expect(actual).toEqual(['/admin/analytics/pharmacy']);
   });
 
+  it('hides Laboratorium when the laboratory module is off', () => {
+    const actual = resolveDisabledAnalyticsHrefs(buildClaims(['laboratory']));
+
+    expect(actual).toEqual(['/admin/analytics/laboratory']);
+  });
+
   it('hides nothing with every module on, or with no feature information at all', () => {
     expect(resolveDisabledAnalyticsHrefs(buildClaims([]))).toEqual([]);
     expect(resolveDisabledAnalyticsHrefs(null)).toEqual([]);
