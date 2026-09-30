@@ -108,6 +108,8 @@ This contradicts `ai-chatbot.md` §2.2, which lists "diagnosis or differential d
 
 ## 3. Rooms do not exist yet
 
+> **Outdated (2026-09-30, P29-T17).** Rooms, beds and admissions now exist: `Ward`, `Room`, `Bed`, `Admission` and `BedAssignment` in `schema.prisma`, owned by the `room-management` and `admission-flow` modules behind the `room-management` feature. The operations dashboard already reports admissions, discharges, average length of stay and bed occupancy from them (P29-T11). The statements below that inpatient analytics has "no data source" no longer hold; the decision not to give the chatbot a room tool stands until someone revisits it with the domain now in place.
+
 There is no `Room`, `Bed`, or `Ward` model in `schema.prisma`. Room availability is not a tool that is missing — it is a domain that has never been built. Nothing reads it, nothing writes it, and the appointment module schedules against practice sessions and a clinic timezone, not physical rooms.
 
 So "which rooms are free" needs, in order: a data model, a module that owns occupancy, a REST surface with its own RBAC, and only then a tool wrapping it. That is a separate phase, sized like `pharmacy-flow`, not a line item here.
