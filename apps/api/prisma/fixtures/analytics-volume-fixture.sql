@@ -9,7 +9,8 @@
 -- Asia/Jakarta:
 --   4 poli, 8 clinicians, 15 000 patients
 --   ~47 000 appointments (~40 000 kept, ~7 000 no-show or cancelled), 52 000 registrations (50 000 visits + 2 000 cancelled)
---   50 000 encounters with ~65 000 diagnoses, 35 000 prescriptions
+--   50 000 encounters with ~65 000 diagnoses (~90% of primaries ICD-10 coded),
+--   ~7 500 procedures, 35 000 prescriptions
 --   60 000 invoices with 120 000 lines and ~56 000 payments (one per paid
 --   invoice, the schema's rule), 8 000 lab orders
 --   a payer on every visit: BPJS where a KUNJUNGAN was sent, else mostly general
@@ -178,20 +179,38 @@ SELECT
 FROM fixture_visit
 WHERE visit_no <= 50000;
 
--- A primary diagnosis on ~97% of encounters from a skewed list of 40 codes,
--- and a secondary on ~30%.
-INSERT INTO diagnoses (id, encounter_id, code, display, type, recorded_at, created_at, updated_at)
+-- A primary diagnosis on ~97% of encounters, skewed towards a few codes of
+-- the ICD-10 catalog seed.sql curates. ~90% of encounters carry a coded one;
+-- the rest were typed as free text with no code behind it, which the case-mix
+-- dashboard counts as uncoded (P29-T12).
+CREATE TEMP TABLE fixture_icd10 AS
+SELECT id, code, COALESCE(display_indonesian, display) AS display,
+       row_number() OVER (ORDER BY code) AS code_no
+FROM icd10_codes
+WHERE deleted_at IS NULL AND is_active;
+
+CREATE TEMP TABLE fixture_primary AS
+SELECT v.encounter_id, v.registered_at, v.roll_extra,
+       1 + floor(power(random(), 2) * k.code_count)::int AS code_no
+FROM fixture_visit v
+CROSS JOIN (SELECT count(*) AS code_count FROM fixture_icd10) k
+WHERE v.visit_no <= 50000 AND v.roll_extra < 0.97;
+
+INSERT INTO diagnoses (
+  id, encounter_id, icd10_code_id, code, display, type, recorded_at, created_at, updated_at
+)
 SELECT
   gen_random_uuid(),
-  encounter_id,
-  'X' || lpad((1 + floor(power(random(), 2) * 40))::int::text, 2, '0'),
-  'Fixture diagnosis',
+  p.encounter_id,
+  CASE WHEN p.roll_extra < 0.90 THEN c.id END,
+  CASE WHEN p.roll_extra < 0.90 THEN c.code ELSE 'FREE' END,
+  CASE WHEN p.roll_extra < 0.90 THEN c.display ELSE 'Fixture diagnosis typed as free text' END,
   'PRIMARY'::"DiagnosisType",
-  registered_at + interval '35 minutes',
-  registered_at,
-  registered_at
-FROM fixture_visit
-WHERE visit_no <= 50000 AND roll_extra < 0.97;
+  p.registered_at + interval '35 minutes',
+  p.registered_at,
+  p.registered_at
+FROM fixture_primary p
+JOIN fixture_icd10 c ON c.code_no = p.code_no;
 
 INSERT INTO diagnoses (id, encounter_id, code, display, type, recorded_at, created_at, updated_at)
 SELECT
@@ -205,6 +224,29 @@ SELECT
   registered_at
 FROM fixture_visit
 WHERE visit_no <= 50000 AND roll_extra < 0.30;
+
+-- A procedure on ~15% of encounters, from the ICD-9-CM catalog seed.sql
+-- curates, for the case-mix dashboard's top procedures (P29-T12).
+CREATE TEMP TABLE fixture_icd9 AS
+SELECT id, code, COALESCE(display_indonesian, display) AS display,
+       row_number() OVER (ORDER BY code) AS code_no
+FROM icd9cm_codes
+WHERE deleted_at IS NULL AND is_active;
+
+CREATE TEMP TABLE fixture_procedure AS
+SELECT v.encounter_id, v.registered_at,
+       1 + floor(power(random(), 2) * k.code_count)::int AS code_no
+FROM fixture_visit v
+CROSS JOIN (SELECT count(*) AS code_count FROM fixture_icd9) k
+WHERE v.visit_no <= 50000 AND v.roll_extra >= 0.30 AND v.roll_extra < 0.45;
+
+INSERT INTO procedures (
+  id, encounter_id, icd9cm_code_id, code, display, performed_at, created_at, updated_at
+)
+SELECT gen_random_uuid(), p.encounter_id, c.id, c.code, c.display,
+       p.registered_at + interval '40 minutes', p.registered_at, p.registered_at
+FROM fixture_procedure p
+JOIN fixture_icd9 c ON c.code_no = p.code_no;
 
 INSERT INTO prescriptions (
   id, patient_id, doctor_id, encounter_id, status, fulfilment_site, charge_mode,

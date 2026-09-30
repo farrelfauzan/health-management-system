@@ -1466,7 +1466,8 @@
         "issued": "Resep diterbitkan",
         "error": "Resep tidak dapat dicetak. Silakan coba lagi.",
         "openError": "Resep sudah diterbitkan, tetapi tidak dapat dibuka. Buka dari tab Dokumen pasien."
-      }
+      },
+      "uncodedNotice": "Hanya pemeriksaan tanpa diagnosis utama berkode ICD-10. Pilih Atur Ulang untuk melihat semua pemeriksaan."
     }
   }
 }

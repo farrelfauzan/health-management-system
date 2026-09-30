@@ -74,6 +74,7 @@ export class EncounterService {
       startedFrom: query.startedFrom ? parseEncounterDateOnly(query.startedFrom) : undefined,
       startedTo: query.startedTo ? parseEncounterDateOnly(query.startedTo) : undefined,
       ownerUserId: scope.hasAny ? undefined : currentUser.sub,
+      isUncoded: query.uncoded,
     });
 
     return {

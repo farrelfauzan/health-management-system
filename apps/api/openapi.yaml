@@ -45089,6 +45089,14 @@ paths:
           schema:
             pattern: ^\d{4}-\d{2}-\d{2}$
             type: string
+        - name: uncoded
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - "true"
+              - "false"
       responses:
         "200":
           description: A permission-scoped, filtered, paginated encounter list.
@@ -63314,6 +63322,334 @@ paths:
       summary: Read the finance dashboard
       tags:
         - Analytics
+  /api/v1/analytics/case-mix:
+    get:
+      operationId: AnalyticsCaseMixController_getCaseMix_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+      responses:
+        "200":
+          description: "Finished encounters started in the range (cancelled ones never
+            count) and how completely they are coded: an encounter is coded when
+            its primary diagnosis carries an ICD-10 code. `topDiagnoses` is the
+            ten most frequent coded primary diagnoses, then one `OTHER` row for
+            every code below them (`otherCodes` says how many) and one `UNCODED`
+            row, so the list adds up to `finishedEncounters`. `groups` does the
+            same by the code's first letter, five groups deep. `codingByPoli`
+            gives each poli's finished and uncoded encounters. `topProcedures`
+            ranks ICD-9-CM procedures done in those encounters. Every clinical
+            count from 1 to 4 is withheld as `{ suppressed: true }`, together
+            with the next smallest when only one would be hidden, and its share
+            is `null`. Totals are exact. `specialtyId`, `doctorId` and
+            `payerType` narrow every block. No patient, encounter id or free
+            text appears. Cached for five minutes; a query past ten seconds
+            answers 503 `ANALYTICS_QUERY_TIMEOUT`."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      totals:
+                        type: object
+                        properties:
+                          finishedEncounters:
+                            type: integer
+                          codedEncounters:
+                            type: integer
+                          uncodedEncounters:
+                            type: integer
+                          codingCompletenessPercent:
+                            type: number
+                          distinctCodes:
+                            type: integer
+                        required:
+                          - finishedEncounters
+                          - codedEncounters
+                          - uncodedEncounters
+                          - codingCompletenessPercent
+                          - distinctCodes
+                      series:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            bucket:
+                              type: string
+                            finishedEncounters:
+                              type: integer
+                            codedEncounters:
+                              type: integer
+                          required:
+                            - bucket
+                            - finishedEncounters
+                            - codedEncounters
+                      breakdowns:
+                        type: object
+                        properties:
+                          topDiagnoses:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                kind:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                count:
+                                  type: integer
+                                sharePercent:
+                                  type: number
+                              required:
+                                - kind
+                                - count
+                          groups:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                kind:
+                                  type: string
+                                group:
+                                  type: string
+                                count:
+                                  type: integer
+                                sharePercent:
+                                  type: number
+                              required:
+                                - kind
+                                - count
+                          codingByPoli:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                specialtyId:
+                                  type: string
+                                specialtyName:
+                                  type: string
+                                finishedEncounters:
+                                  type: integer
+                                uncodedEncounters:
+                                  type: integer
+                                codingCompletenessPercent:
+                                  type: number
+                              required:
+                                - finishedEncounters
+                                - uncodedEncounters
+                          topProcedures:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                kind:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                                count:
+                                  type: integer
+                              required:
+                                - kind
+                                - count
+                        required:
+                          - topDiagnoses
+                          - groups
+                          - codingByPoli
+                          - topProcedures
+                      comparison:
+                        type: object
+                        properties:
+                          from:
+                            type: string
+                          to:
+                            type: string
+                          totals:
+                            type: object
+                            properties:
+                              finishedEncounters:
+                                type: integer
+                              codedEncounters:
+                                type: integer
+                              uncodedEncounters:
+                                type: integer
+                              codingCompletenessPercent:
+                                type: number
+                              distinctCodes:
+                                type: integer
+                            required:
+                              - finishedEncounters
+                              - codedEncounters
+                              - uncodedEncounters
+                              - codingCompletenessPercent
+                              - distinctCodes
+                          series:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                bucket:
+                                  type: string
+                                finishedEncounters:
+                                  type: integer
+                                codedEncounters:
+                                  type: integer
+                              required:
+                                - bucket
+                                - finishedEncounters
+                                - codedEncounters
+                        required:
+                          - from
+                          - to
+                          - totals
+                          - series
+                    required:
+                      - totals
+                      - series
+                      - breakdowns
+                  meta:
+                    type: object
+                    properties:
+                      from:
+                        type: string
+                      to:
+                        type: string
+                      timezone:
+                        type: string
+                      granularity:
+                        type: string
+                      generatedAt:
+                        type: string
+                    required:
+                      - from
+                      - to
+                      - timezone
+                      - granularity
+                      - generatedAt
+                required:
+                  - data
+                  - meta
+                example:
+                  data:
+                    totals:
+                      finishedEncounters: 1086
+                      codedEncounters: 1014
+                      uncodedEncounters: 72
+                      codingCompletenessPercent: 93.4
+                      distinctCodes: 184
+                    series:
+                      - bucket: 2026-09-01
+                        finishedEncounters: 38
+                        codedEncounters: 36
+                    breakdowns:
+                      topDiagnoses:
+                        - kind: CODE
+                          code: J06.9
+                          name: ISPA akut, tidak spesifik
+                          count: 142
+                          sharePercent: 13.1
+                      groups:
+                        - kind: CODE
+                          group: J
+                          count: 262
+                          sharePercent: 24.1
+                      codingByPoli:
+                        - specialtyId: 5b0c9f1e-2a3d-4c6b-8e7f-9a0b1c2d3e4f
+                          specialtyName: Poli Umum
+                          finishedEncounters: 612
+                          uncodedEncounters: 41
+                          codingCompletenessPercent: 93.3
+                      topProcedures:
+                        - kind: CODE
+                          code: "23.2"
+                          name: Restorasi gigi
+                          count: 61
+                    comparison:
+                      from: 2026-08-01
+                      to: 2026-08-31
+                      totals:
+                        finishedEncounters: 1009
+                        codedEncounters: 921
+                        uncodedEncounters: 88
+                        codingCompletenessPercent: 91.3
+                        distinctCodes: 178
+                      series:
+                        - bucket: 2026-08-01
+                          finishedEncounters: 31
+                          codedEncounters: 28
+                  meta:
+                    from: 2026-09-01
+                    to: 2026-09-30
+                    timezone: Asia/Jakarta
+                    granularity: day
+                    generatedAt: 2026-09-28T02:00:00.000Z
+        "401":
+          description: Authentication is required.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: UNAUTHORIZED
+                    message: Authentication is required
+        "403":
+          description: The authenticated user does not have the required permission.
+          content:
+            application/json:
+              schema:
+                example:
+                  error:
+                    code: FORBIDDEN
+                    message: Insufficient permission
+      security:
+        - bearer: []
+      summary: Read the case-mix dashboard
+      tags:
+        - Analytics
   /api/v1/analytics/operations/export:
     get:
       operationId: AnalyticsExportController_exportOperations_v1
@@ -63438,6 +63774,68 @@ paths:
             export writes one `EXPORT` audit row with the dashboard, the filters
             and the row count.
       summary: Export the finance dashboard as CSV
+      tags: *a96
+  /api/v1/analytics/case-mix/export:
+    get:
+      operationId: AnalyticsExportController_exportCaseMix_v1
+      parameters:
+        - name: from
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: to
+          required: true
+          in: query
+          schema:
+            type: string
+        - name: compare
+          required: true
+          in: query
+          schema:
+            default: "false"
+            type: string
+            enum:
+              - "true"
+              - "false"
+        - name: specialtyId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: doctorId
+          required: false
+          in: query
+          schema:
+            format: uuid
+            type: string
+        - name: payerType
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - GENERAL
+              - BPJS
+              - INSURANCE
+        - name: tables
+          required: true
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The dashboard's aggregate tables as CSV, one section per table
+            under its title, for the same filter as the dashboard. `tables` is a
+            comma-separated list of table keys; omitted, every table is written,
+            and an unknown key answers 400 `ANALYTICS_EXPORT_UNKNOWN_TABLE`.
+            UTF-8 with a BOM so Excel opens it; the file is
+            `metaklinik-<dashboard>-<from>-<to>.csv`. Needs `analytics.export`
+            and the dashboard's own read key. No patient appears in it. Every
+            export writes one `EXPORT` audit row with the dashboard, the filters
+            and the row count.
+      summary: Export the case-mix dashboard as CSV
       tags: *a96
   /api/v1/analytics/reporting/export:
     get:

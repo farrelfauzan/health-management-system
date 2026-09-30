@@ -76,7 +76,8 @@
       "flat": "unchanged",
       "minutes": "{value} min",
       "rupiah": "{value}",
-      "invoices": "{value} invoices"
+      "invoices": "{value} invoices",
+      "count": "{value}"
     },
     "states": {
       "loading": "Loading the dashboard",
@@ -405,6 +406,75 @@
           "readiness": "Ready to send?"
         }
       }
+    },
+    "caseMix": {
+      "kpi": {
+        "finished": "Finished encounters",
+        "completeness": "Diagnosis coding completeness",
+        "completenessHelper": "{count} encounters without a coded primary diagnosis",
+        "distinctCodes": "Distinct ICD-10 codes"
+      },
+      "diagnoses": {
+        "title": "Top 10 primary diagnoses",
+        "subtitle": "Primary diagnosis of finished encounters",
+        "countShare": "{count} · {share}%",
+        "other": "Other ({count} codes)",
+        "uncoded": "No code",
+        "empty": "No coded diagnosis in this period."
+      },
+      "coding": {
+        "title": "Coding completeness",
+        "subtitle": "An encounter without a coded primary diagnosis cannot be sent to SATUSEHAT or BPJS",
+        "link": "Encounters without a diagnosis",
+        "ofTotal": "{coded} of {finished}",
+        "poli": "Poli",
+        "uncoded": "Not coded",
+        "noPoli": "No poli"
+      },
+      "groups": {
+        "title": "By ICD-10 group",
+        "subtitle": "Letter group of the primary diagnosis code",
+        "other": "Other ({count} groups)",
+        "uncoded": "No code",
+        "names": {
+          "A": "Infectious and parasitic",
+          "B": "Infectious and parasitic",
+          "C": "Neoplasms",
+          "D": "Neoplasms and blood",
+          "E": "Endocrine and metabolic",
+          "F": "Mental and behavioural",
+          "G": "Nervous system",
+          "H": "Eye and ear",
+          "I": "Circulatory",
+          "J": "Respiratory",
+          "K": "Digestive",
+          "L": "Skin",
+          "M": "Musculoskeletal",
+          "N": "Genitourinary",
+          "O": "Pregnancy and childbirth",
+          "P": "Perinatal",
+          "Q": "Congenital",
+          "R": "Symptoms and findings",
+          "S": "Injury",
+          "T": "Injury and poisoning",
+          "U": "Special codes",
+          "V": "External causes",
+          "W": "External causes",
+          "X": "External causes",
+          "Y": "External causes",
+          "Z": "Health status factors"
+        }
+      },
+      "procedures": {
+        "title": "Top procedures",
+        "subtitle": "ICD-9-CM codes on finished encounters",
+        "other": "Other ({count} codes)",
+        "empty": "No procedure in this period."
+      },
+      "suppressed": "<5",
+      "suppressedNote": "Counts under 5 are hidden to protect patient privacy",
+      "emptyTitle": "No finished encounter in this period",
+      "emptyDescription": "Try another date range, or clear the poli, doctor and payer filters."
     }
   }
 }

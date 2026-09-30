@@ -49,9 +49,24 @@ const REVENUE_FILTER = `
 
 const FINANCE_PARAMS = ['startUtc', 'endUtc', 'doctorId', 'specialtyId'] as const;
 
+// Finished encounters in the range with their coded primary diagnosis (P29-T12).
+const FINISHED_WITH_PRIMARY = `
+  WITH finished AS (
+    SELECT e.id, e.started_at, r.specialty_id, c.code
+    FROM encounters e
+    JOIN registrations r ON r.id = e.registration_id
+    LEFT JOIN diagnoses d ON d.encounter_id = e.id AND d.type = 'PRIMARY' AND d.deleted_at IS NULL
+    LEFT JOIN icd10_codes c ON c.id = d.icd10_code_id
+    WHERE e.deleted_at IS NULL AND e.status = 'FINISHED'
+      AND e.started_at >= $1::timestamp AND e.started_at < $2::timestamp
+      AND ($3::uuid IS NULL OR e.doctor_id = $3::uuid)
+      AND ($4::uuid IS NULL OR r.specialty_id = $4::uuid)
+  )`;
+
 /**
  * The candidate SQL for every Sprint 1 analytics query (P29-T04 operations,
- * P29-T06 reporting status) and the P29-T08 finance queries, as shipped.
+ * P29-T06 reporting status), the P29-T08 finance and the P29-T12 case-mix
+ * queries, as shipped.
  * The shapes follow the ticket definitions; T04 and T06 are expected to
  * adopt them, and re-run the benchmark if they change a join.
  */
@@ -294,5 +309,46 @@ export const ANALYTICS_BENCHMARK_QUERIES: readonly AnalyticsBenchmarkQuery[] = [
           AND ($2::uuid IS NULL OR r.specialty_id = $2::uuid)
       ) aged
       GROUP BY 1`,
+  },
+  {
+    id: 'case-mix-totals-and-buckets',
+    requirement: 'FR-CLN-02',
+    dashboard: 'case-mix',
+    params: [...FINANCE_PARAMS, 'granularity', 'timeZone'],
+    sql: `${FINISHED_WITH_PRIMARY}
+      SELECT date_trunc($5, (started_at AT TIME ZONE 'UTC') AT TIME ZONE $6) AS bucket,
+             count(*)::int AS finished, count(code)::int AS coded, count(DISTINCT code)::int AS codes
+      FROM finished GROUP BY 1`,
+  },
+  {
+    id: 'case-mix-top-diagnoses-and-groups',
+    requirement: 'FR-CLN-01, FR-CLN-03',
+    dashboard: 'case-mix',
+    params: FINANCE_PARAMS,
+    sql: `${FINISHED_WITH_PRIMARY}
+      SELECT code, left(code, 1) AS grp, count(*)::int AS encounters
+      FROM finished WHERE code IS NOT NULL GROUP BY 1, 2 ORDER BY 3 DESC`,
+  },
+  {
+    id: 'case-mix-coding-by-poli',
+    requirement: 'FR-CLN-02',
+    dashboard: 'case-mix',
+    params: FINANCE_PARAMS,
+    sql: `${FINISHED_WITH_PRIMARY}
+      SELECT specialty_id, count(*)::int AS finished, count(code)::int AS coded
+      FROM finished GROUP BY 1`,
+  },
+  {
+    id: 'case-mix-top-procedures',
+    requirement: 'FR-CLN-04',
+    dashboard: 'case-mix',
+    params: FINANCE_PARAMS,
+    sql: `${FINISHED_WITH_PRIMARY}
+      SELECT COALESCE(ic.code, p.code) AS code, count(*)::int AS procedures
+      FROM procedures p
+      JOIN finished f ON f.id = p.encounter_id
+      LEFT JOIN icd9cm_codes ic ON ic.id = p.icd9cm_code_id
+      WHERE p.deleted_at IS NULL
+      GROUP BY 1 ORDER BY 2 DESC`,
   },
 ];

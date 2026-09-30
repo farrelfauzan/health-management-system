@@ -21,6 +21,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AnalyticsCaseMixControllerGetCaseMixV1200,
+  AnalyticsCaseMixControllerGetCaseMixV1Params,
+  AnalyticsExportControllerExportCaseMixV1Params,
   AnalyticsExportControllerExportFinanceV1Params,
   AnalyticsExportControllerExportOperationsV1Params,
   AnalyticsExportControllerExportReportingV1Params,
@@ -332,6 +335,99 @@ export function useAnalyticsFinanceControllerGetFinanceV1<TData = Awaited<Return
 
 
 /**
+ * @summary Read the case-mix dashboard
+ */
+export const analyticsCaseMixControllerGetCaseMixV1 = (
+    params: AnalyticsCaseMixControllerGetCaseMixV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsCaseMixControllerGetCaseMixV1200>(
+      {url: `/api/v1/analytics/case-mix`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsCaseMixControllerGetCaseMixV1QueryKey = (params?: AnalyticsCaseMixControllerGetCaseMixV1Params,) => {
+    return [
+    `/api/v1/analytics/case-mix`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsCaseMixControllerGetCaseMixV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError = unknown>(params: AnalyticsCaseMixControllerGetCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsCaseMixControllerGetCaseMixV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>> = ({ signal }) => analyticsCaseMixControllerGetCaseMixV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsCaseMixControllerGetCaseMixV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>>
+export type AnalyticsCaseMixControllerGetCaseMixV1QueryError = unknown
+
+
+export function useAnalyticsCaseMixControllerGetCaseMixV1<TData = Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError = unknown>(
+ params: AnalyticsCaseMixControllerGetCaseMixV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsCaseMixControllerGetCaseMixV1<TData = Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError = unknown>(
+ params: AnalyticsCaseMixControllerGetCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsCaseMixControllerGetCaseMixV1<TData = Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError = unknown>(
+ params: AnalyticsCaseMixControllerGetCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read the case-mix dashboard
+ */
+
+export function useAnalyticsCaseMixControllerGetCaseMixV1<TData = Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError = unknown>(
+ params: AnalyticsCaseMixControllerGetCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsCaseMixControllerGetCaseMixV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsCaseMixControllerGetCaseMixV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
  * @summary Export the operations dashboard as CSV
  */
 export const analyticsExportControllerExportOperationsV1 = (
@@ -506,6 +602,99 @@ export function useAnalyticsExportControllerExportFinanceV1<TData = Awaited<Retu
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsExportControllerExportFinanceV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Export the case-mix dashboard as CSV
+ */
+export const analyticsExportControllerExportCaseMixV1 = (
+    params: AnalyticsExportControllerExportCaseMixV1Params,
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<void>(
+      {url: `/api/v1/analytics/case-mix/export`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsExportControllerExportCaseMixV1QueryKey = (params?: AnalyticsExportControllerExportCaseMixV1Params,) => {
+    return [
+    `/api/v1/analytics/case-mix/export`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getAnalyticsExportControllerExportCaseMixV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError = unknown>(params: AnalyticsExportControllerExportCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsExportControllerExportCaseMixV1QueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>> = ({ signal }) => analyticsExportControllerExportCaseMixV1(params, signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsExportControllerExportCaseMixV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>>
+export type AnalyticsExportControllerExportCaseMixV1QueryError = unknown
+
+
+export function useAnalyticsExportControllerExportCaseMixV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportCaseMixV1Params, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportCaseMixV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsExportControllerExportCaseMixV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export the case-mix dashboard as CSV
+ */
+
+export function useAnalyticsExportControllerExportCaseMixV1<TData = Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError = unknown>(
+ params: AnalyticsExportControllerExportCaseMixV1Params, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsExportControllerExportCaseMixV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsExportControllerExportCaseMixV1QueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

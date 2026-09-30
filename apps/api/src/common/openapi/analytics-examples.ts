@@ -196,6 +196,77 @@ export const ANALYTICS_EXAMPLES = {
       },
     },
   },
+  caseMix: {
+    response: {
+      data: {
+        totals: {
+          finishedEncounters: 1_086,
+          codedEncounters: 1_014,
+          uncodedEncounters: 72,
+          // `null` with no finished encounter.
+          codingCompletenessPercent: 93.4,
+          distinctCodes: 184,
+        },
+        series: [{ bucket: '2026-09-01', finishedEncounters: 38, codedEncounters: 36 }],
+        breakdowns: {
+          // Ten codes, then `OTHER` and `UNCODED`; a count of 1–4 is `{ suppressed: true }`.
+          topDiagnoses: [
+            {
+              kind: 'CODE',
+              code: optionalExample('J06.9'),
+              name: optionalExample('ISPA akut, tidak spesifik'),
+              count: 142,
+              sharePercent: optionalExample(13.1),
+            },
+          ],
+          groups: [
+            {
+              kind: 'CODE',
+              group: optionalExample('J'),
+              count: 262,
+              sharePercent: optionalExample(24.1),
+            },
+          ],
+          codingByPoli: [
+            {
+              specialtyId: optionalExample(POLI_UMUM_ID),
+              specialtyName: optionalExample('Poli Umum'),
+              finishedEncounters: 612,
+              uncodedEncounters: 41,
+              codingCompletenessPercent: optionalExample(93.3),
+            },
+          ],
+          topProcedures: [
+            {
+              kind: 'CODE',
+              code: optionalExample('23.2'),
+              name: optionalExample('Restorasi gigi'),
+              count: 61,
+            },
+          ],
+        },
+        comparison: optionalExample({
+          from: '2026-08-01',
+          to: '2026-08-31',
+          totals: {
+            finishedEncounters: 1_009,
+            codedEncounters: 921,
+            uncodedEncounters: 88,
+            codingCompletenessPercent: 91.3,
+            distinctCodes: 178,
+          },
+          series: [{ bucket: '2026-08-01', finishedEncounters: 31, codedEncounters: 28 }],
+        }),
+      },
+      meta: {
+        from: '2026-09-01',
+        to: '2026-09-30',
+        timezone: 'Asia/Jakarta',
+        granularity: 'day',
+        generatedAt: '2026-09-28T02:00:00.000Z',
+      },
+    },
+  },
   reportingHealth: {
     response: {
       data: {

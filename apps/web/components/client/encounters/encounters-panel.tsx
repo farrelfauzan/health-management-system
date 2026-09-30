@@ -45,6 +45,7 @@ export function EncountersPanel({
       limit: initialQuery.limit,
       patientId: initialQuery.patientId,
       registrationId: initialQuery.registrationId,
+      isUncoded: initialQuery.isUncoded,
       ...filters,
     });
   }
@@ -67,6 +68,10 @@ export function EncountersPanel({
         onApply={handleApplyFilters}
         onReset={handleResetFilters}
       />
+
+      {initialQuery.isUncoded ? (
+        <InlineNotice tone="info">{t('encounters.uncodedNotice')}</InlineNotice>
+      ) : null}
 
       {encountersQuery.error && encountersQuery.encounters.length > 0 ? (
         <InlineNotice tone="error">{t('encounters.errorDescription')}</InlineNotice>

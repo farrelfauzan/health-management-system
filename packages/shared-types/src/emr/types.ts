@@ -235,6 +235,8 @@ export type ListEncountersParams = {
   startedFrom?: Date;
   startedTo?: Date;
   ownerUserId?: string;
+  /** Only encounters without an ICD-10-coded primary diagnosis. */
+  isUncoded?: boolean;
 };
 
 export type EncounterRelatedPatientRecord = {

@@ -65,7 +65,12 @@ function refineAnalyticsRange(filter: { from: string; to: string }, ctx: z.Refin
 export const analyticsFilterSchema = analyticsFilterObjectSchema.superRefine(refineAnalyticsRange);
 
 /** The dashboards that export as CSV (P29-T10), in sidebar order. */
-export const ANALYTICS_EXPORT_DASHBOARDS = ['operations', 'finance', 'reporting'] as const;
+export const ANALYTICS_EXPORT_DASHBOARDS = [
+  'operations',
+  'finance',
+  'case-mix',
+  'reporting',
+] as const;
 
 export const analyticsExportDashboardSchema = z.enum(ANALYTICS_EXPORT_DASHBOARDS);
 
@@ -93,6 +98,7 @@ export const ANALYTICS_EXPORT_TABLE_KEYS = {
     'doctors',
     'outstanding',
   ],
+  'case-mix': ['summary', 'top-diagnoses', 'groups', 'coding-by-poli', 'top-procedures'],
   reporting: ['satusehat', 'bpjs', 'readiness'],
 } as const;
 

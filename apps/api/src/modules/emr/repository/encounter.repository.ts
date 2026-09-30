@@ -294,6 +294,13 @@ export class EncounterRepository {
       ...(registrationId ? { registrationId } : {}),
       ...this.buildStartedAtFilter(params),
       ...this.buildOwnerFilter(params.ownerUserId),
+      ...(params.isUncoded
+        ? {
+            diagnoses: {
+              none: { type: 'PRIMARY' as const, deletedAt: null, icd10CodeId: { not: null } },
+            },
+          }
+        : {}),
     };
 
     const [items, total] = await this.prisma.executeTransaction(async (tx) => {

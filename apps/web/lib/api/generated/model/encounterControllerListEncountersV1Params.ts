@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { EncounterControllerListEncountersV1Status } from './encounterControllerListEncountersV1Status';
+import type { EncounterControllerListEncountersV1Uncoded } from './encounterControllerListEncountersV1Uncoded';
 
 export type EncounterControllerListEncountersV1Params = {
 /**
@@ -29,4 +30,5 @@ startedFrom?: string;
  * @pattern ^\d{4}-\d{2}-\d{2}$
  */
 startedTo?: string;
+uncoded?: EncounterControllerListEncountersV1Uncoded;
 };
