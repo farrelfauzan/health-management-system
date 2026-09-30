@@ -631,3 +631,21 @@ export type ReadPracticePeriodParams = {
   range: AnalyticsRange;
   doctorId: string;
 };
+
+/**
+ * Today up to now and the same stretch of the same weekday last week, as UTC
+ * `timestamp` text (P29-T16).
+ */
+export type AnalyticsTodayWindows = {
+  date: string;
+  comparisonDate: string;
+  todayStartUtc: string;
+  nowUtc: string;
+  comparisonStartUtc: string;
+  comparisonEndUtc: string;
+};
+
+export type AnalyticsVisitsTodayRow = {
+  visits: number;
+  comparisonVisits: number;
+};

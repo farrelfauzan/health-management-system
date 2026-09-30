@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type {
+  AnalyticsTodayWindows,
+  AnalyticsVisitsTodayRow,
   AnalyticsChannelRow,
   AnalyticsDoctorRow,
   AnalyticsNewAndReturningRow,
@@ -56,6 +58,35 @@ export class AnalyticsOperationsRepository {
         ? await this.depthRepository.listInpatientDispositions(tx, scope)
         : null,
     }));
+  }
+
+  /**
+   * Visits checked in so far today and in the same stretch of last week's
+   * same weekday (P29-T16). A visit is timed by its check-in, or by its
+   * registration if it was never checked in, so both days are cut the same
+   * way whatever has happened to last week's visits since.
+   */
+  countVisitsToday(windows: AnalyticsTodayWindows): Promise<AnalyticsVisitsTodayRow> {
+    return this.analyticsQueryRepository.runReadOnly(async (tx) => {
+      const rows = await tx.$queryRaw<AnalyticsVisitsTodayRow[]>`
+        WITH timed AS (
+          SELECT COALESCE(r."checked_in_at", r."registered_at") AS "arrived_at"
+          FROM "registrations" r
+          WHERE r."deleted_at" IS NULL
+            AND r."status" IN ('CHECKED_IN', 'COMPLETED')
+            AND r."registered_at" >= ${windows.comparisonStartUtc}::timestamp
+            AND r."registered_at" < ${windows.nowUtc}::timestamp
+        )
+        SELECT
+          count(*) FILTER (
+            WHERE "arrived_at" >= ${windows.todayStartUtc}::timestamp
+              AND "arrived_at" < ${windows.nowUtc}::timestamp)::int AS "visits",
+          count(*) FILTER (
+            WHERE "arrived_at" >= ${windows.comparisonStartUtc}::timestamp
+              AND "arrived_at" < ${windows.comparisonEndUtc}::timestamp)::int AS "comparisonVisits"
+        FROM timed`;
+      return rows[0] ?? { visits: 0, comparisonVisits: 0 };
+    });
   }
 
   /** An appointment scheduled in the range, narrowed by doctor and by the doctor's poli. */

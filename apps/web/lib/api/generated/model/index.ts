@@ -223,6 +223,8 @@ export * from './analyticsOperationsControllerGetOperationsV1200DataSeriesItem';
 export * from './analyticsOperationsControllerGetOperationsV1200DataTotals';
 export * from './analyticsOperationsControllerGetOperationsV1200DataTotalsInpatient';
 export * from './analyticsOperationsControllerGetOperationsV1200Meta';
+export * from './analyticsOperationsControllerGetVisitsTodayV1200';
+export * from './analyticsOperationsControllerGetVisitsTodayV1200Data';
 export * from './analyticsPharmacyControllerGetPharmacyV1Compare';
 export * from './analyticsPharmacyControllerGetPharmacyV1Params';
 export * from './analyticsPharmacyControllerGetPharmacyV1PayerType';

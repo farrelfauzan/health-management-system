@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import type {
-  AnalyticsFilterInput,
-  AnalyticsOperationsData,
-  AnalyticsOperationsPeriodSnapshot,
-  AnalyticsResponse,
-  ReadOperationsPeriodParams,
+import {
+  computeChangePercent,
+  type AnalyticsFilterInput,
+  type AnalyticsOperationsData,
+  type AnalyticsOperationsPeriodSnapshot,
+  type AnalyticsResponse,
+  type AnalyticsVisitsTodayResponse,
+  type ReadOperationsPeriodParams,
 } from '@hms/shared-types';
 
 import { FeatureAvailabilityCacheService } from '../../feature-entitlement/service/feature-availability-cache.service';
@@ -39,6 +41,27 @@ export class AnalyticsOperationsService {
       key: { dashboard: 'operations', filter: { ...filter, includeInpatient } },
       load: () => this.loadOperations(filter, includeInpatient),
     });
+  }
+
+  /**
+   * Visits so far today against the same weekday last week up to the same
+   * clock time, for the home dashboard (P29-T16). Not cached: it is a
+   * running count, and one indexed query.
+   */
+  async getVisitsToday(now: Date = new Date()): Promise<AnalyticsVisitsTodayResponse> {
+    const windows = this.analyticsRangeService.resolveTodayWindows(now);
+    const { visits, comparisonVisits } =
+      await this.analyticsOperationsRepository.countVisitsToday(windows);
+    return {
+      data: {
+        date: windows.date,
+        comparisonDate: windows.comparisonDate,
+        asOf: now.toISOString(),
+        visits,
+        comparisonVisits,
+        changePercent: computeChangePercent(visits, comparisonVisits),
+      },
+    };
   }
 
   private async loadOperations(

@@ -35,6 +35,7 @@ import type {
   AnalyticsLaboratoryControllerGetLaboratoryV1Params,
   AnalyticsOperationsControllerGetOperationsV1200,
   AnalyticsOperationsControllerGetOperationsV1Params,
+  AnalyticsOperationsControllerGetVisitsTodayV1200,
   AnalyticsPharmacyControllerGetPharmacyV1200,
   AnalyticsPharmacyControllerGetPharmacyV1Params,
   AnalyticsPracticeControllerGetMyPracticeV1200,
@@ -145,6 +146,98 @@ export function useAnalyticsOperationsControllerGetOperationsV1<TData = Awaited<
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getAnalyticsOperationsControllerGetOperationsV1QueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+/**
+ * @summary Count visits so far today against the same weekday last week
+ */
+export const analyticsOperationsControllerGetVisitsTodayV1 = (
+
+ signal?: AbortSignal
+) => {
+
+
+      return orvalAxiosMutator<AnalyticsOperationsControllerGetVisitsTodayV1200>(
+      {url: `/api/v1/analytics/operations/today`, method: 'GET', signal
+    },
+      );
+    }
+
+
+
+
+export const getAnalyticsOperationsControllerGetVisitsTodayV1QueryKey = () => {
+    return [
+    `/api/v1/analytics/operations/today`
+    ] as const;
+    }
+
+
+export const getAnalyticsOperationsControllerGetVisitsTodayV1QueryOptions = <TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAnalyticsOperationsControllerGetVisitsTodayV1QueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>> = ({ signal }) => analyticsOperationsControllerGetVisitsTodayV1(signal);
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AnalyticsOperationsControllerGetVisitsTodayV1QueryResult = NonNullable<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>>
+export type AnalyticsOperationsControllerGetVisitsTodayV1QueryError = unknown
+
+
+export function useAnalyticsOperationsControllerGetVisitsTodayV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsOperationsControllerGetVisitsTodayV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>,
+          TError,
+          Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAnalyticsOperationsControllerGetVisitsTodayV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Count visits so far today against the same weekday last week
+ */
+
+export function useAnalyticsOperationsControllerGetVisitsTodayV1<TData = Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof analyticsOperationsControllerGetVisitsTodayV1>>, TError, TData>>, }
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAnalyticsOperationsControllerGetVisitsTodayV1QueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

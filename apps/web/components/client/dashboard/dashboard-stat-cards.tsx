@@ -49,7 +49,7 @@ export function DashboardStatCards() {
       isPending: stats.activeDoctorsQuery.isPending,
       isError: stats.activeDoctorsQuery.isError,
       total: stats.activeDoctorsMeta?.total,
-      helper: t('specialtyBreakdown', { surgeons: 3, generalPractitioners: 5 }),
+      helper: t('activeClinicians'),
       variant: 'default',
     },
     {

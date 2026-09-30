@@ -18,7 +18,7 @@
       "appointments": "Appointments",
       "upcomingWithinHour": "{count, plural, one {# upcoming in the next hour} other {# upcoming in the next hour}}",
       "doctorsOnDuty": "Doctors on Duty",
-      "specialtyBreakdown": "{surgeons, number} Surgeons, {generalPractitioners, number} General Phys.",
+      "activeClinicians": "Active doctors and midwives",
       "pendingRx": "Pending RX",
       "awaitingVerification": "Awaiting pharmacist verification",
       "unableToLoad": "Unable to load"
@@ -51,14 +51,13 @@
       "generateReportDescription": "Daily clinical performance data",
       "reportUnavailable": "Reporting ships in a later phase."
     },
-    "activity": {
-      "title": "Recent Activity",
-      "emergencyAdmission": "Emergency admission",
-      "emergencyAdmissionDescription": "Patient Sarah Connor (Cardiac Unit)",
-      "prescriptionVerified": "Prescription verified",
-      "prescriptionVerifiedDescription": "Pharmacy released order #RX-772",
-      "shiftHandover": "Shift handover complete",
-      "shiftHandoverDescription": "Morning shift took over operations"
+    "visitsToday": {
+      "title": "Visits today",
+      "subtitle": "So far, against last {weekday} at the same time",
+      "previous": "{previous} last {weekday}",
+      "noComparison": "No visits by this time last {weekday}",
+      "link": "Open analytics",
+      "unableToLoad": "Unable to load"
     }
   },
   "aiAssistant": {
